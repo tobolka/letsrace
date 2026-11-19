@@ -1,0 +1,346 @@
+{
+ "apply": false,
+ "sources": 551,
+ "pages": 535,
+ "races": 1495,
+ "changes": [
+  {
+   "id": "a5298f52-bb4c-4960-ad7e-e1d8d14f36c9",
+   "name": "Slovácký Kros — Kyjov",
+   "date": "2026-11-15",
+   "row": "ne 15.11.2026 | Kyjov | [Slovácký Kros]",
+   "source": "https://www.cyklokros.cz/kalendar",
+   "regulations_url": "https://www.cyklokros.cz/files/slovacky-kros-rozpis-kyjov-2026-final-2.pdf"
+  },
+  {
+   "id": "090934a6-82b9-47b8-8d82-a952c33bc970",
+   "name": "NoLimited Cup #6 Selce",
+   "date": "2026-12-06",
+   "row": "6.12.2026 | 10. kolo: NoLimited cup v CX (UCI C2) Cyklokros | Selce | |",
+   "source": "https://www.cyklistikaszc.sk/sk/cyklokros/kalendar",
+   "regulations_url": "https://www.cyklistikaszc.sk/kalendar/propozicie/669a58f02835483533f1e6e0b2.zip",
+   "results_url": "https://www.cyklistikaszc.sk/sk/submenu/kalendar-vysledky/prihlasenie/i-2219"
+  },
+  {
+   "id": "0d13d973-06a1-4dc1-95eb-4dd9132bb96a",
+   "name": "8. kolo: Grand Prix Šamorín (UCI C2)",
+   "date": "2026-11-22",
+   "row": "22.11.2026 | 8. kolo: Grand Prix Šamorín (UCI C2) Cyklokros | Šamorín | | |",
+   "source": "https://www.cyklistikaszc.sk/sk/cyklokros/kalendar",
+   "regulations_url": "https://www.cyklistikaszc.sk/kalendar/propozicie/221c7e8a40087efd09b9757e041.zip",
+   "results_url": "https://www.cyklistikaszc.sk/sk/submenu/kalendar-vysledky/prihlasenie/i-2217"
+  },
+  {
+   "id": "43d0f6a8-c942-462f-99f1-5728be6fbc32",
+   "name": "10. kolo: NoLimited cup v CX (UCI C2)",
+   "date": "2026-12-06",
+   "row": "6.12.2026 | 10. kolo: NoLimited cup v CX (UCI C2) Cyklokros | Selce | |",
+   "source": "https://www.cyklistikaszc.sk/sk/cyklokros/kalendar",
+   "regulations_url": "https://www.cyklistikaszc.sk/kalendar/propozicie/669a58f02835483533f1e6e0b2.zip",
+   "results_url": "https://www.cyklistikaszc.sk/sk/submenu/kalendar-vysledky/prihlasenie/i-2219"
+  },
+  {
+   "id": "47bec5f3-1f99-458f-acd1-0a80d4c5308e",
+   "name": "7. kolo: NoLimited cup v CX (UCI C1)",
+   "date": "2026-11-21",
+   "row": "21.11.2026 | 7. kolo: NoLimited cup v CX (UCI C1) Cyklokros | Šamorín | | |",
+   "source": "https://www.cyklistikaszc.sk/sk/cyklokros/kalendar",
+   "regulations_url": "https://www.cyklistikaszc.sk/kalendar/propozicie/217d01e5c7fbe82335d40441723.zip",
+   "results_url": "https://www.cyklistikaszc.sk/sk/submenu/kalendar-vysledky/prihlasenie/i-2216"
+  },
+  {
+   "id": "8bcdc4f3-6ac9-4223-b94f-254edc165664",
+   "name": "6. kolo: Grand Prix Sereď",
+   "date": "2026-11-08",
+   "row": "8.11.2026 | 6. kolo: Grand Prix Sereď Cyklokros | Sereď | |",
+   "source": "https://www.cyklistikaszc.sk/sk/cyklokros/kalendar",
+   "results_url": "https://www.cyklistikaszc.sk/sk/submenu/kalendar-vysledky/prihlasenie/i-2215"
+  },
+  {
+   "id": "ca4496d4-5663-45a5-a9a4-e20a8af989d2",
+   "name": "MSR v cyklokrose (9. kolo)",
+   "date": "2026-12-05",
+   "row": "5.12.2026 | MSR v cyklokrose (9. kolo) Cyklokros | Selce | |",
+   "source": "https://www.cyklistikaszc.sk/sk/cyklokros/kalendar",
+   "results_url": "https://www.cyklistikaszc.sk/sk/submenu/kalendar-vysledky/prihlasenie/i-2218"
+  },
+  {
+   "id": "468aa081-6560-4b70-b000-1b2335851e79",
+   "name": "HIGH POINT Galaxy MTB maraton",
+   "date": "2027-08-21",
+   "row": "21.08.2027 | MTB-M | Sušice | HIGH POINT Galaxy MTB maraton | [web]",
+   "source": "https://maraton.cz/terminovka",
+   "website_url": "http://www.mtbmaratonsusice.cz/"
+  },
+  {
+   "id": "d5c4d3da-81a5-4fbb-a933-91cb3e46a82b",
+   "name": "BSK Giro Pičín",
+   "date": "2027-06-20",
+   "row": "20.06.2027 | MTB-M | Pičín | BSK Giro Pičín (připravuje se) | [web]",
+   "source": "https://maraton.cz/terminovka",
+   "website_url": "http://bskjuniorsteam.cz/"
+  },
+  {
+   "id": "38b83324-c9e0-4603-8fa5-a42b50de7a87",
+   "name": "NRW-Cross-Cup 2026 — Donkey Creek Cyclocross",
+   "date": "2026-11-21",
+   "row": "2. Lauf am Sa., 21.11.2026 [Donkey Creek Cyclocross] in Nideggen-Schmidt (TUS Schmidt)",
+   "source": "https://www.dsergebnis.de/nrw-cross-cup-2026/",
+   "website_url": "https://race-hub.io/events/36a2576b-9b6e-4b00-abf9-9823a4592822/participants"
+  }
+ ],
+ "byHost": {
+  "cyklistikaszc.sk": {
+   "pages": 8,
+   "rows": 216,
+   "regulations": 4,
+   "results": 6,
+   "websites": 0
+  },
+  "maraton.cz": {
+   "pages": 1,
+   "rows": 16,
+   "regulations": 0,
+   "results": 0,
+   "websites": 2
+  },
+  "cyklokros.cz": {
+   "pages": 1,
+   "rows": 17,
+   "regulations": 1,
+   "results": 0,
+   "websites": 0
+  },
+  "dsergebnis.de": {
+   "pages": 3,
+   "rows": 29,
+   "regulations": 0,
+   "results": 0,
+   "websites": 1
+  },
+  "downhill-cup.at": {
+   "pages": 1,
+   "rows": 6,
+   "regulations": 0,
+   "results": 0,
+   "websites": 0
+  },
+  "mtb-liga.at": {
+   "pages": 1,
+   "rows": 12,
+   "regulations": 0,
+   "results": 0,
+   "websites": 0
+  },
+  "sportklasse-cup.at": {
+   "pages": 1,
+   "rows": 13,
+   "regulations": 0,
+   "results": 0,
+   "websites": 0
+  },
+  "youngsters-cup.at": {
+   "pages": 1,
+   "rows": 28,
+   "regulations": 0,
+   "results": 0,
+   "websites": 0
+  },
+  "cykloman.cz": {
+   "pages": 2,
+   "rows": 8,
+   "regulations": 0,
+   "results": 0,
+   "websites": 0
+  },
+  "kalendar.sportsoft.cz": {
+   "pages": 1,
+   "rows": 2,
+   "regulations": 0,
+   "results": 0,
+   "websites": 0
+  },
+  "mtb-kidscup.de": {
+   "pages": 1,
+   "rows": 10,
+   "regulations": 0,
+   "results": 0,
+   "websites": 0
+  },
+  "prahamtb.cz": {
+   "pages": 1,
+   "rows": 17,
+   "regulations": 0,
+   "results": 0,
+   "websites": 0
+  },
+  "pyoraily.fi": {
+   "pages": 1,
+   "rows": 27,
+   "regulations": 0,
+   "results": 0,
+   "websites": 0
+  },
+  "pzkol.pl": {
+   "pages": 1,
+   "rows": 3,
+   "regulations": 0,
+   "results": 0,
+   "websites": 0
+  },
+  "radsport-thueringen.de": {
+   "pages": 2,
+   "rows": 2,
+   "regulations": 0,
+   "results": 0,
+   "websites": 0
+  },
+  "schwarzwaelder-mtb-cup.de": {
+   "pages": 1,
+   "rows": 6,
+   "regulations": 0,
+   "results": 0,
+   "websites": 0
+  },
+  "skvelopraha.cz": {
+   "pages": 1,
+   "rows": 1,
+   "regulations": 0,
+   "results": 0,
+   "websites": 0
+  },
+  "spac-os.cz": {
+   "pages": 1,
+   "rows": 16,
+   "regulations": 0,
+   "results": 0,
+   "websites": 0
+  },
+  "sumator.cz": {
+   "pages": 2,
+   "rows": 2,
+   "regulations": 0,
+   "results": 0,
+   "websites": 0
+  },
+  "amaterskaliga.cz": {
+   "pages": 1,
+   "rows": 22,
+   "regulations": 0,
+   "results": 0,
+   "websites": 0
+  },
+  "bayerwald-mtb-cup.com": {
+   "pages": 1,
+   "rows": 7,
+   "regulations": 0,
+   "results": 0,
+   "websites": 0
+  },
+  "czechcyclingfederation.com": {
+   "pages": 3,
+   "rows": 17,
+   "regulations": 0,
+   "results": 0,
+   "websites": 0
+  },
+  "german-pumptrack-series.de": {
+   "pages": 1,
+   "rows": 5,
+   "regulations": 0,
+   "results": 0,
+   "websites": 0
+  },
+  "gravelseries.cz": {
+   "pages": 2,
+   "rows": 2,
+   "regulations": 0,
+   "results": 0,
+   "websites": 0
+  },
+  "juniorbikecup.at": {
+   "pages": 1,
+   "rows": 5,
+   "regulations": 0,
+   "results": 0,
+   "websites": 0
+  },
+  "kolarna.eu": {
+   "pages": 1,
+   "rows": 24,
+   "regulations": 0,
+   "results": 0,
+   "websites": 0
+  },
+  "marathon-man.eu": {
+   "pages": 1,
+   "rows": 5,
+   "regulations": 0,
+   "results": 0,
+   "websites": 0
+  },
+  "mountainbike-challenge.at": {
+   "pages": 1,
+   "rows": 1,
+   "regulations": 0,
+   "results": 0,
+   "websites": 0
+  },
+  "mtb-bundesliga.net": {
+   "pages": 1,
+   "rows": 5,
+   "regulations": 0,
+   "results": 0,
+   "websites": 0
+  },
+  "pekloseveru.cz": {
+   "pages": 1,
+   "rows": 4,
+   "regulations": 0,
+   "results": 0,
+   "websites": 0
+  },
+  "pkk-hk.cz": {
+   "pages": 2,
+   "rows": 2,
+   "regulations": 0,
+   "results": 0,
+   "websites": 0
+  },
+  "poharmtb.cz": {
+   "pages": 1,
+   "rows": 6,
+   "regulations": 0,
+   "results": 0,
+   "websites": 0
+  },
+  "rad-bundesliga.net": {
+   "pages": 4,
+   "rows": 125,
+   "regulations": 0,
+   "results": 0,
+   "websites": 0
+  },
+  "radclub-moedling.at": {
+   "pages": 1,
+   "rows": 5,
+   "regulations": 0,
+   "results": 0,
+   "websites": 0
+  },
+  "salzkammergut-trophy.at": {
+   "pages": 1,
+   "rows": 11,
+   "regulations": 0,
+   "results": 0,
+   "websites": 0
+  },
+  "sloxcup.com": {
+   "pages": 1,
+   "rows": 9,
+   "regulations": 0,
+   "results": 0,
+   "websites": 0
+  }
+ }
+}

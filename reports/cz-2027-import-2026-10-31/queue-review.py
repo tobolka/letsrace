@@ -1,0 +1,12 @@
+import json,hashlib
+from pathlib import Path
+D=Path('reports/cz-2027-import-2026-10-31')
+rows=[{'name':'Bohemian Border Bash Race','source':'https://www.borderbash.cc/','tentative_date':'2027-09-11','location':'Srbská Kamenice','discipline':'gravel','reason':'Official website gives 11.–18. 2027 without a month; aggregator September date remains unconfirmed. Official /bbbr26-info and manual describe old edition. Require full official 2027 start date; existing 2026 editions remain separate.','sources_checked':['https://www.borderbash.cc/','https://www.borderbash.cc/bbbr26-info','https://ultracyclinghub.com/explore/in/czechia/']},{'name':'Jesenický Ultrasurovec','source':'https://www.jesenickysurovec.cz/ultrasurovec/','tentative_date':'2027-10-15','location':'Jesenice u Rakovníka','discipline':'mtb','reason':'Aggregator gives 15.10.2027 but official cycling page inaccessible. Timing-provider 2027 programme confirms running on Oct 16–17, not the MTB ultra. Need explicit 2027 cycling date/identity confirmation; do not import running competitions as cycling.','sources_checked':['https://www.jesenickysurovec.cz/ultrasurovec/','https://jesenickysurovec.cz/ultrasurovec/','https://www.nazavody.cz/zavod/896-jesenicky-surovec-2027/','https://bezpodpory.cz/bikepacking-a-ultra-cyklisticke-zavody-v-cesku-a-na-slovensku-2027/']}]
+def lit(x):return "'"+str(x).replace("'","''")+"'"
+statements=[]
+for r in rows:
+ key=hashlib.sha256(('manual-cz2027:'+r['name']).encode()).hexdigest();h=hashlib.sha256(json.dumps(r,sort_keys=True).encode()).hexdigest();r['candidate_key']=key;r['evidence_hash']=h
+ payload={'name':r['name'],'placeText':r['location'],'discipline':[r['discipline']],'sourceUrl':r['source'],'websiteUrl':r['source'],'countryHint':'CZ','confidence':0.5,'tentativeStartDate':r['tentative_date']}
+ evidence={'reviewedAt':'2026-10-31','sourcesChecked':r['sources_checked'],'reason':r['reason']}
+ statements.append(f"insert into pipeline_candidates(candidate_key,evidence_hash,source_url,country,season,payload,evidence,reason,status) values({lit(key)},{lit(h)},{lit(r['source'])},'CZ',2027,{lit(json.dumps(payload,ensure_ascii=False))}::jsonb,{lit(json.dumps(evidence,ensure_ascii=False))}::jsonb,{lit(r['reason'])},'waiting') on conflict(candidate_key,evidence_hash) do nothing;")
+(D/'review-queue.json').write_text(json.dumps(rows,ensure_ascii=False,indent=2));(D/'review-queue.sql').write_text('begin;\n'+'\n'.join(statements)+'\ncommit;\n')

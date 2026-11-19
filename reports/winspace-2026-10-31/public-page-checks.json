@@ -1,0 +1,52 @@
+[
+  {
+    "index": 10,
+    "url": "https://letsrace.cz/cs/zavod/cyklokros-okolo-kanalu-2026",
+    "status": 200
+  },
+  {
+    "index": 31,
+    "url": "https://letsrace.cz/cs/zavod/zabacky-cyklokros-memorial-rudolfa-bartose-2026",
+    "status": 200
+  },
+  {
+    "index": 39,
+    "url": "https://letsrace.cz/cs/zavod/mikulassky-cyklokros-breccross-cx-pohar-jmk-vi-2026",
+    "status": 200
+  },
+  {
+    "index": 40,
+    "url": "https://letsrace.cz/cs/zavod/msr-v-cyklokrose-9-kolo-selce-2026",
+    "status": 200
+  },
+  {
+    "index": 41,
+    "url": "https://letsrace.cz/cs/zavod/10-kolo-nolimited-cup-v-cx-uci-c2-2026",
+    "status": 200
+  },
+  {
+    "index": 57,
+    "url": "https://letsrace.cz/cs/zavod/mamut-tour-2027",
+    "status": 200
+  },
+  {
+    "index": 60,
+    "url": "https://letsrace.cz/cs/zavod/predvyber-cz-bike-maraton-vysocina-2027",
+    "status": 200
+  },
+  {
+    "index": 61,
+    "url": "https://letsrace.cz/cs/zavod/bystricky-anjel-2027",
+    "status": 200
+  },
+  {
+    "index": 68,
+    "url": "https://letsrace.cz/cs/zavod/dolomiten-radrundfahrt-2027",
+    "status": 200
+  },
+  {
+    "index": 93,
+    "url": "https://letsrace.cz/cs/zavod/teatro-okolo-malohontu-2027",
+    "status": 200
+  }
+]

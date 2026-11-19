@@ -1,0 +1,541 @@
+{
+  "baseline": {
+    "capturedDate": "2026-10-25",
+    "query": "with b as(select e.*,l.country_code,l.municipality,l.lat,l.lng,case when e.start_date<'2027-01-01' then '2026-end' else '2027' end as period from events e left join locations l on l.id=e.location_id where e.visibility='public' and e.merged_into_id is null and e.status in ('scheduled','postponed','registration_open') and e.start_date between '2026-10-25' and '2027-12-31') select period,case when grouping(country_code)=1 then 'ALL' else coalesce(country_code,'UNKNOWN') end country,count(*) total,count(*) filter(where nullif(website_url,'') is not null) website,count(*) filter(where nullif(registration_url,'') is not null) registration,count(*) filter(where coalesce(cardinality(disciplines),0)=0) missing_discipline,count(*) filter(where location_id is null or nullif(municipality,'') is null) missing_place,count(*) filter(where lat is null or lng is null) missing_coordinates,count(*) filter(where age_confidence='explicit' and cardinality(age_categories)>0) explicit_audience from b group by period,rollup(country_code) order by period,total desc",
+    "rows": [
+      {
+        "period": "2026-end",
+        "country": "ALL",
+        "total": 373,
+        "website": 340,
+        "registration": 134,
+        "missing_discipline": 3,
+        "missing_place": 2,
+        "missing_coordinates": 12,
+        "explicit_audience": 229
+      },
+      {
+        "period": "2026-end",
+        "country": "IT",
+        "total": 133,
+        "website": 108,
+        "registration": 3,
+        "missing_discipline": 0,
+        "missing_place": 0,
+        "missing_coordinates": 3,
+        "explicit_audience": 60
+      },
+      {
+        "period": "2026-end",
+        "country": "DE",
+        "total": 79,
+        "website": 76,
+        "registration": 45,
+        "missing_discipline": 1,
+        "missing_place": 0,
+        "missing_coordinates": 4,
+        "explicit_audience": 61
+      },
+      {
+        "period": "2026-end",
+        "country": "PL",
+        "total": 58,
+        "website": 56,
+        "registration": 20,
+        "missing_discipline": 1,
+        "missing_place": 0,
+        "missing_coordinates": 0,
+        "explicit_audience": 19
+      },
+      {
+        "period": "2026-end",
+        "country": "CZ",
+        "total": 34,
+        "website": 34,
+        "registration": 11,
+        "missing_discipline": 0,
+        "missing_place": 0,
+        "missing_coordinates": 2,
+        "explicit_audience": 33
+      },
+      {
+        "period": "2026-end",
+        "country": "CH",
+        "total": 21,
+        "website": 21,
+        "registration": 21,
+        "missing_discipline": 0,
+        "missing_place": 0,
+        "missing_coordinates": 0,
+        "explicit_audience": 19
+      },
+      {
+        "period": "2026-end",
+        "country": "AT",
+        "total": 15,
+        "website": 15,
+        "registration": 6,
+        "missing_discipline": 1,
+        "missing_place": 0,
+        "missing_coordinates": 1,
+        "explicit_audience": 10
+      },
+      {
+        "period": "2026-end",
+        "country": "BE",
+        "total": 12,
+        "website": 12,
+        "registration": 11,
+        "missing_discipline": 0,
+        "missing_place": 0,
+        "missing_coordinates": 0,
+        "explicit_audience": 11
+      },
+      {
+        "period": "2026-end",
+        "country": "NL",
+        "total": 8,
+        "website": 8,
+        "registration": 6,
+        "missing_discipline": 0,
+        "missing_place": 0,
+        "missing_coordinates": 0,
+        "explicit_audience": 8
+      },
+      {
+        "period": "2026-end",
+        "country": "SK",
+        "total": 7,
+        "website": 4,
+        "registration": 7,
+        "missing_discipline": 0,
+        "missing_place": 0,
+        "missing_coordinates": 0,
+        "explicit_audience": 5
+      },
+      {
+        "period": "2026-end",
+        "country": "ES",
+        "total": 2,
+        "website": 2,
+        "registration": 2,
+        "missing_discipline": 0,
+        "missing_place": 0,
+        "missing_coordinates": 0,
+        "explicit_audience": 1
+      },
+      {
+        "period": "2026-end",
+        "country": "UNKNOWN",
+        "total": 2,
+        "website": 2,
+        "registration": 0,
+        "missing_discipline": 0,
+        "missing_place": 2,
+        "missing_coordinates": 2,
+        "explicit_audience": 0
+      },
+      {
+        "period": "2026-end",
+        "country": "FR",
+        "total": 1,
+        "website": 1,
+        "registration": 1,
+        "missing_discipline": 0,
+        "missing_place": 0,
+        "missing_coordinates": 0,
+        "explicit_audience": 1
+      },
+      {
+        "period": "2026-end",
+        "country": "GB",
+        "total": 1,
+        "website": 1,
+        "registration": 1,
+        "missing_discipline": 0,
+        "missing_place": 0,
+        "missing_coordinates": 0,
+        "explicit_audience": 1
+      },
+      {
+        "period": "2027",
+        "country": "ALL",
+        "total": 857,
+        "website": 814,
+        "registration": 448,
+        "missing_discipline": 10,
+        "missing_place": 18,
+        "missing_coordinates": 39,
+        "explicit_audience": 542
+      },
+      {
+        "period": "2027",
+        "country": "DE",
+        "total": 227,
+        "website": 217,
+        "registration": 142,
+        "missing_discipline": 0,
+        "missing_place": 0,
+        "missing_coordinates": 1,
+        "explicit_audience": 183
+      },
+      {
+        "period": "2027",
+        "country": "AT",
+        "total": 158,
+        "website": 156,
+        "registration": 60,
+        "missing_discipline": 0,
+        "missing_place": 0,
+        "missing_coordinates": 2,
+        "explicit_audience": 132
+      },
+      {
+        "period": "2027",
+        "country": "PL",
+        "total": 134,
+        "website": 133,
+        "registration": 44,
+        "missing_discipline": 0,
+        "missing_place": 0,
+        "missing_coordinates": 2,
+        "explicit_audience": 15
+      },
+      {
+        "period": "2027",
+        "country": "CZ",
+        "total": 77,
+        "website": 76,
+        "registration": 56,
+        "missing_discipline": 6,
+        "missing_place": 0,
+        "missing_coordinates": 8,
+        "explicit_audience": 33
+      },
+      {
+        "period": "2027",
+        "country": "IT",
+        "total": 59,
+        "website": 37,
+        "registration": 28,
+        "missing_discipline": 0,
+        "missing_place": 0,
+        "missing_coordinates": 1,
+        "explicit_audience": 35
+      },
+      {
+        "period": "2027",
+        "country": "CH",
+        "total": 58,
+        "website": 52,
+        "registration": 22,
+        "missing_discipline": 0,
+        "missing_place": 0,
+        "missing_coordinates": 1,
+        "explicit_audience": 43
+      },
+      {
+        "period": "2027",
+        "country": "FR",
+        "total": 30,
+        "website": 30,
+        "registration": 22,
+        "missing_discipline": 0,
+        "missing_place": 0,
+        "missing_coordinates": 1,
+        "explicit_audience": 22
+      },
+      {
+        "period": "2027",
+        "country": "NL",
+        "total": 27,
+        "website": 27,
+        "registration": 17,
+        "missing_discipline": 0,
+        "missing_place": 0,
+        "missing_coordinates": 0,
+        "explicit_audience": 24
+      },
+      {
+        "period": "2027",
+        "country": "UNKNOWN",
+        "total": 18,
+        "website": 18,
+        "registration": 5,
+        "missing_discipline": 4,
+        "missing_place": 18,
+        "missing_coordinates": 18,
+        "explicit_audience": 4
+      },
+      {
+        "period": "2027",
+        "country": "ES",
+        "total": 15,
+        "website": 15,
+        "registration": 7,
+        "missing_discipline": 0,
+        "missing_place": 0,
+        "missing_coordinates": 0,
+        "explicit_audience": 13
+      },
+      {
+        "period": "2027",
+        "country": "BE",
+        "total": 15,
+        "website": 15,
+        "registration": 12,
+        "missing_discipline": 0,
+        "missing_place": 0,
+        "missing_coordinates": 0,
+        "explicit_audience": 13
+      },
+      {
+        "period": "2027",
+        "country": "GB",
+        "total": 10,
+        "website": 9,
+        "registration": 10,
+        "missing_discipline": 0,
+        "missing_place": 0,
+        "missing_coordinates": 4,
+        "explicit_audience": 4
+      },
+      {
+        "period": "2027",
+        "country": "DK",
+        "total": 5,
+        "website": 5,
+        "registration": 3,
+        "missing_discipline": 0,
+        "missing_place": 0,
+        "missing_coordinates": 0,
+        "explicit_audience": 5
+      },
+      {
+        "period": "2027",
+        "country": "SI",
+        "total": 5,
+        "website": 5,
+        "registration": 5,
+        "missing_discipline": 0,
+        "missing_place": 0,
+        "missing_coordinates": 0,
+        "explicit_audience": 5
+      },
+      {
+        "period": "2027",
+        "country": "NO",
+        "total": 4,
+        "website": 4,
+        "registration": 4,
+        "missing_discipline": 0,
+        "missing_place": 0,
+        "missing_coordinates": 0,
+        "explicit_audience": 3
+      },
+      {
+        "period": "2027",
+        "country": "SE",
+        "total": 4,
+        "website": 4,
+        "registration": 4,
+        "missing_discipline": 0,
+        "missing_place": 0,
+        "missing_coordinates": 0,
+        "explicit_audience": 1
+      },
+      {
+        "period": "2027",
+        "country": "HR",
+        "total": 2,
+        "website": 2,
+        "registration": 2,
+        "missing_discipline": 0,
+        "missing_place": 0,
+        "missing_coordinates": 0,
+        "explicit_audience": 1
+      },
+      {
+        "period": "2027",
+        "country": "LU",
+        "total": 2,
+        "website": 2,
+        "registration": 1,
+        "missing_discipline": 0,
+        "missing_place": 0,
+        "missing_coordinates": 0,
+        "explicit_audience": 2
+      },
+      {
+        "period": "2027",
+        "country": "SK",
+        "total": 2,
+        "website": 2,
+        "registration": 1,
+        "missing_discipline": 0,
+        "missing_place": 0,
+        "missing_coordinates": 0,
+        "explicit_audience": 2
+      },
+      {
+        "period": "2027",
+        "country": "GR",
+        "total": 1,
+        "website": 1,
+        "registration": 0,
+        "missing_discipline": 0,
+        "missing_place": 0,
+        "missing_coordinates": 0,
+        "explicit_audience": 1
+      },
+      {
+        "period": "2027",
+        "country": "ME",
+        "total": 1,
+        "website": 1,
+        "registration": 1,
+        "missing_discipline": 0,
+        "missing_place": 0,
+        "missing_coordinates": 0,
+        "explicit_audience": 1
+      },
+      {
+        "period": "2027",
+        "country": "HU",
+        "total": 1,
+        "website": 1,
+        "registration": 0,
+        "missing_discipline": 0,
+        "missing_place": 0,
+        "missing_coordinates": 0,
+        "explicit_audience": 0
+      },
+      {
+        "period": "2027",
+        "country": "FI",
+        "total": 1,
+        "website": 1,
+        "registration": 1,
+        "missing_discipline": 0,
+        "missing_place": 0,
+        "missing_coordinates": 0,
+        "explicit_audience": 0
+      },
+      {
+        "period": "2027",
+        "country": "PT",
+        "total": 1,
+        "website": 1,
+        "registration": 1,
+        "missing_discipline": 0,
+        "missing_place": 0,
+        "missing_coordinates": 1,
+        "explicit_audience": 0
+      }
+    ]
+  },
+  "health": {
+    "query": "select jsonb_build_object('captured_at',now(),'runs_24h',(select row_to_json(t) from(select count(*) total,count(*) filter(where ok and finished_at is not null) succeeded,count(*) filter(where not ok and finished_at is not null) failed,count(*) filter(where finished_at is null) unfinished,sum(events_upserted) upserts,count(*) filter(where error like '%credit balance is too low%') credit_failures,count(distinct watched_url_id) filter(where error like '%credit balance is too low%') credit_sources,count(*) filter(where error like '%Shared LLM budget%') budget_failures from ingest_runs where started_at>now()-interval '24 hours')t),'links',(select jsonb_agg(t) from(select status,count(*) n from discovered_links group by status)t),'independent_handoff',(select jsonb_agg(t) from(select url,status from discovered_links where hint_kind='independent_season_discovery')t),'future_completed',(select jsonb_agg(t) from(select name,start_date,status from events where visibility='public' and merged_into_id is null and start_date>'2026-10-25' and status='completed' order by start_date)t));",
+    "rows": [
+      {
+        "jsonb_build_object": {
+          "links": [
+            {
+              "n": 49,
+              "status": "accepted"
+            },
+            {
+              "n": 687,
+              "status": "ignored"
+            },
+            {
+              "n": 110,
+              "status": "pending"
+            },
+            {
+              "n": 16,
+              "status": "rejected"
+            }
+          ],
+          "runs_24h": {
+            "total": 6069,
+            "failed": 2082,
+            "upserts": 16671,
+            "succeeded": 3987,
+            "unfinished": 0,
+            "credit_sources": 501,
+            "budget_failures": 296,
+            "credit_failures": 1485
+          },
+          "captured_at": "2026-10-25T08:17:31.782835+00:00",
+          "future_completed": [
+            {
+              "name": "Brevet 200 - ARA Leipzig",
+              "status": "completed",
+              "start_date": "2027-05-08"
+            },
+            {
+              "name": "Zeitfahren Hintersee 2026",
+              "status": "completed",
+              "start_date": "2027-05-17"
+            },
+            {
+              "name": "2Much4You | 12h & 24h MTB-Rennen im Zittauer Gebirge",
+              "status": "completed",
+              "start_date": "2027-07-10"
+            },
+            {
+              "name": "Radtag-Stilfserjoch",
+              "status": "completed",
+              "start_date": "2027-08-28"
+            },
+            {
+              "name": "The Grand Escape Germany/Austria",
+              "status": "completed",
+              "start_date": "2027-09-04"
+            },
+            {
+              "name": "slowUp Mountain Albula",
+              "status": "completed",
+              "start_date": "2027-09-05"
+            },
+            {
+              "name": "slowUp Emmental-Oberaargau",
+              "status": "completed",
+              "start_date": "2027-09-12"
+            },
+            {
+              "name": "French Borders",
+              "status": "completed",
+              "start_date": "2027-09-18"
+            }
+          ],
+          "independent_handoff": [
+            {
+              "url": "https://graciaorlova.cz/o-zavodu",
+              "status": "pending"
+            },
+            {
+              "url": "https://lesak-cup.cz",
+              "status": "pending"
+            },
+            {
+              "url": "https://prazska50.cz/tiskova-zprava",
+              "status": "pending"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "deployment": {
+    "domain": "letsrace.cz",
+    "id": "dpl_5jWuzYncW2gm235CXPNSFqrTvYLd",
+    "commit": "1be178a56f37d743877d31be3f1af31fa8358e6c"
+  },
+  "validation": {
+    "testFiles": 10,
+    "tests": 90,
+    "passed": true
+  }
+}

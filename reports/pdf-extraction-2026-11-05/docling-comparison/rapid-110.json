@@ -1,0 +1,43 @@
+{
+  "index": 110,
+  "name": "ogólnopolski wyścig w kolarstwie przełajowym o puchar prezydenta Kielc Pani Agaty Wojdy pod patronatem wojewody świętokrzyskiego Józefa Bryka",
+  "url": "https://pzkol.pl/pobierz/14442/s/14442_regulaminogolnopolski_wyscig_w_ko.pdf",
+  "mode": "rapid",
+  "docling": "2.148.0",
+  "page_range": [
+    1,
+    5
+  ],
+  "ocr_options": {
+    "mode": "default",
+    "lang": [
+      "en"
+    ],
+    "scale": 3.0,
+    "replace_broken_text_layer": false,
+    "backend": "onnxruntime",
+    "model_size": "small",
+    "text_score": 0.5,
+    "use_det": null,
+    "use_cls": null,
+    "detect_orientation": false,
+    "use_rec": null,
+    "print_verbose": false,
+    "det_model_path": null,
+    "cls_model_path": null,
+    "rec_model_path": null,
+    "rec_keys_path": null,
+    "rec_font_path": null,
+    "font_path": null,
+    "rapidocr_params": {},
+    "force_full_page_ocr": false
+  },
+  "device": "cpu",
+  "threads": 4,
+  "status": "ConversionStatus.SUCCESS",
+  "errors": [],
+  "characters": 10805,
+  "tables": 3,
+  "pages": 5,
+  "seconds": 25.619
+}

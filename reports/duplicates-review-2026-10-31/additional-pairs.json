@@ -1,0 +1,80 @@
+[
+  {
+    "key": "3dadbafa-c27c-4280-b0ee-f22f50088661:a403090a-b5e8-4901-9ca5-c1811cb59d23",
+    "date": "2026-11-22",
+    "place": "Sedlčany",
+    "discipline": "cx",
+    "country": "CZ",
+    "left": {
+      "id": "3dadbafa-c27c-4280-b0ee-f22f50088661",
+      "name": "Žabácký cyklokros 2026 – Memoriál Rudolfa Bartoše",
+      "startDate": "2026-11-22",
+      "endDate": "2026-11-22",
+      "disciplines": [
+        "cx"
+      ],
+      "series": null,
+      "websiteUrl": "https://www.cus-sportujsnami.cz/events/zabacky-cyklokros-2026-memorial-rudolfa-bartose/",
+      "registrationUrl": null,
+      "sources": 2
+    },
+    "right": {
+      "id": "a403090a-b5e8-4901-9ca5-c1811cb59d23",
+      "name": "TBC — SEDLČANY",
+      "startDate": "2026-11-22",
+      "endDate": "2026-11-22",
+      "disciplines": [
+        "cx"
+      ],
+      "series": "TBC série",
+      "websiteUrl": "https://www.da-ba.com/zavody/zabacky-cyklokros/",
+      "registrationUrl": "https://maraton.cz/terminovka/entry/373",
+      "sources": 8
+    },
+    "reasons": [
+      "same_day",
+      "same_place",
+      "same_discipline"
+    ]
+  },
+  {
+    "key": "bb1399cd-3baf-4f88-84b8-740bf49afe56:e2258c9f-8aed-4cad-a73e-5f26275c82d9",
+    "date": "2027-06-13",
+    "place": "Lienz",
+    "discipline": "road",
+    "country": "AT",
+    "left": {
+      "id": "bb1399cd-3baf-4f88-84b8-740bf49afe56",
+      "name": "Dolomiten Radrundfahrt",
+      "startDate": "2027-06-13",
+      "endDate": "2027-06-13",
+      "disciplines": [
+        "road",
+        "gran_fondo"
+      ],
+      "series": null,
+      "websiteUrl": "https://www.dolomitensport.at/de/events/dolomitenradrundfahrt.html",
+      "registrationUrl": null,
+      "sources": 2
+    },
+    "right": {
+      "id": "e2258c9f-8aed-4cad-a73e-5f26275c82d9",
+      "name": "SuperGiroDolomiti",
+      "startDate": "2027-06-13",
+      "endDate": "2027-06-13",
+      "disciplines": [
+        "road",
+        "gran_fondo"
+      ],
+      "series": null,
+      "websiteUrl": null,
+      "registrationUrl": null,
+      "sources": 1
+    },
+    "reasons": [
+      "same_day",
+      "same_place",
+      "same_discipline"
+    ]
+  }
+]

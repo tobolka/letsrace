@@ -1,0 +1,52 @@
+{
+  "at": "2026-11-02T08:04:33.303Z",
+  "apply": true,
+  "eligible": 1,
+  "processed": 1,
+  "fetchedUrls": 3,
+  "sourceUrls": 3,
+  "eventWrites": 0,
+  "modelCalls": 0,
+  "outcomes": [
+    {
+      "id": "506455da-b3b3-41ac-9912-508076e012fd",
+      "name": "BikeFest maratón 2027",
+      "version": 1,
+      "attempts": 2,
+      "failures": 0,
+      "checkedAt": "2026-11-02T08:04:33.220Z",
+      "nextCheckAt": "2026-11-03T08:04:33.220Z",
+      "outcome": "changed",
+      "needsReview": true,
+      "documents": [
+        {
+          "url": "https://www.bikepoint.sk/kalendar/",
+          "outcome": "read",
+          "documentHash": "083f3af3bae93965f625174d39dc1396d65bb8e0e8ed84bcc5a0a0ad69906b70",
+          "textHash": "b1c6d81f74b1f0e3ef0e1c06c54296b1b0506e8cd7034f75a065107aee8fc14e",
+          "snapshot": "/Users/radektobolka/Documents/GitHub/letsrace/tmp/candidate-follow-ups/a6e3db4651d192e36044c00fd7c62ae0c1dc16341d47f7424d7d6b467e878b0b-083f3af3bae93965f625174d39dc1396d65bb8e0e8ed84bcc5a0a0ad69906b70.json",
+          "organizerUrls": []
+        },
+        {
+          "url": "https://www.bikepoint.sk/kalendar/maj/30-05-2027/bikefest-maraton-2027/",
+          "outcome": "read",
+          "documentHash": "8d04b2925344e523dea1c5894c4f7b4c970b8fc45db976d5eeac5296ff9993de",
+          "textHash": "382169cf410ac2995573f72092fd81f5f69bd091dc97a3d9932dfa111214420c",
+          "snapshot": "/Users/radektobolka/Documents/GitHub/letsrace/tmp/candidate-follow-ups/e86ea7cf6f5efc56bfe52e4594413993f730743f279873df2be87f68c69c6a9c-8d04b2925344e523dea1c5894c4f7b4c970b8fc45db976d5eeac5296ff9993de.json",
+          "organizerUrls": [
+            "https://bikefest.biker.sk/"
+          ]
+        },
+        {
+          "url": "https://bikefest.biker.sk/",
+          "outcome": "read",
+          "documentHash": "753b8d4b1ee65f96a0900d7a0e292004c7dd1fca24e7630e92eab22364b3c519",
+          "textHash": "c4f382a1669de31ac0ab88c159dc5d4dd9a7a6f5bae1579d54b82c3d2045f409",
+          "snapshot": "/Users/radektobolka/Documents/GitHub/letsrace/tmp/candidate-follow-ups/9b330855bf5bf92ce7b8acb015822f0a47a02e6ca0df5e94706075a2ae759d33-753b8d4b1ee65f96a0900d7a0e292004c7dd1fca24e7630e92eab22364b3c519.json",
+          "organizerUrls": [],
+          "linkedFrom": "https://www.bikepoint.sk/kalendar/maj/30-05-2027/bikefest-maraton-2027/"
+        }
+      ]
+    }
+  ]
+}

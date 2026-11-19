@@ -1,0 +1,29 @@
+[
+  {
+    "url": "https://www.uci.org/competition-details/2027/MTB/80679",
+    "finalUrl": "https://www.uci.org/competition-details/2027/MTB/80679",
+    "status": 200,
+    "key": "8d12e60b99cde66d",
+    "bytes": 41656,
+    "sha256": "1c9e376a6fd7036bc5025be03bb4c2f3ea07e140a1f341865481319bf9014aeb",
+    "at": "2026-10-29T15:24:27.303506+00:00"
+  },
+  {
+    "url": "https://www.uci.org/competition-details/2027/MTB/80408",
+    "finalUrl": "https://www.uci.org/competition-details/2027/MTB/80408",
+    "status": 200,
+    "key": "b46fa342860ca6f0",
+    "bytes": 41604,
+    "sha256": "bed58359545321cac0179e76d830a479b04be6fe575da3608a8b33397c6dd240",
+    "at": "2026-10-29T15:24:27.317481+00:00"
+  },
+  {
+    "url": "https://www.uci.org/competition-details/2027/MTB/80410",
+    "finalUrl": "https://www.uci.org/competition-details/2027/MTB/80410",
+    "status": 200,
+    "key": "9c6e9718a8fa3635",
+    "bytes": 41563,
+    "sha256": "a05d167caf02aa67637a4af8a40ef80b7eeb9eae3d6178d3b02e983eb0a0cb7b",
+    "at": "2026-10-29T15:24:27.965619+00:00"
+  }
+]

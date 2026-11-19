@@ -1,0 +1,102 @@
+{
+  "resolvedAt": "2026-10-29T09:34:30.025Z",
+  "rows": [
+    {
+      "id": "532e5fd5-a1eb-4dc8-a4a4-2a4c66908641",
+      "name": "DoKola!",
+      "start_date": "2027-06-11",
+      "end_date": "2027-06-11",
+      "visibility": "public",
+      "merged_into_id": null
+    },
+    {
+      "id": "c27f3c85-837e-4963-941b-bdfe60747b45",
+      "name": "O DoKola!",
+      "start_date": "2027-06-13",
+      "end_date": "2027-06-13",
+      "visibility": "hidden",
+      "merged_into_id": null
+    }
+  ],
+  "partial": [
+    {
+      "key": "dokola",
+      "id": "532e5fd5-a1eb-4dc8-a4a4-2a4c66908641",
+      "action": "update",
+      "before": {
+        "id": "532e5fd5-a1eb-4dc8-a4a4-2a4c66908641",
+        "slug": "dokola-2027",
+        "name": "DoKola!",
+        "name_normalized": "dokola",
+        "series_id": null,
+        "location_id": "2a4d3a54-c85b-47b3-a7f1-e628b66b6f91",
+        "start_date": "2027-06-11",
+        "end_date": "2027-06-11",
+        "timezone": "Europe/Prague",
+        "disciplines": [
+          "other"
+        ],
+        "audience": "mixed",
+        "status": "scheduled",
+        "website_url": "https://kalendar.winspace.cz/kalendar/2027-dokola-8c6cc475",
+        "registration_url": "https://www.dokolamtb.cz/registrace/",
+        "registration_opens_at": null,
+        "registration_closes_at": "2027-06-09T16:00:00+00:00",
+        "fingerprint": "2027-06-11:u2g00:dokola",
+        "source_kind": "scraped",
+        "last_seen_at": "2026-10-23T21:43:47.948+00:00",
+        "created_at": "2026-10-23T21:43:48.087315+00:00",
+        "updated_at": "2026-10-24T05:20:13.132+00:00",
+        "level": "local",
+        "class_label": "Local",
+        "description": null,
+        "age_categories": [],
+        "uci_class": null,
+        "formats": [],
+        "event_type": "race",
+        "competition_type": "community",
+        "season": "2027",
+        "visibility": "public",
+        "results_url": null,
+        "regulations_url": "https://www.dokolamtb.cz/propozice/",
+        "merged_into_id": null,
+        "search_text": "dokola",
+        "age_confidence": null,
+        "location": {
+          "id": "2a4d3a54-c85b-47b3-a7f1-e628b66b6f91",
+          "lat": 49.228,
+          "lng": 15.496,
+          "geog": "0101000020E6100000CBA145B6F3FD2E4077BE9F1A2F9D4840",
+          "name": "Sedlejov u Telče",
+          "venue": null,
+          "region": null,
+          "timezone": "Europe/Prague",
+          "created_at": "2026-08-13T19:47:02.010381+00:00",
+          "updated_at": "2026-08-14T19:18:11.832104+00:00",
+          "region_code": null,
+          "country_code": "CZ",
+          "municipality": "Sedlejov u Telče",
+          "geocode_query": "Sedlejov u Telče, CZ",
+          "geocode_status": "ok"
+        },
+        "categories": [],
+        "sources": [
+          {
+            "id": "636844e8-3946-4c23-91e0-76187cffe5f2",
+            "kind": "aggregator",
+            "event_id": "532e5fd5-a1eb-4dc8-a4a4-2a4c66908641",
+            "raw_hash": null,
+            "created_at": "2026-10-23T21:43:48.24858+00:00",
+            "source_url": "https://kalendar.winspace.cz/kalendar/2027-dokola-8c6cc475",
+            "external_id": "llm-kalendar.winspace.cz-dokola-2027-06-11",
+            "is_canonical": true,
+            "watched_url_id": "433af772-24e0-49ae-94a0-0ae65f80e8e1"
+          }
+        ],
+        "overrides": null
+      },
+      "complete": false
+    }
+  ],
+  "reason": "No event write occurred: guard failed before upsert; explicit verified source binding now supplies identity."
+}

@@ -1,0 +1,885 @@
+[
+  {
+    "id": "a9d311b6-fe42-4568-9265-27e5cb66265c",
+    "name": "Pražský MTB pohár — 1. kolo Motol XCC (Mistrovství Prahy XCC)",
+    "end_date": "2027-03-26",
+    "series_id": "c9988946-7c2a-44c9-b569-3b346bbf5891",
+    "start_date": "2027-03-26",
+    "disciplines": [
+      "xcc"
+    ],
+    "series_name": "ŠKODA Pražský MTB pohár",
+    "website_url": "https://prahamtb.cz/",
+    "municipality": "Motol",
+    "result": "existing_membership_retained",
+    "assigned_series": null,
+    "evidence_url": "https://prahamtb.cz/"
+  },
+  {
+    "id": "2922dfd2-b492-42a7-b16d-61520e24f5db",
+    "name": "Pražský MTB pohár — 2. kolo Motol XCO",
+    "end_date": "2027-03-27",
+    "series_id": "c9988946-7c2a-44c9-b569-3b346bbf5891",
+    "start_date": "2027-03-27",
+    "disciplines": [
+      "xco"
+    ],
+    "series_name": "ŠKODA Pražský MTB pohár",
+    "website_url": "https://prahamtb.cz/",
+    "municipality": "Motol",
+    "result": "existing_membership_retained",
+    "assigned_series": null,
+    "evidence_url": "https://prahamtb.cz/"
+  },
+  {
+    "id": "39a6fc31-96e9-431d-90c9-2811c7412fd5",
+    "name": "Český pohár MTBO — Tři Dvory",
+    "end_date": "2027-04-18",
+    "series_id": null,
+    "start_date": "2027-04-17",
+    "disciplines": [
+      "mtb",
+      "mtbo"
+    ],
+    "series_name": null,
+    "website_url": "https://mtbo.ceskyorientak.cz/vyberove-rizeni-na-poradatele-cp-mtbo-2027-je-u-konce/",
+    "municipality": "Tři Dvory",
+    "result": "linked_verified_2027",
+    "assigned_series": "cesky-pohar-mtbo",
+    "evidence_url": "https://mtbo.ceskyorientak.cz/vyberove-rizeni-na-poradatele-cp-mtbo-2027-je-u-konce/"
+  },
+  {
+    "id": "e903a8a9-abad-4702-b40e-580ee63f4bd4",
+    "name": "Dětský MTB Cup — Sobotka (časovka + závod)",
+    "end_date": "2027-04-18",
+    "series_id": "8e44474a-73d7-4239-a413-ba869dedc7c3",
+    "start_date": "2027-04-18",
+    "disciplines": [
+      "xco"
+    ],
+    "series_name": "Dětský MTB Cup Libereckého kraje",
+    "website_url": "https://www.detskymtbcup.cz/",
+    "municipality": "Sobotka",
+    "result": "existing_membership_retained",
+    "assigned_series": null,
+    "evidence_url": "https://www.detskymtbcup.cz/"
+  },
+  {
+    "id": "35c0e3d0-75a8-4a42-8b55-5b89686f0e84",
+    "name": "3-2-1 VABANK / NONVABANK 2027",
+    "end_date": "2027-04-25",
+    "series_id": null,
+    "start_date": "2027-04-23",
+    "disciplines": [
+      "mtb",
+      "gravel"
+    ],
+    "series_name": null,
+    "website_url": "https://www.321vabank.cz/",
+    "municipality": "Kovanec",
+    "result": "no_verified_2027_series_membership",
+    "assigned_series": null,
+    "evidence_url": "https://www.321vabank.cz/"
+  },
+  {
+    "id": "bc66fdbd-5926-409f-88e9-1e1ae36e7365",
+    "name": "Český pohár MTB XCO/XCC — Město Touškov",
+    "end_date": "2027-04-25",
+    "series_id": "f5a31302-4fd7-4128-8abc-c1835e7159df",
+    "start_date": "2027-04-24",
+    "disciplines": [
+      "xco",
+      "xcc"
+    ],
+    "series_name": "Český pohár MTB XCO",
+    "website_url": "https://www.poharmtb.cz/cross-country",
+    "municipality": "Město Touškov",
+    "result": "existing_membership_retained",
+    "assigned_series": null,
+    "evidence_url": "https://www.poharmtb.cz/cross-country"
+  },
+  {
+    "id": "d4e1a5a0-6a5d-4d39-aea5-076b30672774",
+    "name": "Porubajk 2027",
+    "end_date": "2027-04-24",
+    "series_id": null,
+    "start_date": "2027-04-24",
+    "disciplines": [
+      "mtb",
+      "gravel"
+    ],
+    "series_name": null,
+    "website_url": "https://www.porubajk.cz/",
+    "municipality": "Ostrava-Poruba",
+    "result": "no_verified_2027_series_membership",
+    "assigned_series": null,
+    "evidence_url": "https://www.porubajk.cz/"
+  },
+  {
+    "id": "4276378e-40f6-44af-bc95-8f017f666ff1",
+    "name": "May Divide",
+    "end_date": "2027-05-01",
+    "series_id": null,
+    "start_date": "2027-05-01",
+    "disciplines": [
+      "mtb"
+    ],
+    "series_name": null,
+    "website_url": "https://bike-paradise.cz/",
+    "municipality": "Buškovský mlýn",
+    "result": "no_verified_2027_series_membership",
+    "assigned_series": null,
+    "evidence_url": "https://bike-paradise.cz/"
+  },
+  {
+    "id": "72427d58-6a5b-4a97-860f-c80c77041d3b",
+    "name": "RAAB FORCE Rohálovská 50ka 2027 - 18. ročník",
+    "end_date": "2027-05-01",
+    "series_id": null,
+    "start_date": "2027-05-01",
+    "disciplines": [
+      "xcm"
+    ],
+    "series_name": null,
+    "website_url": "https://www.vesani.cz/propozice/",
+    "municipality": "Prusinovice",
+    "result": "linked_verified_2027",
+    "assigned_series": "mtb-kral-hostynek",
+    "evidence_url": "https://www.vesani.cz/propozice/"
+  },
+  {
+    "id": "525722e9-f47e-4471-b96c-ae25c667217d",
+    "name": "Dětský MTB Cup — Turnov Rohozec",
+    "end_date": "2027-05-02",
+    "series_id": "8e44474a-73d7-4239-a413-ba869dedc7c3",
+    "start_date": "2027-05-02",
+    "disciplines": [
+      "xco"
+    ],
+    "series_name": "Dětský MTB Cup Libereckého kraje",
+    "website_url": "https://www.detskymtbcup.cz/",
+    "municipality": "Turnov",
+    "result": "existing_membership_retained",
+    "assigned_series": null,
+    "evidence_url": "https://www.detskymtbcup.cz/"
+  },
+  {
+    "id": "2cea23e1-d7ce-4606-84c3-7533bebd087c",
+    "name": "Mistrovství Evropy MTBO — Hradec Králové",
+    "end_date": "2027-05-08",
+    "series_id": null,
+    "start_date": "2027-05-05",
+    "disciplines": [
+      "mtb",
+      "mtbo"
+    ],
+    "series_name": null,
+    "website_url": "https://emtboc2027.cz/en/programme/",
+    "municipality": "Hradec Králové",
+    "result": "no_verified_2027_series_membership",
+    "assigned_series": null,
+    "evidence_url": "https://emtboc2027.cz/en/programme/"
+  },
+  {
+    "id": "b659e6d2-09c5-433b-8e17-a0beabc6f548",
+    "name": "Český pohár MTB XCO/XCC — Vimperk",
+    "end_date": "2027-05-09",
+    "series_id": "f5a31302-4fd7-4128-8abc-c1835e7159df",
+    "start_date": "2027-05-08",
+    "disciplines": [
+      "xco",
+      "xcc"
+    ],
+    "series_name": "Český pohár MTB XCO",
+    "website_url": "https://www.poharmtb.cz/cross-country",
+    "municipality": "Vimperk",
+    "result": "existing_membership_retained",
+    "assigned_series": null,
+    "evidence_url": "https://www.poharmtb.cz/cross-country"
+  },
+  {
+    "id": "468a7cdc-acc1-4bad-adae-bf3bcc2227fb",
+    "name": "Zlivský cyklomaraton",
+    "end_date": "2027-05-08",
+    "series_id": null,
+    "start_date": "2027-05-08",
+    "disciplines": [
+      "xcm"
+    ],
+    "series_name": null,
+    "website_url": null,
+    "municipality": "Zliv",
+    "result": "no_verified_2027_series_membership",
+    "assigned_series": null,
+    "evidence_url": null
+  },
+  {
+    "id": "d14a23a9-19b8-49a8-8091-b60df98f80c1",
+    "name": "Dětský MTB Cup — Turnov Struhy",
+    "end_date": "2027-05-16",
+    "series_id": "8e44474a-73d7-4239-a413-ba869dedc7c3",
+    "start_date": "2027-05-16",
+    "disciplines": [
+      "xco"
+    ],
+    "series_name": "Dětský MTB Cup Libereckého kraje",
+    "website_url": "https://www.detskymtbcup.cz/",
+    "municipality": "Turnov - Struhy",
+    "result": "existing_membership_retained",
+    "assigned_series": null,
+    "evidence_url": "https://www.detskymtbcup.cz/"
+  },
+  {
+    "id": "312cc064-57d5-49cd-ac34-f8be58715d98",
+    "name": "Oremon Krušky Open",
+    "end_date": "2027-05-23",
+    "series_id": null,
+    "start_date": "2027-05-21",
+    "disciplines": [
+      "gravel",
+      "mtb"
+    ],
+    "series_name": null,
+    "website_url": "https://oremon.cz/en/home_en/",
+    "municipality": "Český Jiřetín",
+    "result": "no_verified_2027_series_membership",
+    "assigned_series": null,
+    "evidence_url": "https://oremon.cz/en/home_en/"
+  },
+  {
+    "id": "310e1ed1-4157-4de7-a9b8-b9832aa76be6",
+    "name": "400 Ultra / 200 Hard",
+    "end_date": "2027-05-23",
+    "series_id": null,
+    "start_date": "2027-05-21",
+    "disciplines": [
+      "mtb"
+    ],
+    "series_name": null,
+    "website_url": "https://www.400ultra.cz/",
+    "municipality": "Mostek",
+    "result": "no_verified_2027_series_membership",
+    "assigned_series": null,
+    "evidence_url": "https://www.400ultra.cz/"
+  },
+  {
+    "id": "97aec3a7-aac3-4ef6-8798-21d90ca1ddd0",
+    "name": "Český pohár MTBO — Nejdek",
+    "end_date": "2027-05-23",
+    "series_id": null,
+    "start_date": "2027-05-22",
+    "disciplines": [
+      "mtb",
+      "mtbo"
+    ],
+    "series_name": null,
+    "website_url": "https://mtbo.ceskyorientak.cz/vyberove-rizeni-na-poradatele-cp-mtbo-2027-je-u-konce/",
+    "municipality": "Nejdek",
+    "result": "linked_verified_2027",
+    "assigned_series": "cesky-pohar-mtbo",
+    "evidence_url": "https://mtbo.ceskyorientak.cz/vyberove-rizeni-na-poradatele-cp-mtbo-2027-je-u-konce/"
+  },
+  {
+    "id": "3d8b007c-a258-41d5-bb77-e9e75352f001",
+    "name": "Okolo Stejskala",
+    "end_date": "2027-05-22",
+    "series_id": null,
+    "start_date": "2027-05-22",
+    "disciplines": [
+      "mtb"
+    ],
+    "series_name": null,
+    "website_url": "https://zavodnicasomira.cz/zavody",
+    "municipality": "Rouchovany",
+    "result": "no_verified_2027_series_membership",
+    "assigned_series": null,
+    "evidence_url": "https://zavodnicasomira.cz/zavody"
+  },
+  {
+    "id": "3044fcbe-3b85-42a5-aa66-b9dee3fff9b4",
+    "name": "Moravia Divide",
+    "end_date": "2027-06-03",
+    "series_id": null,
+    "start_date": "2027-05-28",
+    "disciplines": [
+      "mtb"
+    ],
+    "series_name": null,
+    "website_url": "https://moraviadivide.eu/md27/",
+    "municipality": "Javorník",
+    "result": "linked_verified_2027",
+    "assigned_series": "ultrabikers-cup",
+    "evidence_url": "https://ultrabikers.eu/calendar-2027/"
+  },
+  {
+    "id": "f04ffb9f-5e81-4470-8dac-6410bfd0394f",
+    "name": "AUTHOR Král Šumavy",
+    "end_date": "2027-05-29",
+    "series_id": "a199978c-d14f-43e3-a33c-00cd33e4fcde",
+    "start_date": "2027-05-29",
+    "disciplines": [
+      "xcm"
+    ],
+    "series_name": "AUTHOR Král Šumavy",
+    "website_url": "https://www.authorkralsumavy.cz/",
+    "municipality": "Klatovy",
+    "result": "existing_membership_retained",
+    "assigned_series": null,
+    "evidence_url": "https://www.authorkralsumavy.cz/"
+  },
+  {
+    "id": "e24d0e25-829a-46a8-929e-456715cf5d2b",
+    "name": "Dětský MTB Cup — Bedřichov (Mistrovství Libereckého kraje)",
+    "end_date": "2027-05-30",
+    "series_id": "8e44474a-73d7-4239-a413-ba869dedc7c3",
+    "start_date": "2027-05-30",
+    "disciplines": [
+      "xco"
+    ],
+    "series_name": "Dětský MTB Cup Libereckého kraje",
+    "website_url": "https://www.detskymtbcup.cz/",
+    "municipality": "Bedřichov",
+    "result": "existing_membership_retained",
+    "assigned_series": null,
+    "evidence_url": "https://www.detskymtbcup.cz/"
+  },
+  {
+    "id": "f1d40430-b0ae-4dcf-9b94-0288fd48e3b4",
+    "name": "Decathlon Cyklomaraton Hradec Králové",
+    "end_date": "2027-05-30",
+    "series_id": null,
+    "start_date": "2027-05-30",
+    "disciplines": [
+      "xcm"
+    ],
+    "series_name": null,
+    "website_url": "https://www.cyklomaratontour.cz/clanky/25-rocnik-decathlon-cyklomaratonu-opet-v-hradci-kralove-734.html",
+    "municipality": "Hradec Králové",
+    "result": "no_verified_2027_series_membership",
+    "assigned_series": null,
+    "evidence_url": "https://www.cyklomaratontour.cz/clanky/25-rocnik-decathlon-cyklomaratonu-opet-v-hradci-kralove-734.html"
+  },
+  {
+    "id": "45becd5a-9c72-45e5-8aa4-7339e466a485",
+    "name": "Český pohár MTB XCO/XCC — Bedřichov",
+    "end_date": "2027-06-06",
+    "series_id": "f5a31302-4fd7-4128-8abc-c1835e7159df",
+    "start_date": "2027-06-05",
+    "disciplines": [
+      "xco",
+      "xcc"
+    ],
+    "series_name": "Český pohár MTB XCO",
+    "website_url": "https://www.poharmtb.cz/cross-country",
+    "municipality": "Bedřichov",
+    "result": "existing_membership_retained",
+    "assigned_series": null,
+    "evidence_url": "https://www.poharmtb.cz/cross-country"
+  },
+  {
+    "id": "df72ac6c-d903-4b0f-b671-602f3966f74a",
+    "name": "Brdský Meandr",
+    "end_date": "2027-06-06",
+    "series_id": null,
+    "start_date": "2027-06-05",
+    "disciplines": [
+      "mtb"
+    ],
+    "series_name": null,
+    "website_url": "https://www.bike-meandr.cz/brdsky-meandr/",
+    "municipality": "Řevnice",
+    "result": "no_verified_2027_series_membership",
+    "assigned_series": null,
+    "evidence_url": "https://www.bike-meandr.cz/brdsky-meandr/"
+  },
+  {
+    "id": "532e5fd5-a1eb-4dc8-a4a4-2a4c66908641",
+    "name": "DoKola!",
+    "end_date": "2027-06-13",
+    "series_id": null,
+    "start_date": "2027-06-11",
+    "disciplines": [
+      "mtb"
+    ],
+    "series_name": null,
+    "website_url": "https://kalendar.winspace.cz/kalendar/2027-dokola-8c6cc475",
+    "municipality": "Sedlejov",
+    "result": "no_verified_2027_series_membership",
+    "assigned_series": null,
+    "evidence_url": "https://kalendar.winspace.cz/kalendar/2027-dokola-8c6cc475"
+  },
+  {
+    "id": "f5870d39-5588-44b7-bfb6-12a2b07e67f7",
+    "name": "Malevil Cup - International MTB Marathon",
+    "end_date": "2027-06-12",
+    "series_id": "c37965bc-c819-4ab2-b15b-992db8ca85e6",
+    "start_date": "2027-06-12",
+    "disciplines": [
+      "xcm"
+    ],
+    "series_name": "Malevil Cup",
+    "website_url": "https://www.malevilcup.cz",
+    "municipality": "Jablonné v Podještědí",
+    "result": "existing_membership_retained",
+    "assigned_series": null,
+    "evidence_url": "https://www.malevilcup.cz"
+  },
+  {
+    "id": "cc9dace7-377e-4b37-9f5e-d53a3efd0ae1",
+    "name": "Rusavská 50",
+    "end_date": "2027-06-12",
+    "series_id": null,
+    "start_date": "2027-06-12",
+    "disciplines": [
+      "xcm"
+    ],
+    "series_name": null,
+    "website_url": "https://www.rusavska50.cz/propozice",
+    "municipality": "Rusava",
+    "result": "linked_verified_2027",
+    "assigned_series": "mtb-kral-hostynek",
+    "evidence_url": "https://www.vesani.cz/mtb-kral-hostynek/"
+  },
+  {
+    "id": "57791b1e-04e4-4db1-b440-c9e864875fbb",
+    "name": "WOLFman",
+    "end_date": "2027-06-18",
+    "series_id": null,
+    "start_date": "2027-06-18",
+    "disciplines": [
+      "mtb",
+      "gravel"
+    ],
+    "series_name": null,
+    "website_url": "https://wolf-man.cz/cyklisticke-zavody-2/",
+    "municipality": "Orlické hory",
+    "result": "no_verified_2027_series_membership",
+    "assigned_series": null,
+    "evidence_url": "https://wolf-man.cz/cyklisticke-zavody-2/"
+  },
+  {
+    "id": "53e27216-78fc-42bd-a01e-b74cdb65eee2",
+    "name": "Dolnolhotský BAJK",
+    "end_date": "2027-06-19",
+    "series_id": null,
+    "start_date": "2027-06-19",
+    "disciplines": [
+      "mtb"
+    ],
+    "series_name": null,
+    "website_url": "https://kalendar.winspace.cz/kalendar/2027-dolnolhotsky-bajk-651ae13b",
+    "municipality": "Dolní Lhota",
+    "result": "no_verified_2027_series_membership",
+    "assigned_series": null,
+    "evidence_url": "https://kalendar.winspace.cz/kalendar/2027-dolnolhotsky-bajk-651ae13b"
+  },
+  {
+    "id": "36878ddd-54c4-482d-a99f-0bbfa0314d19",
+    "name": "Český pohár MTBO — Mariánské Lázně",
+    "end_date": "2027-06-20",
+    "series_id": null,
+    "start_date": "2027-06-19",
+    "disciplines": [
+      "mtb",
+      "mtbo"
+    ],
+    "series_name": null,
+    "website_url": "https://mtbo.ceskyorientak.cz/vyberove-rizeni-na-poradatele-cp-mtbo-2027-je-u-konce/",
+    "municipality": "Mariánské Lázně",
+    "result": "linked_verified_2027",
+    "assigned_series": "cesky-pohar-mtbo",
+    "evidence_url": "https://mtbo.ceskyorientak.cz/vyberove-rizeni-na-poradatele-cp-mtbo-2027-je-u-konce/"
+  },
+  {
+    "id": "5bbb56a7-3cef-488f-9a5d-f0bddf5ea9e1",
+    "name": "Dětský MTB Cup — Tanvald",
+    "end_date": "2027-06-20",
+    "series_id": "8e44474a-73d7-4239-a413-ba869dedc7c3",
+    "start_date": "2027-06-20",
+    "disciplines": [
+      "xco"
+    ],
+    "series_name": "Dětský MTB Cup Libereckého kraje",
+    "website_url": "https://www.detskymtbcup.cz/",
+    "municipality": "Tanvald",
+    "result": "existing_membership_retained",
+    "assigned_series": null,
+    "evidence_url": "https://www.detskymtbcup.cz/"
+  },
+  {
+    "id": "d5c4d3da-81a5-4fbb-a933-91cb3e46a82b",
+    "name": "BSK Giro Pičín",
+    "end_date": "2027-06-20",
+    "series_id": null,
+    "start_date": "2027-06-20",
+    "disciplines": [
+      "xcm"
+    ],
+    "series_name": null,
+    "website_url": "https://bskjuniorsteam.cz/",
+    "municipality": "Pičín",
+    "result": "no_verified_2027_series_membership",
+    "assigned_series": null,
+    "evidence_url": "https://bskjuniorsteam.cz/"
+  },
+  {
+    "id": "56967778-ec83-45c2-989b-226c8c13dac3",
+    "name": "Vinařská 50",
+    "end_date": "2027-06-26",
+    "series_id": null,
+    "start_date": "2027-06-26",
+    "disciplines": [
+      "mtb"
+    ],
+    "series_name": null,
+    "website_url": "https://kalendar.winspace.cz/kalendar/2027-vinarska-50-0edc1da7",
+    "municipality": "Kobylí",
+    "result": "no_verified_2027_series_membership",
+    "assigned_series": null,
+    "evidence_url": "https://kalendar.winspace.cz/kalendar/2027-vinarska-50-0edc1da7"
+  },
+  {
+    "id": "547e9dd0-a712-42d4-a4df-46ba695739ac",
+    "name": "Český pohár MTBO — Plzeň",
+    "end_date": "2027-07-06",
+    "series_id": null,
+    "start_date": "2027-07-02",
+    "disciplines": [
+      "mtb",
+      "mtbo"
+    ],
+    "series_name": null,
+    "website_url": "https://mtbo.ceskyorientak.cz/vyberove-rizeni-na-poradatele-cp-mtbo-2027-je-u-konce/",
+    "municipality": "Plzeň",
+    "result": "linked_verified_2027",
+    "assigned_series": "cesky-pohar-mtbo",
+    "evidence_url": "https://mtbo.ceskyorientak.cz/vyberove-rizeni-na-poradatele-cp-mtbo-2027-je-u-konce/"
+  },
+  {
+    "id": "9444658e-16f4-4498-ae02-3f34725a749c",
+    "name": "TROJMEZÍ",
+    "end_date": "2027-07-07",
+    "series_id": null,
+    "start_date": "2027-07-07",
+    "disciplines": [
+      "mtb",
+      "gravel"
+    ],
+    "series_name": null,
+    "website_url": "https://bike-paradise.cz/",
+    "municipality": "Dolní Bousov",
+    "result": "no_verified_2027_series_membership",
+    "assigned_series": null,
+    "evidence_url": "https://bike-paradise.cz/"
+  },
+  {
+    "id": "820bf4d0-ef76-4744-8cfc-8c7aeb3a4c81",
+    "name": "Ratajská 40",
+    "end_date": "2027-07-10",
+    "series_id": null,
+    "start_date": "2027-07-10",
+    "disciplines": [
+      "mtb"
+    ],
+    "series_name": null,
+    "website_url": "https://kalendar.winspace.cz/kalendar",
+    "municipality": "Rataje nad Sázavou",
+    "result": "no_verified_2027_series_membership",
+    "assigned_series": null,
+    "evidence_url": "https://kalendar.winspace.cz/kalendar"
+  },
+  {
+    "id": "845dfe98-7911-43f2-8951-697e3644e710",
+    "name": "MČR MTB XCC/XCO — Praha — Traily Motol",
+    "end_date": "2027-07-18",
+    "series_id": "f5a31302-4fd7-4128-8abc-c1835e7159df",
+    "start_date": "2027-07-17",
+    "disciplines": [
+      "xco",
+      "xcc"
+    ],
+    "series_name": "Český pohár MTB XCO",
+    "website_url": "https://www.poharmtb.cz/cross-country",
+    "municipality": "Motol",
+    "result": "existing_membership_retained",
+    "assigned_series": null,
+    "evidence_url": "https://www.poharmtb.cz/cross-country"
+  },
+  {
+    "id": "216b4b14-9be7-432f-bdb9-895201eea65e",
+    "name": "Český pohár MTB XCO/XCC — Stupno",
+    "end_date": "2027-08-15",
+    "series_id": "f5a31302-4fd7-4128-8abc-c1835e7159df",
+    "start_date": "2027-08-14",
+    "disciplines": [
+      "xco",
+      "xcc"
+    ],
+    "series_name": "Český pohár MTB XCO",
+    "website_url": "https://www.poharmtb.cz/cross-country",
+    "municipality": "Stupno",
+    "result": "existing_membership_retained",
+    "assigned_series": null,
+    "evidence_url": "https://www.poharmtb.cz/cross-country"
+  },
+  {
+    "id": "df59e814-c7ed-458f-a510-190002554ea4",
+    "name": "Cyklozávod ČEZ Kolem Lipna",
+    "end_date": "2027-08-15",
+    "series_id": null,
+    "start_date": "2027-08-15",
+    "disciplines": [
+      "mtb",
+      "gravel"
+    ],
+    "series_name": null,
+    "website_url": "https://www.lipnosportfestival.cz/cyklo-/",
+    "municipality": "Lipno nad Vltavou",
+    "result": "no_verified_2027_series_membership",
+    "assigned_series": null,
+    "evidence_url": "https://www.lipnosportfestival.cz/cyklo-/"
+  },
+  {
+    "id": "468aa081-6560-4b70-b000-1b2335851e79",
+    "name": "HIGH POINT Galaxy MTB maraton",
+    "end_date": "2027-08-21",
+    "series_id": null,
+    "start_date": "2027-08-21",
+    "disciplines": [
+      "xcm"
+    ],
+    "series_name": null,
+    "website_url": "https://www.mtbmaratonsusice.cz/",
+    "municipality": "Sušice",
+    "result": "deferred_2027_membership_not_confirmed",
+    "assigned_series": null,
+    "evidence_url": "https://www.mtbmaratonsusice.cz/"
+  },
+  {
+    "id": "1b813592-d910-45c1-a44e-a286b9c5acf9",
+    "name": "Tour de Kosová2027",
+    "end_date": "2027-08-21",
+    "series_id": null,
+    "start_date": "2027-08-21",
+    "disciplines": [
+      "mtb"
+    ],
+    "series_name": null,
+    "website_url": "https://zavodnicasomira.cz/zavody/tour-de-kosova/2027",
+    "municipality": "Moravské Budějovice",
+    "result": "no_verified_2027_series_membership",
+    "assigned_series": null,
+    "evidence_url": "https://zavodnicasomira.cz/zavody/tour-de-kosova/2027"
+  },
+  {
+    "id": "475f4e03-d0c9-4961-94f1-85a01476fead",
+    "name": "Bike Paradise",
+    "end_date": "2027-08-21",
+    "series_id": null,
+    "start_date": "2027-08-21",
+    "disciplines": [
+      "mtb"
+    ],
+    "series_name": null,
+    "website_url": "https://bike-paradise.cz/",
+    "municipality": "Máchalův mlýn",
+    "result": "no_verified_2027_series_membership",
+    "assigned_series": null,
+    "evidence_url": "https://bike-paradise.cz/"
+  },
+  {
+    "id": "e8ded1c2-70c2-4614-ac7c-ba126971592e",
+    "name": "Půl Paradise",
+    "end_date": "2027-08-21",
+    "series_id": null,
+    "start_date": "2027-08-21",
+    "disciplines": [
+      "mtb"
+    ],
+    "series_name": null,
+    "website_url": "https://bike-paradise.cz/",
+    "municipality": "Máchalův mlýn",
+    "result": "no_verified_2027_series_membership",
+    "assigned_series": null,
+    "evidence_url": "https://bike-paradise.cz/"
+  },
+  {
+    "id": "da9a3ca6-323f-4e8c-a294-d4ec567e652a",
+    "name": "Junior Cup",
+    "end_date": "2027-08-22",
+    "series_id": null,
+    "start_date": "2027-08-22",
+    "disciplines": [
+      "xco"
+    ],
+    "series_name": null,
+    "website_url": "https://www.juniorcup.net/",
+    "municipality": "Hradec Králové",
+    "result": "no_verified_2027_series_membership",
+    "assigned_series": null,
+    "evidence_url": "https://www.juniorcup.net/"
+  },
+  {
+    "id": "91bd0276-c560-4c4c-b7ed-830923c90a7c",
+    "name": "Dětský MTB Cup — Vratislavice nad Nisou",
+    "end_date": "2027-09-05",
+    "series_id": "8e44474a-73d7-4239-a413-ba869dedc7c3",
+    "start_date": "2027-09-05",
+    "disciplines": [
+      "xco"
+    ],
+    "series_name": "Dětský MTB Cup Libereckého kraje",
+    "website_url": "https://www.detskymtbcup.cz/",
+    "municipality": "Vratislavice nad Nisou",
+    "result": "existing_membership_retained",
+    "assigned_series": null,
+    "evidence_url": "https://www.detskymtbcup.cz/"
+  },
+  {
+    "id": "f705559e-8c58-4a50-b10b-340ba19e0c52",
+    "name": "Český pohár MTBO — Jedovnice",
+    "end_date": "2027-09-12",
+    "series_id": null,
+    "start_date": "2027-09-11",
+    "disciplines": [
+      "mtb",
+      "mtbo"
+    ],
+    "series_name": null,
+    "website_url": "https://mtbo.ceskyorientak.cz/vyberove-rizeni-na-poradatele-cp-mtbo-2027-je-u-konce/",
+    "municipality": "Jedovnice",
+    "result": "linked_verified_2027",
+    "assigned_series": "cesky-pohar-mtbo",
+    "evidence_url": "https://mtbo.ceskyorientak.cz/vyberove-rizeni-na-poradatele-cp-mtbo-2027-je-u-konce/"
+  },
+  {
+    "id": "0bde49af-5935-4244-916e-bcbe40998c02",
+    "name": "Dětský MTB Cup — Liberec Ještěd",
+    "end_date": "2027-09-12",
+    "series_id": "8e44474a-73d7-4239-a413-ba869dedc7c3",
+    "start_date": "2027-09-12",
+    "disciplines": [
+      "xco"
+    ],
+    "series_name": "Dětský MTB Cup Libereckého kraje",
+    "website_url": "https://www.detskymtbcup.cz/",
+    "municipality": "Ještěd",
+    "result": "existing_membership_retained",
+    "assigned_series": null,
+    "evidence_url": "https://www.detskymtbcup.cz/"
+  },
+  {
+    "id": "acaf3bb6-19c8-4bc6-895f-da354b0f12dd",
+    "name": "Český pohár MTB XCO/XCC — Nové Město na Moravě",
+    "end_date": "2027-09-19",
+    "series_id": "f5a31302-4fd7-4128-8abc-c1835e7159df",
+    "start_date": "2027-09-18",
+    "disciplines": [
+      "xco",
+      "xcc"
+    ],
+    "series_name": "Český pohár MTB XCO",
+    "website_url": "https://www.poharmtb.cz/cross-country",
+    "municipality": "Nové Město na Moravě",
+    "result": "existing_membership_retained",
+    "assigned_series": null,
+    "evidence_url": "https://www.poharmtb.cz/cross-country"
+  },
+  {
+    "id": "6252575f-ecaf-4f4d-86f2-7244553dd135",
+    "name": "Pražský MTB pohár — 3. kolo Letňany/Kbely XCO",
+    "end_date": "2027-09-25",
+    "series_id": "c9988946-7c2a-44c9-b569-3b346bbf5891",
+    "start_date": "2027-09-25",
+    "disciplines": [
+      "xco"
+    ],
+    "series_name": "ŠKODA Pražský MTB pohár",
+    "website_url": "https://prahamtb.cz/",
+    "municipality": "Letňany",
+    "result": "existing_membership_retained",
+    "assigned_series": null,
+    "evidence_url": "https://prahamtb.cz/"
+  },
+  {
+    "id": "fc12e248-22dc-4e0c-8d7d-e6fd3fe9e0af",
+    "name": "Pražský MTB pohár — 4. kolo Letňany/Kbely XCO (Mistrovství Prahy XCO)",
+    "end_date": "2027-09-26",
+    "series_id": "c9988946-7c2a-44c9-b569-3b346bbf5891",
+    "start_date": "2027-09-26",
+    "disciplines": [
+      "xco"
+    ],
+    "series_name": "ŠKODA Pražský MTB pohár",
+    "website_url": "https://prahamtb.cz/",
+    "municipality": "Letňany",
+    "result": "existing_membership_retained",
+    "assigned_series": null,
+    "evidence_url": "https://prahamtb.cz/"
+  },
+  {
+    "id": "6683713d-8659-4db5-84b4-d1136c19df78",
+    "name": "Český pohár MTBO — Vrchlabí",
+    "end_date": "2027-10-03",
+    "series_id": null,
+    "start_date": "2027-10-02",
+    "disciplines": [
+      "mtb",
+      "mtbo"
+    ],
+    "series_name": null,
+    "website_url": "https://mtbo.ceskyorientak.cz/vyberove-rizeni-na-poradatele-cp-mtbo-2027-je-u-konce/",
+    "municipality": "Vrchlabí",
+    "result": "linked_verified_2027",
+    "assigned_series": "cesky-pohar-mtbo",
+    "evidence_url": "https://mtbo.ceskyorientak.cz/vyberove-rizeni-na-poradatele-cp-mtbo-2027-je-u-konce/"
+  },
+  {
+    "id": "d5f584de-19be-487b-984b-5da25b934308",
+    "name": "Dětský MTB Cup — Nové Město pod Smrkem",
+    "end_date": "2027-10-03",
+    "series_id": "8e44474a-73d7-4239-a413-ba869dedc7c3",
+    "start_date": "2027-10-03",
+    "disciplines": [
+      "xco"
+    ],
+    "series_name": "Dětský MTB Cup Libereckého kraje",
+    "website_url": "https://www.detskymtbcup.cz/",
+    "municipality": "Nové Město pod Smrkem",
+    "result": "existing_membership_retained",
+    "assigned_series": null,
+    "evidence_url": "https://www.detskymtbcup.cz/"
+  },
+  {
+    "id": "de94d5be-36ba-40b8-9cfe-ad5ea31e257e",
+    "name": "Muldička 2027",
+    "end_date": "2027-10-10",
+    "series_id": null,
+    "start_date": "2027-10-10",
+    "disciplines": [
+      "xco"
+    ],
+    "series_name": null,
+    "website_url": "https://www.czex.cz/mulda/muldicka",
+    "municipality": "Brno",
+    "result": "no_verified_2027_series_membership",
+    "assigned_series": null,
+    "evidence_url": "https://www.czex.cz/mulda/muldicka"
+  },
+  {
+    "id": "0ef7b2ec-d881-42e9-b5e9-5de9184a47d4",
+    "name": "Soběšická Mulda 2027",
+    "end_date": "2027-10-10",
+    "series_id": null,
+    "start_date": "2027-10-10",
+    "disciplines": [
+      "xco"
+    ],
+    "series_name": null,
+    "website_url": "https://www.czex.cz/mulda/",
+    "municipality": "Brno",
+    "result": "no_verified_2027_series_membership",
+    "assigned_series": null,
+    "evidence_url": "https://www.czex.cz/mulda/"
+  }
+]

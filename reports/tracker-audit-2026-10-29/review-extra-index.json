@@ -1,0 +1,25 @@
+[
+  {
+    "url": "https://www.uci.org/calendar/mtb/1voMyukVGR4iZMhMlDfRv0?discipline=MTB&searchTerm=S",
+    "finalUrl": "https://www.uci.org/calendar/mtb/1voMyukVGR4iZMhMlDfRv0?discipline=MTB&searchTerm=S",
+    "status": 200,
+    "key": "479fc23a1aa6aa0a",
+    "bytes": 74862,
+    "sha256": "63bd3e78364a16ad9abe0f7fca9eea82ed4b9eb7d13d4a2b5e3a784bc7abae9d",
+    "at": "2026-10-29T15:10:53.832042+00:00"
+  },
+  {
+    "url": "https://www.erg1900.de/",
+    "finalUrl": "https://www.erg1900.de/",
+    "status": 200,
+    "key": "235b1eb8388165be",
+    "bytes": 171646,
+    "sha256": "1d4f897768ec6dd628f39e8efc447527ef66a02b76f3fadb819f7833bef5c8aa",
+    "at": "2026-10-29T15:10:54.369725+00:00"
+  },
+  {
+    "url": "http://www.radteamhintersee.de/",
+    "key": "891b9b30f239322a",
+    "error": "HTTP Error 421: Misdirected Request"
+  }
+]

@@ -1,0 +1,106 @@
+[
+  {
+    "name": "Humenský MTB maratón Singletracky Hubková 2027",
+    "eventId": "32accab5-9f80-4c70-8f85-6c909403b3b2",
+    "candidateId": "74ee5a04-f03f-4770-bbb4-8e944a3bd3b1",
+    "status": "already_published",
+    "originals": [
+      "f313d8ee-a38f-4c4a-a2b2-218f055d7108"
+    ]
+  },
+  {
+    "name": "12. ročník Ondavský cyklomaratón",
+    "eventId": "211a0257-58b2-4c90-806a-5d5d62b85f6c",
+    "candidateId": "000c35a2-aee3-4fd8-adb6-57864172638e",
+    "status": "already_published",
+    "originals": [
+      "d0c342d9-aa10-422b-981c-fced5eb7bb96"
+    ]
+  },
+  {
+    "name": "4. ročník Novoveský pojazd",
+    "eventId": "e93c3021-d26c-4e12-9d73-c7e1ebe4d492",
+    "candidateId": "ca730ebf-4925-4748-8474-e023e6192733",
+    "status": "already_published",
+    "originals": [
+      "9edfbdd8-f6b5-49a9-9335-3a68f01cee1c"
+    ]
+  },
+  {
+    "name": "19. ročník časovky do vrchu Jantex Banské - Mláčky",
+    "eventId": "f3d57c60-54ab-4bf5-b0a8-e2f2096eaca7",
+    "candidateId": "ae74ad0e-bfa1-48fb-8a0c-5eb2a9c2cf5c",
+    "id": "f3d57c60-54ab-4bf5-b0a8-e2f2096eaca7",
+    "created": false,
+    "changed": true,
+    "originals": [
+      "e10ce72e-68cc-4344-abdd-956ca2a871dc"
+    ]
+  },
+  {
+    "name": "ŠKODA MTB MARATÓN Rajecké Teplice 2027",
+    "eventId": "a8293764-24cb-42af-bdb3-6c159df04513",
+    "candidateId": "307d872a-2f51-4aac-817e-5fb70a4caf59",
+    "id": "a8293764-24cb-42af-bdb3-6c159df04513",
+    "created": true,
+    "changed": false,
+    "originals": [
+      "6b65420b-3d00-4ef3-820f-98c99cb2271d"
+    ]
+  },
+  {
+    "name": "ISTROFINAL Snežnický MTB maratón 2027",
+    "eventId": "9375abdf-f0ab-4f3c-a178-77724a2f7a48",
+    "candidateId": "fb6de128-9d91-463c-91ee-206e7e938a56",
+    "id": "9375abdf-f0ab-4f3c-a178-77724a2f7a48",
+    "created": true,
+    "changed": false,
+    "originals": [
+      "b4ed894f-393d-4afd-b0c9-ce2df6c0cd1f"
+    ]
+  },
+  {
+    "name": "Slovak National Championships - XCO/XCC",
+    "eventId": "976ae665-fab9-4382-a3d7-f0d0357c64aa",
+    "candidateId": "6a2236ac-7109-4fa5-bd2d-f4cba6a8c14e",
+    "id": "976ae665-fab9-4382-a3d7-f0d0357c64aa",
+    "created": true,
+    "changed": false,
+    "originals": [
+      "473f4363-bf7e-4da9-a4b7-d169303475d0"
+    ]
+  },
+  {
+    "name": "Sp XCO Zlatnicka Dolina",
+    "eventId": "1e89401b-7414-467e-99ff-26a9ff5751a2",
+    "candidateId": "6dfd1968-0424-496f-ad70-9cf42528e93e",
+    "id": "1e89401b-7414-467e-99ff-26a9ff5751a2",
+    "created": true,
+    "changed": false,
+    "originals": [
+      "8d5f24e0-0367-4be2-b51b-b0e309374c3d"
+    ]
+  },
+  {
+    "name": "Sp XCO Bystricany",
+    "eventId": "909f3f21-1c77-4814-ac72-895b6f2977ac",
+    "candidateId": "e479582c-0c6a-4821-9cac-243392cfed00",
+    "id": "909f3f21-1c77-4814-ac72-895b6f2977ac",
+    "created": true,
+    "changed": false,
+    "originals": [
+      "85234aa2-cae3-4adb-b909-87d072b6785c"
+    ]
+  },
+  {
+    "name": "Sp XCO Oslany",
+    "eventId": "2e2b3ce3-6eb9-4d8b-bb94-e0f4eed3b2f2",
+    "candidateId": "d1b94caa-3b76-4fe7-8ea4-55f68eeb6b3b",
+    "id": "2e2b3ce3-6eb9-4d8b-bb94-e0f4eed3b2f2",
+    "created": true,
+    "changed": false,
+    "originals": [
+      "b4761274-1511-45e2-801d-9043c68ec78f"
+    ]
+  }
+]

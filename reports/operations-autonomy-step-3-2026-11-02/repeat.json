@@ -1,0 +1,11 @@
+{
+  "at": "2026-11-02T07:25:11.556Z",
+  "apply": true,
+  "eligible": 0,
+  "processed": 0,
+  "fetchedUrls": 0,
+  "sourceUrls": 0,
+  "eventWrites": 0,
+  "modelCalls": 0,
+  "outcomes": []
+}

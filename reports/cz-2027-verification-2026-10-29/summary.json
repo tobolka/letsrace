@@ -1,0 +1,17 @@
+{
+  "detailed_events": 42,
+  "additional_leads": 15,
+  "baseline_cz_tagged_2027": 109,
+  "baseline_public": 79,
+  "baseline_hidden": 30,
+  "created": 15,
+  "created_races": 13,
+  "created_rides": 2,
+  "updated_existing": 10,
+  "unchanged_verified": 17,
+  "duplicates_merged": 3,
+  "provisional_existing_hidden": 4,
+  "noncycling_hidden": 1,
+  "additional_unverified_leads": 13,
+  "assertions": 240
+}

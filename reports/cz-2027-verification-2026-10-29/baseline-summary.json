@@ -1,0 +1,1668 @@
+{
+  "cz2027": 109,
+  "related": [
+    {
+      "id": "00862df3-deff-45d8-816b-13a72191e6b9",
+      "name": "NN KIDS RACE",
+      "date": "2027-05-30",
+      "end": "2027-05-30",
+      "visibility": "public",
+      "status": "scheduled",
+      "merged": null,
+      "place": "Malšovická aréna",
+      "disciplines": [],
+      "categories": [],
+      "overrides": null,
+      "website": "https://www.cyklomaratontour.cz/",
+      "registration": "https://www.eventreg.cz/"
+    },
+    {
+      "id": "02a7e60b-1fe1-4758-85d5-99e6b4a3670c",
+      "name": "Tour de Romandie Féminin",
+      "date": "2027-09-10",
+      "end": "2027-09-10",
+      "visibility": "public",
+      "status": "scheduled",
+      "merged": null,
+      "place": "Suisse Romande, Switzerland",
+      "disciplines": [
+        "road"
+      ],
+      "categories": [],
+      "overrides": null,
+      "website": "https://tourderomandiefeminin.ch/",
+      "registration": "https://www.uci.org/competition-details/2027/ROA/79728"
+    },
+    {
+      "id": "109e4ea9-0265-4ae2-84dd-e9e093280c00",
+      "name": "Zlivský Cyklomaraton",
+      "date": "2026-05-08",
+      "end": "2026-05-08",
+      "visibility": "public",
+      "status": "completed",
+      "merged": null,
+      "place": "Zliv",
+      "disciplines": [
+        "xcm"
+      ],
+      "categories": [],
+      "overrides": null,
+      "website": null,
+      "registration": null
+    },
+    {
+      "id": "134db97e-dd3d-4d2f-8f83-46d2227bf684",
+      "name": "CASIA Krakonošův cyklomaraton RR 100,5 km",
+      "date": "2027-06-12",
+      "end": "2027-06-12",
+      "visibility": "public",
+      "status": "scheduled",
+      "merged": null,
+      "disciplines": [
+        "gran_fondo"
+      ],
+      "categories": [],
+      "overrides": null,
+      "website": "https://www.roadcycling.cz/roadcup/rocnik-2027",
+      "registration": null
+    },
+    {
+      "id": "19173ef3-908a-47c9-9d9e-533f56532220",
+      "name": "Šatovská Padesátka",
+      "date": "2026-06-27",
+      "end": "2026-06-27",
+      "visibility": "public",
+      "status": "completed",
+      "merged": null,
+      "place": "Šatov",
+      "disciplines": [
+        "other"
+      ],
+      "categories": [],
+      "overrides": null,
+      "website": "https://www.tatransatov.cz/satovska-padesatka/",
+      "registration": "https://www.amchrono.cz/cz/s2125/Kalendar-akci/c2634-Detail-akce/gsto2989-Satovska-50ka"
+    },
+    {
+      "id": "1c6c3543-ec18-4a6a-8488-bfaecb68d424",
+      "name": "Cykloman — Cyklomaraton Hřebečské důlní stezky",
+      "date": "2026-09-12",
+      "end": "2026-09-12",
+      "visibility": "public",
+      "status": "completed",
+      "merged": null,
+      "place": "fotbalový stadion, Moravská Třebová",
+      "disciplines": [
+        "xcm"
+      ],
+      "categories": [],
+      "overrides": null,
+      "website": "https://www.cykloman.cz/zavody-a-akce/2026/cyklomaraton-hrebecske-dulni-stezky",
+      "registration": "https://www.cykloman.cz/zavody-a-akce/2026/cyklomaraton-hrebecske-dulni-stezky"
+    },
+    {
+      "id": "2922dfd2-b492-42a7-b16d-61520e24f5db",
+      "name": "Pražský MTB pohár — 2. kolo Motol XCO",
+      "date": "2027-03-27",
+      "end": "2027-03-27",
+      "visibility": "public",
+      "status": "scheduled",
+      "merged": null,
+      "place": "Traily Motol",
+      "disciplines": [
+        "xco"
+      ],
+      "categories": [],
+      "overrides": {
+        "id": "db07bf09-11f6-45b5-87d6-9496539ca7c7",
+        "fields": {
+          "name": "Pražský MTB pohár — 2. kolo Motol XCO",
+          "end_date": "2027-03-27",
+          "series_id": "c9988946-7c2a-44c9-b569-3b346bbf5891",
+          "start_date": "2027-03-27",
+          "location_id": "4d121da2-e5fe-44d0-9f32-7bf69341c957",
+          "website_url": "https://prahamtb.cz/"
+        },
+        "event_id": "2922dfd2-b492-42a7-b16d-61520e24f5db",
+        "updated_at": "2026-09-28T18:18:28.218897+00:00",
+        "updated_by": "prazsky-mtb-pohar 2027 seed 2026-09-28",
+        "locked_fields": [
+          "name",
+          "start_date",
+          "end_date",
+          "location_id",
+          "website_url",
+          "series_id"
+        ]
+      },
+      "website": "https://prahamtb.cz/",
+      "registration": "https://prahamtb.cz/?p=7163"
+    },
+    {
+      "id": "29297e7a-d785-4311-b089-0d6050f6e4cf",
+      "name": "Pražský MTB pohár — 2. kolo Motol XCO",
+      "date": "2026-04-12",
+      "end": "2026-04-12",
+      "visibility": "public",
+      "status": "completed",
+      "merged": null,
+      "place": "Praha Motol",
+      "disciplines": [
+        "mtb",
+        "xco"
+      ],
+      "categories": [],
+      "overrides": {
+        "id": "6f263507-72f9-4b00-86f9-c8c7d4a509c7",
+        "fields": {
+          "name": "Pražský MTB pohár — 2. kolo Motol XCO",
+          "end_date": "2026-04-12",
+          "series_id": "c9988946-7c2a-44c9-b569-3b346bbf5891",
+          "start_date": "2026-04-12"
+        },
+        "event_id": "29297e7a-d785-4311-b089-0d6050f6e4cf",
+        "updated_at": "2026-09-17T06:43:53.132716+00:00",
+        "updated_by": "major series repair 2026-09-17",
+        "locked_fields": [
+          "name",
+          "start_date",
+          "end_date",
+          "series_id"
+        ]
+      },
+      "website": "http://prahamtb.cz/",
+      "registration": null
+    },
+    {
+      "id": "2c79b5bd-b1c5-4e0c-91a0-71e0c24b06ca",
+      "name": "Vinařská 50",
+      "date": "2026-06-27",
+      "end": "2026-06-27",
+      "visibility": "hidden",
+      "status": "hidden",
+      "merged": null,
+      "place": "Kobylí",
+      "disciplines": [
+        "other"
+      ],
+      "categories": [],
+      "overrides": null,
+      "website": "https://www.vinarska50.cz",
+      "registration": null
+    },
+    {
+      "id": "33580f77-35ed-42b2-842c-5d0f465671b1",
+      "name": "Pražský MTB pohár — 1. kolo Motol XCC",
+      "date": "2026-04-11",
+      "end": "2026-04-11",
+      "visibility": "public",
+      "status": "completed",
+      "merged": null,
+      "place": "Praha Motol",
+      "disciplines": [
+        "mtb",
+        "xcc"
+      ],
+      "categories": [],
+      "overrides": {
+        "id": "d915bca0-8d3b-4c82-8581-9947efab18fb",
+        "fields": {
+          "name": "Pražský MTB pohár — 1. kolo Motol XCC",
+          "end_date": "2026-04-11",
+          "series_id": "c9988946-7c2a-44c9-b569-3b346bbf5891",
+          "start_date": "2026-04-11"
+        },
+        "event_id": "33580f77-35ed-42b2-842c-5d0f465671b1",
+        "updated_at": "2026-09-17T06:43:52.680615+00:00",
+        "updated_by": "major series repair 2026-09-17",
+        "locked_fields": [
+          "name",
+          "start_date",
+          "end_date",
+          "series_id"
+        ]
+      },
+      "website": "http://prahamtb.cz/",
+      "registration": null
+    },
+    {
+      "id": "36f0d2c5-374d-477b-b1c6-63e16df7c4cf",
+      "name": "HEAD Bike Maraton Slezská Harta 2026",
+      "date": "2026-06-06",
+      "end": "2026-06-06",
+      "visibility": "public",
+      "status": "completed",
+      "merged": null,
+      "place": "Nová Pláň",
+      "disciplines": [
+        "xcm"
+      ],
+      "categories": [],
+      "overrides": {
+        "id": "e1455ca4-34aa-4e82-abea-d64696e775e4",
+        "fields": {
+          "location_id": "e2493d48-3252-4d04-b858-792163668f2c"
+        },
+        "event_id": "36f0d2c5-374d-477b-b1c6-63e16df7c4cf",
+        "updated_at": "2026-09-12T05:49:31.130701+00:00",
+        "updated_by": "catalog identity review 2026-09-12",
+        "locked_fields": [
+          "location_id"
+        ]
+      },
+      "website": "https://www.bikemaraton-slezskaharta.cz",
+      "registration": "https://casomierapt.com/event/slezska-harta-bike-maraton-2026/"
+    },
+    {
+      "id": "3711d294-0407-4bdf-9af1-1b4a7bcb9d38",
+      "name": "Netradiční scorelauf Brdy 2026",
+      "date": "2026-06-06",
+      "end": "2026-06-06",
+      "visibility": "public",
+      "status": "completed",
+      "merged": null,
+      "place": "Rožmitál pod Třemšínem",
+      "disciplines": [
+        "other"
+      ],
+      "categories": [],
+      "overrides": null,
+      "website": "https://hk-rac.cz/brdy-6-6-2026/",
+      "registration": "https://hk-rac.cz/brdy-6-6-2026/"
+    },
+    {
+      "id": "3a1b08cb-1613-49fe-a827-bce4f31db55a",
+      "name": "Chrono Féminin & Tour de Gatineau 2026",
+      "date": "2026-09-16",
+      "end": "2026-09-16",
+      "visibility": "hidden",
+      "status": "completed",
+      "merged": null,
+      "place": "Gatineau, QC",
+      "disciplines": [
+        "road"
+      ],
+      "categories": [],
+      "overrides": null,
+      "website": "https://cyclingcanada.ca/event/chrono-feminin-tour-de-gatineau-2026/",
+      "registration": "https://cyclingcanada.ca/event/chrono-feminin-tour-de-gatineau-2026/"
+    },
+    {
+      "id": "3e5e16e2-6996-4f49-a098-d38392aa97c1",
+      "name": "Tour de Feminin",
+      "date": "2026-05-17",
+      "end": "2026-05-17",
+      "visibility": "hidden",
+      "status": "hidden",
+      "merged": null,
+      "place": "Krásná Lípa",
+      "disciplines": [
+        "road"
+      ],
+      "categories": [],
+      "overrides": null,
+      "website": null,
+      "registration": null
+    },
+    {
+      "id": "4276378e-40f6-44af-bc95-8f017f666ff1",
+      "name": "May Divide",
+      "date": "2027-05-01",
+      "end": "2027-05-01",
+      "visibility": "public",
+      "status": "scheduled",
+      "merged": null,
+      "place": "Buškovský mlýn",
+      "disciplines": [
+        "mtb"
+      ],
+      "categories": [],
+      "overrides": {
+        "id": "e7aee7d1-c64c-4ded-ad91-cc774cf650ba",
+        "fields": {
+          "name": "May Divide",
+          "end_date": "2027-05-01",
+          "start_date": "2027-05-01"
+        },
+        "event_id": "4276378e-40f6-44af-bc95-8f017f666ff1",
+        "updated_at": "2026-10-23T21:52:47.374398+00:00",
+        "updated_by": "czech 2027 csv seed 2026-10-23",
+        "locked_fields": [
+          "name",
+          "start_date",
+          "end_date"
+        ]
+      },
+      "website": "https://bike-paradise.cz/",
+      "registration": null
+    },
+    {
+      "id": "468a7cdc-acc1-4bad-adae-bf3bcc2227fb",
+      "name": "Zlivský cyklomaraton",
+      "date": "2027-05-08",
+      "end": "2027-05-08",
+      "visibility": "public",
+      "status": "scheduled",
+      "merged": null,
+      "place": "Zliv",
+      "disciplines": [
+        "xcm"
+      ],
+      "categories": [],
+      "overrides": null,
+      "website": null,
+      "registration": null
+    },
+    {
+      "id": "475f4e03-d0c9-4961-94f1-85a01476fead",
+      "name": "Bike Paradise",
+      "date": "2027-08-21",
+      "end": "2027-08-21",
+      "visibility": "public",
+      "status": "scheduled",
+      "merged": null,
+      "place": "Máchalův mlýn",
+      "disciplines": [
+        "mtb"
+      ],
+      "categories": [],
+      "overrides": {
+        "id": "4aaf0799-dfeb-41e2-aab0-bced7f3de0fb",
+        "fields": {
+          "name": "Bike Paradise",
+          "end_date": "2027-08-21",
+          "start_date": "2027-08-21"
+        },
+        "event_id": "475f4e03-d0c9-4961-94f1-85a01476fead",
+        "updated_at": "2026-10-23T21:52:52.04585+00:00",
+        "updated_by": "czech 2027 csv seed 2026-10-23",
+        "locked_fields": [
+          "name",
+          "start_date",
+          "end_date"
+        ]
+      },
+      "website": "https://bike-paradise.cz/",
+      "registration": "https://bike-paradise.cz/registrace/"
+    },
+    {
+      "id": "480a6a98-cb34-4305-ac45-75fde64678b9",
+      "name": "SPOKE maraton",
+      "date": "2026-08-29",
+      "end": "2026-08-29",
+      "visibility": "public",
+      "status": "completed",
+      "merged": null,
+      "place": "Kralovice",
+      "disciplines": [
+        "xcm"
+      ],
+      "categories": [],
+      "overrides": null,
+      "website": "https://www.spokemaraton.cz",
+      "registration": "https://prihlasky.4timing.cz/spokemaraton/"
+    },
+    {
+      "id": "542a618e-e3b9-42dc-9d8f-b8c3fee20068",
+      "name": "Pražský MTB pohár — 3. kolo Letňany",
+      "date": "2026-05-16",
+      "end": "2026-05-16",
+      "visibility": "public",
+      "status": "completed",
+      "merged": null,
+      "place": "Praha — Letňany",
+      "disciplines": [
+        "mtb"
+      ],
+      "categories": [],
+      "overrides": {
+        "id": "72326e04-5594-472a-a060-da654d0907d3",
+        "fields": {
+          "name": "Pražský MTB pohár — 3. kolo Letňany",
+          "end_date": "2026-05-16",
+          "series_id": "c9988946-7c2a-44c9-b569-3b346bbf5891",
+          "start_date": "2026-05-16"
+        },
+        "event_id": "542a618e-e3b9-42dc-9d8f-b8c3fee20068",
+        "updated_at": "2026-09-17T06:43:53.495165+00:00",
+        "updated_by": "major series repair 2026-09-17",
+        "locked_fields": [
+          "name",
+          "start_date",
+          "end_date",
+          "series_id"
+        ]
+      },
+      "website": "https://prahamtb.cz/?page_id=12",
+      "registration": "https://sportt.cz/register/1532"
+    },
+    {
+      "id": "58a25cf9-06dd-47a1-91f8-a29b91c6ffed",
+      "name": "CASIA Krakonošův cyklomaraton",
+      "date": "2027-06-13",
+      "end": "2027-06-13",
+      "visibility": "public",
+      "status": "scheduled",
+      "merged": null,
+      "place": "Krkonoše",
+      "disciplines": [
+        "road"
+      ],
+      "categories": [],
+      "overrides": null,
+      "website": "https://www.roadcycling.cz/roadcup/rocnik-2027",
+      "registration": "https://vysledky.sportsoft.cz/race/805"
+    },
+    {
+      "id": "5f1a0ce7-f310-4667-9e09-50a8e97c7495",
+      "name": "Náměšťský cyklomaraton 2026",
+      "date": "2026-05-08",
+      "end": "2026-05-08",
+      "visibility": "public",
+      "status": "completed",
+      "merged": null,
+      "place": "Náměšť nad Oslavou",
+      "disciplines": [
+        "xcm"
+      ],
+      "categories": [
+        {
+          "id": "0d4ca24d-88b3-4b2e-949e-b340d9a6126f",
+          "name": "Trasa A",
+          "gender": null,
+          "age_max": null,
+          "age_min": null,
+          "audience": "mixed",
+          "event_id": "5f1a0ce7-f310-4667-9e09-50a8e97c7495",
+          "distance_km": 50,
+          "elevation_m": null
+        },
+        {
+          "id": "bb597bdd-3648-4c17-af6d-0795b79946a9",
+          "name": "Trasa B",
+          "gender": null,
+          "age_max": null,
+          "age_min": null,
+          "audience": "mixed",
+          "event_id": "5f1a0ce7-f310-4667-9e09-50a8e97c7495",
+          "distance_km": 25,
+          "elevation_m": null
+        },
+        {
+          "id": "8cd51944-9f0a-4830-9734-36b46067d6f0",
+          "name": "Dětské závody - děti od 7 - 14 let",
+          "gender": null,
+          "age_max": null,
+          "age_min": null,
+          "audience": "kids",
+          "event_id": "5f1a0ce7-f310-4667-9e09-50a8e97c7495",
+          "distance_km": null,
+          "elevation_m": null
+        },
+        {
+          "id": "6361426b-79a7-4f99-bcda-e140d291876a",
+          "name": "Dětské závody - děti do 6 let + odrážedla",
+          "gender": null,
+          "age_max": null,
+          "age_min": null,
+          "audience": "kids",
+          "event_id": "5f1a0ce7-f310-4667-9e09-50a8e97c7495",
+          "distance_km": null,
+          "elevation_m": null
+        }
+      ],
+      "overrides": null,
+      "website": "https://www.sokolisti.org",
+      "registration": null
+    },
+    {
+      "id": "6252575f-ecaf-4f4d-86f2-7244553dd135",
+      "name": "Pražský MTB pohár — 3. kolo Letňany/Kbely XCO",
+      "date": "2027-09-25",
+      "end": "2027-09-25",
+      "visibility": "public",
+      "status": "scheduled",
+      "merged": null,
+      "place": "Lesopark Letňany – Kbely",
+      "disciplines": [
+        "xco"
+      ],
+      "categories": [],
+      "overrides": {
+        "id": "d7d00714-3eca-4d2b-96f7-a5a7631fcdf0",
+        "fields": {
+          "name": "Pražský MTB pohár — 3. kolo Letňany/Kbely XCO",
+          "end_date": "2027-09-25",
+          "series_id": "c9988946-7c2a-44c9-b569-3b346bbf5891",
+          "start_date": "2027-09-25",
+          "location_id": "56205aab-86da-4df6-9686-8e602506b475",
+          "website_url": "https://prahamtb.cz/"
+        },
+        "event_id": "6252575f-ecaf-4f4d-86f2-7244553dd135",
+        "updated_at": "2026-09-28T18:18:29.475024+00:00",
+        "updated_by": "prazsky-mtb-pohar 2027 seed 2026-09-28",
+        "locked_fields": [
+          "name",
+          "start_date",
+          "end_date",
+          "location_id",
+          "website_url",
+          "series_id"
+        ]
+      },
+      "website": "https://prahamtb.cz/",
+      "registration": "https://prahamtb.cz/?p=7163"
+    },
+    {
+      "id": "697fbade-fa91-4801-89c9-e9df333b3394",
+      "name": "1/ BIKOVÉ ÚTERKY 2026",
+      "date": "2026-05-12",
+      "end": "2026-05-12",
+      "visibility": "hidden",
+      "status": "hidden",
+      "merged": null,
+      "place": "Trhová Kamenice",
+      "disciplines": [
+        "other"
+      ],
+      "categories": [],
+      "overrides": null,
+      "website": "https://www.sport-aktiv.cz",
+      "registration": null
+    },
+    {
+      "id": "70d48991-9f23-4116-ae13-dd721b1e4ca1",
+      "name": "Pražská padesátka 2026",
+      "date": "2026-09-19",
+      "end": "2026-09-19",
+      "visibility": "hidden",
+      "status": "hidden",
+      "merged": null,
+      "place": "Praha",
+      "disciplines": [
+        "xcm"
+      ],
+      "categories": [],
+      "overrides": null,
+      "website": "https://prazska50.cz/",
+      "registration": "https://prazska50.cz/stranka/registrace/"
+    },
+    {
+      "id": "77d3fcdd-cc6b-4f91-9d7d-f03541895084",
+      "name": "Cycling Paradise Sylt",
+      "date": "2026-08-29",
+      "end": "2026-08-29",
+      "visibility": "public",
+      "status": "completed",
+      "merged": null,
+      "place": "Wenningstedt-Braderup (Sylt)",
+      "disciplines": [
+        "road"
+      ],
+      "categories": [
+        {
+          "id": "886059c0-6e3a-4875-bd5d-841df30b81a0",
+          "name": "40 km",
+          "gender": null,
+          "age_max": null,
+          "age_min": null,
+          "audience": "mixed",
+          "event_id": "77d3fcdd-cc6b-4f91-9d7d-f03541895084",
+          "distance_km": 40,
+          "elevation_m": null
+        },
+        {
+          "id": "bda1927a-ac46-4a5a-9d1d-79e0c421f190",
+          "name": "65 km",
+          "gender": null,
+          "age_max": null,
+          "age_min": null,
+          "audience": "mixed",
+          "event_id": "77d3fcdd-cc6b-4f91-9d7d-f03541895084",
+          "distance_km": 65,
+          "elevation_m": null
+        },
+        {
+          "id": "ec628f74-246d-42b6-9107-bbdec591835d",
+          "name": "100 km",
+          "gender": null,
+          "age_max": null,
+          "age_min": null,
+          "audience": "mixed",
+          "event_id": "77d3fcdd-cc6b-4f91-9d7d-f03541895084",
+          "distance_km": 100,
+          "elevation_m": null
+        }
+      ],
+      "overrides": null,
+      "website": "https://cycling-paradise.com/cycling-event/",
+      "registration": "https://cycling-paradise.com/cycling-event/"
+    },
+    {
+      "id": "827c0cf7-1543-433a-957e-fe46d2028122",
+      "name": "ŠKODA MTB cyklomaratón Topoľčianky",
+      "date": "2026-06-27",
+      "end": "2026-06-27",
+      "visibility": "public",
+      "status": "completed",
+      "merged": null,
+      "place": "Topoľčianky",
+      "disciplines": [
+        "xcm"
+      ],
+      "categories": [],
+      "overrides": null,
+      "website": "https://www.cyklistikaszc.sk/kalendar/vysledky/202602e895876137a8c1fdbbbb4ba3.pdf",
+      "registration": null
+    },
+    {
+      "id": "85f1a788-d156-4d7f-a4d3-a494e7097496",
+      "name": "25. ročník Decathlon Cyklomaratonu opět v Hradci Králové",
+      "date": "2026-10-15",
+      "end": "2026-10-15",
+      "visibility": "hidden",
+      "status": "completed",
+      "merged": null,
+      "place": "Unknown",
+      "disciplines": [
+        "xcm"
+      ],
+      "categories": [],
+      "overrides": null,
+      "website": "https://www.cyklomaratontour.cz/clanky/25-rocnik-decathlon-cyklomaratonu-opet-v-hradci-kralove-734.html",
+      "registration": null
+    },
+    {
+      "id": "89b6b007-12b1-4049-9f23-b1586eb147f8",
+      "name": "Slavnostní večer",
+      "date": "2026-11-25",
+      "end": "2026-11-25",
+      "visibility": "hidden",
+      "status": "hidden",
+      "merged": null,
+      "place": "Lidový dům Kbely",
+      "disciplines": [
+        "xco"
+      ],
+      "categories": [],
+      "overrides": null,
+      "website": null,
+      "registration": null
+    },
+    {
+      "id": "9444658e-16f4-4498-ae02-3f34725a749c",
+      "name": "TROJMEZÍ",
+      "date": "2027-07-07",
+      "end": "2027-07-07",
+      "visibility": "public",
+      "status": "scheduled",
+      "merged": null,
+      "place": "Dolní Bousov",
+      "disciplines": [
+        "mtb",
+        "gravel"
+      ],
+      "categories": [],
+      "overrides": null,
+      "website": "https://bike-paradise.cz/",
+      "registration": "https://bike-paradise.cz/registrace/"
+    },
+    {
+      "id": "a73eb9a5-46de-4bbe-b9d7-1e141a026314",
+      "name": "V4",
+      "date": "2027-08-01",
+      "end": "2027-08-01",
+      "visibility": "hidden",
+      "status": "scheduled",
+      "merged": null,
+      "place": "Dolní Bousov",
+      "disciplines": [
+        "mtb"
+      ],
+      "categories": [],
+      "overrides": {
+        "id": "9d8d5a2c-b0a2-4a6f-a2fc-fb550e87ac1e",
+        "fields": {
+          "name": "V4",
+          "end_date": "2027-08-01",
+          "start_date": "2027-08-01"
+        },
+        "event_id": "a73eb9a5-46de-4bbe-b9d7-1e141a026314",
+        "updated_at": "2026-10-23T21:52:51.270189+00:00",
+        "updated_by": "czech 2027 csv seed 2026-10-23",
+        "locked_fields": [
+          "name",
+          "start_date",
+          "end_date"
+        ]
+      },
+      "website": "https://bike-paradise.cz/",
+      "registration": null
+    },
+    {
+      "id": "a9d311b6-fe42-4568-9265-27e5cb66265c",
+      "name": "Pražský MTB pohár — 1. kolo Motol XCC (Mistrovství Prahy XCC)",
+      "date": "2027-03-26",
+      "end": "2027-03-26",
+      "visibility": "public",
+      "status": "scheduled",
+      "merged": null,
+      "place": "Traily Motol",
+      "disciplines": [
+        "xcc"
+      ],
+      "categories": [],
+      "overrides": {
+        "id": "e8f788de-5be1-4a25-adcd-54d199391f5e",
+        "fields": {
+          "name": "Pražský MTB pohár — 1. kolo Motol XCC (Mistrovství Prahy XCC)",
+          "end_date": "2027-03-26",
+          "series_id": "c9988946-7c2a-44c9-b569-3b346bbf5891",
+          "start_date": "2027-03-26",
+          "location_id": "4d121da2-e5fe-44d0-9f32-7bf69341c957",
+          "website_url": "https://prahamtb.cz/"
+        },
+        "event_id": "a9d311b6-fe42-4568-9265-27e5cb66265c",
+        "updated_at": "2026-09-28T18:18:27.17823+00:00",
+        "updated_by": "prazsky-mtb-pohar 2027 seed 2026-09-28",
+        "locked_fields": [
+          "name",
+          "start_date",
+          "end_date",
+          "location_id",
+          "website_url",
+          "series_id"
+        ]
+      },
+      "website": "https://prahamtb.cz/",
+      "registration": "https://prahamtb.cz/?p=7163"
+    },
+    {
+      "id": "b0131799-67b4-42cd-8d55-a8fa98ac24f9",
+      "name": "Pražská padesátka 2026 - Memoriál Jana Hrubeše",
+      "date": "2026-09-19",
+      "end": "2026-09-19",
+      "visibility": "hidden",
+      "status": "hidden",
+      "merged": "f2db4bce-a186-4d11-aeed-13ddf0577bfc",
+      "place": "Praha",
+      "disciplines": [
+        "mtb"
+      ],
+      "categories": [],
+      "overrides": null,
+      "website": "https://prazska50.cz/",
+      "registration": "https://registrace.sportsoft.cz/webregistration.aspx?e=3446"
+    },
+    {
+      "id": "c2a505fe-484d-4277-ac67-a4a84d36be07",
+      "name": "Tour de Feminin",
+      "date": "2026-05-14",
+      "end": "2026-05-17",
+      "visibility": "public",
+      "status": "completed",
+      "merged": null,
+      "place": "Krásná Lípa",
+      "disciplines": [
+        "road"
+      ],
+      "categories": [],
+      "overrides": null,
+      "website": "https://www.tourdefeminin.com/cz/",
+      "registration": null
+    },
+    {
+      "id": "c3ee0ebf-ead8-44e3-a296-4c96421d05c3",
+      "name": "Pražský MTB pohár — 2. kolo Motol 2",
+      "date": "2026-04-12",
+      "end": "2026-04-12",
+      "visibility": "hidden",
+      "status": "hidden",
+      "merged": "29297e7a-d785-4311-b089-0d6050f6e4cf",
+      "place": "Praha — Motol 2",
+      "disciplines": [
+        "xco"
+      ],
+      "categories": [],
+      "overrides": null,
+      "website": "https://prahamtb.cz/?page_id=12",
+      "registration": null
+    },
+    {
+      "id": "cd9d6968-2b6f-421c-a53e-eda353edcac9",
+      "name": "Pražský MTB pohár — 3. kolo Letňany",
+      "date": "2026-05-16",
+      "end": "2026-05-16",
+      "visibility": "hidden",
+      "status": "hidden",
+      "merged": "542a618e-e3b9-42dc-9d8f-b8c3fee20068",
+      "place": "Praha — Letňany",
+      "disciplines": [
+        "xco"
+      ],
+      "categories": [],
+      "overrides": null,
+      "website": "https://prahamtb.cz/?page_id=12",
+      "registration": "https://sportt.cz/register/1532"
+    },
+    {
+      "id": "ce93409c-87ee-4886-8ff9-5a07000b0dc0",
+      "name": "Lost Ride",
+      "date": "2027-06-01",
+      "end": "2027-06-01",
+      "visibility": "public",
+      "status": "scheduled",
+      "merged": null,
+      "place": "Czechia",
+      "disciplines": [
+        "gravel"
+      ],
+      "categories": [],
+      "overrides": null,
+      "website": "https://lost-ride.cz/",
+      "registration": "https://lost-ride.cz/register"
+    },
+    {
+      "id": "d742b826-9382-4122-8dee-8687bb4d01b6",
+      "name": "5. MTBO Wernigerode/Harz",
+      "date": "2026-05-02",
+      "end": "2026-05-02",
+      "visibility": "public",
+      "status": "completed",
+      "merged": null,
+      "place": "Wernigerode ",
+      "disciplines": [
+        "mtb"
+      ],
+      "categories": [],
+      "overrides": null,
+      "website": "https://my.raceresult.com/371974/",
+      "registration": "https://my.raceresult.com/371974/"
+    },
+    {
+      "id": "d9cb07e7-66e5-423c-873c-37da2ab5f2b6",
+      "name": "Pražský MTB pohár — 4. kolo Kbely",
+      "date": "2026-05-17",
+      "end": "2026-05-17",
+      "visibility": "public",
+      "status": "completed",
+      "merged": null,
+      "place": "Praha — Kbely",
+      "disciplines": [
+        "mtb"
+      ],
+      "categories": [],
+      "overrides": {
+        "id": "f62faa52-3d3d-467b-93bd-1fc93a114b31",
+        "fields": {
+          "name": "Pražský MTB pohár — 4. kolo Kbely",
+          "end_date": "2026-05-17",
+          "series_id": "c9988946-7c2a-44c9-b569-3b346bbf5891",
+          "start_date": "2026-05-17"
+        },
+        "event_id": "d9cb07e7-66e5-423c-873c-37da2ab5f2b6",
+        "updated_at": "2026-09-17T06:43:53.761014+00:00",
+        "updated_by": "major series repair 2026-09-17",
+        "locked_fields": [
+          "name",
+          "start_date",
+          "end_date",
+          "series_id"
+        ]
+      },
+      "website": "https://prahamtb.cz/?page_id=12",
+      "registration": "https://sportt.cz/register/1533"
+    },
+    {
+      "id": "df4a6b29-fdf5-4bde-8b21-8768d4ed79b3",
+      "name": "Babinského bloudění 2026",
+      "date": "2026-11-21",
+      "end": "2026-11-21",
+      "visibility": "public",
+      "status": "scheduled",
+      "merged": null,
+      "place": "Ptýrov - Braňka",
+      "disciplines": [
+        "other"
+      ],
+      "categories": [],
+      "overrides": null,
+      "website": "https://www.sacbela.cz",
+      "registration": "https://www.sacbela.cz/propozice_sac.php?prop_zavod_sac=5"
+    },
+    {
+      "id": "e4b9b2d6-fb1e-48e4-b4e1-7b210d38cf10",
+      "name": "Rakovnické cyklování - MTBO",
+      "date": "2026-07-18",
+      "end": "2026-07-18",
+      "visibility": "public",
+      "status": "completed",
+      "merged": null,
+      "place": "Rakovník",
+      "disciplines": [
+        "other"
+      ],
+      "categories": [],
+      "overrides": null,
+      "website": "http://www.rakovnickecyklovani.cz",
+      "registration": null
+    },
+    {
+      "id": "e8ded1c2-70c2-4614-ac7c-ba126971592e",
+      "name": "Půl Paradise",
+      "date": "2027-08-21",
+      "end": "2027-08-21",
+      "visibility": "public",
+      "status": "scheduled",
+      "merged": null,
+      "place": "Máchalův mlýn",
+      "disciplines": [
+        "mtb"
+      ],
+      "categories": [],
+      "overrides": {
+        "id": "c1533a99-e60f-4876-a9d8-620cda3713c0",
+        "fields": {
+          "name": "Půl Paradise",
+          "end_date": "2027-08-21",
+          "start_date": "2027-08-21"
+        },
+        "event_id": "e8ded1c2-70c2-4614-ac7c-ba126971592e",
+        "updated_at": "2026-10-23T21:52:52.31789+00:00",
+        "updated_by": "czech 2027 csv seed 2026-10-23",
+        "locked_fields": [
+          "name",
+          "start_date",
+          "end_date"
+        ]
+      },
+      "website": "https://bike-paradise.cz/",
+      "registration": "https://bike-paradise.cz/registrace/"
+    },
+    {
+      "id": "f15a000c-b1e7-4bce-ac4d-678f939a4406",
+      "name": "Pražský MTB pohár — 1. kolo Motol 1",
+      "date": "2026-04-11",
+      "end": "2026-04-11",
+      "visibility": "hidden",
+      "status": "hidden",
+      "merged": "33580f77-35ed-42b2-842c-5d0f465671b1",
+      "place": "Praha — Motol 1",
+      "disciplines": [
+        "xco"
+      ],
+      "categories": [],
+      "overrides": null,
+      "website": "https://prahamtb.cz/?page_id=12",
+      "registration": null
+    },
+    {
+      "id": "f1689d8b-7147-4680-bd8d-f4df715c18e6",
+      "name": "Decathlon Cyklomaraton Hradec Králové",
+      "date": "2026-05-31",
+      "end": "2026-05-31",
+      "visibility": "public",
+      "status": "completed",
+      "merged": null,
+      "place": "HRADEC KRÁLOVÉ",
+      "disciplines": [
+        "xcm"
+      ],
+      "categories": [],
+      "overrides": null,
+      "website": "https://cyklomaratontour.cz/zavody/-310-cyklomaraton-hradec-kralove.html",
+      "registration": null
+    },
+    {
+      "id": "f1b1ad59-2f7f-4869-883d-56d87dd11b19",
+      "name": "Aimtec Open Race - Cyklomaraton Plzeň - Berounka Trails",
+      "date": "2026-05-23",
+      "end": "2026-05-23",
+      "visibility": "public",
+      "status": "completed",
+      "merged": null,
+      "place": "Plzeň, Doubravka - areál U sv. Jiří (Ke sv. Jiří 13, Plzeň)",
+      "disciplines": [
+        "xcm"
+      ],
+      "categories": [],
+      "overrides": null,
+      "website": "https://www.aimtecopenrace.cz",
+      "registration": "https://aimtecopenrace.cz/#ticketprice"
+    },
+    {
+      "id": "f1d40430-b0ae-4dcf-9b94-0288fd48e3b4",
+      "name": "Decathlon Cyklomaraton Hradec Králové",
+      "date": "2027-05-30",
+      "end": "2027-05-30",
+      "visibility": "public",
+      "status": "scheduled",
+      "merged": null,
+      "place": "Hradec Králové",
+      "disciplines": [
+        "xcm"
+      ],
+      "categories": [],
+      "overrides": {
+        "id": "0cceef60-b1ce-4cef-994a-ef24375d2122",
+        "fields": {
+          "name": "Decathlon Cyklomaraton Hradec Králové",
+          "end_date": "2027-05-30",
+          "start_date": "2027-05-30"
+        },
+        "event_id": "f1d40430-b0ae-4dcf-9b94-0288fd48e3b4",
+        "updated_at": "2026-10-23T21:52:49.55137+00:00",
+        "updated_by": "czech 2027 csv seed 2026-10-23",
+        "locked_fields": [
+          "name",
+          "start_date",
+          "end_date"
+        ]
+      },
+      "website": "https://www.cyklomaratontour.cz/clanky/25-rocnik-decathlon-cyklomaratonu-opet-v-hradci-kralove-734.html",
+      "registration": "https://www.eventreg.cz/"
+    },
+    {
+      "id": "f20ef423-3dc2-4841-b5cd-1bb84a91198f",
+      "name": "IV. MORAVA BIKE",
+      "date": "2026-06-13",
+      "end": "2026-06-14",
+      "visibility": "public",
+      "status": "completed",
+      "merged": null,
+      "place": "Dolní Morava",
+      "disciplines": [
+        "other"
+      ],
+      "categories": [],
+      "overrides": null,
+      "website": "https://moravaflow.cz/moravabike/",
+      "registration": "https://moravaflow.cz/moravabike/chci-jet/"
+    },
+    {
+      "id": "f264a69f-7498-4289-a6da-88782990238e",
+      "name": "4. MTBO Wernigerode/Harz",
+      "date": "2025-05-03",
+      "end": "2025-05-03",
+      "visibility": "public",
+      "status": "completed",
+      "merged": null,
+      "place": "Wernigerode ",
+      "disciplines": [
+        "mtb"
+      ],
+      "categories": [],
+      "overrides": null,
+      "website": "https://my.raceresult.com/319048/",
+      "registration": "https://my.raceresult.com/319048/"
+    },
+    {
+      "id": "f2889fe8-75d5-411d-aeb3-6f9f65d0a088",
+      "name": "Brdský Meandr",
+      "date": "2026-06-06",
+      "end": "2026-06-06",
+      "visibility": "public",
+      "status": "completed",
+      "merged": null,
+      "place": "Řevnice",
+      "disciplines": [
+        "xcm"
+      ],
+      "categories": [],
+      "overrides": null,
+      "website": null,
+      "registration": null
+    },
+    {
+      "id": "f2db4bce-a186-4d11-aeed-13ddf0577bfc",
+      "name": "Pražská padesátka 2026 - Memoriál Jana Hrubeše",
+      "date": "2026-09-19",
+      "end": "2026-09-19",
+      "visibility": "public",
+      "status": "completed",
+      "merged": null,
+      "place": "Praha",
+      "disciplines": [
+        "mtb"
+      ],
+      "categories": [],
+      "overrides": null,
+      "website": "https://cz.author.eu/maraton-tour/author-maraton-tour-2026",
+      "registration": "https://registrace.sportsoft.cz/webregistration.aspx?e=3446"
+    },
+    {
+      "id": "f55faa7a-569e-4e67-8290-e6e01079dde1",
+      "name": "Krakonošův cyklomaraton",
+      "date": "2026-06-13",
+      "end": "2026-06-13",
+      "visibility": "public",
+      "status": "completed",
+      "merged": null,
+      "place": "Trutnov",
+      "disciplines": [
+        "road"
+      ],
+      "categories": [],
+      "overrides": null,
+      "website": null,
+      "registration": null
+    },
+    {
+      "id": "fa689860-8868-4693-a505-c435b782b1e4",
+      "name": "DECATHLON CYKLOMARATON 2026",
+      "date": "2026-05-31",
+      "end": "2026-05-31",
+      "visibility": "public",
+      "status": "completed",
+      "merged": null,
+      "place": "HRADEC KRÁLOVÉ",
+      "disciplines": [
+        "xcm"
+      ],
+      "categories": [],
+      "overrides": null,
+      "website": "https://sport-base.eu/competitions/cmt-26",
+      "registration": null
+    },
+    {
+      "id": "fc12e248-22dc-4e0c-8d7d-e6fd3fe9e0af",
+      "name": "Pražský MTB pohár — 4. kolo Letňany/Kbely XCO (Mistrovství Prahy XCO)",
+      "date": "2027-09-26",
+      "end": "2027-09-26",
+      "visibility": "public",
+      "status": "scheduled",
+      "merged": null,
+      "place": "Lesopark Letňany – Kbely",
+      "disciplines": [
+        "xco"
+      ],
+      "categories": [],
+      "overrides": {
+        "id": "0079801b-1371-494e-8229-1cee59004da5",
+        "fields": {
+          "name": "Pražský MTB pohár — 4. kolo Letňany/Kbely XCO (Mistrovství Prahy XCO)",
+          "end_date": "2027-09-26",
+          "series_id": "c9988946-7c2a-44c9-b569-3b346bbf5891",
+          "start_date": "2027-09-26",
+          "location_id": "56205aab-86da-4df6-9686-8e602506b475",
+          "website_url": "https://prahamtb.cz/"
+        },
+        "event_id": "fc12e248-22dc-4e0c-8d7d-e6fd3fe9e0af",
+        "updated_at": "2026-09-28T18:18:30.017282+00:00",
+        "updated_by": "prazsky-mtb-pohar 2027 seed 2026-09-28",
+        "locked_fields": [
+          "name",
+          "start_date",
+          "end_date",
+          "location_id",
+          "website_url",
+          "series_id"
+        ]
+      },
+      "website": "https://prahamtb.cz/",
+      "registration": "https://prahamtb.cz/?p=7163"
+    }
+  ],
+  "candidates": [
+    {
+      "id": "0e13ed64-21e6-47d5-acef-4a6120efeea9",
+      "status": "pending",
+      "name": "ŠKODA CYKLOMARATÓN TOPOLČIANKY"
+    },
+    {
+      "id": "df880db5-363c-4737-a069-d736e2723a06",
+      "status": "waiting",
+      "name": "Pražská 50"
+    }
+  ],
+  "watches": [
+    {
+      "id": "01a09af8-200f-4406-a982-659e9c7928ae",
+      "url": "https://sumator.cz/race/mtb-sadecka-pila-15-8-2026?date_from=8-2026&date_to=8-2026&race_type_filter=xc,dh,event,road,xcm,mtbo,4x,cyclocross",
+      "status": "paused",
+      "added_by": "auto-same-domain"
+    },
+    {
+      "id": "1341d2eb-585a-42d4-9be8-5d9115d425d9",
+      "url": "https://prahamtb.cz/wp-content/uploads/2026/01/Prazsky-MTB-pohar-2026_casovy-program-1.kolo-XCC.pdf",
+      "status": "paused",
+      "added_by": "auto-same-domain"
+    },
+    {
+      "id": "1e6c6686-7a13-4aab-97ea-3680ce851781",
+      "url": "https://mtbs.cz/clanek/namestsky-cyklomaraton-2026-74985/kategorie/xcm",
+      "status": "paused",
+      "added_by": "auto-same-domain"
+    },
+    {
+      "id": "1e95aaa7-3b5d-484e-8417-bac9238bd5b7",
+      "url": "https://sumator.cz/race/casovka-3xtopcz-lysa-hora-9-8-2026?date_from=8-2026&date_to=8-2026&race_type_filter=xc,dh,event,road,xcm,mtbo,4x,cyclocross",
+      "status": "paused",
+      "added_by": "auto-same-domain"
+    },
+    {
+      "id": "2143814a-1362-4b49-81ee-fb6a1f0ac799",
+      "url": "https://www.cykloman.cz/zavody-a-akce/2026/cyklomaraton-hrebecske-dulni-stezky",
+      "status": "active",
+      "added_by": "auto-same-domain"
+    },
+    {
+      "id": "23833b08-a9c3-4208-92d7-ac0bc0582300",
+      "url": "https://sumator.cz/xc,dh,event,road,xcm,mtbo,cyclocross",
+      "status": "paused",
+      "added_by": "auto-same-domain"
+    },
+    {
+      "id": "27e25e07-6f15-4d59-8c04-b89e9c30f57a",
+      "url": "https://sumator.cz/race/decathlon-cyklomaraton-31-5-2026",
+      "status": "paused",
+      "added_by": "auto-same-domain"
+    },
+    {
+      "id": "298d2cb8-9d37-4930-86ce-6f038df8164d",
+      "url": "https://sumator.cz/cup/prazsky-mtb-pohar-2026",
+      "status": "active",
+      "added_by": "auto-same-domain"
+    },
+    {
+      "id": "2d63ac1f-f01c-4395-ae14-228c46cded03",
+      "url": "https://www.cyklomaratontour.cz/clanky/decathlon-cyklomaraton-hradec-kralove-695.html",
+      "status": "active",
+      "added_by": "auto-same-domain"
+    },
+    {
+      "id": "31d69f6c-566f-4c56-b163-9eebcc31477e",
+      "url": "https://cykloman.cz/zavody-a-akce/2026/cyklomaraton-hrebecske-dulni-stezky/vysledky-novy/2842",
+      "status": "active",
+      "added_by": "auto-same-domain"
+    },
+    {
+      "id": "32315463-467e-4292-9b20-0274774e30a4",
+      "url": "https://mtbs.cz/clanek/spoke-maraton-74732/kategorie/mtbo",
+      "status": "paused",
+      "added_by": "auto-same-domain"
+    },
+    {
+      "id": "3254fc93-2568-4f1b-b574-dcb989e8329b",
+      "url": "https://mtbs.cz/clanek/1-bikove-uterky-2026-75039/kategorie/mtbo",
+      "status": "paused",
+      "added_by": "auto-same-domain"
+    },
+    {
+      "id": "332a076f-e054-4fe8-bce3-e0d6fe1758b5",
+      "url": "https://www.cyklomaratontour.cz/",
+      "status": "active",
+      "added_by": "admin"
+    },
+    {
+      "id": "3e1d111e-b4b3-4779-8287-15ce364ce937",
+      "url": "https://sumator.cz/race/fox-grom-enduro-bikepark-peklak-23-8-2026?date_from=8-2026&date_to=8-2026&race_type_filter=xc,dh,event,road,xcm,mtbo,4x,cyclocross",
+      "status": "paused",
+      "added_by": "auto-same-domain"
+    },
+    {
+      "id": "48802487-1f9b-41a6-bf68-4f21678fb6d2",
+      "url": "https://www.cyklomaratontour.cz/post.html",
+      "status": "active",
+      "added_by": "auto-same-domain"
+    },
+    {
+      "id": "492bf106-5ea1-4340-9c59-c8d9ff2dce82",
+      "url": "https://sumator.cz/race/manitou-zelezne-hory-15-8-2026?date_from=8-2026&date_to=8-2026&race_type_filter=xc,dh,event,road,xcm,mtbo,4x,cyclocross",
+      "status": "paused",
+      "added_by": "auto-same-domain"
+    },
+    {
+      "id": "4f7075e6-ed2f-4a13-80af-ccefd5a9b2b6",
+      "url": "https://www.cyklomaratontour.cz/clanky/25-rocnik-decathlon-cyklomaratonu-opet-v-hradci-kralove-734.html",
+      "status": "active",
+      "added_by": "auto-same-domain"
+    },
+    {
+      "id": "4fa0cddf-9162-44b2-bb30-78a36aa1020a",
+      "url": "https://sumator.cz/race/tour-de-feminin-14-5-2026",
+      "status": "paused",
+      "added_by": "auto-same-domain"
+    },
+    {
+      "id": "520ee8d4-a187-4fcd-be4f-6c3131f42e65",
+      "url": "https://sumator.cz/race/cp-vesec-22-8-2026?date_from=8-2026&date_to=8-2026&race_type_filter=xc,dh,event,road,xcm,mtbo,4x,cyclocross",
+      "status": "paused",
+      "added_by": "auto-same-domain"
+    },
+    {
+      "id": "524973b0-6726-4e21-a8fd-f18181dfff36",
+      "url": "https://www.cyklomaratontour.cz/clanky/zaregistruj-se-hned-ted-kazdy-zavodnik-v-cili-dostava-krasnou-medaili-697.html",
+      "status": "active",
+      "added_by": "auto-same-domain"
+    },
+    {
+      "id": "595af0fd-e23d-4ae6-9e91-2885053656a4",
+      "url": "https://sumator.cz/race/cernokostelecky-bajk-15-8-2026?date_from=8-2026&date_to=8-2026&race_type_filter=xc,dh,event,road,xcm,mtbo,4x,cyclocross",
+      "status": "paused",
+      "added_by": "auto-same-domain"
+    },
+    {
+      "id": "5a49e89f-9665-426b-ae6a-e44d92dbe9bc",
+      "url": "https://sumator.cz/race/cesky-pohar-xco-ostrava-15-8-2026?date_from=8-2026&date_to=8-2026&race_type_filter=xc,dh,event,road,xcm,mtbo,4x,cyclocross",
+      "status": "paused",
+      "added_by": "auto-same-domain"
+    },
+    {
+      "id": "5ce5720e-de15-4b77-8510-de98f7acce4d",
+      "url": "https://cykloman.cz/zavody-a-akce/2026/cyklomaraton-hrebecske-dulni-stezky",
+      "status": "active",
+      "added_by": "auto-same-domain"
+    },
+    {
+      "id": "628be9ba-a3bd-4dfa-83df-45f93cb33511",
+      "url": "https://prahamtb.cz/wp-content/uploads/2026/01/Prazsky-MTB-pohar-2026_casovy-program-1.kolo-XCC-1.pdf",
+      "status": "paused",
+      "added_by": "auto-same-domain"
+    },
+    {
+      "id": "648029b7-be03-4ebb-8aa4-715b417e9e64",
+      "url": "https://lost-ride.cz/",
+      "status": "active",
+      "added_by": "admin"
+    },
+    {
+      "id": "69cc2760-a934-4007-a546-0e244abfad6a",
+      "url": "https://sumator.cz/xc,dh,event,road,xcm,mtbo,4x",
+      "status": "paused",
+      "added_by": "auto-same-domain"
+    },
+    {
+      "id": "6acad921-9a4e-47af-868d-92d989aeb4d3",
+      "url": "https://sumator.cz/race/lesna-9-8-2026?date_from=8-2026&date_to=8-2026&race_type_filter=xc,dh,event,road,xcm,mtbo,4x,cyclocross",
+      "status": "paused",
+      "added_by": "auto-same-domain"
+    },
+    {
+      "id": "6b502833-3db8-4f53-8b7a-ce0b193d045a",
+      "url": "http://bikeri.cz/serial/prazsky-mtb-pohar",
+      "status": "active",
+      "added_by": "auto-same-domain"
+    },
+    {
+      "id": "6ea3aff3-27f5-401f-af94-cfc72d3f0294",
+      "url": "https://sumator.cz/xc,dh,event,road,mtbo,4x,cyclocross",
+      "status": "paused",
+      "added_by": "auto-same-domain"
+    },
+    {
+      "id": "6f74ff83-2927-4e76-9033-770830a5e102",
+      "url": "https://sumator.cz/race/kolem-posazavi-2-8-2026?date_from=8-2026&date_to=8-2026&race_type_filter=xc,dh,event,road,xcm,mtbo,4x,cyclocross",
+      "status": "paused",
+      "added_by": "auto-same-domain"
+    },
+    {
+      "id": "718659fc-c060-46bf-8a97-df594d1f0233",
+      "url": "https://mtbs.cz/clanek/rakovnicke-cyklovani-mtbo-75181/kategorie/mtbo",
+      "status": "paused",
+      "added_by": "auto-same-domain"
+    },
+    {
+      "id": "726176f4-0c82-4edc-872e-df9530510a76",
+      "url": "https://sumator.cz/race/susicky-high-point-galaxy-mtb-maraton-22-8-2026?date_from=8-2026&date_to=8-2026&race_type_filter=xc,dh,event,road,xcm,mtbo,4x,cyclocross",
+      "status": "paused",
+      "added_by": "auto-same-domain"
+    },
+    {
+      "id": "737ad0c8-355a-4afa-a978-40355eceecb8",
+      "url": "https://cykloman.cz/zavody-a-akce/2026/cyklomaraton-hrebecske-dulni-stezky/vysledky",
+      "status": "active",
+      "added_by": "auto-same-domain"
+    },
+    {
+      "id": "75373f93-80b2-4f39-96f9-1f580bbabfdb",
+      "url": "https://sumator.cz/xc,dh,road,xcm,mtbo,4x,cyclocross",
+      "status": "paused",
+      "added_by": "auto-same-domain"
+    },
+    {
+      "id": "76ecbc98-5b13-4ce5-8bb2-f5ee65ed4dc5",
+      "url": "https://sumator.cz/dh,event,road,xcm,mtbo,4x,cyclocross",
+      "status": "paused",
+      "added_by": "auto-same-domain"
+    },
+    {
+      "id": "78679930-5411-4dd4-a845-6ea40332a1f1",
+      "url": "https://sumator.cz/race/o-cenu-rapotina-9-8-2026?date_from=8-2026&date_to=8-2026&race_type_filter=xc,dh,event,road,xcm,mtbo,4x,cyclocross",
+      "status": "paused",
+      "added_by": "auto-same-domain"
+    },
+    {
+      "id": "80a760b7-2a77-4609-921e-09267eb60472",
+      "url": "https://www.cyklomaratontour.cz/partneri.html",
+      "status": "active",
+      "added_by": "auto-same-domain"
+    },
+    {
+      "id": "82c96e8e-ae8e-4ac7-97e1-3ae9cfc5cfbc",
+      "url": "https://mtbs.cz/clanek/satovska-padesatka-74849/kategorie/mtbo",
+      "status": "paused",
+      "added_by": "auto-same-domain"
+    },
+    {
+      "id": "89707c07-adef-4d5b-81e0-50552f033d94",
+      "url": "https://mtbs.cz/clanek/netradicni-scorelauf-brdy-2026-75369/kategorie/mtbo",
+      "status": "paused",
+      "added_by": "auto-same-domain"
+    },
+    {
+      "id": "97110fe7-cc90-4443-b89a-bf7065a08dc6",
+      "url": "https://sumator.cz/race/krakonosuv-cyklomaraton-13-6-2026",
+      "status": "paused",
+      "added_by": "auto-same-domain"
+    },
+    {
+      "id": "9a92ee06-2706-4df9-a9ac-b4204cf1e927",
+      "url": "https://prahamtb.cz/wp-content/uploads/2025/02/Prazsky-MTB-pohar-2025_casovy-program-1.kolo-XCC-1.pdf",
+      "status": "paused",
+      "added_by": "auto-same-domain"
+    },
+    {
+      "id": "9b33ecd5-6e68-4c54-890a-3b9f82b76b60",
+      "url": "https://bike-paradise.cz/",
+      "status": "active",
+      "added_by": "admin"
+    },
+    {
+      "id": "a522c65f-639b-4a18-bc34-f1f08817424d",
+      "url": "https://sumator.cz/race/kramolinske-peklo-23-8-2026?date_from=8-2026&date_to=8-2026&race_type_filter=xc,dh,event,road,xcm,mtbo,4x,cyclocross",
+      "status": "paused",
+      "added_by": "auto-same-domain"
+    },
+    {
+      "id": "aab13105-594c-4ab0-a187-fa1e610e78b4",
+      "url": "https://sumator.cz/xc,dh,event,xcm,mtbo,4x,cyclocross",
+      "status": "paused",
+      "added_by": "auto-same-domain"
+    },
+    {
+      "id": "abbbbcf0-13d9-461a-b712-619fcd613693",
+      "url": "https://sumator.cz/cup/prazsky-mtb-pohar-2027",
+      "status": "active",
+      "added_by": "season-successor"
+    },
+    {
+      "id": "afccf49a-5d62-430e-8863-cf583497d9fb",
+      "url": "https://sumator.cz/race/povltavsky-bikersky-pohar-treti-letni-kriterium-horskych-kol-9-8-2026?date_from=8-2026&date_to=8-2026&race_type_filter=xc,dh,event,road,xcm,mtbo,4x,cyclocross",
+      "status": "paused",
+      "added_by": "auto-same-domain"
+    },
+    {
+      "id": "b20b13cc-cb56-4ed9-a481-fb60affbb347",
+      "url": "https://prahamtb.cz/?page_id=12",
+      "status": "active",
+      "added_by": "agent"
+    },
+    {
+      "id": "b20dfa49-29b1-477c-8cb9-f04204119a33",
+      "url": "https://sumator.cz/race/energotis-22-8-2026?date_from=8-2026&date_to=8-2026&race_type_filter=xc,dh,event,road,xcm,mtbo,4x,cyclocross",
+      "status": "paused",
+      "added_by": "auto-same-domain"
+    },
+    {
+      "id": "b501900c-d71a-4e73-8ce1-310762c38f85",
+      "url": "https://mtbs.cz/clanek/decathlon-cyklomaraton-hradec-kralove-74606/kategorie/xcm",
+      "status": "paused",
+      "added_by": "auto-same-domain"
+    },
+    {
+      "id": "bcfbc9ab-c6f9-4b75-8a9a-2f68e6b34fbf",
+      "url": "https://sumator.cz/race/zlivsky-cyklomaraton-8-5-2026",
+      "status": "paused",
+      "added_by": "auto-same-domain"
+    },
+    {
+      "id": "bf2dc7c9-4b62-4251-9855-266d5103136e",
+      "url": "https://www.cyklomaratontour.cz/clanky/detske-zavody-nn-kids-race-696.html",
+      "status": "active",
+      "added_by": "auto-same-domain"
+    },
+    {
+      "id": "bfd6ce36-3730-49ec-bbad-a0f32577fdc0",
+      "url": "https://mtbs.cz/clanek/aimtec-open-race-cyklomaraton-plzen-berounka-trails-75065/kategorie/xcm",
+      "status": "paused",
+      "added_by": "auto-same-domain"
+    },
+    {
+      "id": "c568a898-0559-47f8-9d72-9d9532b3fd53",
+      "url": "https://prahamtb.cz/wp-content/uploads/2025/02/Prazsky-MTB-pohar-2025_casovy-program-1.kolo-XCC.pdf",
+      "status": "paused",
+      "added_by": "auto-same-domain"
+    },
+    {
+      "id": "c7ed486a-1fd6-45f7-a80d-9562faec5beb",
+      "url": "https://www.cyklomaratontour.cz/clanky.html",
+      "status": "active",
+      "added_by": "auto-same-domain"
+    },
+    {
+      "id": "cb930c0b-eba2-4c81-bedf-0399afce8c56",
+      "url": "https://sumator.cz/xc,event,road,xcm,mtbo,4x,cyclocross",
+      "status": "paused",
+      "added_by": "auto-same-domain"
+    },
+    {
+      "id": "cedddad9-3217-4a46-ab91-ce29ff949921",
+      "url": "https://www.cykloman.cz/zavody-a-akce/2026/cyklomaraton-hrebecske-dulni-stezky/vysledky",
+      "status": "active",
+      "added_by": "auto-same-domain"
+    },
+    {
+      "id": "d4c4155a-d63f-435f-a0b7-36a3f804ef8e",
+      "url": "https://krakonosuvcyklomaraton.cz/",
+      "status": "active",
+      "added_by": "admin"
+    },
+    {
+      "id": "d905b22f-2327-41a7-a4b4-ef74349b69dc",
+      "url": "https://mtbs.cz/clanek/vinarska-50-74799/kategorie/mtbo",
+      "status": "paused",
+      "added_by": "auto-same-domain"
+    },
+    {
+      "id": "e26ebedd-3765-4a12-8fc9-6927d3cddb29",
+      "url": "https://sumator.cz/race/svincice-22-8-2026?date_from=8-2026&date_to=8-2026&race_type_filter=xc,dh,event,road,xcm,mtbo,4x,cyclocross",
+      "status": "paused",
+      "added_by": "auto-same-domain"
+    },
+    {
+      "id": "e6e0d70e-f079-4fa7-a17a-a5a96c66fef7",
+      "url": "https://sumator.cz/race/cez-karlovy-vary-8-8-2026?date_from=8-2026&date_to=8-2026&race_type_filter=xc,dh,event,road,xcm,mtbo,4x,cyclocross",
+      "status": "paused",
+      "added_by": "auto-same-domain"
+    },
+    {
+      "id": "e79690ed-ad5d-4912-9329-1920e4b1dac3",
+      "url": "https://sumator.cz/race/namestsky-cyklomaraton-8-5-2026",
+      "status": "paused",
+      "added_by": "auto-same-domain"
+    },
+    {
+      "id": "ebf8a490-eedb-4560-9084-9820da5f9b3a",
+      "url": "https://mtbs.cz/clanek/head-bike-maraton-slezska-harta-2026-74922/kategorie/mtbo",
+      "status": "paused",
+      "added_by": "auto-same-domain"
+    },
+    {
+      "id": "eebecf3e-8dcf-43be-9c93-f7ee6f9850f8",
+      "url": "https://mtbs.cz/clanek/morava-bike-75222/kategorie/mtbo",
+      "status": "paused",
+      "added_by": "auto-same-domain"
+    },
+    {
+      "id": "f0e25aed-ae7a-4508-bc1c-7beee046a8ab",
+      "url": "https://sumator.cz/race/suchy-vrch-15-8-2026?date_from=8-2026&date_to=8-2026&race_type_filter=xc,dh,event,road,xcm,mtbo,4x,cyclocross",
+      "status": "paused",
+      "added_by": "auto-same-domain"
+    },
+    {
+      "id": "f21643e8-5d06-4831-b36f-7befe9026cd2",
+      "url": "https://www.cykloman.cz/zavody-a-akce/2026/cyklomaraton-hrebecske-dulni-stezky/vysledky-novy/3489",
+      "status": "active",
+      "added_by": "auto-same-domain"
+    },
+    {
+      "id": "f9d58385-b5d3-40e1-9b45-bf4cf4435fc1",
+      "url": "https://sumator.cz/race/xc-hyncice-22-8-2026?date_from=8-2026&date_to=8-2026&race_type_filter=xc,dh,event,road,xcm,mtbo,4x,cyclocross",
+      "status": "paused",
+      "added_by": "auto-same-domain"
+    },
+    {
+      "id": "fb68a83a-8b27-417e-83b7-17fc0728e722",
+      "url": "https://sumator.cz/race/pohar-drahanske-vrchoviny-boskovice-1-8-2026?date_from=8-2026&date_to=8-2026&race_type_filter=xc,dh,event,road,xcm,mtbo,4x,cyclocross",
+      "status": "paused",
+      "added_by": "auto-same-domain"
+    },
+    {
+      "id": "fcbf5727-a190-419d-a593-7e0f46fe7e0a",
+      "url": "https://sumator.cz/race/galaxy-cyklosvec-kriterium-hradiste-9-8-2026?date_from=8-2026&date_to=8-2026&race_type_filter=xc,dh,event,road,xcm,mtbo,4x,cyclocross",
+      "status": "paused",
+      "added_by": "auto-same-domain"
+    },
+    {
+      "id": "ff85ac90-b4f1-4df3-9c07-b22d74d42848",
+      "url": "https://sumator.cz/race/klatovy-cykloservis-malat-casovka-15-8-2026?date_from=8-2026&date_to=8-2026&race_type_filter=xc,dh,event,road,xcm,mtbo,4x,cyclocross",
+      "status": "paused",
+      "added_by": "auto-same-domain"
+    }
+  ],
+  "links": [
+    {
+      "id": "0e73524b-e424-4b7f-9466-713253c4dfb6",
+      "url": "https://cyklocajka.sk/29-08-2026-presovsky-cyklomaraton",
+      "from_watched_url_id": "9ee2f4c5-b671-4f02-bdbf-052df059479d",
+      "status": "ignored",
+      "hint_kind": "race",
+      "created_at": "2026-08-14T09:56:37.492701+00:00"
+    },
+    {
+      "id": "2199903b-31ae-4c27-8904-dd152cff887a",
+      "url": "https://pretekaj.sk/sk/vysledky/ondavskycyklomaraton/2236",
+      "from_watched_url_id": "0253a57b-efbf-401e-b94a-69046383275b",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-23T20:53:51.199952+00:00"
+    },
+    {
+      "id": "e23ad2fa-fcee-4735-a3d4-832f9f7c8231",
+      "url": "https://www.sportovniservis.cz/wordpress/wp-content/uploads/2024/04/Prazsky-MTB-pohar-1.kolo-6-4-2024-Startovni-listina-casovka.pdf",
+      "from_watched_url_id": "b20b13cc-cb56-4ed9-a481-fb60affbb347",
+      "status": "ignored",
+      "hint_kind": "race",
+      "created_at": "2026-08-14T06:54:05.110637+00:00"
+    },
+    {
+      "id": "f10b73eb-de21-4ff9-9873-42f407e55477",
+      "url": "https://krakonosuvcyklomaraton.cz",
+      "from_watched_url_id": "595fbc46-f8ec-46be-815b-5f5436501d7c",
+      "status": "ignored",
+      "hint_kind": "race",
+      "created_at": "2026-08-13T19:45:40.544153+00:00"
+    }
+  ]
+}

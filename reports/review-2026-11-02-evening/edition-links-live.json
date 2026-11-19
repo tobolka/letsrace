@@ -1,0 +1,35 @@
+{
+  "at": "2026-11-02T19:35:04.293Z",
+  "commit": "861b88b5",
+  "deployment": "READY",
+  "checks": [
+    {
+      "path": "/cs/zavod/4x-pro-tour-jbc-4x-revelations-2026",
+      "status": 200,
+      "heading": "Další ročníky",
+      "href": "/cs/zavod/jbc-4x-revelations-2027",
+      "date": "2027-07-09"
+    },
+    {
+      "path": "/cs/zavod/jbc-4x-revelations-2027",
+      "status": 200,
+      "heading": "Předchozí ročníky",
+      "href": "/cs/zavod/4x-pro-tour-jbc-4x-revelations-2026",
+      "date": "2026-07-10"
+    },
+    {
+      "path": "/en/race/4x-pro-tour-jbc-4x-revelations-2026",
+      "status": 200,
+      "heading": "Later editions",
+      "href": "/en/race/jbc-4x-revelations-2027",
+      "date": "2027-07-09"
+    },
+    {
+      "path": "/en/race/jbc-4x-revelations-2027",
+      "status": 200,
+      "heading": "Previous editions",
+      "href": "/en/race/4x-pro-tour-jbc-4x-revelations-2026",
+      "date": "2026-07-10"
+    }
+  ]
+}

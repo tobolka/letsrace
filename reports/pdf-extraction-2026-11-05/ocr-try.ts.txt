@@ -1,0 +1,8 @@
+import fs from "node:fs"; import { pdfText } from "@/lib/catalog/regulation-ages";
+async function main() {
+const SP = process.argv[2]; const rows = JSON.parse(fs.readFileSync(`${SP}/pdf-compare.json`, "utf8")).filter((r: {kind?: string}) => r.kind && r.kind !== "text");
+const out = [];
+for (const r of rows) { const t0 = Date.now(); const text = await pdfText(new Uint8Array(fs.readFileSync(r.file))).catch((e: Error) => `ERR ${e.message}`); out.push({ name: r.name, start: r.start, url: r.url, pages: r.pages, ms: Date.now() - t0, text }); console.log(r.pages, "pages", Date.now() - t0, "ms", text.length, "chars", r.name.slice(0, 40)); }
+fs.writeFileSync(`${SP}/ocr-out.json`, JSON.stringify(out, null, 1));
+}
+main();

@@ -1,0 +1,263 @@
+[
+  {
+    "event": {
+      "externalId": "racetime-181",
+      "name": "Humenský MTB maratón Singletracky Hubková 2027",
+      "startDate": "2027-06-19",
+      "placeText": "Námestie Slobody Humenné (pred MsKS)",
+      "countryHint": "SK",
+      "discipline": [
+        "mtb"
+      ],
+      "sourceUrl": "https://racetime.sk/terminovka",
+      "confidence": 0.95,
+      "evidence": {
+        "quote": "<article class=\"rt-term-calendar-item\" data-rt-calendar-event=\"\" data-event-id=\"181\" data-open=\"0\" data-search=\"Humenský MTB maratón Singletracky Hubková 2027\n Námestie Slobody Humenné (pred MsKS) MTB  SCK - Slovenský cykloklub Humenné\">\n\t\t\t\t\t\t\t\t<time class=\"rt-term-calendar-date\" datetime=\"2027-06-19\">\n\t\t\t\t\t\t\t\t\t<strong>19</strong>\n\t\t\t\t\t\t\t\t\t<span>JÚN</span>\n\t\t\t\t\t\t\t\t\t<small>Sobota</small>\n\t\t\t\t\t\t\t\t\t<span class=\"rt-term-calendar-logo\"><img src=\"https://racetime.sk/uploads/optimized/69e6a5818fa84027-499.webp\" srcset=\"https://racetime.sk/uploads/optimized/69e6a5818fa84027-80.webp 80w, https://racetime.sk/uploads/optimized/69e6a5818fa84027-160.webp 160w, https://racetime.sk/uploads/optimized/69e6a5818fa84027-240.webp 240w, https://racetime.sk/uploads/optimized/69e6a5818fa84027-320.webp 320w, https://racetime.sk/uploads/optimized/69e6a5818fa84027-480.webp 480w, https://racetime.sk/uploads/optimized/69e6a5818fa84027-499.webp 499w\" sizes=\"70px\" width=\"499\" height=\"500\" alt=\"Logo SCK - Slovenský cykloklub Humenné\" loading=\"lazy\" decoding=\"async\" onerror=\"this.parentNode.hidden=true\"></span>\t\t\t\t\t\t\t\t</time>\n\t\t\t\t\t\t\t\t<div class=\"rt-term-calendar-main\">\n\t\t\t\t\t\t\t\t\t<div class=\"rt-term-calendar-tags\">\n\t\t\t\t\t\t\t\t\t\t<span class=\"rt-term-status waiting\"><i class=\"fas fa-circle\" aria-hidden=\"true\"></i> Pripravujeme</span>\n\t\t\t\t\t\t\t\t\t\t<span class=\"rt-term-sport\">MTB</span>\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t<h3>Humenský MTB maratón Singletracky Hubková 2027</h3>\n\t\t\t\t\t\t\t\t\t<p class=\"rt-term-place\"><i class=\"fas fa-map-marker-alt\" aria-hidden=\"true\"></i> Námestie Slobody Humenné (pred MsKS)</p>\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"rt-term-calendar-meta\">\n\t\t\t\t\t\t\t\t\t\t\t<span><i class=\"fas fa-users\" aria-hidden=\"true\"></i> 0 registrovaných</span>\n\t\t\t\t\t\t\t\t\t\t\t<span><i class=\"fas fa-credit-card\" aria-hidden=\"true\"></i> 0 uhradených</span>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\n\t\t\t\t\t\t\t\t<div class=\"rt-term-calendar-actions\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<span class=\"rt-term-detail-pending\">Detail pripravujeme</span>\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t</article>",
+        "sourceUrl": "https://racetime.sk/terminovka",
+        "method": "structured_calendar",
+        "version": "racetime-v1"
+      }
+    },
+    "authority": "official",
+    "originals": [
+      "f313d8ee-a38f-4c4a-a2b2-218f055d7108"
+    ],
+    "reason": "Fresh structured timing-operator schedule states this exact cycling event, date and Slovak venue. Public Slovak catalogue identity review performed; Banské is an existing hidden CZ-misclassified edition, explicitly corrected from the timing source before reviewed continuation."
+  },
+  {
+    "event": {
+      "externalId": "racetime-184",
+      "name": "12. ročník Ondavský cyklomaratón",
+      "startDate": "2027-07-18",
+      "placeText": "Námestie SNP Stropkov",
+      "countryHint": "SK",
+      "discipline": [
+        "mtb"
+      ],
+      "sourceUrl": "https://racetime.sk/terminovka",
+      "confidence": 0.95,
+      "evidence": {
+        "quote": "<article class=\"rt-term-calendar-item\" data-rt-calendar-event=\"\" data-event-id=\"184\" data-open=\"0\" data-search=\"12. ročník Ondavský cyklomaratón Námestie SNP Stropkov  MTB MTB Liga Prešovského kraja Cyklistická liga Stropkov\">\n\t\t\t\t\t\t\t\t<time class=\"rt-term-calendar-date\" datetime=\"2027-07-18\">\n\t\t\t\t\t\t\t\t\t<strong>18</strong>\n\t\t\t\t\t\t\t\t\t<span>JÚL</span>\n\t\t\t\t\t\t\t\t\t<small>Nedeľa</small>\n\t\t\t\t\t\t\t\t\t<span class=\"rt-term-calendar-logo\"><img src=\"https://racetime.sk/uploads/optimized/01d0650e1a149c7f-400.webp\" srcset=\"https://racetime.sk/uploads/optimized/01d0650e1a149c7f-80.webp 80w, https://racetime.sk/uploads/optimized/01d0650e1a149c7f-160.webp 160w, https://racetime.sk/uploads/optimized/01d0650e1a149c7f-240.webp 240w, https://racetime.sk/uploads/optimized/01d0650e1a149c7f-320.webp 320w, https://racetime.sk/uploads/optimized/01d0650e1a149c7f-400.webp 400w\" sizes=\"70px\" width=\"400\" height=\"400\" alt=\"Logo Cyklistická liga Stropkov\" loading=\"lazy\" decoding=\"async\" onerror=\"this.parentNode.hidden=true\"></span>\t\t\t\t\t\t\t\t</time>\n\t\t\t\t\t\t\t\t<div class=\"rt-term-calendar-main\">\n\t\t\t\t\t\t\t\t\t<div class=\"rt-term-calendar-tags\">\n\t\t\t\t\t\t\t\t\t\t<span class=\"rt-term-status waiting\"><i class=\"fas fa-circle\" aria-hidden=\"true\"></i> Pripravujeme</span>\n\t\t\t\t\t\t\t\t\t\t<span class=\"rt-term-sport\">MTB</span>\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t<h3>12. ročník Ondavský cyklomaratón</h3>\n\t\t\t\t\t\t\t\t\t<p class=\"rt-term-place\"><i class=\"fas fa-map-marker-alt\" aria-hidden=\"true\"></i> Námestie SNP Stropkov </p>\t\t\t\t\t\t\t\t\t<a class=\"rt-term-league-chip\" href=\"https://racetime.sk/liga/mtb-liga-presovskeho-kraja\"><i class=\"fas fa-trophy\" aria-hidden=\"true\"></i> MTB Liga Prešovského kraja</a>\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"rt-term-calendar-meta\">\n\t\t\t\t\t\t\t\t\t\t\t<span><i class=\"fas fa-users\" aria-hidden=\"true\"></i> 0 registrovaných</span>\n\t\t\t\t\t\t\t\t\t\t\t<span><i class=\"fas fa-credit-card\" aria-hidden=\"true\"></i> 0 uhradených</span>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\n\t\t\t\t\t\t\t\t<div class=\"rt-term-calendar-actions\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<span class=\"rt-term-detail-pending\">Detail pripravujeme</span>\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t</article>",
+        "sourceUrl": "https://racetime.sk/terminovka",
+        "method": "structured_calendar",
+        "version": "racetime-v1"
+      }
+    },
+    "authority": "official",
+    "originals": [
+      "d0c342d9-aa10-422b-981c-fced5eb7bb96"
+    ],
+    "reason": "Fresh structured timing-operator schedule states this exact cycling event, date and Slovak venue. Public Slovak catalogue identity review performed; Banské is an existing hidden CZ-misclassified edition, explicitly corrected from the timing source before reviewed continuation."
+  },
+  {
+    "event": {
+      "externalId": "racetime-176",
+      "name": "4. ročník Novoveský pojazd",
+      "startDate": "2027-07-31",
+      "placeText": "Ruská Nová Ves, FUTBALOVÉ IHRISKO",
+      "countryHint": "SK",
+      "discipline": [
+        "mtb"
+      ],
+      "sourceUrl": "https://racetime.sk/terminovka",
+      "confidence": 0.95,
+      "evidence": {
+        "quote": "<article class=\"rt-term-calendar-item\" data-rt-calendar-event=\"\" data-event-id=\"176\" data-open=\"0\" data-search=\"4. ročník Novoveský pojazd Ruská Nová Ves, FUTBALOVÉ IHRISKO MTB  Novoveský pojazd\">\n\t\t\t\t\t\t\t\t<time class=\"rt-term-calendar-date\" datetime=\"2027-07-31\">\n\t\t\t\t\t\t\t\t\t<strong>31</strong>\n\t\t\t\t\t\t\t\t\t<span>JÚL</span>\n\t\t\t\t\t\t\t\t\t<small>Sobota</small>\n\t\t\t\t\t\t\t\t\t<span class=\"rt-term-calendar-logo\"><img src=\"https://racetime.sk/uploads/optimized/856c6fe114e8b73d-434.webp\" srcset=\"https://racetime.sk/uploads/optimized/856c6fe114e8b73d-80.webp 80w, https://racetime.sk/uploads/optimized/856c6fe114e8b73d-160.webp 160w, https://racetime.sk/uploads/optimized/856c6fe114e8b73d-240.webp 240w, https://racetime.sk/uploads/optimized/856c6fe114e8b73d-320.webp 320w, https://racetime.sk/uploads/optimized/856c6fe114e8b73d-434.webp 434w\" sizes=\"70px\" width=\"434\" height=\"192\" alt=\"Logo Novoveský pojazd\" loading=\"lazy\" decoding=\"async\" onerror=\"this.parentNode.hidden=true\"></span>\t\t\t\t\t\t\t\t</time>\n\t\t\t\t\t\t\t\t<div class=\"rt-term-calendar-main\">\n\t\t\t\t\t\t\t\t\t<div class=\"rt-term-calendar-tags\">\n\t\t\t\t\t\t\t\t\t\t<span class=\"rt-term-status waiting\"><i class=\"fas fa-circle\" aria-hidden=\"true\"></i> Pripravujeme</span>\n\t\t\t\t\t\t\t\t\t\t<span class=\"rt-term-sport\">MTB</span>\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t<h3>4. ročník Novoveský pojazd</h3>\n\t\t\t\t\t\t\t\t\t<p class=\"rt-term-place\"><i class=\"fas fa-map-marker-alt\" aria-hidden=\"true\"></i> Ruská Nová Ves, FUTBALOVÉ IHRISKO</p>\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"rt-term-calendar-meta\">\n\t\t\t\t\t\t\t\t\t\t\t<span><i class=\"fas fa-users\" aria-hidden=\"true\"></i> 0 registrovaných</span>\n\t\t\t\t\t\t\t\t\t\t\t<span><i class=\"fas fa-credit-card\" aria-hidden=\"true\"></i> 0 uhradených</span>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\n\t\t\t\t\t\t\t\t<div class=\"rt-term-calendar-actions\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<span class=\"rt-term-detail-pending\">Detail pripravujeme</span>\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t</article>",
+        "sourceUrl": "https://racetime.sk/terminovka",
+        "method": "structured_calendar",
+        "version": "racetime-v1"
+      }
+    },
+    "authority": "official",
+    "originals": [
+      "9edfbdd8-f6b5-49a9-9335-3a68f01cee1c"
+    ],
+    "reason": "Fresh structured timing-operator schedule states this exact cycling event, date and Slovak venue. Public Slovak catalogue identity review performed; Banské is an existing hidden CZ-misclassified edition, explicitly corrected from the timing source before reviewed continuation."
+  },
+  {
+    "event": {
+      "externalId": "racetime-173",
+      "name": "19. ročník časovky do vrchu Jantex Banské - Mláčky",
+      "startDate": "2027-08-15",
+      "placeText": "Banské (okr. Vranov n/T), štart pred kultúrnym domom",
+      "countryHint": "SK",
+      "discipline": [
+        "tt"
+      ],
+      "sourceUrl": "https://racetime.sk/terminovka",
+      "confidence": 0.95,
+      "evidence": {
+        "quote": "<article class=\"rt-term-calendar-item\" data-rt-calendar-event=\"\" data-event-id=\"173\" data-open=\"0\" data-search=\"19. ročník časovky do vrchu Jantex Banské - Mláčky Banské (okr. Vranov n/T), štart pred kultúrnym domom Cestná cyklistika  ŠK Banské\">\n\t\t\t\t\t\t\t\t<time class=\"rt-term-calendar-date\" datetime=\"2027-08-15\">\n\t\t\t\t\t\t\t\t\t<strong>15</strong>\n\t\t\t\t\t\t\t\t\t<span>AUG</span>\n\t\t\t\t\t\t\t\t\t<small>Nedeľa</small>\n\t\t\t\t\t\t\t\t\t<span class=\"rt-term-calendar-logo\"><img src=\"https://racetime.sk/uploads/optimized/00114949b38f4af3-250.webp\" srcset=\"https://racetime.sk/uploads/optimized/00114949b38f4af3-80.webp 80w, https://racetime.sk/uploads/optimized/00114949b38f4af3-160.webp 160w, https://racetime.sk/uploads/optimized/00114949b38f4af3-240.webp 240w, https://racetime.sk/uploads/optimized/00114949b38f4af3-250.webp 250w\" sizes=\"70px\" width=\"250\" height=\"90\" alt=\"Logo ŠK Banské\" loading=\"lazy\" decoding=\"async\" onerror=\"this.parentNode.hidden=true\"></span>\t\t\t\t\t\t\t\t</time>\n\t\t\t\t\t\t\t\t<div class=\"rt-term-calendar-main\">\n\t\t\t\t\t\t\t\t\t<div class=\"rt-term-calendar-tags\">\n\t\t\t\t\t\t\t\t\t\t<span class=\"rt-term-status waiting\"><i class=\"fas fa-circle\" aria-hidden=\"true\"></i> Pripravujeme</span>\n\t\t\t\t\t\t\t\t\t\t<span class=\"rt-term-sport\">Cestná cyklistika</span>\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t<h3>19. ročník časovky do vrchu Jantex Banské - Mláčky</h3>\n\t\t\t\t\t\t\t\t\t<p class=\"rt-term-place\"><i class=\"fas fa-map-marker-alt\" aria-hidden=\"true\"></i> Banské (okr. Vranov n/T), štart pred kultúrnym domom</p>\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"rt-term-calendar-meta\">\n\t\t\t\t\t\t\t\t\t\t\t<span><i class=\"fas fa-users\" aria-hidden=\"true\"></i> 0 registrovaných</span>\n\t\t\t\t\t\t\t\t\t\t\t<span><i class=\"fas fa-credit-card\" aria-hidden=\"true\"></i> 0 uhradených</span>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\n\t\t\t\t\t\t\t\t<div class=\"rt-term-calendar-actions\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<span class=\"rt-term-detail-pending\">Detail pripravujeme</span>\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t</article>",
+        "sourceUrl": "https://racetime.sk/terminovka",
+        "method": "structured_calendar",
+        "version": "racetime-v1"
+      }
+    },
+    "authority": "official",
+    "originals": [
+      "e10ce72e-68cc-4344-abdd-956ca2a871dc"
+    ],
+    "reason": "Fresh structured timing-operator schedule states this exact cycling event, date and Slovak venue. Public Slovak catalogue identity review performed; Banské is an existing hidden CZ-misclassified edition, explicitly corrected from the timing source before reviewed continuation."
+  },
+  {
+    "event": {
+      "externalId": "review-rajecke-2027",
+      "name": "ŠKODA MTB MARATÓN Rajecké Teplice 2027",
+      "startDate": "2027-05-22",
+      "placeText": "Kúpalisko Laura, Rajecké Teplice",
+      "countryHint": "SK",
+      "discipline": [
+        "xcm"
+      ],
+      "sourceUrl": "https://www.bikepoint.sk/maraton/zakladne-informacie/",
+      "websiteUrl": "https://www.bikepoint.sk/maraton/zakladne-informacie/",
+      "confidence": 1,
+      "evidence": {
+        "quote": "Názov pretekov: ŠKODA MTB MARATÓN Rajecké Teplice 2027 22.05.2027 (sobota), Kúpalisko Laura Rajecké Teplice, Slovensko Organizátor: Organizátor: Žilinský pedál, XIRIS s.r.o. ",
+        "sourceUrl": "https://www.bikepoint.sk/maraton/zakladne-informacie/",
+        "method": "source_review",
+        "version": "2026-10-29"
+      }
+    },
+    "authority": "official",
+    "originals": [
+      "6b65420b-3d00-4ef3-820f-98c99cb2271d"
+    ],
+    "reason": "Organizer page explicitly names the 2027 edition, 22.05.2027, Kúpalisko Laura and Žilinský pedál/XIRIS. Not inferred from the aggregator."
+  },
+  {
+    "event": {
+      "externalId": "review-sneznica-2027",
+      "name": "ISTROFINAL Snežnický MTB maratón 2027",
+      "startDate": "2027-09-04",
+      "placeText": "Snežnica",
+      "countryHint": "SK",
+      "discipline": [
+        "xcm"
+      ],
+      "sourceUrl": "https://www.sneznickymaraton.sk/",
+      "websiteUrl": "https://www.sneznickymaraton.sk/",
+      "confidence": 1,
+      "evidence": {
+        "quote": "Ďaľší 14. ročník sa uskutoční 4.9.2027 VÝSLEDKY: ODKAZ TU VIDEO z trate: ODKAZ TU FOTO zo zázemia: O",
+        "sourceUrl": "https://www.sneznickymaraton.sk/",
+        "method": "source_review",
+        "version": "2026-10-29"
+      }
+    },
+    "authority": "official",
+    "originals": [
+      "b4ed894f-393d-4afd-b0c9-ce2df6c0cd1f"
+    ],
+    "reason": "Organizer explicitly announces next 14th edition on 4.9.2027; venue and cycling discipline independently agree with the calendar. No existing 2027 edition found."
+  },
+  {
+    "event": {
+      "externalId": "uci-80358",
+      "name": "Slovak National Championships - XCO/XCC",
+      "startDate": "2027-07-17",
+      "endDate": "2027-07-18",
+      "placeText": "Bratislava",
+      "countryHint": "SK",
+      "discipline": [
+        "xco",
+        "xcc"
+      ],
+      "sourceUrl": "https://www.uci.org/competition-details/2027/MTB/80358",
+      "websiteUrl": "https://www.cyklistikaszc.sk/",
+      "confidence": 1,
+      "evidence": {
+        "quote": "{\"competitionDetails\":{\"name\":\"Slovak National Championships - XCO/XCC\",\"dates\":\"17 Jul - 18 Jul 2027\",\"venue\":\"Bratislava\",\"country\":\"Slovakia\",\"competitionClass\":\"CN - National Championships\",\"website\":{\"title\":\"https://www.cyklistikaszc.sk/\",\"url\":\"https://www.cyklistikaszc.sk/\",\"isExternal\":true},\"email\":{\"title\":\"miso.rzonca@gmail.com\",\"url\":\"mailto:miso.rzonca@gmail.com\",\"isExternal\":true}},\"schedule\":{\"items\":[{\"date\":\"17 Jul 2027\",\"races\":[{\"raceName\":\"Cross-country short circuit Men Elite\",\"raceType\":\"Cross-country short circuit\",\"raceClass\":\"CN - National Championships\",\"category\":\"Men Elite\"},{\"raceName\":\"Cross-country short circuit Women Elite\",\"raceType\":\"Cross-country short circuit\",\"raceClass\":\"CN - National Championships\",\"category\":\"Women Elite\"},{\"raceName\":\"Cross-country Olympic Men Elite\",\"raceType\":\"Cross-country Olympic\",\"raceClass\":\"CN - National Championships\",\"category\":\"Men Elite\"},{\"raceName\":\"Cross-country Olympic Men Junior\",\"raceType\":\"Cross-country Olympic\",\"raceClass\":\"CN - National Championships\",\"category\":\"Men Junior\"},{\"raceName\":\"Cross-country Olympic Women Elite\",\"raceType\":\"Cross-country Olympic\",\"raceClass\":\"CN - National Championships\",\"category\":\"Women Elite\"},{\"raceName\":\"Cross-country Olympic Women Junior\",\"raceType\":\"Cross-country Olympic\",\"raceClass\":\"CN - National Championships\",\"category\":\"Women Junior\"}]}]}}",
+        "sourceUrl": "https://www.uci.org/competition-details/2027/MTB/80358",
+        "method": "source_review",
+        "version": "2026-10-29"
+      }
+    },
+    "authority": "official",
+    "originals": [
+      "473f4363-bf7e-4da9-a4b7-d169303475d0"
+    ],
+    "reason": "UCI competition 80358 confirms Bratislava, 17–18 July 2027, XCO/XCC and national championship classification. Retains full two-day span absent from the model payload."
+  },
+  {
+    "event": {
+      "externalId": "uci-80679",
+      "name": "Sp XCO Zlatnicka Dolina",
+      "startDate": "2027-05-15",
+      "endDate": "2027-05-16",
+      "placeText": "Zlatnícka dolina",
+      "countryHint": "SK",
+      "discipline": [
+        "xco"
+      ],
+      "sourceUrl": "https://www.uci.org/competition-details/2027/MTB/80679",
+      "websiteUrl": "https://www.cyklistikaszc.sk/",
+      "confidence": 1,
+      "evidence": {
+        "quote": "{\"competitionDetails\":{\"name\":\"Sp XCO Zlatnicka Dolina\",\"dates\":\"15 May - 16 May 2027\",\"venue\":\"Zlatnícka dolina\",\"country\":\"Slovakia\",\"competitionClass\":\"3 - Class 3\",\"website\":{\"title\":\"https://www.cyklistikaszc.sk/\",\"url\":\"https://www.cyklistikaszc.sk/\",\"isExternal\":true},\"email\":{\"title\":\"miso.rzonca@gmail.com\",\"url\":\"mailto:miso.rzonca@gmail.com\",\"isExternal\":true}},\"schedule\":{\"items\":[{\"date\":\"15 May 2027\",\"races\":[{\"raceName\":\"Cross-country Olympic Men Elite\",\"raceType\":\"Cross-country Olympic\",\"raceClass\":\"3 - Class 3\",\"category\":\"Men Elite\"},{\"raceName\":\"Cross-country Olympic Women Elite\",\"raceType\":\"Cross-country Olympic\",\"raceClass\":\"3 - Class 3\",\"category\":\"Women Elite\"},{\"raceName\":\"Cross-country Olympic Men Junior\",\"raceType\":\"Cross-country Olympic\",\"raceClass\":\"3 - Class 3\",\"category\":\"Men Junior\"},{\"raceName\":\"Cross-country Olympic Women Junior\",\"raceType\":\"Cross-country Olympic\",\"raceClass\":\"3 - Class 3\",\"category\":\"Women Junior\"}]}]}}",
+        "sourceUrl": "https://www.uci.org/competition-details/2027/MTB/80679",
+        "method": "source_review",
+        "version": "2026-10-29"
+      }
+    },
+    "authority": "official",
+    "originals": [
+      "8d5f24e0-0367-4be2-b51b-b0e309374c3d"
+    ],
+    "reason": "Live UCI calendar API revealed exact competition URL; competition detail confirms the named Slovak XCO venue and full two-day 2027 span. Original model assertion omitted end date; publish the corrected primary assertion."
+  },
+  {
+    "event": {
+      "externalId": "uci-80408",
+      "name": "Sp XCO Bystricany",
+      "startDate": "2027-06-05",
+      "endDate": "2027-06-06",
+      "placeText": "Bystričany",
+      "countryHint": "SK",
+      "discipline": [
+        "xco"
+      ],
+      "sourceUrl": "https://www.uci.org/competition-details/2027/MTB/80408",
+      "websiteUrl": "https://www.cyklistikaszc.sk/",
+      "confidence": 1,
+      "evidence": {
+        "quote": "{\"competitionDetails\":{\"name\":\"Sp XCO Bystricany\",\"dates\":\"05 Jun - 06 Jun 2027\",\"venue\":\"Bystričany\",\"country\":\"Slovakia\",\"competitionClass\":\"2 - Class 2\",\"website\":{\"title\":\"https://www.cyklistikaszc.sk/\",\"url\":\"https://www.cyklistikaszc.sk/\",\"isExternal\":true},\"email\":{\"title\":\"radosa.matus@gmail.com\",\"url\":\"mailto:radosa.matus@gmail.com\",\"isExternal\":true}},\"schedule\":{\"items\":[{\"date\":\"05 Jun 2027\",\"races\":[{\"raceName\":\"Cross-country Olympic Men Elite\",\"raceType\":\"Cross-country Olympic\",\"raceClass\":\"2 - Class 2\",\"category\":\"Men Elite\"},{\"raceName\":\"Cross-country Olympic Men Junior\",\"raceType\":\"Cross-country Olympic\",\"raceClass\":\"2 - Class 2\",\"category\":\"Men Junior\"},{\"raceName\":\"Cross-country Olympic Women Elite\",\"raceType\":\"Cross-country Olympic\",\"raceClass\":\"2 - Class 2\",\"category\":\"Women Elite\"},{\"raceName\":\"Cross-country Olympic Women Junior\",\"raceType\":\"Cross-country Olympic\",\"raceClass\":\"2 - Class 2\",\"category\":\"Women Junior\"}]}]}}",
+        "sourceUrl": "https://www.uci.org/competition-details/2027/MTB/80408",
+        "method": "source_review",
+        "version": "2026-10-29"
+      }
+    },
+    "authority": "official",
+    "originals": [
+      "85234aa2-cae3-4adb-b909-87d072b6785c"
+    ],
+    "reason": "Live UCI calendar API revealed exact competition URL; competition detail confirms the named Slovak XCO venue and full two-day 2027 span. Original model assertion omitted end date; publish the corrected primary assertion."
+  },
+  {
+    "event": {
+      "externalId": "uci-80410",
+      "name": "Sp XCO Oslany",
+      "startDate": "2027-07-31",
+      "endDate": "2027-08-01",
+      "placeText": "Oslany",
+      "countryHint": "SK",
+      "discipline": [
+        "xco"
+      ],
+      "sourceUrl": "https://www.uci.org/competition-details/2027/MTB/80410",
+      "websiteUrl": "https://www.cyklistikaszc.sk/",
+      "confidence": 1,
+      "evidence": {
+        "quote": "{\"competitionDetails\":{\"name\":\"Sp XCO Oslany\",\"dates\":\"31 Jul - 01 Aug 2027\",\"venue\":\"Oslany\",\"country\":\"Slovakia\",\"competitionClass\":\"2 - Class 2\",\"website\":{\"title\":\"https://www.cyklistikaszc.sk/\",\"url\":\"https://www.cyklistikaszc.sk/\",\"isExternal\":true},\"email\":{\"title\":\"radosa.matus@gmail.com\",\"url\":\"mailto:radosa.matus@gmail.com\",\"isExternal\":true}},\"schedule\":{\"items\":[{\"date\":\"31 Jul 2027\",\"races\":[{\"raceName\":\"Cross-country Olympic Men Elite\",\"raceType\":\"Cross-country Olympic\",\"raceClass\":\"2 - Class 2\",\"category\":\"Men Elite\"},{\"raceName\":\"Cross-country Olympic Men Junior\",\"raceType\":\"Cross-country Olympic\",\"raceClass\":\"2 - Class 2\",\"category\":\"Men Junior\"},{\"raceName\":\"Cross-country Olympic Women Elite\",\"raceType\":\"Cross-country Olympic\",\"raceClass\":\"2 - Class 2\",\"category\":\"Women Elite\"},{\"raceName\":\"Cross-country Olympic Women Junior\",\"raceType\":\"Cross-country Olympic\",\"raceClass\":\"2 - Class 2\",\"category\":\"Women Junior\"}]}]}}",
+        "sourceUrl": "https://www.uci.org/competition-details/2027/MTB/80410",
+        "method": "source_review",
+        "version": "2026-10-29"
+      }
+    },
+    "authority": "official",
+    "originals": [
+      "b4761274-1511-45e2-801d-9043c68ec78f"
+    ],
+    "reason": "Live UCI calendar API revealed exact competition URL; competition detail confirms the named Slovak XCO venue and full two-day 2027 span. Original model assertion omitted end date; publish the corrected primary assertion."
+  }
+]

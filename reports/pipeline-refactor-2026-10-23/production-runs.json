@@ -1,0 +1,203 @@
+{
+  "initial": {
+    "startedAt": "2026-10-23T19:22:25.053Z",
+    "finishedAt": "2026-10-23T19:23:07.234Z",
+    "outcomes": [
+      {
+        "watchedUrlId": "6192e6fa-1549-4326-b04b-6daca83e1c97",
+        "url": "https://www.dsergebnis.de/",
+        "ok": true,
+        "eventsUpserted": 22,
+        "eventsExtracted": 22,
+        "eventsCreated": 1,
+        "eventsUpdated": 21,
+        "eventsRejected": 0,
+        "eventsFailed": 0,
+        "extractionComplete": true,
+        "issues": [],
+        "usage": {
+          "tokensIn": 6289,
+          "tokensOut": 6535,
+          "costUsd": 0.0038964
+        },
+        "linksDiscovered": 12,
+        "droppedHidden": 0,
+        "strategy": "generic+llm",
+        "httpStatus": 200
+      },
+      {
+        "watchedUrlId": "68337e02-c887-4947-9c9a-df6c69dd72bc",
+        "url": "https://www.kolarna.eu/kolarna-cba-odersky-pohar-2026/",
+        "ok": true,
+        "eventsUpserted": 6,
+        "eventsExtracted": 6,
+        "eventsCreated": 1,
+        "eventsUpdated": 5,
+        "eventsRejected": 0,
+        "eventsFailed": 0,
+        "extractionComplete": true,
+        "issues": [],
+        "usage": {
+          "tokensIn": 3014,
+          "tokensOut": 3395,
+          "costUsd": 0.0019989
+        },
+        "linksDiscovered": 1,
+        "droppedHidden": 0,
+        "strategy": "generic+llm",
+        "httpStatus": 200
+      },
+      {
+        "watchedUrlId": "155508cc-9fa5-4d7e-8219-e466b505de5c",
+        "url": "https://www.stevenscup.de/rennen",
+        "ok": true,
+        "eventsUpserted": 16,
+        "eventsExtracted": 16,
+        "eventsCreated": 0,
+        "eventsUpdated": 16,
+        "eventsRejected": 0,
+        "eventsFailed": 0,
+        "extractionComplete": true,
+        "issues": [],
+        "linksDiscovered": 0,
+        "droppedHidden": 0,
+        "strategy": "jsonld",
+        "httpStatus": 200
+      }
+    ]
+  },
+  "rerun": {
+    "startedAt": "2026-10-23T19:25:32.550Z",
+    "finishedAt": "2026-10-23T19:26:01.455Z",
+    "outcomes": [
+      {
+        "watchedUrlId": "6192e6fa-1549-4326-b04b-6daca83e1c97",
+        "url": "https://www.dsergebnis.de/",
+        "ok": true,
+        "eventsUpserted": 22,
+        "eventsExtracted": 22,
+        "eventsCreated": 1,
+        "eventsUpdated": 21,
+        "eventsRejected": 0,
+        "eventsFailed": 0,
+        "extractionComplete": true,
+        "issues": [],
+        "usage": {
+          "tokensIn": 6331,
+          "tokensOut": 6105,
+          "costUsd": 0.0036856
+        },
+        "linksDiscovered": 12,
+        "droppedHidden": 0,
+        "strategy": "generic+llm",
+        "httpStatus": 200
+      },
+      {
+        "watchedUrlId": "68337e02-c887-4947-9c9a-df6c69dd72bc",
+        "url": "https://www.kolarna.eu/kolarna-cba-odersky-pohar-2026/",
+        "ok": true,
+        "eventsUpserted": 6,
+        "eventsExtracted": 6,
+        "eventsCreated": 0,
+        "eventsUpdated": 6,
+        "eventsRejected": 0,
+        "eventsFailed": 0,
+        "extractionComplete": true,
+        "issues": [],
+        "usage": {
+          "tokensIn": 0,
+          "tokensOut": 0,
+          "costUsd": 0
+        },
+        "linksDiscovered": 1,
+        "droppedHidden": 0,
+        "strategy": "generic+llm",
+        "httpStatus": 200
+      },
+      {
+        "watchedUrlId": "155508cc-9fa5-4d7e-8219-e466b505de5c",
+        "url": "https://www.stevenscup.de/rennen",
+        "ok": true,
+        "eventsUpserted": 16,
+        "eventsExtracted": 16,
+        "eventsCreated": 0,
+        "eventsUpdated": 16,
+        "eventsRejected": 0,
+        "eventsFailed": 0,
+        "extractionComplete": true,
+        "issues": [],
+        "linksDiscovered": 0,
+        "droppedHidden": 0,
+        "strategy": "jsonld",
+        "httpStatus": 200
+      }
+    ]
+  },
+  "final": {
+    "startedAt": "2026-10-23T19:27:34.941Z",
+    "finishedAt": "2026-10-23T19:28:03.875Z",
+    "outcomes": [
+      {
+        "watchedUrlId": "6192e6fa-1549-4326-b04b-6daca83e1c97",
+        "url": "https://www.dsergebnis.de/",
+        "ok": true,
+        "eventsUpserted": 22,
+        "eventsExtracted": 22,
+        "eventsCreated": 0,
+        "eventsUpdated": 22,
+        "eventsRejected": 0,
+        "eventsFailed": 0,
+        "extractionComplete": true,
+        "issues": [],
+        "usage": {
+          "tokensIn": 6319,
+          "tokensOut": 6505,
+          "costUsd": 0.0038844
+        },
+        "linksDiscovered": 12,
+        "droppedHidden": 0,
+        "strategy": "generic+llm",
+        "httpStatus": 200
+      },
+      {
+        "watchedUrlId": "68337e02-c887-4947-9c9a-df6c69dd72bc",
+        "url": "https://www.kolarna.eu/kolarna-cba-odersky-pohar-2026/",
+        "ok": true,
+        "eventsUpserted": 6,
+        "eventsExtracted": 6,
+        "eventsCreated": 0,
+        "eventsUpdated": 6,
+        "eventsRejected": 0,
+        "eventsFailed": 0,
+        "extractionComplete": true,
+        "issues": [],
+        "usage": {
+          "tokensIn": 0,
+          "tokensOut": 0,
+          "costUsd": 0
+        },
+        "linksDiscovered": 1,
+        "droppedHidden": 0,
+        "strategy": "generic+llm",
+        "httpStatus": 200
+      },
+      {
+        "watchedUrlId": "155508cc-9fa5-4d7e-8219-e466b505de5c",
+        "url": "https://www.stevenscup.de/rennen",
+        "ok": true,
+        "eventsUpserted": 16,
+        "eventsExtracted": 16,
+        "eventsCreated": 0,
+        "eventsUpdated": 16,
+        "eventsRejected": 0,
+        "eventsFailed": 0,
+        "extractionComplete": true,
+        "issues": [],
+        "linksDiscovered": 0,
+        "droppedHidden": 0,
+        "strategy": "jsonld",
+        "httpStatus": 200
+      }
+    ]
+  }
+}

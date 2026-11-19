@@ -1,0 +1,8 @@
+import fs from "node:fs"; import cp from "node:child_process"; import { resolvePracticalEvidence, verifyPracticalExtraction } from "@/lib/catalog/practical-extraction"; import { practicalProgramme, combinePracticalFindings } from "@/lib/catalog/practical-programme";
+async function main() { for (const [input, output] of [[process.argv[2], process.argv[3]]]) {
+  const rows = JSON.parse(fs.readFileSync(input!, "utf8")); const ids = rows.map((r: {id: string}) => `'${r.id}'`).join(",");
+  const db = JSON.parse(cp.execFileSync("/opt/homebrew/opt/postgresql@17/bin/psql", ["-h","127.0.0.1","-p","54329","-U","postgres","-d","letsrace","-qAt","-c",`select json_agg(t) from (select e.id,e.name,e.start_date "startDate",e.end_date "endDate",l.venue "knownVenue",l.municipality,json_build_array(e.website_url,e.regulations_url) "ownUrls" from events e left join locations l on l.id=e.location_id where e.id in (${ids})) t`], { encoding: "utf8", env: { ...process.env, NODE_OPTIONS: "" } }));
+  const out = rows.map((r: {id: string; raw: unknown; documents: {url: string; text: string; links: string[]}[]}) => { const c = db.find((d: {id: string}) => d.id === r.id); const context = { ...c, knownVenue: c.knownVenue ?? undefined, documents: r.documents }; const checked = verifyPracticalExtraction(resolvePracticalEvidence(r.raw, r.documents), context); let deterministic = {}; for (const doc of r.documents) deterministic = combinePracticalFindings(deterministic, practicalProgramme(doc, context)); checked.details = combinePracticalFindings(checked.details, deterministic); return { ...r, checked }; });
+  fs.writeFileSync(output!, JSON.stringify(out));
+} }
+main();

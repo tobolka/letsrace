@@ -1,0 +1,44 @@
+## 3.4 Startgelder/Nachmeldung
+
+Meldeschluss ist Dienstag, 23:59 Uhr vor dem jeweiligen Veranstaltungstermin. Maßgeblich ist der rechtzeitige Eingang des Startgeldes auf dem Veranstalterkonto. Nachmeldungen sind bis 60 Minuten vor dem Start der einzelnen Rennen vor Ort möglich.
+
+Es werden dabei folgende Nachmeldegebühren erhoben:
+
+## 10,00 € für U11 und älter 5,00 € für U9 und U7
+
+Ausgabe der Startnummern erfolgt bis 60 Minuten vor dem jeweiligen Rennen.
+
+## 4. Startaufstellung
+
+## Zum 1. Lauf in Solingen erfolgt die Startaufstellung wie folgt:
+
+1. in den Klassen des MTB-Schüler-Cup 2026 erfolgt die Startaufstellung aus dem Ergebnis des Technikteils.
+
+## Nach dem ersten Lauf wird
+
+in den Klassen des MTB-Schüler-Cup 2026 wie folgt aufgestellt:
+
+1. nach der aktuellen Gesamtplatzierung im Cup
+2. nach Auslosung
+
+Die Kommissäre können bis zu fünf Fahrern eine privilegierte Startposition geben.
+
+## Zum 1. Lauf in Remscheid (international C3) wird
+
+in den Klassen des XCO-NRW-Cup 2026 wie folgt aufgestellt:
+
+1. nach aktuellem UCI-Ranking
+2. die jeweils ersten 10 Fahrer nach den Gesamtergebnissen des XCO-NRW-Cups 2025 2 und des 3 Nations-Cup 2025
+3. nach Auslosung
+
+Zum Rennen in Winterberg (international C1) wird in den Klassen des XCO-NRW-Cup 2026 wie folgt aufgestellt:
+
+1. nach aktuellem UCI-Ranking
+2. nach dem aktuellen Punktestand der Internationalen Rennserien (3-Nationen-Cup, MTBBundesliga)
+3. nach Auslosung
+
+In allen Klassen des MTB-NRW-Fun-Cup 2026 erfolgt die Startaufstellung beim 1. Wertungslauf nach Overall-Ranking des Vorjahres für die ersten 20 Startpositionen (unabhängig von den Altersklassen). Zu den restlichen Läufen wird zur Startaufstellung ein Overall-Ranking für die ersten 20 Startpositionen (unabhängig von den Altersklassen) erstellt, nachdem die Startaufstellung erfolgt.
+
+In den Rennen der U11/U13 und U15 starten die männlichen Fahrer mit ausreichendem Abstand (ca. 50% der Rundenzeit) hinter den Fahrerinnen (Ausnahme bei den Internationalen Events).
+
+2 Für das Gesamtergebnis im XCO-NRW-Cup gilt: Die ersten 5 in der Klasse verbliebenen Fahrer/innen, dann die ersten 5 altersbedingt aufgestiegenen Fahrer/ innen.

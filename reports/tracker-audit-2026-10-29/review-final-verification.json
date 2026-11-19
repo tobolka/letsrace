@@ -1,0 +1,14 @@
+{
+  "at": "2026-10-29T15:27:53.079831+00:00",
+  "openAll": {
+    "waiting": 20
+  },
+  "original112": {
+    "waiting": 13,
+    "rejected": 99
+  },
+  "explicitRepairFacts": 18,
+  "publicEndBeforeStart": 0,
+  "publicCompletedFuture": 0,
+  "publishedNewAssertions": 10
+}

@@ -1,0 +1,2092 @@
+{
+  "counts": [
+    {
+      "status": "ignored",
+      "count": 687
+    },
+    {
+      "status": "rejected",
+      "count": 16
+    },
+    {
+      "status": "pending",
+      "count": 207
+    },
+    {
+      "status": "accepted",
+      "count": 49
+    }
+  ],
+  "pending": [
+    {
+      "id": "010af441-ec5c-4476-aacf-4b49ad64433f",
+      "url": "https://mujspac.spac-os.cz/registrace",
+      "from_watched_url_id": "3c27c04e-86d7-49e3-b353-687b0757c73c",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-23T19:35:38.269745+00:00",
+      "parent_url": "https://spac-os.cz/sezona-2026/",
+      "parent_status": "active"
+    },
+    {
+      "id": "56ef2005-2879-4021-a99d-cf2c30789759",
+      "url": "https://radsport-buchholz.de/grosser-preis",
+      "from_watched_url_id": "2d947679-f360-44fe-a212-1c4792c116b1",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-23T19:35:48.28361+00:00",
+      "parent_url": "https://www.dsergebnis.de/34-grosser-preis-von-buchholz/",
+      "parent_status": "active"
+    },
+    {
+      "id": "51aaf890-f3f5-432e-adee-114bd66d6096",
+      "url": "https://jugend.radsport-thueringen.de",
+      "from_watched_url_id": "aaaa2712-244e-4777-aac8-67cce0a21e67",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-23T19:37:11.366884+00:00",
+      "parent_url": "https://radsport-thueringen.de/",
+      "parent_status": "active"
+    },
+    {
+      "id": "b4536b51-4ce5-4d3d-b14e-84b5ad32a1cf",
+      "url": "https://rennsport.radsport-thueringen.de",
+      "from_watched_url_id": "aaaa2712-244e-4777-aac8-67cce0a21e67",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-23T19:37:11.41275+00:00",
+      "parent_url": "https://radsport-thueringen.de/",
+      "parent_status": "active"
+    },
+    {
+      "id": "47bbff49-2d30-4853-94ea-a3bbad9683e5",
+      "url": "https://mtb.radsport-thueringen.de",
+      "from_watched_url_id": "aaaa2712-244e-4777-aac8-67cce0a21e67",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-23T19:37:11.45456+00:00",
+      "parent_url": "https://radsport-thueringen.de/",
+      "parent_status": "active"
+    },
+    {
+      "id": "7f3727c2-86e4-459a-b9c3-e3315005681f",
+      "url": "https://radball.radsport-thueringen.de",
+      "from_watched_url_id": "aaaa2712-244e-4777-aac8-67cce0a21e67",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-23T19:37:11.48863+00:00",
+      "parent_url": "https://radsport-thueringen.de/",
+      "parent_status": "active"
+    },
+    {
+      "id": "efe16049-f727-4a9c-9776-a6282f4dd098",
+      "url": "https://kunstrad.radsport-thueringen.de",
+      "from_watched_url_id": "aaaa2712-244e-4777-aac8-67cce0a21e67",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-23T19:37:11.579468+00:00",
+      "parent_url": "https://radsport-thueringen.de/",
+      "parent_status": "active"
+    },
+    {
+      "id": "3b464f76-68a6-4087-b889-f3d624dd23a6",
+      "url": "https://casomeric.cz/registration/reg_form_VP.php?zavod=4468",
+      "from_watched_url_id": "5eb01214-8b46-41d4-9efa-f0f0a2db390c",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-23T19:37:39.825686+00:00",
+      "parent_url": "https://www.edieteam.cz/mtb-mladeze",
+      "parent_status": "active"
+    },
+    {
+      "id": "d9a008ac-5f12-438b-95a4-2ca9031cdfc8",
+      "url": "https://lausitzer-bluetenlauf.de/index.php/ausschreibung",
+      "from_watched_url_id": "5fd98a06-cf91-4bac-811c-e64f6cfaf228",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-23T19:41:04.862076+00:00",
+      "parent_url": "https://lausitzcup.de/index.php?catid=8&id=621%3Atermine-lausitzcup-2026&view=article",
+      "parent_status": "active"
+    },
+    {
+      "id": "7db30bb7-73ae-4941-bb7f-31e59544c37f",
+      "url": "https://gpseries.de/ausschreibung",
+      "from_watched_url_id": "e1e69b4b-2e30-4b66-a60c-bb18639c6756",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-23T19:46:53.369731+00:00",
+      "parent_url": "https://www.german-pumptrack-series.de/",
+      "parent_status": "active"
+    },
+    {
+      "id": "9ba03cdf-29d6-46d0-9048-3137bf2e85f6",
+      "url": "https://malevilcup.cz/index.php/registrace",
+      "from_watched_url_id": "1451c649-537f-467a-9f2e-377b4ad88899",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-23T19:47:57.650435+00:00",
+      "parent_url": "https://www.gravelseries.cz/propozice-trasy/",
+      "parent_status": "active"
+    },
+    {
+      "id": "9bc49010-1930-4f17-878d-00d7752e3ab4",
+      "url": "https://kolopro.cz/zavody/znojmo-burcak-tour-kooperativy/propozice",
+      "from_watched_url_id": "1451c649-537f-467a-9f2e-377b4ad88899",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-23T19:47:57.733504+00:00",
+      "parent_url": "https://www.gravelseries.cz/propozice-trasy/",
+      "parent_status": "active"
+    },
+    {
+      "id": "10915f64-50d2-4688-aaa0-8ff58b725dc6",
+      "url": "https://registrace.sportsoft.cz/startlist.aspx?e=3519",
+      "from_watched_url_id": "1451c649-537f-467a-9f2e-377b4ad88899",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-23T19:47:57.85578+00:00",
+      "parent_url": "https://www.gravelseries.cz/propozice-trasy/",
+      "parent_status": "active"
+    },
+    {
+      "id": "ad9576a7-d26d-4448-bf58-ce5201138045",
+      "url": "https://registrace.sportsoft.cz/startlist.aspx?e=3520",
+      "from_watched_url_id": "1451c649-537f-467a-9f2e-377b4ad88899",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-23T19:47:57.901907+00:00",
+      "parent_url": "https://www.gravelseries.cz/propozice-trasy/",
+      "parent_status": "active"
+    },
+    {
+      "id": "8a8eed00-3b74-4985-880b-3d772404e17e",
+      "url": "https://registrace.sportsoft.cz/startlist.aspx?e=3521",
+      "from_watched_url_id": "1451c649-537f-467a-9f2e-377b4ad88899",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-23T19:47:57.957295+00:00",
+      "parent_url": "https://www.gravelseries.cz/propozice-trasy/",
+      "parent_status": "active"
+    },
+    {
+      "id": "30bf9c25-5fb4-4990-94dc-e624e2d6acdb",
+      "url": "https://registrace.sportsoft.cz/startlist.aspx?e=3522",
+      "from_watched_url_id": "1451c649-537f-467a-9f2e-377b4ad88899",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-23T19:47:57.994798+00:00",
+      "parent_url": "https://www.gravelseries.cz/propozice-trasy/",
+      "parent_status": "active"
+    },
+    {
+      "id": "83448e76-38be-4b3d-a178-1386767dfc67",
+      "url": "https://kolopro.cz/photo-pg-8246---.jpg",
+      "from_watched_url_id": "1451c649-537f-467a-9f2e-377b4ad88899",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-23T19:47:58.078538+00:00",
+      "parent_url": "https://www.gravelseries.cz/propozice-trasy/",
+      "parent_status": "active"
+    },
+    {
+      "id": "e9354149-32f7-464c-9aef-5bbc3ab74543",
+      "url": "https://registrace.sportsoft.cz/registration.aspx?e=3519",
+      "from_watched_url_id": "31728b26-e82d-48dc-8e63-7084ddeb8221",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-23T19:48:01.811536+00:00",
+      "parent_url": "https://www.gravelseries.cz/registrace/",
+      "parent_status": "active"
+    },
+    {
+      "id": "5306187c-3b14-45c0-a0b4-02feff2de2c5",
+      "url": "https://registrace.sportsoft.cz/registration.aspx?e=3520",
+      "from_watched_url_id": "31728b26-e82d-48dc-8e63-7084ddeb8221",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-23T19:48:01.894309+00:00",
+      "parent_url": "https://www.gravelseries.cz/registrace/",
+      "parent_status": "active"
+    },
+    {
+      "id": "21f937ae-e8ae-4c83-a4f1-0543d2ec1b9e",
+      "url": "https://registrace.sportsoft.cz/registration.aspx?e=3521",
+      "from_watched_url_id": "31728b26-e82d-48dc-8e63-7084ddeb8221",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-23T19:48:02.054859+00:00",
+      "parent_url": "https://www.gravelseries.cz/registrace/",
+      "parent_status": "active"
+    },
+    {
+      "id": "c553e0a7-0f20-47d6-b026-37e1dbb1c64c",
+      "url": "https://registrace.sportsoft.cz/registration.aspx?e=3522",
+      "from_watched_url_id": "31728b26-e82d-48dc-8e63-7084ddeb8221",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-23T19:48:02.124426+00:00",
+      "parent_url": "https://www.gravelseries.cz/registrace/",
+      "parent_status": "active"
+    },
+    {
+      "id": "3c09e1e7-b06e-4dce-8f2a-3426dfec5a1f",
+      "url": "https://beskydtour.cz/propozice",
+      "from_watched_url_id": "dd8354a0-4dd1-439c-832e-a7aa52361377",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-23T19:48:59.537761+00:00",
+      "parent_url": "https://spac-os.cz/sezona-2025/",
+      "parent_status": "active"
+    },
+    {
+      "id": "27dec1c9-e609-49f0-8108-2a9598d04021",
+      "url": "https://miko-cycles.cz/mamut/mamut-tour/propozice",
+      "from_watched_url_id": "dd8354a0-4dd1-439c-832e-a7aa52361377",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-23T19:48:59.576964+00:00",
+      "parent_url": "https://spac-os.cz/sezona-2025/",
+      "parent_status": "active"
+    },
+    {
+      "id": "25cd63a7-117c-4482-9bfe-b095ca42e118",
+      "url": "https://casomeric.cz/registration/list_reg_VP.php?zavod=4468",
+      "from_watched_url_id": "89dda756-2652-4f50-a9d0-6c42987e1b13",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-23T19:50:01.908445+00:00",
+      "parent_url": "https://www.edieteam.cz/mtb-mladeze/registrace-2026",
+      "parent_status": "active"
+    },
+    {
+      "id": "8bf89886-64b2-4395-ad10-321b7bf2cd73",
+      "url": "https://rajce.idnes.cz/biketeamkralupy/album/mytinka-cup-3-10-2026",
+      "from_watched_url_id": "20deddf1-8981-4a65-a770-72377ce82a1e",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-23T19:50:47.401567+00:00",
+      "parent_url": "https://www.kolokolemkomina.cz/zavody/mytinka-cup-2025",
+      "parent_status": "active"
+    },
+    {
+      "id": "333b9d02-6ec0-4867-b22a-85dc7a139d99",
+      "url": "http://beskydtour.cz/propozice",
+      "from_watched_url_id": "41b4ad04-5ee9-4a6e-a874-5383252cb268",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-23T19:52:02.065211+00:00",
+      "parent_url": "https://spac-os.cz/sezona-2023/",
+      "parent_status": "active"
+    },
+    {
+      "id": "217cf506-dafe-412a-844a-ade48d635bf9",
+      "url": "https://picardellics.de/index.php/ponickauer-dreiecksrennen/ausschreibung-2026",
+      "from_watched_url_id": "8dfece41-5d3c-43b6-a472-df038bee60bd",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-23T20:47:59.942295+00:00",
+      "parent_url": "https://lausitzcup.de/index.php/ponickau/ausschreibung-ponickau",
+      "parent_status": "active"
+    },
+    {
+      "id": "2b842baa-9808-4dc5-a8c8-01c19e09cfb3",
+      "url": "https://stopnito.cz/prihlaseni-na-zavod/1154",
+      "from_watched_url_id": "c09120a2-aef3-491c-8692-cbff11b82318",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-23T20:48:37.463306+00:00",
+      "parent_url": "https://www.amaterskaliga.cz/zavody/2026/6-tuchorice",
+      "parent_status": "active"
+    },
+    {
+      "id": "f8f2c16b-391c-42ba-9d40-454c1e3ed5c2",
+      "url": "https://preteky.vychodroadliga.sk/event/detska-liga-adriana-babica-2026",
+      "from_watched_url_id": "d869af99-0812-4b07-9ab9-48150b144b97",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-23T20:50:14.890988+00:00",
+      "parent_url": "https://www.vychodroadliga.sk/detska-liga-adriana-babica",
+      "parent_status": "active"
+    },
+    {
+      "id": "951f0dcd-adc3-4e7f-967c-92a0c338ac9f",
+      "url": "https://preteky.vychodroadliga.sk/entry:hAlu2hwbvO",
+      "from_watched_url_id": "bc55e676-5d94-4fa9-938e-59cfc661b741",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-23T20:50:22.609377+00:00",
+      "parent_url": "https://www.vychodroadliga.sk/ostatne-preteky-2",
+      "parent_status": "active"
+    },
+    {
+      "id": "b51be608-cd51-4b91-86f3-1e276ed7cf93",
+      "url": "https://zpn-timing.de/web/public/anmeldung.php?eventid=663",
+      "from_watched_url_id": "c9801002-57b4-41af-b14f-c12d79586e89",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-23T20:51:03.692827+00:00",
+      "parent_url": "https://lausitzcup.de/index.php/goerlitz/ausschreibung-goerlitz",
+      "parent_status": "active"
+    },
+    {
+      "id": "07dab15d-ae01-43dd-90bc-2141d5466a12",
+      "url": "https://pretekaj.sk/sk/vysledky/vrl2025/2733?category=categories",
+      "from_watched_url_id": "0253a57b-efbf-401e-b94a-69046383275b",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-23T20:53:50.492311+00:00",
+      "parent_url": "https://www.vychodroadliga.sk/vysledky",
+      "parent_status": "active"
+    },
+    {
+      "id": "cd5f679a-c306-4ad1-b771-ed68122a3cea",
+      "url": "https://pretekaj.sk/sk/vysledky/dvrl2025/2716?category=categories",
+      "from_watched_url_id": "0253a57b-efbf-401e-b94a-69046383275b",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-23T20:53:50.626789+00:00",
+      "parent_url": "https://www.vychodroadliga.sk/vysledky",
+      "parent_status": "active"
+    },
+    {
+      "id": "046442aa-c2f9-4f74-bb29-2649cca51ee3",
+      "url": "https://pretekaj.sk/sk/vysledky/vrl2024/2289?category=categories",
+      "from_watched_url_id": "0253a57b-efbf-401e-b94a-69046383275b",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-23T20:53:50.693652+00:00",
+      "parent_url": "https://www.vychodroadliga.sk/vysledky",
+      "parent_status": "active"
+    },
+    {
+      "id": "5fd20187-7b87-4527-89c7-26083e4f5004",
+      "url": "https://pretekaj.sk/sk/vysledky/dvrl2024/2262?category=categories",
+      "from_watched_url_id": "0253a57b-efbf-401e-b94a-69046383275b",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-23T20:53:51.013704+00:00",
+      "parent_url": "https://www.vychodroadliga.sk/vysledky",
+      "parent_status": "active"
+    },
+    {
+      "id": "2199903b-31ae-4c27-8904-dd152cff887a",
+      "url": "https://pretekaj.sk/sk/vysledky/ondavskycyklomaraton/2236",
+      "from_watched_url_id": "0253a57b-efbf-401e-b94a-69046383275b",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-23T20:53:51.199952+00:00",
+      "parent_url": "https://www.vychodroadliga.sk/vysledky",
+      "parent_status": "active"
+    },
+    {
+      "id": "f2231524-f8f7-4990-8111-3e0e7dd4ca89",
+      "url": "https://radsport-peitz.de/2026/07/13/ausschreibung-radkriterium-peitz-2026",
+      "from_watched_url_id": "36a59333-897e-43f3-afab-28b56b67dece",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-23T21:01:53.464461+00:00",
+      "parent_url": "https://lausitzcup.de/index.php/peitz/ausschreibung-peitz",
+      "parent_status": "active"
+    },
+    {
+      "id": "35afcb76-2927-43c1-a677-f624653bd549",
+      "url": "https://vesani.cz/propozice-deti",
+      "from_watched_url_id": "129b3fc0-7d6b-4f48-940e-3613b1b87e81",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-23T21:41:16.801308+00:00",
+      "parent_url": "https://www.vesani.cz/propozice/",
+      "parent_status": "active"
+    },
+    {
+      "id": "42b9d180-15a6-493a-90dd-9089a3ed2627",
+      "url": "https://vesani.cz/on-line-registrace",
+      "from_watched_url_id": "129b3fc0-7d6b-4f48-940e-3613b1b87e81",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-23T21:41:16.869222+00:00",
+      "parent_url": "https://www.vesani.cz/propozice/",
+      "parent_status": "active"
+    },
+    {
+      "id": "a275beb2-2393-4354-8b28-d06a733e43ce",
+      "url": "https://oetztaler-radmarathon.com",
+      "from_watched_url_id": "1db34ffe-94f0-4258-93ef-c396f46536be",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-23T21:41:59.444634+00:00",
+      "parent_url": "https://www.maratony.eu/",
+      "parent_status": "active"
+    },
+    {
+      "id": "527b21f1-0b5c-4239-b5cc-20172779d86f",
+      "url": "https://kitzbueheler-radmarathon.at",
+      "from_watched_url_id": "1db34ffe-94f0-4258-93ef-c396f46536be",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-23T21:41:59.560176+00:00",
+      "parent_url": "https://www.maratony.eu/",
+      "parent_status": "active"
+    },
+    {
+      "id": "fe22cf26-07bd-43a4-b03e-7e28b9212557",
+      "url": "https://slovenia.letapeseries.com",
+      "from_watched_url_id": "1db34ffe-94f0-4258-93ef-c396f46536be",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-23T21:41:59.656532+00:00",
+      "parent_url": "https://www.maratony.eu/",
+      "parent_status": "active"
+    },
+    {
+      "id": "6480171a-898f-48fa-8229-f50937b44b35",
+      "url": "http://glocknerkoenig.com",
+      "from_watched_url_id": "1db34ffe-94f0-4258-93ef-c396f46536be",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-23T21:41:59.702171+00:00",
+      "parent_url": "https://www.maratony.eu/",
+      "parent_status": "active"
+    },
+    {
+      "id": "bf7d45d9-0a29-4cdd-8b8c-a3a125f85303",
+      "url": "http://kaernten-radmarathon.at",
+      "from_watched_url_id": "1db34ffe-94f0-4258-93ef-c396f46536be",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-23T21:41:59.748853+00:00",
+      "parent_url": "https://www.maratony.eu/",
+      "parent_status": "active"
+    },
+    {
+      "id": "793a89bf-5f1f-44be-9cbb-acc288e12c60",
+      "url": "https://dolomitensport.at/de/events/dolomitenradrundfahrt.html",
+      "from_watched_url_id": "1db34ffe-94f0-4258-93ef-c396f46536be",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-23T21:41:59.798478+00:00",
+      "parent_url": "https://www.maratony.eu/",
+      "parent_status": "active"
+    },
+    {
+      "id": "00ad3f8f-a40a-46d4-83f8-4b8643d11a61",
+      "url": "https://letapeseries.com/events",
+      "from_watched_url_id": "1db34ffe-94f0-4258-93ef-c396f46536be",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-23T21:41:59.843161+00:00",
+      "parent_url": "https://www.maratony.eu/",
+      "parent_status": "active"
+    },
+    {
+      "id": "8408cde9-b541-4101-a078-f68cb1478d2a",
+      "url": "http://ucigranfondoworldseries.com",
+      "from_watched_url_id": "1db34ffe-94f0-4258-93ef-c396f46536be",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-23T21:41:59.888148+00:00",
+      "parent_url": "https://www.maratony.eu/",
+      "parent_status": "active"
+    },
+    {
+      "id": "4427b719-d4a4-4174-acc7-be0183650541",
+      "url": "http://austria-top-tour.at",
+      "from_watched_url_id": "1db34ffe-94f0-4258-93ef-c396f46536be",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-23T21:41:59.93268+00:00",
+      "parent_url": "https://www.maratony.eu/",
+      "parent_status": "active"
+    },
+    {
+      "id": "02aee452-b012-40e9-a82e-7529f5b7f863",
+      "url": "https://roadcycling.cz/roadcup/rocnik-2026",
+      "from_watched_url_id": "1db34ffe-94f0-4258-93ef-c396f46536be",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-23T21:41:59.970725+00:00",
+      "parent_url": "https://www.maratony.eu/",
+      "parent_status": "active"
+    },
+    {
+      "id": "8d22d821-a226-4d53-a5d5-6afafcf9dd78",
+      "url": "https://vychodroadliga.eu/kalendar",
+      "from_watched_url_id": "1db34ffe-94f0-4258-93ef-c396f46536be",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-23T21:42:00.070725+00:00",
+      "parent_url": "https://www.maratony.eu/",
+      "parent_status": "active"
+    },
+    {
+      "id": "d113891c-44f4-4c66-9096-32d894d436b0",
+      "url": "https://okolo-stejskala.webnode.cz/propozice",
+      "from_watched_url_id": "3c1cce9e-6a0d-4647-bb4c-b5a53d3255b4",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-23T21:42:06.237151+00:00",
+      "parent_url": "https://okolo-stejskala.webnode.cz/",
+      "parent_status": "active"
+    },
+    {
+      "id": "62d935c6-1545-4a93-88c8-f2b3eff6b960",
+      "url": "https://okolo-stejskala.webnode.cz/trat",
+      "from_watched_url_id": "3c1cce9e-6a0d-4647-bb4c-b5a53d3255b4",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-23T21:42:06.369738+00:00",
+      "parent_url": "https://okolo-stejskala.webnode.cz/",
+      "parent_status": "active"
+    },
+    {
+      "id": "74a68ab8-0c3c-4c25-8253-efc149a4bab7",
+      "url": "https://okolo-stejskala.webnode.cz/registrace",
+      "from_watched_url_id": "3c1cce9e-6a0d-4647-bb4c-b5a53d3255b4",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-23T21:42:06.414862+00:00",
+      "parent_url": "https://okolo-stejskala.webnode.cz/",
+      "parent_status": "active"
+    },
+    {
+      "id": "13d42aa5-d061-4844-bb18-e616debd3c89",
+      "url": "https://okolo-stejskala.webnode.cz/detsky-zavod",
+      "from_watched_url_id": "3c1cce9e-6a0d-4647-bb4c-b5a53d3255b4",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-23T21:42:06.466221+00:00",
+      "parent_url": "https://okolo-stejskala.webnode.cz/",
+      "parent_status": "active"
+    },
+    {
+      "id": "46fcd843-5276-431c-98bb-0612171fe8f4",
+      "url": "https://okolo-stejskala.webnode.cz/vysledky",
+      "from_watched_url_id": "3c1cce9e-6a0d-4647-bb4c-b5a53d3255b4",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-23T21:42:06.507444+00:00",
+      "parent_url": "https://okolo-stejskala.webnode.cz/",
+      "parent_status": "active"
+    },
+    {
+      "id": "95241b6f-816f-4f29-93ee-b064803c7c22",
+      "url": "https://ceskypulmaraton.cz",
+      "from_watched_url_id": "332a076f-e054-4fe8-bce3-e0d6fe1758b5",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-23T21:42:12.496961+00:00",
+      "parent_url": "https://www.cyklomaratontour.cz/",
+      "parent_status": "active"
+    },
+    {
+      "id": "bc6cbc1d-17e6-4af7-9aab-af2fa436cba9",
+      "url": "https://dokolamtb.cz/registrace",
+      "from_watched_url_id": "3353ca67-d4a8-4faf-80f8-95fb3730da64",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-23T21:43:55.581547+00:00",
+      "parent_url": "https://www.dokolamtb.cz/",
+      "parent_status": "active"
+    },
+    {
+      "id": "4c244bf3-d97e-4e6f-9ab5-fd29afe47eef",
+      "url": "http://wolf-man.cz/project_list/prurez-historii-zavodu-wolfman",
+      "from_watched_url_id": "1c20a9e5-f686-4221-9478-c11ebeb7122e",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-23T21:44:15.735856+00:00",
+      "parent_url": "https://wolf-man.cz/cyklisticke-zavody-2/",
+      "parent_status": "active"
+    },
+    {
+      "id": "951f55b1-98a9-490b-9364-c669d1625eb7",
+      "url": "https://dlbajk.cz/registrace",
+      "from_watched_url_id": "7b8d419f-94e7-425d-bbea-11f9cefd5ffb",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-23T21:44:19.243519+00:00",
+      "parent_url": "https://dlbajk.cz/",
+      "parent_status": "active"
+    },
+    {
+      "id": "411b5ab3-e785-4a01-84d3-f008db5ee996",
+      "url": "https://vinarska50.cz/zavod/propozice-zavodu",
+      "from_watched_url_id": "62e74c62-ad74-40a2-a0c2-34455ede13de",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-23T21:44:23.407597+00:00",
+      "parent_url": "https://www.vinarska50.cz/",
+      "parent_status": "active"
+    },
+    {
+      "id": "3e04325b-207e-4198-aae6-f307d44144ba",
+      "url": "https://vinarska50.cz/zavod/startovni-kategorie",
+      "from_watched_url_id": "62e74c62-ad74-40a2-a0c2-34455ede13de",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-23T21:44:23.445396+00:00",
+      "parent_url": "https://www.vinarska50.cz/",
+      "parent_status": "active"
+    },
+    {
+      "id": "bb01ed9c-e55b-4961-8ac8-6079b7fc4dd6",
+      "url": "https://registrace.sportsoft.cz/startlist.aspx?e=3503",
+      "from_watched_url_id": "62e74c62-ad74-40a2-a0c2-34455ede13de",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-23T21:44:23.481689+00:00",
+      "parent_url": "https://www.vinarska50.cz/",
+      "parent_status": "active"
+    },
+    {
+      "id": "e4e045fa-3e4a-4e2f-ae4c-e447fa3c1784",
+      "url": "https://lipnosportfestival.cz/cyklo-prihlaseni",
+      "from_watched_url_id": "fd7b6823-897f-48d7-bb61-1e480d5f83c5",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-23T21:44:31.372955+00:00",
+      "parent_url": "https://www.lipnosportfestival.cz/cyklo-/",
+      "parent_status": "active"
+    },
+    {
+      "id": "d29fc1b5-00a8-4d11-a8e6-33e79261dd7b",
+      "url": "https://okolo-stejskala.webnode.cz",
+      "from_watched_url_id": "9288712a-e84e-42a2-ac0a-708c0a97e5b4",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-23T21:44:39.465893+00:00",
+      "parent_url": "https://zavodnicasomira.cz/zavody",
+      "parent_status": "active"
+    },
+    {
+      "id": "8cf10090-b03e-4459-b7bf-4dd9282123d2",
+      "url": "https://zelenak.cz/propozice/propozice",
+      "from_watched_url_id": "2b6ecd46-fb80-4a7f-bac1-4e9666a90dd3",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-23T21:44:48.601764+00:00",
+      "parent_url": "https://www.zelenak.cz/",
+      "parent_status": "active"
+    },
+    {
+      "id": "4363ec6f-35e5-4b5b-8821-61b6d0c80a64",
+      "url": "https://registrace.zelenak.cz/startovni-listina",
+      "from_watched_url_id": "2b6ecd46-fb80-4a7f-bac1-4e9666a90dd3",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-23T21:44:48.687719+00:00",
+      "parent_url": "https://www.zelenak.cz/",
+      "parent_status": "active"
+    },
+    {
+      "id": "93498b76-e21b-42dc-87c1-2bd5d851becf",
+      "url": "https://cyklobrani.cz/o-zavodu/prihlaseni-do-zavodu",
+      "from_watched_url_id": "1796fbaf-3446-4325-8ca1-8068ee5cdedf",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-23T21:44:52.834692+00:00",
+      "parent_url": "https://www.cyklobrani.cz/o-zavodu/propozice-zavodu",
+      "parent_status": "active"
+    },
+    {
+      "id": "573cc9f5-93bf-4dc2-a05e-9be09df838b7",
+      "url": "https://cyklobrani.cz/o-zavodu/trasa-a-mapa",
+      "from_watched_url_id": "1796fbaf-3446-4325-8ca1-8068ee5cdedf",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-23T21:44:52.876543+00:00",
+      "parent_url": "https://www.cyklobrani.cz/o-zavodu/propozice-zavodu",
+      "parent_status": "active"
+    },
+    {
+      "id": "34f031d5-b009-47fb-9b6f-976abdfeaffa",
+      "url": "https://cyklobrani.cz/o-zavodu/deti-a-cyklobrani",
+      "from_watched_url_id": "1796fbaf-3446-4325-8ca1-8068ee5cdedf",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-23T21:44:52.922635+00:00",
+      "parent_url": "https://www.cyklobrani.cz/o-zavodu/propozice-zavodu",
+      "parent_status": "active"
+    },
+    {
+      "id": "1fe41de8-dec2-4e35-96ec-9c3956642280",
+      "url": "https://cyklobrani.cz/o-zavodu/propozice-zavodu/2-nezarazeno/34-informace-o-zpracovani-osobnich-udaju",
+      "from_watched_url_id": "1796fbaf-3446-4325-8ca1-8068ee5cdedf",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-23T21:44:52.967927+00:00",
+      "parent_url": "https://www.cyklobrani.cz/o-zavodu/propozice-zavodu",
+      "parent_status": "active"
+    },
+    {
+      "id": "b3482b39-43a1-4786-bdcb-070eebcbd43c",
+      "url": "https://ctauthorcup.cz/propozice-trasy",
+      "from_watched_url_id": "49cdc8f0-4c58-4841-b1bb-79180d865b4a",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-23T21:48:54.357871+00:00",
+      "parent_url": "https://ctauthorcup.cz",
+      "parent_status": "active"
+    },
+    {
+      "id": "0be2e69d-f3b8-4499-95b7-1678030146d7",
+      "url": "https://ctauthorcup.cz/detail-trasy",
+      "from_watched_url_id": "49cdc8f0-4c58-4841-b1bb-79180d865b4a",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-23T21:48:54.469429+00:00",
+      "parent_url": "https://ctauthorcup.cz",
+      "parent_status": "active"
+    },
+    {
+      "id": "7fea62f8-07e8-41c8-a5a3-fb3e108aaec8",
+      "url": "https://ctauthorcup.cz/novinky",
+      "from_watched_url_id": "49cdc8f0-4c58-4841-b1bb-79180d865b4a",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-23T21:48:54.561823+00:00",
+      "parent_url": "https://ctauthorcup.cz",
+      "parent_status": "active"
+    },
+    {
+      "id": "4d7a3096-fb58-451d-8901-4a1a029e6cfc",
+      "url": "https://mtb-team-bucklige-welt.at/termine-events/schlossberg-xc",
+      "from_watched_url_id": "1b4f8dec-5258-4126-ac65-633b240bdbdd",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-24T00:07:52.924715+00:00",
+      "parent_url": "https://www.buckligeweltcup.at/rennen/2026-07-12-schlossberg-xc-in-kirchschlag",
+      "parent_status": "active"
+    },
+    {
+      "id": "74156d29-b858-4231-9163-168c45834071",
+      "url": "https://sokolovska24mtb.cz/xc-jarni-bajky",
+      "from_watched_url_id": "d11f9b9a-da32-4910-beee-cae6faf48f03",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-24T07:22:56.984819+00:00",
+      "parent_url": "http://bikeri.cz/pohary/jarni-bahno",
+      "parent_status": "active"
+    },
+    {
+      "id": "b655bfdd-5560-43f7-aa53-6e44b7e63879",
+      "url": "http://kiwibike.tym.cz/akce.html",
+      "from_watched_url_id": "8a61ec0c-e824-4b6c-bdc2-219932d53dae",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-24T07:23:08.912512+00:00",
+      "parent_url": "http://bikeri.cz/zavody/vysledky/triatlon",
+      "parent_status": "active"
+    },
+    {
+      "id": "27a59f97-c56c-4361-9861-21bc50efb8fb",
+      "url": "https://pitbikemoravia.cz",
+      "from_watched_url_id": "9288712a-e84e-42a2-ac0a-708c0a97e5b4",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-24T07:26:15.175276+00:00",
+      "parent_url": "https://zavodnicasomira.cz/zavody",
+      "parent_status": "active"
+    },
+    {
+      "id": "eb23314c-d2e7-43d6-b740-c87838f4b779",
+      "url": "https://tourdekosova.cz",
+      "from_watched_url_id": "91c42b53-b8bf-47fd-8653-0537443371fc",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-24T07:27:25.626591+00:00",
+      "parent_url": "https://zavodnicasomira.cz/zavody/tour-de-kosova/2027",
+      "parent_status": "active"
+    },
+    {
+      "id": "35233234-17e9-4a3c-bf57-8242104ba03a",
+      "url": "https://bikethebugles.at/junior-race",
+      "from_watched_url_id": "f977ef53-ebd9-4289-a948-5c816d2a6a80",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-24T07:28:59.359717+00:00",
+      "parent_url": "https://www.buckligeweltcup.at/rennen/2026-08-29-bike-the-bugles-junior-race-in-krumbach",
+      "parent_status": "active"
+    },
+    {
+      "id": "f2dedc09-a2fe-4f7e-a6ef-12870514fe81",
+      "url": "http://cyclocross-race.de",
+      "from_watched_url_id": "be01cf8e-7a47-4736-9977-4e52bb0fb8f8",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-24T07:29:06.170558+00:00",
+      "parent_url": "https://www.dsergebnis.de/archiv/cyclingworld-cyclocross-race-powered-by-hobel-und-fidlock-1/",
+      "parent_status": "active"
+    },
+    {
+      "id": "848c3bee-1ec7-45e6-adcd-7bf26a8f0f51",
+      "url": "http://cykloserver.cz/f/c295297950",
+      "from_watched_url_id": "87af5fbe-f304-42ad-be23-daef55108e3f",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-24T07:30:02.228903+00:00",
+      "parent_url": "https://www.kolarna.eu/hanacke-gravel/",
+      "parent_status": "active"
+    },
+    {
+      "id": "b24c3f75-c451-45ec-9003-736a77d3a56f",
+      "url": "https://bikethebugles.at/junior-lake-attack",
+      "from_watched_url_id": "b5db1df3-4696-42e6-9853-c486fd85ff8a",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-24T07:30:35.242705+00:00",
+      "parent_url": "https://www.buckligeweltcup.at/rennen/2026-05-02-junior-lake-attack-krumbach",
+      "parent_status": "active"
+    },
+    {
+      "id": "e9b7fdc9-7481-44b5-9792-736e5ad38d48",
+      "url": "https://rcnk.at/veranstaltungen/tage-des-querfeldeinsports/samstag-kinder-und-trainingsrennen",
+      "from_watched_url_id": "6964f838-7648-460f-aff9-e4d108283365",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-24T07:30:41.017102+00:00",
+      "parent_url": "https://www.buckligeweltcup.at/rennen/2026-11-14-tage-des-querfeldeinsports-in-ternitz",
+      "parent_status": "active"
+    },
+    {
+      "id": "736db8da-d117-47e3-a9de-8c6b8a1e30da",
+      "url": "https://rcnk.at/veranstaltungen/kinderrennen-im-stadtpark",
+      "from_watched_url_id": "02de8c47-7155-4e1e-a8c1-223b18924fe8",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-24T07:30:48.461449+00:00",
+      "parent_url": "https://www.buckligeweltcup.at/rennen/2026-05-16-kinder-radrennen-im-stadtpark-neunkirchen",
+      "parent_status": "active"
+    },
+    {
+      "id": "9fdccbc5-19d7-4b8f-8988-6ab72b1997cc",
+      "url": "http://bredy.cz/maraton/trat.php",
+      "from_watched_url_id": "43aa0c60-6fde-4f64-8eb8-eda2307dd397",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-24T07:30:57.857008+00:00",
+      "parent_url": "https://www.cykloman.cz/rozpis-bredy-maraton-cyklomanek",
+      "parent_status": "active"
+    },
+    {
+      "id": "ba61b554-000e-4446-a74a-7deb3c1d59a1",
+      "url": "https://cyklistikaszc.sk/sk/cyklistika-pre-vsetkych/kalendar-prop-vysl",
+      "from_watched_url_id": "1db34ffe-94f0-4258-93ef-c396f46536be",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-24T13:05:10.649882+00:00",
+      "parent_url": "https://www.maratony.eu/",
+      "parent_status": "active"
+    },
+    {
+      "id": "88794f15-2220-4df9-bf6d-b39377af29af",
+      "url": "https://trnavskacyklistickaliga.sk",
+      "from_watched_url_id": "1db34ffe-94f0-4258-93ef-c396f46536be",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-24T13:05:10.758316+00:00",
+      "parent_url": "https://www.maratony.eu/",
+      "parent_status": "active"
+    },
+    {
+      "id": "60384b66-0979-4899-9ca4-186058efc422",
+      "url": "https://chocholna-velcice.sk/navstevnik/aktualne/kalendar-akcii/cyklisticke-preteky-do-vrchu-chocholna-kykula-2736_276sk.html",
+      "from_watched_url_id": "66b7dd0b-b8ba-40ef-b8f3-0c988eb3c808",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-24T15:14:35.967096+00:00",
+      "parent_url": "https://www.maratony.eu/letak-casovka-chocholna-kykula-3/",
+      "parent_status": "active"
+    },
+    {
+      "id": "af98b834-945b-4ee7-8a14-648966f1cd9e",
+      "url": "http://niederrhein-gravel.de",
+      "from_watched_url_id": "99bccbf4-a1ef-4ac0-86f3-5270dd8364dd",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-24T15:15:22.454796+00:00",
+      "parent_url": "https://www.dsergebnis.de/niederrhein-gravel-race-2026/",
+      "parent_status": "active"
+    },
+    {
+      "id": "a72f9551-34b1-403e-886f-24b7b61bf4c8",
+      "url": "https://amaterskaliga.cz/zavody/2026/9-most-lesna-2026",
+      "from_watched_url_id": "394df2bc-ec6b-4087-9930-4300a370675f",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-24T15:16:03.989902+00:00",
+      "parent_url": "https://www.roadcycling.cz/roadcup/rocnik-2027",
+      "parent_status": "active"
+    },
+    {
+      "id": "c8800d3c-e49f-4ec5-9e3b-29a0f530fe14",
+      "url": "https://lawi-tour.cz/index.php/propozice/propozice-classic",
+      "from_watched_url_id": "394df2bc-ec6b-4087-9930-4300a370675f",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-24T15:16:04.030418+00:00",
+      "parent_url": "https://www.roadcycling.cz/roadcup/rocnik-2027",
+      "parent_status": "active"
+    },
+    {
+      "id": "c39afd48-f612-4b3f-be2d-3d0f2abbc16a",
+      "url": "https://roadstage.cz/dolni-morava/kancelar-zavodu-dm",
+      "from_watched_url_id": "394df2bc-ec6b-4087-9930-4300a370675f",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-24T15:16:04.072392+00:00",
+      "parent_url": "https://www.roadcycling.cz/roadcup/rocnik-2027",
+      "parent_status": "active"
+    },
+    {
+      "id": "9a3a663f-277d-4f3f-8ba0-435405987f0a",
+      "url": "https://beskydtour.cz/vysledky",
+      "from_watched_url_id": "394df2bc-ec6b-4087-9930-4300a370675f",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-24T15:16:04.106609+00:00",
+      "parent_url": "https://www.roadcycling.cz/roadcup/rocnik-2027",
+      "parent_status": "active"
+    },
+    {
+      "id": "1bfd6da2-f2a3-458a-a416-0882f7228242",
+      "url": "https://granfondopag.com/en/home",
+      "from_watched_url_id": "1db34ffe-94f0-4258-93ef-c396f46536be",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-24T15:22:06.072271+00:00",
+      "parent_url": "https://www.maratony.eu/",
+      "parent_status": "active"
+    },
+    {
+      "id": "0df9caa4-c4c8-4f3d-ac89-bb007f9b03f2",
+      "url": "https://miko-cycles.cz/mamut/mamut-tour",
+      "from_watched_url_id": "1db34ffe-94f0-4258-93ef-c396f46536be",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-24T15:22:06.118402+00:00",
+      "parent_url": "https://www.maratony.eu/",
+      "parent_status": "active"
+    },
+    {
+      "id": "e0dc9b65-f4c7-4a89-8b82-cf0f6adce8aa",
+      "url": "https://carinthia200.com",
+      "from_watched_url_id": "1db34ffe-94f0-4258-93ef-c396f46536be",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-24T15:22:06.162678+00:00",
+      "parent_url": "https://www.maratony.eu/",
+      "parent_status": "active"
+    },
+    {
+      "id": "0024e073-df66-411d-afca-9f4d1c4bbdec",
+      "url": "https://imster-radmarathon.at",
+      "from_watched_url_id": "1db34ffe-94f0-4258-93ef-c396f46536be",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-24T15:22:06.212123+00:00",
+      "parent_url": "https://www.maratony.eu/",
+      "parent_status": "active"
+    },
+    {
+      "id": "b2ca3349-5c4b-448a-ac68-187ee8acf6d5",
+      "url": "https://cfc-kladno.cz/rfc_registrace.php?event_id=281",
+      "from_watched_url_id": "07ee7a45-c2be-4c43-824d-cb28be1b563c",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-24T15:22:34.831286+00:00",
+      "parent_url": "https://www.amaterskaliga.cz/zavody/2026/5-praha-doksy",
+      "parent_status": "active"
+    },
+    {
+      "id": "e47e2513-fe6d-4f04-b589-fe73fa13757c",
+      "url": "https://pretekaj.sk/sk/vysledky/vrl2022/1416?category=categories",
+      "from_watched_url_id": "0253a57b-efbf-401e-b94a-69046383275b",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-24T15:24:38.296908+00:00",
+      "parent_url": "https://www.vychodroadliga.sk/vysledky",
+      "parent_status": "active"
+    },
+    {
+      "id": "16ffb338-d347-4900-b8d2-62379bd9a2fd",
+      "url": "https://radsport-peitz.de/wp-content/uploads/2026/08/Ergebnis-2026.pdf",
+      "from_watched_url_id": "29f8e6a5-e6b4-48c8-8892-e42cfd114e4a",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-24T15:26:54.369706+00:00",
+      "parent_url": "https://lausitzcup.de/index.php/lausitzcup/einzelwertung/einzelergebnisse-2026",
+      "parent_status": "active"
+    },
+    {
+      "id": "14387a55-6ea0-4453-b8d3-3176756cd77f",
+      "url": "https://lesak-cup.cz",
+      "from_watched_url_id": null,
+      "status": "pending",
+      "hint_kind": "independent_season_discovery",
+      "created_at": "2026-10-24T16:51:07.859969+00:00",
+      "parent_url": null,
+      "parent_status": null
+    },
+    {
+      "id": "9d65f635-1c4c-4a27-a4d2-671357ad2027",
+      "url": "https://prazska50.cz/tiskova-zprava",
+      "from_watched_url_id": null,
+      "status": "pending",
+      "hint_kind": "independent_season_discovery",
+      "created_at": "2026-10-24T16:51:07.859969+00:00",
+      "parent_url": null,
+      "parent_status": null
+    },
+    {
+      "id": "b6216409-1282-4bec-a06f-c235bda77f5d",
+      "url": "https://graciaorlova.cz/o-zavodu",
+      "from_watched_url_id": null,
+      "status": "pending",
+      "hint_kind": "independent_season_discovery",
+      "created_at": "2026-10-24T16:51:07.859969+00:00",
+      "parent_url": null,
+      "parent_status": null
+    },
+    {
+      "id": "bc5a1742-ecc3-413e-b0e2-a355e78a8d02",
+      "url": "https://leithaberg-radmarathon.at",
+      "from_watched_url_id": "49f18563-0bf6-4a0e-835b-0a9e7ac97a04",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-24T23:55:35.702439+00:00",
+      "parent_url": "https://www.maratony.eu/letak-leitha-berg-radmarathon-2/",
+      "parent_status": "active"
+    },
+    {
+      "id": "6877be07-623d-4439-8d87-7a8f52c29b56",
+      "url": "https://malevilcup.cz/index.php/malevil-cup/informace/mapy-a-profily",
+      "from_watched_url_id": "1451c649-537f-467a-9f2e-377b4ad88899",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-24T23:55:38.383631+00:00",
+      "parent_url": "https://www.gravelseries.cz/propozice-trasy/",
+      "parent_status": "active"
+    },
+    {
+      "id": "eb2775f4-0e92-4bcd-aa7b-c0ab3d506161",
+      "url": "https://4bikes-festival.de",
+      "from_watched_url_id": "32b16643-fb7a-4571-8265-0fc80182122b",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-24T23:56:24.274089+00:00",
+      "parent_url": "https://www.dsergebnis.de/archiv/4bikesfestival-ggew-grand-prix/",
+      "parent_status": "active"
+    },
+    {
+      "id": "4de9a4f5-b1c0-41e8-83dd-fb1428144d98",
+      "url": "http://spmtb.cz",
+      "from_watched_url_id": "6b4ae46e-6cb3-4d6c-9702-bb0520d915d7",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-24T23:58:10.526081+00:00",
+      "parent_url": "https://www.kolarna.eu/kolarna-ridelli-crosscoutry/",
+      "parent_status": "active"
+    },
+    {
+      "id": "155c5eac-9cdb-470e-bb3b-b31a3e0935cb",
+      "url": "http://uac.cz/zavody-a-vysledky/2026/silnice",
+      "from_watched_url_id": "391b58f6-b160-4462-8566-fd49f48d2dc9",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-24T23:59:00.318731+00:00",
+      "parent_url": "http://cfc-kladno.cz/posazavi1.php",
+      "parent_status": "active"
+    },
+    {
+      "id": "b33ea516-42b5-48d2-b8d2-f396057760fa",
+      "url": "https://sportraces.cz/kraslicky-sip",
+      "from_watched_url_id": "c6d5734f-469e-43e9-a537-4ba0ee125e5a",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-25T00:00:09.036333+00:00",
+      "parent_url": "https://www.amaterskaliga.cz/odkazy",
+      "parent_status": "active"
+    },
+    {
+      "id": "7f56e9e7-fbb0-43d8-b761-ba0721010bd8",
+      "url": "https://feen-bike-events.de/feen-bike-enduro-2026-zeitplan",
+      "from_watched_url_id": "04fa71a5-5b22-447e-a0a5-3cb26543539e",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-25T00:00:28.274663+00:00",
+      "parent_url": "https://radsport-thueringen.de/news/#post-2451",
+      "parent_status": "active"
+    },
+    {
+      "id": "a0072475-604f-4763-ad36-89afd83ff59f",
+      "url": "https://registrace.sportsoft.cz/startlist.aspx?e=3630",
+      "from_watched_url_id": "69fbd78f-3def-4801-b6b3-d219da08bdd2",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-25T20:29:32.24977+00:00",
+      "parent_url": "https://www.roadstage.cz/orlicke-hory/kancelar-zavodu",
+      "parent_status": "active"
+    },
+    {
+      "id": "715e930d-835b-41cb-b6f8-2d4b678354ec",
+      "url": "https://cykloteammxm.cz",
+      "from_watched_url_id": "9f71830d-1b80-4b29-9db2-b2747e539d40",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-25T20:29:45.798126+00:00",
+      "parent_url": "https://www.edieteam.cz/9-aktuality/307-mxm-mtb-cup-2027",
+      "parent_status": "active"
+    },
+    {
+      "id": "b593e94b-675a-4c2d-930b-cc220ec9db09",
+      "url": "https://dkbikeshop.cz",
+      "from_watched_url_id": "9a58ffdb-560b-4bac-8650-18f523d91487",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-25T20:30:45.020931+00:00",
+      "parent_url": "https://www.edieteam.cz/9-aktuality/302-ostravsky-mtb-pohar-2026",
+      "parent_status": "active"
+    },
+    {
+      "id": "eb227aca-e21d-46ac-84e0-36acc2b3bce5",
+      "url": "http://mtb.block.cz",
+      "from_watched_url_id": "a1e3e511-336a-479d-a2ab-76176143eea9",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-25T20:31:19.191452+00:00",
+      "parent_url": "https://www.edieteam.cz/mtb-mladeze/208-propozice-prihlasky-a-harmonogram-zavodu-block-valassky-pohar-mtb-xc",
+      "parent_status": "active"
+    },
+    {
+      "id": "92a85635-fceb-47cc-834a-7d19f03351fd",
+      "url": "https://chocholna-velcice.sk/navstevnik/aktualne/kalendar-akcii/cyklisticke-preteky-chocholna-kykula-1925_139sk.html",
+      "from_watched_url_id": "ba08f0c3-70a2-4074-8d69-6e64ab63361a",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-25T22:36:58.881812+00:00",
+      "parent_url": "https://www.maratony.eu/letak-casovka-chocholna-kykula/",
+      "parent_status": "active"
+    },
+    {
+      "id": "e74e235d-461f-44af-af3d-6ca802327f9d",
+      "url": "https://stopnito.cz/prihlaseni-na-zavod/1113",
+      "from_watched_url_id": "2494c85f-0e98-45b2-94f4-a65cf4ba8969",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-26T00:40:07.782717+00:00",
+      "parent_url": "https://www.amaterskaliga.cz/zavody/2026/7-velka-cena-biliny-o-radovesickou-kostku",
+      "parent_status": "active"
+    },
+    {
+      "id": "34415b51-e9a5-48f8-95fa-e82d0d9ed315",
+      "url": "https://stopnito.cz/prihlaseni-na-zavod/1209",
+      "from_watched_url_id": "a5ffcb3b-ff97-49ed-a6eb-518984031bb1",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-26T00:40:16.901636+00:00",
+      "parent_url": "https://www.amaterskaliga.cz/zavody/2026/9-most-lesna-2026",
+      "parent_status": "active"
+    },
+    {
+      "id": "2f2d4aa2-8f6d-4b37-980c-8fb14536f0c3",
+      "url": "https://cfc-kladno.cz/texty/posazavi_propozice_2026.pdf",
+      "from_watched_url_id": "d95d2ee3-8d18-4a94-b693-e425d627fec1",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-26T00:40:17.459295+00:00",
+      "parent_url": "https://www.amaterskaliga.cz/zavody/2026/8-kolem-posazavi",
+      "parent_status": "active"
+    },
+    {
+      "id": "75c7e621-8393-4afe-8969-e14898a856a7",
+      "url": "https://registrace.sportsoft.cz/registration.aspx?e=3679",
+      "from_watched_url_id": "75fb7b9e-228e-449f-a9f6-9b1a5299fa8e",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-26T00:40:25.909341+00:00",
+      "parent_url": "https://www.roadstage.cz/grande-finale#trasa",
+      "parent_status": "active"
+    },
+    {
+      "id": "c8801e6a-bba2-4d4a-8ce6-75e06ae82a33",
+      "url": "https://bikemaraton.com.pl/klasyfikacja-generalna",
+      "from_watched_url_id": "4562bac1-97e0-4a68-9e0b-651dcfe6fb1c",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-26T00:40:41.698719+00:00",
+      "parent_url": "https://dzkol.pl/polanica-zdroj-w-wersji-ultra-bike-maraton-2026/",
+      "parent_status": "active"
+    },
+    {
+      "id": "3ec46a21-f2ec-48b3-bb97-26075e8e6441",
+      "url": "https://domtel-sport.pl/wyniki,zawody,6409",
+      "from_watched_url_id": "0196c606-accd-4906-9dab-4cf0b8ea3a45",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-26T00:40:46.395509+00:00",
+      "parent_url": "https://dzkol.pl/marcin-wlodarski-triumfowal-w-grand-prix-doliny-baryczy/",
+      "parent_status": "active"
+    },
+    {
+      "id": "d6e73679-6c31-47c3-a69e-6838b13a0243",
+      "url": "http://poharmtb.cz",
+      "from_watched_url_id": "31b21523-d588-47d4-a273-6d244575db3f",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-26T00:41:05.970127+00:00",
+      "parent_url": "http://bikeri.cz/zavod/cp-xco-teplice",
+      "parent_status": "active"
+    },
+    {
+      "id": "1fe4874b-7695-47e7-9be1-76fb55bb1684",
+      "url": "http://dragouncheb.cz/files/soubory/dragoun_cup_2015.pdf",
+      "from_watched_url_id": "5841c663-fb0b-44a0-bf91-0bdd80ba8a5e",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-26T00:41:14.054885+00:00",
+      "parent_url": "http://bikeri.cz/zavod/dragoun-cup",
+      "parent_status": "active"
+    },
+    {
+      "id": "b09950ee-0c0b-4333-8207-a3612fc48ebe",
+      "url": "http://cyklomasters.cz",
+      "from_watched_url_id": "f8b79d88-04d2-4dca-826c-5cfb2e87868a",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-26T00:41:15.873983+00:00",
+      "parent_url": "http://bikeri.cz/zavod/casovka-dvojic-sokolov",
+      "parent_status": "active"
+    },
+    {
+      "id": "4f4a6a44-168c-4323-8f9a-9bc38234c918",
+      "url": "https://bb.cesyk.cz/registrace",
+      "from_watched_url_id": "57340a76-0477-4f28-984a-976004470537",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-26T00:42:42.180663+00:00",
+      "parent_url": "https://bb.cesyk.cz",
+      "parent_status": "active"
+    },
+    {
+      "id": "5195970b-6d00-4680-9924-8a0d3607fa5d",
+      "url": "https://bikeri.cz/pohary/pohar-kvsc",
+      "from_watched_url_id": "1a1bfb95-38db-469a-8780-6f2bb362483d",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-26T00:42:44.066965+00:00",
+      "parent_url": "http://bikeri.cz/zavod/antal-bike",
+      "parent_status": "active"
+    },
+    {
+      "id": "7ebf6e6c-b002-4f92-baa4-b0c1956ea065",
+      "url": "http://bikeri.cz/zavody/propozice",
+      "from_watched_url_id": "1a1bfb95-38db-469a-8780-6f2bb362483d",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-26T00:42:44.123219+00:00",
+      "parent_url": "http://bikeri.cz/zavod/antal-bike",
+      "parent_status": "active"
+    },
+    {
+      "id": "5422f705-0bfa-4f08-a394-5beb8dcb89e5",
+      "url": "https://okolojiznichcech.cz/zavod.html",
+      "from_watched_url_id": "99f89582-2ce9-4b9f-8f13-17b79cf8e903",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-26T00:42:44.546674+00:00",
+      "parent_url": "https://okolojiznichcech.cz",
+      "parent_status": "active"
+    },
+    {
+      "id": "31e2ecb5-4b6f-446c-b95f-9e1ad412155d",
+      "url": "https://okolojiznichcech.cz/klicove-informace.html",
+      "from_watched_url_id": "99f89582-2ce9-4b9f-8f13-17b79cf8e903",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-26T00:42:44.614422+00:00",
+      "parent_url": "https://okolojiznichcech.cz",
+      "parent_status": "active"
+    },
+    {
+      "id": "c888bd8e-597e-4327-92d5-2576f6c3a852",
+      "url": "https://okolojiznichcech.cz/historie.html",
+      "from_watched_url_id": "99f89582-2ce9-4b9f-8f13-17b79cf8e903",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-26T00:42:44.673303+00:00",
+      "parent_url": "https://okolojiznichcech.cz",
+      "parent_status": "active"
+    },
+    {
+      "id": "7d2e1ffb-10e1-4081-b1de-28ef83e6169d",
+      "url": "https://okolojiznichcech.cz/archiv.html",
+      "from_watched_url_id": "99f89582-2ce9-4b9f-8f13-17b79cf8e903",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-26T00:42:44.721927+00:00",
+      "parent_url": "https://okolojiznichcech.cz",
+      "parent_status": "active"
+    },
+    {
+      "id": "08fad0e4-1c94-474f-8286-21bd5474841a",
+      "url": "https://redpointteam.cz/rallye-sudety/propozice-rallye-sudety",
+      "from_watched_url_id": "a5f348f8-ed84-4e86-90c4-f4be20f9a83a",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-26T00:42:48.74035+00:00",
+      "parent_url": "https://redpointteam.cz",
+      "parent_status": "active"
+    },
+    {
+      "id": "a7523d6b-98dd-497a-9742-910e4dd182d4",
+      "url": "https://redpointteam.cz/sportovni-klub/poradane-zavody",
+      "from_watched_url_id": "a5f348f8-ed84-4e86-90c4-f4be20f9a83a",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-26T00:42:48.775185+00:00",
+      "parent_url": "https://redpointteam.cz",
+      "parent_status": "active"
+    },
+    {
+      "id": "be699224-4ed6-4dc3-b86d-d2ac46dd0515",
+      "url": "https://amaterskaliga.cz/zavody/2026",
+      "from_watched_url_id": "fa0bf4cc-d20e-4084-9179-669e245cb8da",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-26T00:42:50.909941+00:00",
+      "parent_url": "http://amaterskaliga.cz",
+      "parent_status": "active"
+    },
+    {
+      "id": "c5617b1b-fd4e-481c-b871-16d264b9b66d",
+      "url": "https://pistovicky-cyklokapr.cz/propozice",
+      "from_watched_url_id": "fc3b2f2b-6a36-4cbc-8ad1-7934ef39a5ee",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-26T00:42:53.671484+00:00",
+      "parent_url": "https://www.pistovicky-cyklokapr.cz/",
+      "parent_status": "active"
+    },
+    {
+      "id": "e93b20fb-8e3e-4a7a-866c-0fde6d108a6a",
+      "url": "https://sokolovska24mtb.cz/registrace2019",
+      "from_watched_url_id": "3fd64487-2ba6-450f-be00-048ade0c9f0a",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-26T00:42:53.706478+00:00",
+      "parent_url": "https://www.sokolovska24mtb.cz/casovka/",
+      "parent_status": "active"
+    },
+    {
+      "id": "b7aa32be-8821-49f3-be6f-b8bc0fb2c091",
+      "url": "https://pistovicky-cyklokapr.cz/formulare",
+      "from_watched_url_id": "fc3b2f2b-6a36-4cbc-8ad1-7934ef39a5ee",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-26T00:42:53.731309+00:00",
+      "parent_url": "https://www.pistovicky-cyklokapr.cz/",
+      "parent_status": "active"
+    },
+    {
+      "id": "59f68034-33d8-4e40-b278-ad58f63aecfb",
+      "url": "https://sokolovska24mtb.cz/race",
+      "from_watched_url_id": "3fd64487-2ba6-450f-be00-048ade0c9f0a",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-26T00:42:53.753278+00:00",
+      "parent_url": "https://www.sokolovska24mtb.cz/casovka/",
+      "parent_status": "active"
+    },
+    {
+      "id": "bbc88952-62a7-4b9f-9d10-478c96b70889",
+      "url": "https://pistovicky-cyklokapr.cz/aktuality",
+      "from_watched_url_id": "fc3b2f2b-6a36-4cbc-8ad1-7934ef39a5ee",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-26T00:42:53.778287+00:00",
+      "parent_url": "https://www.pistovicky-cyklokapr.cz/",
+      "parent_status": "active"
+    },
+    {
+      "id": "1552a144-905e-45ad-bbde-7b15df9d2fb7",
+      "url": "https://sokolovska24mtb.cz/6058-2",
+      "from_watched_url_id": "3fd64487-2ba6-450f-be00-048ade0c9f0a",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-26T00:42:53.8109+00:00",
+      "parent_url": "https://www.sokolovska24mtb.cz/casovka/",
+      "parent_status": "active"
+    },
+    {
+      "id": "c9d936ac-d897-4a95-830f-cf449da5a9cd",
+      "url": "https://sokolovska24mtb.cz/s-24-mapa-arealu",
+      "from_watched_url_id": "3fd64487-2ba6-450f-be00-048ade0c9f0a",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-26T00:42:53.846685+00:00",
+      "parent_url": "https://www.sokolovska24mtb.cz/casovka/",
+      "parent_status": "active"
+    },
+    {
+      "id": "9ce9e6f7-fd30-46d3-b278-bad7bc592801",
+      "url": "https://cyklosvec.cz/zavody",
+      "from_watched_url_id": "c48f6c8a-941e-42da-930d-04b15fc9409e",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-26T00:42:54.475385+00:00",
+      "parent_url": "https://cyklosvec.cz",
+      "parent_status": "active"
+    },
+    {
+      "id": "be78431a-dc2f-4003-aa7b-6e734807528e",
+      "url": "https://cyklosvec.cz/ke-stazeni",
+      "from_watched_url_id": "c48f6c8a-941e-42da-930d-04b15fc9409e",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-26T00:42:54.513748+00:00",
+      "parent_url": "https://cyklosvec.cz",
+      "parent_status": "active"
+    },
+    {
+      "id": "2c5cafd3-9a81-4025-85df-10def8549db4",
+      "url": "https://cyklosvec.cz/aktuality/team-cyklosvec-cl848-php",
+      "from_watched_url_id": "c48f6c8a-941e-42da-930d-04b15fc9409e",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-26T00:42:54.551504+00:00",
+      "parent_url": "https://cyklosvec.cz",
+      "parent_status": "active"
+    },
+    {
+      "id": "1056a634-b995-451e-a102-2a2407ae6119",
+      "url": "https://cyklosvec.cz/sponzoring-10",
+      "from_watched_url_id": "c48f6c8a-941e-42da-930d-04b15fc9409e",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-26T00:42:54.591112+00:00",
+      "parent_url": "https://cyklosvec.cz",
+      "parent_status": "active"
+    },
+    {
+      "id": "e21af072-2ea3-461d-b357-c5e92a753d7c",
+      "url": "https://cyklosvec.cz/team-pg9.php",
+      "from_watched_url_id": "c48f6c8a-941e-42da-930d-04b15fc9409e",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-26T00:42:54.635819+00:00",
+      "parent_url": "https://cyklosvec.cz",
+      "parent_status": "active"
+    },
+    {
+      "id": "758cc090-2a86-4a6a-8950-eb6d0c14eef2",
+      "url": "https://cyklosvec.cz/galaxy-cyklosvec-cyklokros-kukle-2026",
+      "from_watched_url_id": "c48f6c8a-941e-42da-930d-04b15fc9409e",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-26T00:42:54.678891+00:00",
+      "parent_url": "https://cyklosvec.cz",
+      "parent_status": "active"
+    },
+    {
+      "id": "15e5c8e3-ffc5-4aef-8d46-1ef7b5650b13",
+      "url": "https://cyklosvec.cz/sponzoring-pg8.php",
+      "from_watched_url_id": "c48f6c8a-941e-42da-930d-04b15fc9409e",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-26T00:42:54.719248+00:00",
+      "parent_url": "https://cyklosvec.cz",
+      "parent_status": "active"
+    },
+    {
+      "id": "b186d9cd-63b5-45e4-9724-60a863f798a2",
+      "url": "https://cyklosvec.cz/ke-stazeni-pg6.php",
+      "from_watched_url_id": "c48f6c8a-941e-42da-930d-04b15fc9409e",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-26T00:42:54.761012+00:00",
+      "parent_url": "https://cyklosvec.cz",
+      "parent_status": "active"
+    },
+    {
+      "id": "7fb25ee1-76ab-4b5a-b52c-20dcdf34597f",
+      "url": "https://cesyk.cz/mahacup/prihlaska-formular",
+      "from_watched_url_id": "c3d571c5-50e9-4373-b691-287541b7814a",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-26T00:42:56.751522+00:00",
+      "parent_url": "https://cesyk.cz/mahacup/propozice-2/",
+      "parent_status": "active"
+    },
+    {
+      "id": "6cccd2a7-3d8c-48cb-9587-239419906bc8",
+      "url": "https://ztracenekobylky.cz/registrace",
+      "from_watched_url_id": "e695e30f-1c56-4c55-b477-a0e02bb85d01",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-26T00:42:58.638582+00:00",
+      "parent_url": "https://www.ztracenekobylky.cz/propozice-roubenkove26/",
+      "parent_status": "active"
+    },
+    {
+      "id": "147ccea0-2926-40fe-a1fd-925ca855889f",
+      "url": "https://ztracenekobylky.cz/podminky",
+      "from_watched_url_id": "e695e30f-1c56-4c55-b477-a0e02bb85d01",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-26T00:42:58.683581+00:00",
+      "parent_url": "https://www.ztracenekobylky.cz/propozice-roubenkove26/",
+      "parent_status": "active"
+    },
+    {
+      "id": "5bbc0b6a-a1eb-4303-a2d1-45e095a3588c",
+      "url": "https://ztracenekobylky.cz/sponzorsky-program",
+      "from_watched_url_id": "e695e30f-1c56-4c55-b477-a0e02bb85d01",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-26T00:42:58.718182+00:00",
+      "parent_url": "https://www.ztracenekobylky.cz/propozice-roubenkove26/",
+      "parent_status": "active"
+    },
+    {
+      "id": "6af65e6c-ae18-42da-bf90-3eed0956dd7d",
+      "url": "https://ztracenekobylky.cz/2026/02/145-kobylek-a-podzimni-tema",
+      "from_watched_url_id": "e695e30f-1c56-4c55-b477-a0e02bb85d01",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-26T00:42:58.758976+00:00",
+      "parent_url": "https://www.ztracenekobylky.cz/propozice-roubenkove26/",
+      "parent_status": "active"
+    },
+    {
+      "id": "79505bff-1288-4430-b18f-3fa85fd524f8",
+      "url": "https://spindlerovka-cup.cz/vysledky.html",
+      "from_watched_url_id": "0d5a1ad7-60d9-4567-a173-a529040d5904",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-26T00:42:59.781109+00:00",
+      "parent_url": "https://www.spindlerovka-cup.cz/",
+      "parent_status": "active"
+    },
+    {
+      "id": "b4370b91-8cde-4d54-bc1f-02ffaa053797",
+      "url": "https://spindlerovka-cup.cz/galerie.html",
+      "from_watched_url_id": "0d5a1ad7-60d9-4567-a173-a529040d5904",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-26T00:42:59.828867+00:00",
+      "parent_url": "https://www.spindlerovka-cup.cz/",
+      "parent_status": "active"
+    },
+    {
+      "id": "8596c943-4eea-4c95-94cc-3002b933d900",
+      "url": "https://tjoresin.cz/oresinsky-vanek/registrace",
+      "from_watched_url_id": "ac91a315-033c-428e-a272-117261291fed",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-26T00:43:00.323736+00:00",
+      "parent_url": "https://www.tjoresin.cz/oresinsky-vanek/",
+      "parent_status": "active"
+    },
+    {
+      "id": "bb9d2ef0-6fbc-46a3-8477-540617e9f0a9",
+      "url": "https://prazska50.cz/stranka/propozice",
+      "from_watched_url_id": "cb86f1fe-a85e-4e74-af02-7512f8eb2223",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-26T00:43:00.981284+00:00",
+      "parent_url": "https://prazska50.cz",
+      "parent_status": "active"
+    },
+    {
+      "id": "99e5cf77-6e34-4bad-8e33-609a011a4926",
+      "url": "https://prazska50.cz/stranka/registrace",
+      "from_watched_url_id": "cb86f1fe-a85e-4e74-af02-7512f8eb2223",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-26T00:43:01.016636+00:00",
+      "parent_url": "https://prazska50.cz",
+      "parent_status": "active"
+    },
+    {
+      "id": "90a726a1-b29d-4fbf-b0e9-96ff51469737",
+      "url": "https://zlinska50.cz/propozice",
+      "from_watched_url_id": "4d99080f-8c50-4ca8-916a-3cdc95e58b1d",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-26T00:43:04.649204+00:00",
+      "parent_url": "https://zlinska50.cz",
+      "parent_status": "active"
+    },
+    {
+      "id": "ea8a6b52-d4c3-47aa-8782-1f82ee508ea0",
+      "url": "http://okolohor.cz/domains/okolohor.cz/index.php/kalendar",
+      "from_watched_url_id": "a5153f6a-8c40-4215-8eea-ce4861d1da38",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-26T00:43:05.403608+00:00",
+      "parent_url": "http://okolohor.cz",
+      "parent_status": "active"
+    },
+    {
+      "id": "78722c0e-2b03-45e8-8e1c-e86013f048fd",
+      "url": "http://okolohor.cz/domains/okolohor.cz/index.php/about/okolohor-z-s",
+      "from_watched_url_id": "a5153f6a-8c40-4215-8eea-ce4861d1da38",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-26T00:43:05.451231+00:00",
+      "parent_url": "http://okolohor.cz",
+      "parent_status": "active"
+    },
+    {
+      "id": "e32be432-b61a-4899-a2d6-7845bcf6d27d",
+      "url": "http://cykloteam.cz/wp-content/uploads/2026/03/Sob%C4%9Bslavsk%C3%A9-okruhy_2026_Final.pdf",
+      "from_watched_url_id": "7ecbd163-697e-48fb-a9b1-fe0836fbac69",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-26T00:43:11.623992+00:00",
+      "parent_url": "http://cykloteam.cz",
+      "parent_status": "active"
+    },
+    {
+      "id": "94648ea5-7335-462e-bb31-cad4028cb9e2",
+      "url": "http://cykloteam.cz/2026/08/12/vialit-galaxy-sobeslavsky-mtb-maraton-2026",
+      "from_watched_url_id": "7ecbd163-697e-48fb-a9b1-fe0836fbac69",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-26T00:43:11.672631+00:00",
+      "parent_url": "http://cykloteam.cz",
+      "parent_status": "active"
+    },
+    {
+      "id": "78c57668-716b-4486-867b-1811c41b6252",
+      "url": "http://cykloteam.cz/2026/03/23/banes-alfahaus-sobeslavske-okruhy-2026-48-rocnik",
+      "from_watched_url_id": "7ecbd163-697e-48fb-a9b1-fe0836fbac69",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-26T00:43:11.71471+00:00",
+      "parent_url": "http://cykloteam.cz",
+      "parent_status": "active"
+    },
+    {
+      "id": "20d3272e-a612-4d2b-9e8b-a0595f6cc6d8",
+      "url": "https://pavov.cup.cz",
+      "from_watched_url_id": null,
+      "status": "pending",
+      "hint_kind": "explore",
+      "created_at": "2026-10-26T06:12:28.145604+00:00",
+      "parent_url": null,
+      "parent_status": null
+    },
+    {
+      "id": "7790477b-ad08-4178-9449-a6f99ebd876c",
+      "url": "http://bikesportmh.cz/mohelnicky-1-2-maraton",
+      "from_watched_url_id": "dfa031d4-4599-4fc4-a5da-b9ad1d0f4abe",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-26T06:51:02.965901+00:00",
+      "parent_url": "http://bikesportmh.cz",
+      "parent_status": "active"
+    },
+    {
+      "id": "2d408a6b-b360-4995-b015-4698150ec695",
+      "url": "http://bikesportmh.cz/o-nas",
+      "from_watched_url_id": "dfa031d4-4599-4fc4-a5da-b9ad1d0f4abe",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-26T06:51:03.035091+00:00",
+      "parent_url": "http://bikesportmh.cz",
+      "parent_status": "active"
+    },
+    {
+      "id": "aafa887d-f1b1-4513-b3a3-ad64a0fe9159",
+      "url": "http://clcyklo.cz/kalendar",
+      "from_watched_url_id": "e9db5d22-acf0-42d0-aa35-0fb22c4b3059",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-26T06:51:03.634309+00:00",
+      "parent_url": "http://clcyklo.cz",
+      "parent_status": "active"
+    },
+    {
+      "id": "97e27520-1716-431c-acbd-9dfa955649e8",
+      "url": "http://clcyklo.cz/zavody",
+      "from_watched_url_id": "e9db5d22-acf0-42d0-aa35-0fb22c4b3059",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-26T06:51:04.085842+00:00",
+      "parent_url": "http://clcyklo.cz",
+      "parent_status": "active"
+    },
+    {
+      "id": "d177ec00-b13d-4e73-bd4e-af9758b4a4f9",
+      "url": "http://clcyklo.cz/archiv-vysledku",
+      "from_watched_url_id": "e9db5d22-acf0-42d0-aa35-0fb22c4b3059",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-26T06:51:04.134922+00:00",
+      "parent_url": "http://clcyklo.cz",
+      "parent_status": "active"
+    },
+    {
+      "id": "3d3af19c-62f5-4478-adf9-3fe8599dc16b",
+      "url": "http://clcyklo.cz/porovnani-casovek",
+      "from_watched_url_id": "e9db5d22-acf0-42d0-aa35-0fb22c4b3059",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-26T06:51:04.183328+00:00",
+      "parent_url": "http://clcyklo.cz",
+      "parent_status": "active"
+    },
+    {
+      "id": "ffce7077-c6e7-428c-b3c5-8802006980b7",
+      "url": "http://clcyklo.cz/2026/05/05/prvni-stupne-vitezu-v-roce-2026",
+      "from_watched_url_id": "e9db5d22-acf0-42d0-aa35-0fb22c4b3059",
+      "status": "pending",
+      "hint_kind": "outbound",
+      "created_at": "2026-10-26T06:51:04.263931+00:00",
+      "parent_url": "http://clcyklo.cz",
+      "parent_status": "active"
+    },
+    {
+      "id": "699576ee-82e8-47ec-9fc0-b268067b6389",
+      "url": "https://ridegravel.ch/bern",
+      "from_watched_url_id": null,
+      "status": "pending",
+      "hint_kind": "explore_unread",
+      "created_at": "2026-10-26T09:42:20.908913+00:00",
+      "parent_url": null,
+      "parent_status": null
+    },
+    {
+      "id": "0b11f44b-20bd-42a3-98fc-78bcf4fa2821",
+      "url": "https://ridegravel.ch/bern/premieren-schweizer-meister-werden-in-bern-erkoren",
+      "from_watched_url_id": null,
+      "status": "pending",
+      "hint_kind": "explore_unread",
+      "created_at": "2026-10-26T09:42:20.990717+00:00",
+      "parent_url": null,
+      "parent_status": null
+    },
+    {
+      "id": "7121f54b-1059-4097-9967-2469a94a22ee",
+      "url": "https://swiss-cycling.ch/de/veranstaltungen/kalender",
+      "from_watched_url_id": null,
+      "status": "pending",
+      "hint_kind": "explore_unread",
+      "created_at": "2026-10-26T09:42:21.070422+00:00",
+      "parent_url": null,
+      "parent_status": null
+    },
+    {
+      "id": "81313c37-da87-45c3-89c9-0a30c07a5a37",
+      "url": "https://808project.de/post/gravel-bike-events-2026-alle-rennen-termine-auf-einen-blick",
+      "from_watched_url_id": null,
+      "status": "pending",
+      "hint_kind": "explore_unread",
+      "created_at": "2026-10-26T09:42:21.138528+00:00",
+      "parent_url": null,
+      "parent_status": null
+    },
+    {
+      "id": "edd16853-7114-44d1-84ba-01ac7b2d942b",
+      "url": "https://mountainbiker.ch/events",
+      "from_watched_url_id": null,
+      "status": "pending",
+      "hint_kind": "explore_unread",
+      "created_at": "2026-10-26T09:42:21.186959+00:00",
+      "parent_url": null,
+      "parent_status": null
+    },
+    {
+      "id": "3ae8ebfd-36b3-4ec9-a817-9a29f3cf15b8",
+      "url": "https://mountainbiker.ch/events/all",
+      "from_watched_url_id": null,
+      "status": "pending",
+      "hint_kind": "explore_unread",
+      "created_at": "2026-10-26T09:42:21.295044+00:00",
+      "parent_url": null,
+      "parent_status": null
+    },
+    {
+      "id": "266b0152-1b8f-46b7-bfc8-ece428874c6f",
+      "url": "https://eigerbike.ch/de/home",
+      "from_watched_url_id": null,
+      "status": "pending",
+      "hint_kind": "explore_unread",
+      "created_at": "2026-10-26T09:42:21.339195+00:00",
+      "parent_url": null,
+      "parent_status": null
+    },
+    {
+      "id": "69af2fe3-e2b2-46f3-b41a-acd58288a3c8",
+      "url": "https://eigerbike.ch",
+      "from_watched_url_id": null,
+      "status": "pending",
+      "hint_kind": "explore_unread",
+      "created_at": "2026-10-26T09:42:21.388865+00:00",
+      "parent_url": null,
+      "parent_status": null
+    },
+    {
+      "id": "9e1196f6-2801-4184-af79-0b20bc0764e7",
+      "url": "https://trainingscup.ch",
+      "from_watched_url_id": null,
+      "status": "pending",
+      "hint_kind": "explore_unread",
+      "created_at": "2026-10-26T09:42:21.44015+00:00",
+      "parent_url": null,
+      "parent_status": null
+    },
+    {
+      "id": "9b07df3b-d533-4252-b9a8-c39046839fb2",
+      "url": "https://cup.cz",
+      "from_watched_url_id": null,
+      "status": "pending",
+      "hint_kind": "explore_unread",
+      "created_at": "2026-10-26T09:42:21.489887+00:00",
+      "parent_url": null,
+      "parent_status": null
+    },
+    {
+      "id": "f600ed0b-c1e8-4e89-8481-c0c1ec7547c7",
+      "url": "https://tour-magazin.de/profi-radsport/tagesrennen/cyclocross-weltcup-kalender-2026-2027-alle-termine",
+      "from_watched_url_id": null,
+      "status": "pending",
+      "hint_kind": "explore_unread",
+      "created_at": "2026-10-28T21:17:48.225751+00:00",
+      "parent_url": null,
+      "parent_status": null
+    },
+    {
+      "id": "7bf4087b-20f6-4463-93ac-136189bef66c",
+      "url": "https://radgate.de/radrennen/cyclocross",
+      "from_watched_url_id": null,
+      "status": "pending",
+      "hint_kind": "explore_unread",
+      "created_at": "2026-10-28T21:17:48.526556+00:00",
+      "parent_url": null,
+      "parent_status": null
+    },
+    {
+      "id": "a0917385-0c2d-4f15-8baf-c92dede47dbd",
+      "url": "https://rst-luebeck.de/wp-content/uploads/2026/06/Termine-Cyclo-Cross-Rennen-2026_27.pdf",
+      "from_watched_url_id": null,
+      "status": "pending",
+      "hint_kind": "explore_unread",
+      "created_at": "2026-10-28T21:17:48.729429+00:00",
+      "parent_url": null,
+      "parent_status": null
+    },
+    {
+      "id": "bd5ca3dc-0f8b-429f-853c-b52376031365",
+      "url": "https://radsportaktuell.de/cyclocross-kalender",
+      "from_watched_url_id": null,
+      "status": "pending",
+      "hint_kind": "explore_unread",
+      "created_at": "2026-10-28T21:17:48.780507+00:00",
+      "parent_url": null,
+      "parent_status": null
+    },
+    {
+      "id": "9f76a589-b738-4d61-9c32-879127966997",
+      "url": "https://rst-luebeck.de/wp-content/uploads/2026/09/Termine-Cyclo-Cross-Rennen-2026_27.pdf",
+      "from_watched_url_id": null,
+      "status": "pending",
+      "hint_kind": "explore_unread",
+      "created_at": "2026-10-28T21:17:48.836111+00:00",
+      "parent_url": null,
+      "parent_status": null
+    },
+    {
+      "id": "1aa3115a-08cf-4ec2-b76c-8c5824953e8b",
+      "url": "https://mtb-news.de/news/mtb-world-series-2027-uci-kalender-leak",
+      "from_watched_url_id": null,
+      "status": "pending",
+      "hint_kind": "explore_unread",
+      "created_at": "2026-10-28T21:17:48.904724+00:00",
+      "parent_url": null,
+      "parent_status": null
+    },
+    {
+      "id": "e96967fe-1ac9-4d4a-80d3-9525b954ba5d",
+      "url": "https://radgate.de/radrennen/jahr/2027",
+      "from_watched_url_id": null,
+      "status": "pending",
+      "hint_kind": "explore_unread",
+      "created_at": "2026-10-28T21:17:49.049375+00:00",
+      "parent_url": null,
+      "parent_status": null
+    },
+    {
+      "id": "33617ca3-c9e4-491d-8e1e-1b024c93b56c",
+      "url": "https://mtb-news.de/news/uci-cycling-world-championships-2027-kalender",
+      "from_watched_url_id": null,
+      "status": "pending",
+      "hint_kind": "explore_unread",
+      "created_at": "2026-10-28T21:17:49.107543+00:00",
+      "parent_url": null,
+      "parent_status": null
+    },
+    {
+      "id": "70e36474-8eeb-4e26-a9c2-519e156236d9",
+      "url": "https://bike-magazin.de/touren/europa/mountain-races-2027-routen-bewerbung",
+      "from_watched_url_id": null,
+      "status": "pending",
+      "hint_kind": "explore_unread",
+      "created_at": "2026-10-28T21:17:49.162537+00:00",
+      "parent_url": null,
+      "parent_status": null
+    },
+    {
+      "id": "b2617264-d042-4432-a677-b41a0d2c3104",
+      "url": "https://radgate.de/radrennen/2027/halterner-mtb-rennen-haltern-am-see",
+      "from_watched_url_id": null,
+      "status": "pending",
+      "hint_kind": "explore_unread",
+      "created_at": "2026-10-28T21:17:49.24821+00:00",
+      "parent_url": null,
+      "parent_status": null
+    },
+    {
+      "id": "9de97b15-487c-4e0b-811a-ee2671c6fa80",
+      "url": "https://fullgazrace.de",
+      "from_watched_url_id": null,
+      "status": "pending",
+      "hint_kind": "explore_unread",
+      "created_at": "2026-10-28T21:17:49.346245+00:00",
+      "parent_url": null,
+      "parent_status": null
+    },
+    {
+      "id": "82056f90-4f96-4f20-aaf5-7b09d80051f6",
+      "url": "https://bike-packing.de/magazin/atlas-mountain-race",
+      "from_watched_url_id": null,
+      "status": "pending",
+      "hint_kind": "explore_unread",
+      "created_at": "2026-10-28T21:17:49.387621+00:00",
+      "parent_url": null,
+      "parent_status": null
+    },
+    {
+      "id": "10215522-7849-4b13-832a-ea4e0b5f5e42",
+      "url": "https://steppenwolf-berlin.de/cyclocross-rennen-berlin-26-27",
+      "from_watched_url_id": null,
+      "status": "pending",
+      "hint_kind": "explore_unread",
+      "created_at": "2026-10-28T23:23:34.042888+00:00",
+      "parent_url": null,
+      "parent_status": null
+    },
+    {
+      "id": "a9caf257-9f8d-4d6e-9ee7-58a5755a1e5f",
+      "url": "https://kellerwald-bikemarathon.de/hp2017",
+      "from_watched_url_id": null,
+      "status": "pending",
+      "hint_kind": "explore_unread",
+      "created_at": "2026-10-28T23:23:34.145374+00:00",
+      "parent_url": null,
+      "parent_status": null
+    },
+    {
+      "id": "e65a7474-579c-42e9-bd17-e152577c993f",
+      "url": "https://brt27.de/anmeldung.html",
+      "from_watched_url_id": null,
+      "status": "pending",
+      "hint_kind": "explore_unread",
+      "created_at": "2026-10-28T23:23:34.231165+00:00",
+      "parent_url": null,
+      "parent_status": null
+    },
+    {
+      "id": "fd780649-8731-4331-88f4-0ceba0bcf497",
+      "url": "https://kolozavod.cz/zavody/GRAVEL/?rocnik=2026",
+      "from_watched_url_id": null,
+      "status": "pending",
+      "hint_kind": "explore_unread",
+      "created_at": "2026-10-31T00:01:28.301743+00:00",
+      "parent_url": null,
+      "parent_status": null
+    },
+    {
+      "id": "bc798c79-4415-458d-8045-5a338d73a333",
+      "url": "https://gravel-sudomir.cz/2025/12/%F0%9F%9A%B4-gravel-sudomir-2026-zavod-pro-vsechny",
+      "from_watched_url_id": null,
+      "status": "pending",
+      "hint_kind": "explore_unread",
+      "created_at": "2026-10-31T00:01:28.777503+00:00",
+      "parent_url": null,
+      "parent_status": null
+    },
+    {
+      "id": "1ea94dba-bae6-4768-9bd4-007f3ca34e35",
+      "url": "https://bezpodpory.cz/bikepacking-a-ultra-cyklisticke-zavody-v-cesku-a-na-slovensku-2026/gravel",
+      "from_watched_url_id": null,
+      "status": "pending",
+      "hint_kind": "explore_unread",
+      "created_at": "2026-10-31T00:01:28.994717+00:00",
+      "parent_url": null,
+      "parent_status": null
+    },
+    {
+      "id": "115532ff-1b47-40d1-8b3b-b49c92b06a30",
+      "url": "https://kalendar.winspace.cz/kalendar/2026-gravel-live-2026-e42c2ab6",
+      "from_watched_url_id": null,
+      "status": "pending",
+      "hint_kind": "explore_unread",
+      "created_at": "2026-10-31T00:01:29.271434+00:00",
+      "parent_url": null,
+      "parent_status": null
+    },
+    {
+      "id": "000bc42f-6465-4a32-867a-51f3b1a5a6ab",
+      "url": "https://kudyznudy.cz/akce/gravel-series-cyklisticke-zavody",
+      "from_watched_url_id": null,
+      "status": "pending",
+      "hint_kind": "explore_unread",
+      "created_at": "2026-10-31T00:01:29.45831+00:00",
+      "parent_url": null,
+      "parent_status": null
+    },
+    {
+      "id": "a1acb783-5f00-473d-8a4e-24f868cb2a42",
+      "url": "https://detskymtbcup.cz/detsky-mtb-cup-p10",
+      "from_watched_url_id": null,
+      "status": "pending",
+      "hint_kind": "explore_unread",
+      "created_at": "2026-10-31T00:01:29.669379+00:00",
+      "parent_url": null,
+      "parent_status": null
+    },
+    {
+      "id": "d8df7dcc-c764-4069-8295-8396d7be5988",
+      "url": "https://pivorohozec.cz/novinka/detsky-mtb-cup",
+      "from_watched_url_id": null,
+      "status": "pending",
+      "hint_kind": "explore_unread",
+      "created_at": "2026-10-31T00:01:29.819857+00:00",
+      "parent_url": null,
+      "parent_status": null
+    },
+    {
+      "id": "65ef6dbb-3ccd-4224-bd71-7c0d3b73a084",
+      "url": "https://kolozavod.cz/detsky-mtb-cup-libereckeho-nove-mesto-pod-smrkem-2026",
+      "from_watched_url_id": null,
+      "status": "pending",
+      "hint_kind": "explore_unread",
+      "created_at": "2026-10-31T00:01:29.890413+00:00",
+      "parent_url": null,
+      "parent_status": null
+    },
+    {
+      "id": "0b433181-7924-43db-8eb9-273243181a45",
+      "url": "https://vikendo.cz/events/detsky-mtb-cup-5b42e090-f810-413b-b4ac-b7b259473c7b",
+      "from_watched_url_id": null,
+      "status": "pending",
+      "hint_kind": "explore_unread",
+      "created_at": "2026-10-31T00:01:29.94522+00:00",
+      "parent_url": null,
+      "parent_status": null
+    }
+  ]
+}

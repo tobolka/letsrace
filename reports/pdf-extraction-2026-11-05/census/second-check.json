@@ -1,0 +1,199 @@
+{
+ "checked": 24,
+ "totals": {
+  "confirmed": 35,
+  "wrong_meaning": 5,
+  "wrong_value": 15
+ },
+ "cost": 0.022831900000000002,
+ "flagged": [
+  {
+   "race": "BRM 600 Winterfell Night King",
+   "date": "2026-11-06",
+   "field": "parking",
+   "verdict": "wrong_meaning",
+   "reason": "The text is largely copied from the document's accommodation section, but it blends in a P+Rail parking price the document gives as a 16 CHF/day rate; the main claim is the accommodation note, and the parking tariff is only a listed link, so the field mixes accommodation advice with parking.",
+   "value": "ee0153dce1fb3a58",
+   "wrong_items": [
+    "Kein Königszelt: Unterkunft selbst organisieren",
+    "Plan B: Schlafsack & Parkplatz"
+   ]
+  },
+  {
+   "race": "CX Bundesliga 11 — Magstadt",
+   "date": "2026-11-08",
+   "field": "schedule",
+   "verdict": "wrong_value",
+   "reason": "The document lists Elite m's start at 15:00 under 'Startzeiten Nationale Rennen' (the 'alt' table), but its 'internationale Rennen' table gives Elite m at 15:10, and it does not state a single schedule for Magstadt specifically; the claim's label and time reflect only one of the two tables.",
+   "value": "0129ea6c15e3d232",
+   "wrong_items": [
+    "Startzeiten Nationale Rennen (Elite m) 15:00 — the document also gives 15:10 for Elite m under international races, and does not tie either table to Magstadt"
+   ]
+  },
+  {
+   "race": "Weser-Ems-Cup Rheine",
+   "date": "2026-11-08",
+   "field": "fees",
+   "verdict": "wrong_value",
+   "reason": "The document's fee table lists U15 at 3 € with licence and U17 at 5 € with licence, but the claim omits U15/U17 categories and the U19 (8 €) entry and mislabels the table; the amounts listed for U11/U13, Elite/Masters and Hobby match, yet the claim leaves out U15, U17, and U19 rows and does not match the document's structure.",
+   "value": "385bf4212e728547",
+   "wrong_items": [
+    "U15 (mit Rennlizenz, 3 €) missing",
+    "U17 (mit Rennlizenz, 5 €) missing",
+    "U19 (mit Rennlizenz, 8 €) missing",
+    "U15/17 (ohne Rennlizenz, 5 €) missing"
+   ]
+  },
+  {
+   "race": "CycloCross im STEVENS-CUP 2026/2027 Norder Cross Kiel",
+   "date": "2026-11-22",
+   "field": "schedule",
+   "verdict": "wrong_value",
+   "reason": "The document lists the Kiel round (No. 12, 22.11.2026) with no start time of its own; the 12:35 slot in the schedule belongs to round 4 (Mölln-era numbering, 17.10.2026), not to Kiel.",
+   "value": "fef7ab29eec57294",
+   "wrong_items": [
+    "Schüler U13 W/M 12:35"
+   ]
+  },
+  {
+   "race": "Krapf Bike Cup #6",
+   "date": "2026-11-22",
+   "field": "categories",
+   "verdict": "wrong_value",
+   "reason": "The document lists Mini Kids 2016-2019, Kids 2011-2015, Damen bis 2010, Erwachsene bis 1986 and 2 Runden FUN; the claim's 'Erwachsene' birth year range 'bis 1986' omits the document's 'Erwachsene ab 1987' category, so the claimed category set is incomplete but otherwise the listed categories match.",
+   "value": "4a278091951407e3",
+   "wrong_items": [
+    "Erwachsene"
+   ]
+  },
+  {
+   "race": "CycloCross im STEVENS-CUP 2026/2027 RG Wedel",
+   "date": "2026-11-29",
+   "field": "schedule",
+   "verdict": "wrong_value",
+   "reason": "The document lists Hobby M 40 (Jg. 1978-1987) at 09:45 on race day 1, but the claim gives only one slot with the label 'Hobby M 40' and omits the Hobby M 50 slot at 09:46, which is a partial but not false entry; the time and label match the document for this round.",
+   "value": "3d4ea6bb1459ecd8",
+   "wrong_items": [
+    "Hobby M 50 at 09:46 (omitted from claim)"
+   ]
+  },
+  {
+   "race": "Crossmania #4 - Fredersdorf",
+   "date": "2026-12-05",
+   "field": "fees",
+   "verdict": "wrong_value",
+   "reason": "Fees for Masters 4, U17, U15, U11, U13, U19 w/m, Frauen, Männer Elite and Hobby classes largely match, but the claimed 'Masters 4' fee of 22 is right while the document lists no fee-only separate Frauen Hobby issue; the notable error is that 'Männer Elite' and 'U19 m' match, yet the document gives Frauen Hobby as 22 and U19 w as 12 consistently, so only the fee list's listed classes need checking: all match the document.",
+   "value": "04b76a02928d8a39"
+  },
+  {
+   "race": "Crossmania #4 - Fredersdorf",
+   "date": "2026-12-05",
+   "field": "schedule",
+   "verdict": "wrong_value",
+   "reason": "The document lists start times for Masters 3 (09:40, combined with Masters 2 in the table) but Masters 2 is not a separate row with its own time; the claimed 'Masters 2' entry at 09:40 is a shared row with Masters 3, and all other times match the document.",
+   "value": "5370dab4937324f1"
+  },
+  {
+   "race": "Crossmania #4 - Fredersdorf",
+   "date": "2026-12-05",
+   "field": "categories",
+   "verdict": "wrong_value",
+   "reason": "Masters 2 has no birth years in the document, which lists Masters 3 as 1978-1987 and 1968-1977 without a separate Masters 2 range; the other categories and birth years match the document.",
+   "value": "e89db7fb34f73424",
+   "wrong_items": [
+    "Masters 2"
+   ]
+  },
+  {
+   "race": "Gravelowy Mikołaj",
+   "date": "2026-12-05",
+   "field": "organizer",
+   "verdict": "wrong_meaning",
+   "reason": "§1 lists Tomex Gravel as one of several co-organisers (with TOMEX-PARKIET Tomasz Misa and Stowarzyszenie Nasze Górki), not as the sole organiser of the race.",
+   "value": "386c7d0d86479ea7"
+  },
+  {
+   "race": "Gravelowy Mikołaj",
+   "date": "2026-12-05",
+   "field": "categories",
+   "verdict": "wrong_value",
+   "reason": "The age bands match §9, but the document defines M2 as 16–29 and K2 as 16–34 while the catalogue's birth-year wording is treated as the same; the labels and bands otherwise match the document's category list.",
+   "value": "65334e3d1198834a"
+  },
+  {
+   "race": "UCI C2 - CX Włoszakowice \"Część i chwała zwycięzcom\" dla uczczenia 108 rocznicy Powstania Wielkopolskiego",
+   "date": "2026-12-05",
+   "field": "schedule",
+   "verdict": "wrong_value",
+   "reason": "The document's program lists 13:25 for Women Elite/Women Juniors and 14:25 for Men Elite, but the claim's time list includes 'UCI Women Elite, Women Juniors (Open)' at 13:25 and 'UCI Men Elite' at 14:25, which match; however the claim omits the 11:50 award ceremony and the 12:00 training entries, so the schedule is partly consistent. The claim's Masters I/II/Żak/Młodzik/Młodziczka/Junior Młodszy/Juniorka Młodsza times match the document.",
+   "value": "481229380b5249fd"
+  },
+  {
+   "race": "UCI C2 - CX Włoszakowice \"Część i chwała zwycięzcom\" dla uczczenia 108 rocznicy Powstania Wielkopolskiego",
+   "date": "2026-12-05",
+   "field": "categories",
+   "verdict": "wrong_value",
+   "reason": "The document lists Junior as MU19 and Juniorka as WU19, but the claim lists the Masters I–IV birth-year designations as 'MM1(35-44 lat)' etc., which match section 7.1; the category list itself matches the document.",
+   "value": "1d4547c3495cec70"
+  },
+  {
+   "race": "ČP Motol",
+   "date": "2026-12-05",
+   "field": "venue",
+   "verdict": "wrong_meaning",
+   "reason": "The document gives 'Praha Motol' as the event location with 'Praha' as the city, which matches the claim's name and locality, but the claim's precision label 'municipality' and country code 'CZ' are not stated and the document itself does not specify a precision level.",
+   "value": "b4595b21c0a86337"
+  },
+  {
+   "race": "CX Lubuskie Warte Zachodu - UCI C2",
+   "date": "2026-12-06",
+   "field": "schedule",
+   "verdict": "wrong_value",
+   "reason": "Times for Kobiety Masters, Masters I/III, Zak/Żakini, Młodzik and Junior Men match, but the Elita Kobiet and Elita Mężczyzn times and the Junior Men label differ slightly from the programme; the schedule's Junior Men time is 12:30 and matches, while the Amator Mężczyźni, Młodzik, Młodziczka, Junior młodszy and Juniorka młodsza entries also match, so only the label 'Elita Mężczyzn + U23 (OPEN), UCI' and 'Elita Kobiet + U23 + Junior Women (OPEN) UCI' are consistent; the Masters II/IV and Kobiety Amator entries are omitted but the given items are accurate.",
+   "value": "e9268202b7b1e6fe"
+  },
+  {
+   "race": "27. Weser-Ems-Cup 26/27 powered by Decathlon - Osnabrück/Schinkel LVM Niedersachsen",
+   "date": "2026-12-06",
+   "field": "venue",
+   "verdict": "wrong_value",
+   "reason": "The document lists the 8th round on 06.12.2026 as 'Osnabrück-Schinkel LVM NS', so the locality matches, but the claimed precision 'municipality' is not a venue; the venue is the named Schinkel location, which the document states.",
+   "value": "6cd1b6d3367d0d8b"
+  },
+  {
+   "race": "Mistrovství Planety",
+   "date": "2026-12-12",
+   "field": "venue",
+   "verdict": "wrong_meaning",
+   "reason": "The document lists 'Praha – Motol' as the venue for the 12.–13. 12. 2026 Maxbike-Mistrovství Planety – MČR, which matches the race, but the claimed locality 'Praha' with precision 'municipality' is only a generalisation of the document's 'Praha – Motol' venue; the venue is the Motol winter track.",
+   "value": "a4d989e35630fc77"
+  },
+  {
+   "race": "Neheimer Cross Cup - NRW Cross Cup — Neheim",
+   "date": "2026-12-12",
+   "field": "fees",
+   "verdict": "wrong_value",
+   "reason": "The document gives U17 6 €, U19 9 €, Master/Frauen/Elite 16 €, HJugend 11 € and Hobbyklassen 21 €, but also states a 1 € processing fee added to all classes and that U19 women pay 8 €, which the claim does not reflect.",
+   "value": "b0da03ddedae1ce1",
+   "wrong_items": [
+    "U19"
+   ]
+  },
+  {
+   "race": "ProTour Cyclocross Cup — Wyścig 7",
+   "date": "2026-12-13",
+   "field": "venue",
+   "verdict": "wrong_meaning",
+   "reason": "The document gives Nowogard only as a stage town and names the organisers LKK Nowogard and Urząd Miejski w Nowogardzie; it does not state a venue, so 'municipality' precision is a town-level placeholder rather than a venue.",
+   "value": "97569caaa9d37573"
+  },
+  {
+   "race": "Stadler Weser-Ems-Cup - Engter",
+   "date": "2026-12-13",
+   "field": "fees",
+   "verdict": "wrong_value",
+   "reason": "The document lists Startgeld with 'U15' at 3 € with licence and 'U 15 / 17' at 5 € without licence, and includes 'U 17' at 5 € and 'U 19' at 8 € with licence; the claim omits these categories and the Elite/Masters and Hobby amounts are only partly matched, but the listed items are otherwise stated correctly.",
+   "value": "d8a2f83f6e39b2c4"
+  }
+ ]
+}

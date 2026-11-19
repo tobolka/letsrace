@@ -1,0 +1,569 @@
+[
+  {
+    "url": "https://bikeboard.at/termine/34-scott-erzgebirgs-bike-marathon-termin16099",
+    "finalUrl": "https://bikeboard.at/termine/34-scott-erzgebirgs-bike-marathon-termin16099",
+    "status": 200,
+    "key": "f779166d97f2fb4e",
+    "bytes": 76311,
+    "sha256": "838e472c9bb7005cfab06f1d0f75801ea5fcc7eea5f484041bbf286ca2cf30eb",
+    "at": "2026-10-29T15:08:50.245586+00:00"
+  },
+  {
+    "url": "https://bikeboard.at/termine/4-laendermeisterschaft-strasse-u23-termin15984",
+    "finalUrl": "https://bikeboard.at/termine/4-laendermeisterschaft-strasse-u23-termin15984",
+    "status": 200,
+    "key": "703fca282df7f13c",
+    "bytes": 71245,
+    "sha256": "af9703dd0475cb664239611954ec21198b43384074770ec45f397b67d046a5c5",
+    "at": "2026-10-29T15:08:50.245979+00:00"
+  },
+  {
+    "url": "https://bikeboard.at/termine/tour-transalp-termin16129",
+    "finalUrl": "https://bikeboard.at/termine/tour-transalp-termin16129",
+    "status": 200,
+    "key": "c28720054025d9e2",
+    "bytes": 63845,
+    "sha256": "1af0e44ac96fe89ba93d0b71f8601e83937bcf3be1115843f5ec15a64739ba96",
+    "at": "2026-10-29T15:08:50.275051+00:00"
+  },
+  {
+    "url": "https://hynekmusil.cz",
+    "finalUrl": "https://hynekmusil.cz",
+    "status": 200,
+    "key": "f8925ae970190c90",
+    "bytes": 187595,
+    "sha256": "cf6f4de7c6ff4002fa44aaa650365957741ed146c89cdb57a67318026cb80cb7",
+    "at": "2026-10-29T15:08:50.047425+00:00"
+  },
+  {
+    "url": "https://hynekmusil.cz/?serialosss=kpz",
+    "finalUrl": "https://hynekmusil.cz/?serialosss=kpz",
+    "status": 200,
+    "key": "eda61b94d035c691",
+    "bytes": 14011,
+    "sha256": "0606e9964be20aebb264ee7575cc85a83a11f68f9b6613365b68a298068e30a6",
+    "at": "2026-10-29T15:08:49.934390+00:00"
+  },
+  {
+    "url": "https://hynekmusil.cz/?serialosss=mtbbl",
+    "finalUrl": "https://hynekmusil.cz/?serialosss=mtbbl",
+    "status": 200,
+    "key": "274b5a1a20fe3995",
+    "bytes": 14011,
+    "sha256": "0606e9964be20aebb264ee7575cc85a83a11f68f9b6613365b68a298068e30a6",
+    "at": "2026-10-29T15:08:49.933510+00:00"
+  },
+  {
+    "url": "https://kalendarzrowerowy.pl/wydarzenie/brevet-niepodlegla-2026/",
+    "finalUrl": "https://kalendarzrowerowy.pl/wydarzenie/brevet-niepodlegla-2026/",
+    "status": 200,
+    "key": "9cfe9616330f28e4",
+    "bytes": 33336,
+    "sha256": "c785e8ae6c788d2db81298d4be32082c52701a737b2ebdb57f469f2b9c0e7fa7",
+    "at": "2026-10-29T15:08:50.279130+00:00"
+  },
+  {
+    "url": "https://kalendarzrowerowy.pl/wydarzenie/the-grand-escape-tuscany-2026/",
+    "finalUrl": "https://kalendarzrowerowy.pl/wydarzenie/the-grand-escape-tuscany-2026/",
+    "status": 200,
+    "key": "6ce8eb4b3c368666",
+    "bytes": 29306,
+    "sha256": "c998427ab3cdc19ae52a93efec22e3d1ffd949d211582db86e79476ec905b1cd",
+    "at": "2026-10-29T15:08:50.279478+00:00"
+  },
+  {
+    "url": "https://kalendarzrowerowy.pl/wydarzenie/the-grand-escape-tuscany-2027/",
+    "finalUrl": "https://kalendarzrowerowy.pl/wydarzenie/the-grand-escape-tuscany-2027/",
+    "status": 200,
+    "key": "cc7088cce26e796f",
+    "bytes": 29598,
+    "sha256": "ca0eb3d7c4a1f9dcac9410cd96f43cf7d00991308d0fbb4d238ae4ebb210f883",
+    "at": "2026-10-29T15:08:50.462500+00:00"
+  },
+  {
+    "url": "https://mtbs.cz/clanek/peklo-severu-2026-2-33-sebnitzer-mtb-cup-74738/kategorie/xcm",
+    "finalUrl": "https://mtbs.cz/clanek/peklo-severu-2026-2-33-sebnitzer-mtb-cup-74738/kategorie/xcm",
+    "status": 200,
+    "key": "0ce0ea112cec6428",
+    "bytes": 18292,
+    "sha256": "f759814d9661379d8010f922e2cf0461912e1ee05ec45cf8390b0f79663f417c",
+    "at": "2026-10-29T15:08:50.425945+00:00"
+  },
+  {
+    "url": "https://mtbs.cz/clanek/rohanske-stezky-74327/kategorie/xcm",
+    "finalUrl": "https://mtbs.cz/clanek/rohanske-stezky-74327/kategorie/xcm",
+    "status": 200,
+    "key": "a3936f11a831a3e3",
+    "bytes": 19148,
+    "sha256": "bb70964c2d0405eebbbbc09df73181b10f7eb7ebf03cd22a74fcc83a6cd71e0c",
+    "at": "2026-10-29T15:08:50.435762+00:00"
+  },
+  {
+    "url": "https://mtbs.cz/clanek/slovak-e-bike-cup-2026-zlatnicka-dolina-74928/kategorie/akce",
+    "finalUrl": "https://mtbs.cz/clanek/slovak-e-bike-cup-2026-zlatnicka-dolina-74928/kategorie/akce",
+    "status": 200,
+    "key": "fd79315c7d37b61c",
+    "bytes": 19999,
+    "sha256": "5f57778fdff77591ab9030d1e31ac8bd4fb8aa943e8dccb2ee6bef21f5f48434",
+    "at": "2026-10-29T15:08:50.774336+00:00"
+  },
+  {
+    "url": "https://mtbs.cz/clanek/treibjagd-im-dunkelwald-etapovy-zavod-mtb-v-krusnych-horach-74836/kategorie/xcm",
+    "finalUrl": "https://mtbs.cz/clanek/treibjagd-im-dunkelwald-etapovy-zavod-mtb-v-krusnych-horach-74836/kategorie/xcm",
+    "status": 200,
+    "key": "aece13bbf7f7f801",
+    "bytes": 22875,
+    "sha256": "f9e8415b6f3bb9f74ed9c99a0be08dfc61a877873b9c42e385a7e6ddd788b78a",
+    "at": "2026-10-29T15:08:50.715146+00:00"
+  },
+  {
+    "url": "https://my.raceresult.com/382600/",
+    "finalUrl": "https://my.raceresult.com/382600/",
+    "status": 200,
+    "key": "7d2a673e89a996aa",
+    "bytes": 12271,
+    "sha256": "11a35a259a5efa4c0d471e50b95e621e0b1a1b9209a933cb49746c77dead8c67",
+    "at": "2026-10-29T15:08:50.467282+00:00"
+  },
+  {
+    "url": "https://portal.czechcyclingfederation.com/RaceDetail/Race/1619",
+    "finalUrl": "https://portal.czechcyclingfederation.com/RaceDetail/Race/1619",
+    "status": 200,
+    "key": "5dcd56758b35f357",
+    "bytes": 9371,
+    "sha256": "e9121db9c061ff2b300d6db8deefbf038160cba41986c73425ab4d04ab491b4a",
+    "at": "2026-10-29T15:08:50.619932+00:00"
+  },
+  {
+    "url": "https://portal.czechcyclingfederation.com/RaceDetail/Race/1695",
+    "finalUrl": "https://portal.czechcyclingfederation.com/RaceDetail/Race/1695",
+    "status": 200,
+    "key": "006d3349e8960bac",
+    "bytes": 9386,
+    "sha256": "05e4a34060a987efc13fbf4362aaf16a811640e6dc42c24e0a965671b1ee7d27",
+    "at": "2026-10-29T15:08:50.619352+00:00"
+  },
+  {
+    "url": "https://pucharmtb.pl/kalendarz-2026/",
+    "finalUrl": "https://pucharmtb.pl/kalendarz-2026/",
+    "status": 200,
+    "key": "302817ad598a6522",
+    "bytes": 94513,
+    "sha256": "797c3d7df0319511aeaf46ac57e2405d4a1ee6bf4146d1baddb4d2737d35b2be",
+    "at": "2026-10-29T15:08:50.857517+00:00"
+  },
+  {
+    "url": "https://racetime.sk/terminovka",
+    "finalUrl": "https://racetime.sk/terminovka",
+    "status": 200,
+    "key": "50d5a3f23b87c999",
+    "bytes": 66055,
+    "sha256": "4db4b0bf9e00b2622a92b3e7b8620dabc9c3d989c372cf8817159c491241b3da",
+    "at": "2026-10-29T15:08:50.755079+00:00"
+  },
+  {
+    "url": "https://radsport-events.de/events/1290",
+    "finalUrl": "https://radsport-events.de/events/1290",
+    "status": 200,
+    "key": "e96a3211c82e885e",
+    "bytes": 3257,
+    "sha256": "5f5570223d4009aae1e2dff174c556d2371d00ee23c3773500083fb55ce4e3a6",
+    "at": "2026-10-29T15:08:50.753292+00:00"
+  },
+  {
+    "url": "https://radsport-events.de/events/27044",
+    "finalUrl": "https://radsport-events.de/events/27044",
+    "status": 200,
+    "key": "4dfba1308373b72f",
+    "bytes": 3257,
+    "sha256": "5f5570223d4009aae1e2dff174c556d2371d00ee23c3773500083fb55ce4e3a6",
+    "at": "2026-10-29T15:08:50.753039+00:00"
+  },
+  {
+    "url": "https://radsport-events.de/events/27862",
+    "finalUrl": "https://radsport-events.de/events/27862",
+    "status": 200,
+    "key": "946343cf0a4d55aa",
+    "bytes": 3257,
+    "sha256": "5f5570223d4009aae1e2dff174c556d2371d00ee23c3773500083fb55ce4e3a6",
+    "at": "2026-10-29T15:08:50.778126+00:00"
+  },
+  {
+    "url": "https://sumator.cz/race/1000-miles-adventure-5-7-2026",
+    "finalUrl": "https://sumator.cz/race/1000-miles-adventure-5-7-2026",
+    "status": 200,
+    "key": "21db544b88d0d689",
+    "bytes": 19409,
+    "sha256": "8acd32f899d0e484cedeb9ac062e8dca5c23b709034f4c764a6ab7f3a05fc802",
+    "at": "2026-10-29T15:08:50.972332+00:00"
+  },
+  {
+    "url": "https://sumator.cz/race/cyprus-granfondo-3-4-2026",
+    "finalUrl": "https://sumator.cz/race/cyprus-granfondo-3-4-2026",
+    "status": 200,
+    "key": "95d8465e39524c00",
+    "bytes": 14765,
+    "sha256": "0fd29132b184d6cc75647139ca5c80ec22c47e431bc1bd3b257bafe0bd8cd84e",
+    "at": "2026-10-29T15:08:50.972114+00:00"
+  },
+  {
+    "url": "https://sumator.cz/race/cyprus-granfondo-4-4-2025",
+    "finalUrl": "https://sumator.cz/race/cyprus-granfondo-4-4-2025",
+    "status": 200,
+    "key": "c8890a7c821c9bef",
+    "bytes": 14714,
+    "sha256": "5ee935b955f4b75b69270f1ee5707d1232013fee5e6bee5f7f5a4c2d537768e2",
+    "at": "2026-10-29T15:08:51.022136+00:00"
+  },
+  {
+    "url": "https://sumator.cz/race/enduro-race-czarna-gora-26-6-2026",
+    "finalUrl": "https://sumator.cz/race/enduro-race-czarna-gora-26-6-2026",
+    "status": 200,
+    "key": "a69bfa5451c68690",
+    "bytes": 14547,
+    "sha256": "1e14430f15f1dec0a7d0ebe9189cd1e53eace104ac7dfd6cde61349630cb6c41",
+    "at": "2026-10-29T15:08:50.971831+00:00"
+  },
+  {
+    "url": "https://sumator.cz/race/granfondo-novi-sad-7-6-2026",
+    "finalUrl": "https://sumator.cz/race/granfondo-novi-sad-7-6-2026",
+    "status": 200,
+    "key": "f73475688b4bfedf",
+    "bytes": 13205,
+    "sha256": "bbd479ffc0475cc5f3013e80659a6219768c891b768fc4e60f4143cd45b03f53",
+    "at": "2026-10-29T15:08:51.017196+00:00"
+  },
+  {
+    "url": "https://sumator.cz/race/granfondo-novi-sad-8-6-2025",
+    "finalUrl": "https://sumator.cz/race/granfondo-novi-sad-8-6-2025",
+    "status": 200,
+    "key": "9f7fa28123896d16",
+    "bytes": 14370,
+    "sha256": "d4b37b60101f1ad44005f735b05891072d5fad11b5c88aa6a2b8018b3d3026ff",
+    "at": "2026-10-29T15:08:51.047427+00:00"
+  },
+  {
+    "url": "https://sumator.cz/race/gravel-tour-vir-30-5-2026",
+    "finalUrl": "https://sumator.cz/race/gravel-tour-vir-30-5-2026",
+    "status": 200,
+    "key": "8a2d3b79279a6289",
+    "bytes": 14613,
+    "sha256": "eb55be92950a47731afd4c51ef163b3bbcaa5acc5cc59ddd03edcad24c8ebdaa",
+    "at": "2026-10-29T15:08:51.123337+00:00"
+  },
+  {
+    "url": "https://sumator.cz/race/manitou-zelezne-hory-15-8-2026",
+    "finalUrl": "https://sumator.cz/race/manitou-zelezne-hory-15-8-2026",
+    "status": 200,
+    "key": "b773cdda238388ed",
+    "bytes": 21350,
+    "sha256": "a0acf11a64240b3bf1117bd6f4d7c55c6a6aac9e50028cdc9bfc8df1ca378029",
+    "at": "2026-10-29T15:08:51.209249+00:00"
+  },
+  {
+    "url": "https://sumator.cz/race/okruh-parizov-sec-hrbokov-bucina-etapa-v-ramci-poharu-zeleznych-hor-29-4-2026",
+    "finalUrl": "https://sumator.cz/race/okruh-parizov-sec-hrbokov-bucina-etapa-v-ramci-poharu-zeleznych-hor-29-4-2026",
+    "status": 200,
+    "key": "eb240146bb38b84d",
+    "bytes": 17014,
+    "sha256": "36a7f72acae8f928df0bf19b28ee00b5a9294f97c4e7b2b7e11b01195bb72307",
+    "at": "2026-10-29T15:08:51.175160+00:00"
+  },
+  {
+    "url": "https://sumator.cz/race/schleck-granfondo-24-5-2025",
+    "finalUrl": "https://sumator.cz/race/schleck-granfondo-24-5-2025",
+    "status": 200,
+    "key": "bb581d2dfe9b3da4",
+    "bytes": 16231,
+    "sha256": "8a4fef5d0fd0763d23a7e145b2e31565568645a5d6ad1469d7fe34a2e7bee931",
+    "at": "2026-10-29T15:08:51.217752+00:00"
+  },
+  {
+    "url": "https://sumator.cz/race/schleck-granfondo-30-5-2026",
+    "finalUrl": "https://sumator.cz/race/schleck-granfondo-30-5-2026",
+    "status": 200,
+    "key": "c7d07c58e4d24b5b",
+    "bytes": 14856,
+    "sha256": "e98f529c5c152d9da7ad38a81cca95b94e540a80cddaaa7d122268576491a0b6",
+    "at": "2026-10-29T15:08:51.230448+00:00"
+  },
+  {
+    "url": "https://sumator.cz/race/secsky-okruh-pres-pocatky-27-5-2026",
+    "finalUrl": "https://sumator.cz/race/secsky-okruh-pres-pocatky-27-5-2026",
+    "status": 200,
+    "key": "c39214ce4840ee1a",
+    "bytes": 19316,
+    "sha256": "10348d193b12fd8fb12d2d1cbd7fcf5974af6e55b3e5f07d312cc444f8d666da",
+    "at": "2026-10-29T15:08:51.247293+00:00"
+  },
+  {
+    "url": "https://sumator.cz/race/skoda-mtb-maraton-rajecke-teplice-10-5-2026",
+    "finalUrl": "https://sumator.cz/race/skoda-mtb-maraton-rajecke-teplice-10-5-2026",
+    "status": 200,
+    "key": "846466c02ed6b462",
+    "bytes": 17171,
+    "sha256": "29acbaad6ab7ace68b6994559189e356d934c1d7552a14d9a30003198d8b4eca",
+    "at": "2026-10-29T15:08:51.263819+00:00"
+  },
+  {
+    "url": "https://sumator.cz/race/sumavsky-pohar-mtb-waldkirchen-26-4-2026",
+    "finalUrl": "https://sumator.cz/race/sumavsky-pohar-mtb-waldkirchen-26-4-2026",
+    "status": 200,
+    "key": "72764b4d3e9d96e5",
+    "bytes": 17806,
+    "sha256": "4bdf720aa50d77ad7da249a010322f491f0eff7392ceab0f9990c65cb2bc077d",
+    "at": "2026-10-29T15:08:51.293903+00:00"
+  },
+  {
+    "url": "https://sumator.cz/race/tartu-rattaralli-1-6-2025",
+    "finalUrl": "https://sumator.cz/race/tartu-rattaralli-1-6-2025",
+    "status": 200,
+    "key": "96dfe76ab07b5d3a",
+    "bytes": 13751,
+    "sha256": "fdb3a6d3767bc546d5b7c5193e58ee46c09eb2cdc9b90ab2bb9c5c55969e82e7",
+    "at": "2026-10-29T15:08:51.337633+00:00"
+  },
+  {
+    "url": "https://sumator.cz/race/tartu-rattaralli-7-6-2026",
+    "finalUrl": "https://sumator.cz/race/tartu-rattaralli-7-6-2026",
+    "status": 200,
+    "key": "eab15a47746702a4",
+    "bytes": 13123,
+    "sha256": "1d8365350ddde36dd3e61359dc10179f7f35b02cc86b97d122443937d0b79ec3",
+    "at": "2026-10-29T15:08:51.338149+00:00"
+  },
+  {
+    "url": "https://www.bikepoint.sk/kalendar/",
+    "finalUrl": "https://www.bikepoint.sk/kalendar/",
+    "status": 200,
+    "key": "a6e3db4651d192e3",
+    "bytes": 26522,
+    "sha256": "e6f307fed91484849c1d67193529ee557744bab6170788f1695055fd824d593c",
+    "at": "2026-10-29T15:08:52.285718+00:00"
+  },
+  {
+    "url": "https://www.bikepoint.sk/kalendar/april/25-04-2027/quick-sport-jarny-sprint/",
+    "finalUrl": "https://www.bikepoint.sk/kalendar/april/25-04-2027/quick-sport-jarny-sprint/",
+    "status": 200,
+    "key": "a4c20773024e9bd7",
+    "bytes": 27593,
+    "sha256": "98bafeebe7d1c904893272157eee5941dad79518dd17fb183af5682db4d19d16",
+    "at": "2026-10-29T15:08:52.391129+00:00"
+  },
+  {
+    "url": "https://www.bikepoint.sk/kalendar/august/01-08-2027/oslianske-dni-cyklistiky-slovak-e-bike-cup-sp-xco-hobby/",
+    "finalUrl": "https://www.bikepoint.sk/kalendar/august/01-08-2027/oslianske-dni-cyklistiky-slovak-e-bike-cup-sp-xco-hobby/",
+    "status": 200,
+    "key": "286114e06a9c2484",
+    "bytes": 27636,
+    "sha256": "4d7eccc9139a5c580c08c5e1bdf13e2781e44279c79098ed0cffb7f7d316db07",
+    "at": "2026-10-29T15:08:52.308079+00:00"
+  },
+  {
+    "url": "https://www.bikepoint.sk/kalendar/august/14-08-2027/skoda-horal-mtb-maraton/",
+    "finalUrl": "https://www.bikepoint.sk/kalendar/august/14-08-2027/skoda-horal-mtb-maraton/",
+    "status": 200,
+    "key": "fff4c476bb33e3f3",
+    "bytes": 27628,
+    "sha256": "046042bb4421cf26c0003eb5cbb8e6e07493edc336914ddda3692b6a1c4722b3",
+    "at": "2026-10-29T15:08:52.215717+00:00"
+  },
+  {
+    "url": "https://www.bikepoint.sk/kalendar/august/21-08-2027/mtb-maraton-bike4you-hlohovec-poniklec/",
+    "finalUrl": "https://www.bikepoint.sk/kalendar/august/21-08-2027/mtb-maraton-bike4you-hlohovec-poniklec/",
+    "status": 200,
+    "key": "625c651afbf90094",
+    "bytes": 27975,
+    "sha256": "465401c05265e0148c89d83c2768c9da042482ea99bdb3f637d6020c163863b4",
+    "at": "2026-10-29T15:08:52.571999+00:00"
+  },
+  {
+    "url": "https://www.bikepoint.sk/kalendar/januar/31-01-2027/cergovska-retaz-mtb/",
+    "finalUrl": "https://www.bikepoint.sk/kalendar/januar/31-01-2027/cergovska-retaz-mtb/",
+    "status": 200,
+    "key": "670953a671e39020",
+    "bytes": 27816,
+    "sha256": "a75ef01a17f6a9ddea3f009a3ffd4cec4a826408c6053abab8b8f915fe459e54",
+    "at": "2026-10-29T15:08:52.320724+00:00"
+  },
+  {
+    "url": "https://www.bikepoint.sk/kalendar/jul/03-07-2027/povazsky-mtb-special-maraton-povazska-bystrica/",
+    "finalUrl": "https://www.bikepoint.sk/kalendar/jul/03-07-2027/povazsky-mtb-special-maraton-povazska-bystrica/",
+    "status": 200,
+    "key": "a6f0c15d1ee09254",
+    "bytes": 28017,
+    "sha256": "0cb1226790c1f7bd58c24279659c27794a4bd004511d426399cb2876a985b2a8",
+    "at": "2026-10-29T15:08:53.143015+00:00"
+  },
+  {
+    "url": "https://www.bikepoint.sk/kalendar/jul/04-07-2027/povazsky-mtb-specialik/",
+    "finalUrl": "https://www.bikepoint.sk/kalendar/jul/04-07-2027/povazsky-mtb-specialik/",
+    "status": 200,
+    "key": "05c6793cebf2b7af",
+    "bytes": 27735,
+    "sha256": "b0f23fd729eb0ee75675a6b2239b9e6c2dd92cd3d57457a85438500035fad666",
+    "at": "2026-10-29T15:08:53.204171+00:00"
+  },
+  {
+    "url": "https://www.bikepoint.sk/kalendar/jul/17-07-2027/majstrovstva-slovenska-xco-xcc-bratislava/",
+    "finalUrl": "https://www.bikepoint.sk/kalendar/jul/17-07-2027/majstrovstva-slovenska-xco-xcc-bratislava/",
+    "status": 200,
+    "key": "d7bca1a342a7c3b8",
+    "bytes": 27446,
+    "sha256": "1bc4b5bc0f68d87d4f6c9e3ddec6e1cee3f8249790561c3b2063f57858e45d4f",
+    "at": "2026-10-29T15:08:53.219799+00:00"
+  },
+  {
+    "url": "https://www.bikepoint.sk/kalendar/jul/25-07-2027/raslavicky-pedal/",
+    "finalUrl": "https://www.bikepoint.sk/kalendar/jul/25-07-2027/raslavicky-pedal/",
+    "status": 200,
+    "key": "5efd76c3fcc250f8",
+    "bytes": 27537,
+    "sha256": "0ea3c335d32b3bba070c193af1867cfed77d87684cf4c77b9286568f58346782",
+    "at": "2026-10-29T15:08:53.222633+00:00"
+  },
+  {
+    "url": "https://www.bikepoint.sk/kalendar/jul/31-07-2027/oslianske-dni-cyklistiky-slovak-e-bike-cup-sp-xco-hobby/",
+    "finalUrl": "https://www.bikepoint.sk/kalendar/jul/31-07-2027/oslianske-dni-cyklistiky-slovak-e-bike-cup-sp-xco-hobby/",
+    "status": 200,
+    "key": "e40ebd98efbab191",
+    "bytes": 27458,
+    "sha256": "d43d30872299deb6d95b51ccbe368f9a7ee9340684d86d31eaa3fe53ea9a544f",
+    "at": "2026-10-29T15:08:53.340711+00:00"
+  },
+  {
+    "url": "https://www.bikepoint.sk/kalendar/jun/05-06-2027/skoda-maraton-slovensky-raj/",
+    "finalUrl": "https://www.bikepoint.sk/kalendar/jun/05-06-2027/skoda-maraton-slovensky-raj/",
+    "status": 200,
+    "key": "d70aab239cdfaf23",
+    "bytes": 27832,
+    "sha256": "0f87ed5d1699e06a008bf3206df7895f1e1fed153b7c7573651e155d13cc73dc",
+    "at": "2026-10-29T15:08:53.444451+00:00"
+  },
+  {
+    "url": "https://www.bikepoint.sk/kalendar/jun/05-06-2027/sp-xc0-bystricany/",
+    "finalUrl": "https://www.bikepoint.sk/kalendar/jun/05-06-2027/sp-xc0-bystricany/",
+    "status": 200,
+    "key": "857a2b52b3efd0b5",
+    "bytes": 27418,
+    "sha256": "0bf55fc7075fad09ba728284b78e23ddb3d333c2ffade718c2db9f343ca6a1cb",
+    "at": "2026-10-29T15:08:54.174678+00:00"
+  },
+  {
+    "url": "https://www.bikepoint.sk/kalendar/jun/19-06-2027/skoda-cyklomaraton-topolcianky/",
+    "finalUrl": "https://www.bikepoint.sk/kalendar/jun/19-06-2027/skoda-cyklomaraton-topolcianky/",
+    "status": 200,
+    "key": "b4b604dc34dedbbd",
+    "bytes": 27940,
+    "sha256": "4ea7ed7354c089a004bef7dd579bdc9ba9867ff946e89042a552d32237249fcd",
+    "at": "2026-10-29T15:08:54.186717+00:00"
+  },
+  {
+    "url": "https://www.bikepoint.sk/kalendar/maj/06-05-2027/majstrovstva-slovenska-e-xc-ebike-cup-2026/",
+    "finalUrl": "https://www.bikepoint.sk/kalendar/maj/06-05-2027/majstrovstva-slovenska-e-xc-ebike-cup-2026/",
+    "status": 200,
+    "key": "4d2669dcd1c499c8",
+    "bytes": 27924,
+    "sha256": "99ddfb3c2a5df946cc1b5a8464acd8497f6dbf8cd26d29ba5dcdf9098837f3ed",
+    "at": "2026-10-29T15:08:54.180842+00:00"
+  },
+  {
+    "url": "https://www.bikepoint.sk/kalendar/maj/15-05-2027/e3nexus-mtb-maraton-duatlon/",
+    "finalUrl": "https://www.bikepoint.sk/kalendar/maj/15-05-2027/e3nexus-mtb-maraton-duatlon/",
+    "status": 200,
+    "key": "7b32798a7d572e7e",
+    "bytes": 27878,
+    "sha256": "b8d5e85120462244039b0ea112b55c83841c292e8f2c6fd2a1980e02f344fc00",
+    "at": "2026-10-29T15:08:54.201182+00:00"
+  },
+  {
+    "url": "https://www.bikepoint.sk/kalendar/maj/15-05-2027/zlatnicka-dolina-mtb-xco-slovensky-pohar-uci-3/",
+    "finalUrl": "https://www.bikepoint.sk/kalendar/maj/15-05-2027/zlatnicka-dolina-mtb-xco-slovensky-pohar-uci-3/",
+    "status": 200,
+    "key": "6f3138bd16974178",
+    "bytes": 27904,
+    "sha256": "649460fb211958cfc22b493609ef6088e60acafdef6ecd1cfda697f61b672ecb",
+    "at": "2026-10-29T15:08:54.285348+00:00"
+  },
+  {
+    "url": "https://www.bikepoint.sk/kalendar/maj/22-05-2027/skoda-mtb-maraton-rajecke-teplice/",
+    "finalUrl": "https://www.bikepoint.sk/kalendar/maj/22-05-2027/skoda-mtb-maraton-rajecke-teplice/",
+    "status": 200,
+    "key": "9580b1accbae787d",
+    "bytes": 28223,
+    "sha256": "9092ae58f896962d4d02733714f7005c61435da62198709d78d37829e85d7913",
+    "at": "2026-10-29T15:08:54.460599+00:00"
+  },
+  {
+    "url": "https://www.bikepoint.sk/kalendar/maj/30-05-2027/bikefest-maraton-2027/",
+    "finalUrl": "https://www.bikepoint.sk/kalendar/maj/30-05-2027/bikefest-maraton-2027/",
+    "status": 200,
+    "key": "e86ea7cf6f5efc56",
+    "bytes": 27423,
+    "sha256": "8d04b2925344e523dea1c5894c4f7b4c970b8fc45db976d5eeac5296ff9993de",
+    "at": "2026-10-29T15:08:55.394832+00:00"
+  },
+  {
+    "url": "https://www.bikepoint.sk/kalendar/september/04-09-2027/istrofinal-sneznicky-mtb-maraton-kysucka-vrchovina/",
+    "finalUrl": "https://www.bikepoint.sk/kalendar/september/04-09-2027/istrofinal-sneznicky-mtb-maraton-kysucka-vrchovina/",
+    "status": 200,
+    "key": "97d0e79e0e3dfc97",
+    "bytes": 27923,
+    "sha256": "74f7c319c4256b92921eadcb4611e059bbfcd2112827b180461ff8ab218bcc66",
+    "at": "2026-10-29T15:08:55.379925+00:00"
+  },
+  {
+    "url": "https://www.bikepoint.sk/kalendar/september/18-09-2027/brezniansky-mtb-maraton-2027/",
+    "finalUrl": "https://www.bikepoint.sk/kalendar/september/18-09-2027/brezniansky-mtb-maraton-2027/",
+    "status": 200,
+    "key": "8b9439de13e57456",
+    "bytes": 28549,
+    "sha256": "ee4103ff41948d22e7b08dc6dc90d1f2eaf6c2eb3230d5927ee826381d93f857",
+    "at": "2026-10-29T15:08:55.226058+00:00"
+  },
+  {
+    "url": "https://www.cyklokros.cz/kalendar",
+    "finalUrl": "https://www.cyklokros.cz/kalendar",
+    "status": 200,
+    "key": "819e90bae8e8cd2f",
+    "bytes": 45859,
+    "sha256": "2923578648cad81a0ea6618034b04447f8cee08227b40e9bad7d682b9bac8fbd",
+    "at": "2026-10-29T15:08:54.510289+00:00"
+  },
+  {
+    "url": "https://www.cykloman.cz/zavody-a-akce/2026/duatlon-powerman-kuncina",
+    "finalUrl": "https://www.cykloman.cz/zavody-a-akce/2026/duatlon-powerman-kuncina",
+    "status": 200,
+    "key": "cacda1f415778340",
+    "bytes": 108917,
+    "sha256": "98dd2a65979bf9d655f8e62344bde385b43ce6419532ea96776bb9188fa370b6",
+    "at": "2026-10-29T15:08:54.672187+00:00"
+  },
+  {
+    "url": "https://www.mazurymtb.pl/zawody",
+    "finalUrl": "https://www.mazurymtb.pl/zawody",
+    "status": 200,
+    "key": "bd461a0aed6fe0ef",
+    "bytes": 33669,
+    "sha256": "b30506a1020b44e66d2b0d3e8be3f221fc0547b34af7c08980e95d36aab38548",
+    "at": "2026-10-29T15:08:54.938388+00:00"
+  },
+  {
+    "url": "https://www.mazurymtb.pl/zawody/wyniki/135",
+    "finalUrl": "https://www.mazurymtb.pl/zawody/wyniki/135",
+    "status": 200,
+    "key": "f7403cace80bc16c",
+    "bytes": 447207,
+    "sha256": "4ab6f52debdfe53dae98cde3deceb7990d4049eedd38fdd72a9874d104ca6e44",
+    "at": "2026-10-29T15:08:55.487520+00:00"
+  },
+  {
+    "url": "https://www.soof.sk/podujatia-a-akcie",
+    "finalUrl": "https://www.soof.sk/podujatia-a-akcie",
+    "status": 200,
+    "key": "25776ed3b1204ee6",
+    "bytes": 255745,
+    "sha256": "0e6f6540ffc7a4fe8c8a485deeb8396a46a48804ccabfab3343ac2a75639e3f7",
+    "at": "2026-10-29T15:08:55.209831+00:00"
+  }
+]

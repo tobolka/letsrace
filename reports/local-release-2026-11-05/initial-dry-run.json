@@ -1,0 +1,66 @@
+{
+ "dryRun": true,
+ "seconds": 1.6,
+ "transactions": 1,
+ "totals": {
+  "applied": 11,
+  "unchanged": 0,
+  "conflict": 1,
+  "group_held": 3,
+  "failed": 0,
+  "pending": 0,
+  "skippedLockedColumns": 0
+ },
+ "byTable": {
+  "public.locations": {
+   "applied": 2,
+   "unchanged": 0,
+   "conflict": 0,
+   "failed": 0
+  },
+  "public.events": {
+   "applied": 3,
+   "unchanged": 0,
+   "conflict": 0,
+   "failed": 0,
+   "group_held": null
+  },
+  "public.event_sources": {
+   "applied": 3,
+   "unchanged": 0,
+   "conflict": 0,
+   "failed": 0,
+   "group_held": null
+  },
+  "public.event_facts": {
+   "applied": 3,
+   "unchanged": 0,
+   "conflict": 0,
+   "failed": 0,
+   "group_held": null
+  },
+  "public.event_series": {
+   "applied": 0,
+   "unchanged": 0,
+   "conflict": 1,
+   "failed": 0
+  }
+ },
+ "problemSample": [
+  {
+   "tab": "public.event_series",
+   "pk": {
+    "event_id": "2d966321-da80-4354-a3be-660d4123bb18",
+    "series_id": "536d0ff3-42f0-43d5-b575-b46da1e07a32"
+   },
+   "op": "insert",
+   "state": "conflict",
+   "reason": "exists_with_other_values",
+   "columns": [
+    "source",
+    "created_at"
+   ],
+   "locked": null
+  }
+ ]
+}

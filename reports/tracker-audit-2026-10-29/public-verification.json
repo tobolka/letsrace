@@ -1,0 +1,22 @@
+[
+  {
+    "url": "https://letsrace.cz/api/ops/pipeline-status",
+    "error": "HTTP Error 401: Unauthorized"
+  },
+  {
+    "url": "https://letsrace.cz/cs/e/kaszebe-runda-2027",
+    "status": 200,
+    "hasCorrectPlace": false,
+    "hasAustriaAsTitle": false
+  },
+  {
+    "url": "https://letsrace.cz/cs/e/39-ernst-feuchtner-gedenkrennen-in-soll-2027",
+    "status": 200,
+    "hasCorrectPlace": true,
+    "hasAustriaAsTitle": false
+  },
+  {
+    "url": "https://letsrace.cz/cs/e/zeitfahren-hintersee-2026",
+    "error": "HTTP Error 404: Not Found"
+  }
+]

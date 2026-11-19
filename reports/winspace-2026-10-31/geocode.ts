@@ -1,0 +1,2 @@
+import fs from 'node:fs';import {geocodePlace} from '../../src/lib/geocode';
+(async()=>{const dir='reports/winspace-2026-10-31';const a=JSON.parse(fs.readFileSync(`${dir}/actions.json`,'utf8'));let results=[];for(let x of a.filter((x:any)=>x.needsLocation)){let r=await geocodePlace(x.place,x.country);results.push({index:x.index,place:x.place,country:x.country,result:r});console.log(JSON.stringify(results.at(-1)));fs.writeFileSync(`${dir}/geocodes.json`,JSON.stringify(results,null,2));}})();

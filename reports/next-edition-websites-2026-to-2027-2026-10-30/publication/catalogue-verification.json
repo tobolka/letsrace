@@ -1,0 +1,19 @@
+{
+  "catalogueCount": 974,
+  "present": [
+    "krkonosska-70-mtb-2027",
+    "lesak-cup-2027",
+    "praha-doksy-2027",
+    "ozp-50-podralsko-2027",
+    "montes-ferrei-2027",
+    "casovka-3xtop-cz-lysa-hora-2027",
+    "morava-bike-2027",
+    "sensor-cyklo-mastale-2027"
+  ],
+  "missing": [
+    "svejkova-sobota-cykloturistika-2027"
+  ],
+  "verificationPassed": true,
+  "rideVerifiedSeparately": "svejkova-sobota-cykloturistika-2027",
+  "note": "Default race catalogue excludes recreational rides; all eight race/challenge entries are present, the ninth ride is public and returned with eventType=ride."
+}

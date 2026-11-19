@@ -1,0 +1,949 @@
+[
+  {
+    "event": {
+      "id": "c992e42e-65b4-4a5c-96cd-1a0d17e5d7be",
+      "name": "DoKola!",
+      "slug": "dokola-sedlejov-u-telce-2026",
+      "level": "local",
+      "season": "2026",
+      "status": "completed",
+      "formats": [],
+      "audience": "mixed",
+      "end_date": "2026-06-07",
+      "timezone": "Europe/Prague",
+      "series_id": null,
+      "uci_class": null,
+      "created_at": "2026-08-13T19:47:02.053444+00:00",
+      "event_type": "race",
+      "start_date": "2026-06-05",
+      "updated_at": "2026-10-29T05:20:22.49+00:00",
+      "visibility": "public",
+      "class_label": null,
+      "description": null,
+      "disciplines": [
+        "other"
+      ],
+      "fingerprint": "2026-06-05:u2g00:dokola",
+      "location_id": "2a4d3a54-c85b-47b3-a7f1-e628b66b6f91",
+      "results_url": null,
+      "search_text": "dokola",
+      "source_kind": "scraped",
+      "website_url": "http://www.dokolamtb.cz",
+      "last_seen_at": "2026-10-28T21:15:08.29+00:00",
+      "age_categories": [],
+      "age_confidence": null,
+      "merged_into_id": null,
+      "name_normalized": "dokola",
+      "regulations_url": "https://bavsesportem.cz/wp-content/uploads/2026/07/propozice_xco_chocen_6_2026.pdf",
+      "competition_type": "other",
+      "registration_url": null,
+      "registration_opens_at": null,
+      "registration_closes_at": null
+    },
+    "sources": [
+      {
+        "id": "0f7c4e4c-536f-4961-983c-eca2ad5c3954",
+        "kind": "aggregator",
+        "event_id": "c992e42e-65b4-4a5c-96cd-1a0d17e5d7be",
+        "raw_hash": null,
+        "created_at": "2026-08-13T19:47:02.091657+00:00",
+        "source_url": "https://mtbs.cz/clanek/dokola-74245/kategorie/akce",
+        "external_id": "mtbs-dokola-2026-06-05",
+        "is_canonical": true,
+        "watched_url_id": "8ee0c534-448c-461e-bcd1-1f19564c0382"
+      }
+    ],
+    "location": {
+      "id": "2a4d3a54-c85b-47b3-a7f1-e628b66b6f91",
+      "lat": 49.228,
+      "lng": 15.496,
+      "geog": "0101000020E6100000CBA145B6F3FD2E4077BE9F1A2F9D4840",
+      "name": "Sedlejov u Telče",
+      "venue": null,
+      "region": null,
+      "timezone": "Europe/Prague",
+      "created_at": "2026-08-13T19:47:02.010381+00:00",
+      "updated_at": "2026-08-14T19:18:11.832104+00:00",
+      "region_code": null,
+      "country_code": "CZ",
+      "municipality": "Sedlejov u Telče",
+      "geocode_query": "Sedlejov u Telče, CZ",
+      "geocode_status": "ok"
+    },
+    "override": null,
+    "categories": null
+  },
+  {
+    "event": {
+      "id": "982e29a4-9481-4d65-adae-80c9b45b43cf",
+      "name": "DoKola!",
+      "slug": "dokola-sedlejov-2026",
+      "level": "local",
+      "season": "2026",
+      "status": "hidden",
+      "formats": [],
+      "audience": "mixed",
+      "end_date": "2026-06-07",
+      "timezone": "Europe/Prague",
+      "series_id": null,
+      "uci_class": null,
+      "created_at": "2026-08-13T19:49:38.598857+00:00",
+      "event_type": "race",
+      "start_date": "2026-06-07",
+      "updated_at": "2026-10-29T05:20:24.008+00:00",
+      "visibility": "hidden",
+      "class_label": null,
+      "description": null,
+      "disciplines": [
+        "other"
+      ],
+      "fingerprint": "2026-06-07:u2g00:dokola",
+      "location_id": "6b392f81-8140-4fff-ab99-024dbdfd545b",
+      "results_url": null,
+      "search_text": "dokola",
+      "source_kind": "scraped",
+      "website_url": null,
+      "last_seen_at": "2026-10-28T21:16:37.842+00:00",
+      "age_categories": [],
+      "age_confidence": null,
+      "merged_into_id": null,
+      "name_normalized": "dokola",
+      "regulations_url": null,
+      "competition_type": "other",
+      "registration_url": null,
+      "registration_opens_at": null,
+      "registration_closes_at": null
+    },
+    "sources": [
+      {
+        "id": "6761fa57-41ab-4e13-abe1-5474345d1bd4",
+        "kind": "aggregator",
+        "event_id": "982e29a4-9481-4d65-adae-80c9b45b43cf",
+        "raw_hash": null,
+        "created_at": "2026-08-13T19:49:38.640179+00:00",
+        "source_url": "https://sumator.cz/race/dokola-5-6-2026",
+        "external_id": "sumator-dokola-2026-06-07",
+        "is_canonical": true,
+        "watched_url_id": "19cfe36f-637e-4bb6-83a9-7183a1b55621"
+      },
+      {
+        "id": "5c4b463f-bdcf-4c88-ba4e-3b50cddb6157",
+        "kind": "aggregator",
+        "event_id": "982e29a4-9481-4d65-adae-80c9b45b43cf",
+        "raw_hash": null,
+        "created_at": "2026-09-30T05:57:55.538044+00:00",
+        "source_url": "https://sumator.cz/race/dokola-5-6-2026",
+        "external_id": "sumator-dokola-2026-06-07",
+        "is_canonical": true,
+        "watched_url_id": "90312107-735a-4dfe-96eb-2af60ca0d441"
+      }
+    ],
+    "location": {
+      "id": "6b392f81-8140-4fff-ab99-024dbdfd545b",
+      "lat": 49.228,
+      "lng": 15.496,
+      "geog": "0101000020E6100000CBA145B6F3FD2E4077BE9F1A2F9D4840",
+      "name": "Sedlejov",
+      "venue": null,
+      "region": null,
+      "timezone": "Europe/Prague",
+      "created_at": "2026-08-13T19:49:38.56046+00:00",
+      "updated_at": "2026-08-14T19:18:13.358767+00:00",
+      "region_code": null,
+      "country_code": "CZ",
+      "municipality": "Sedlejov",
+      "geocode_query": "Sedlejov, CZ",
+      "geocode_status": "ok"
+    },
+    "override": null,
+    "categories": null
+  },
+  {
+    "event": {
+      "id": "316f2a6e-9dd1-49e2-a20c-529dfff683f4",
+      "name": "FILIPA Podkrkonošský maraton",
+      "slug": "filipa-podkrkonossky-maraton-2026",
+      "level": "national",
+      "season": "2026",
+      "status": "completed",
+      "formats": [
+        "xcm"
+      ],
+      "audience": "mixed",
+      "end_date": "2026-08-01",
+      "timezone": "Europe/Prague",
+      "series_id": "8f2d11af-d170-4d54-9a9b-bf179840e09c",
+      "uci_class": null,
+      "created_at": "2026-08-13T19:47:12.927644+00:00",
+      "event_type": "race",
+      "start_date": "2026-08-01",
+      "updated_at": "2026-10-30T20:00:23.277+00:00",
+      "visibility": "public",
+      "class_label": "Local",
+      "description": null,
+      "disciplines": [
+        "mtb",
+        "xcm"
+      ],
+      "fingerprint": "2026-08-01:u2gnf:filipa podkrkonossky maraton",
+      "location_id": "4f8c52d6-9b5f-48bc-a153-3d60f06a14e8",
+      "results_url": null,
+      "search_text": "filipa podkrkonossky maraton prima cup prima cup",
+      "source_kind": "scraped",
+      "website_url": "https://www.iprimacup.cz/pm-2026/",
+      "last_seen_at": "2026-10-30T20:00:23.277+00:00",
+      "age_categories": [
+        "amateur",
+        "masters",
+        "kids",
+        "youth"
+      ],
+      "age_confidence": "explicit",
+      "merged_into_id": null,
+      "name_normalized": "filipa podkrkonossky maraton",
+      "regulations_url": "https://bavsesportem.cz/wp-content/uploads/2026/07/propozice_xco_chocen_6_2026.pdf",
+      "competition_type": "community",
+      "registration_url": null,
+      "registration_opens_at": null,
+      "registration_closes_at": null
+    },
+    "sources": [
+      {
+        "id": "4268b041-6064-4478-8557-7982bd912cc6",
+        "kind": "aggregator",
+        "event_id": "316f2a6e-9dd1-49e2-a20c-529dfff683f4",
+        "raw_hash": null,
+        "created_at": "2026-10-05T14:26:00.728053+00:00",
+        "source_url": "https://sumator.cz/race/filipa-podkrkonossky-maraton-1-8-2026",
+        "external_id": "sumator-filipa podkrkonossky maraton-2026-08-01",
+        "is_canonical": true,
+        "watched_url_id": "19cfe36f-637e-4bb6-83a9-7183a1b55621"
+      },
+      {
+        "id": "82d98e44-a5d6-4525-a603-6851882aa99d",
+        "kind": "series",
+        "event_id": "316f2a6e-9dd1-49e2-a20c-529dfff683f4",
+        "raw_hash": null,
+        "created_at": "2026-09-17T06:43:33.858461+00:00",
+        "source_url": "https://www.iprimacup.cz/pm-2026/",
+        "external_id": "prima-filipa podkrkonossky maraton-2026-08-01",
+        "is_canonical": true,
+        "watched_url_id": "1ae18d80-1a3f-479c-ab08-ddd4b4f057f1"
+      },
+      {
+        "id": "3e2f50a3-e057-47f9-83ed-c1dece045ecf",
+        "kind": "official",
+        "event_id": "316f2a6e-9dd1-49e2-a20c-529dfff683f4",
+        "raw_hash": null,
+        "created_at": "2026-08-14T09:43:50.975817+00:00",
+        "source_url": "https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2026",
+        "external_id": "podkrkonossky-2026-08-01",
+        "is_canonical": true,
+        "watched_url_id": "4c57a9ef-7d3e-452f-be67-c7587ffd44e2"
+      },
+      {
+        "id": "b8811ed5-4441-48ca-a55c-61602bfaf9c0",
+        "kind": "official",
+        "event_id": "316f2a6e-9dd1-49e2-a20c-529dfff683f4",
+        "raw_hash": null,
+        "created_at": "2026-10-05T14:25:29.152514+00:00",
+        "source_url": "https://sumator.cz/race/filipa-podkrkonossky-maraton-1-8-2026",
+        "external_id": "sumator-filipa podkrkonossky maraton-2026-08-01",
+        "is_canonical": true,
+        "watched_url_id": "ea1636e4-c290-4f18-988d-75225676b49c"
+      },
+      {
+        "id": "dd5415c4-707c-44f9-85f7-bbc1bd3223a9",
+        "kind": "aggregator",
+        "event_id": "316f2a6e-9dd1-49e2-a20c-529dfff683f4",
+        "raw_hash": null,
+        "created_at": "2026-10-05T14:24:05.3756+00:00",
+        "source_url": "https://sumator.cz/race/filipa-podkrkonossky-maraton-1-8-2026",
+        "external_id": "sumator-filipa podkrkonossky maraton-2026-08-01",
+        "is_canonical": true,
+        "watched_url_id": "90312107-735a-4dfe-96eb-2af60ca0d441"
+      },
+      {
+        "id": "1a612c26-67d7-4d22-952b-d44f6db235bf",
+        "kind": "national_federation",
+        "event_id": "316f2a6e-9dd1-49e2-a20c-529dfff683f4",
+        "raw_hash": null,
+        "created_at": "2026-08-31T07:52:28.62118+00:00",
+        "source_url": "https://portal.czechcyclingfederation.com/RaceDetail/Race/1452",
+        "external_id": "csc-1452",
+        "is_canonical": true,
+        "watched_url_id": "3c570c1d-4eaf-495b-ad26-0dc33766ff0a"
+      },
+      {
+        "id": "b6dd5daa-86b9-4a57-a886-ed5fcfcadb17",
+        "kind": "aggregator",
+        "event_id": "316f2a6e-9dd1-49e2-a20c-529dfff683f4",
+        "raw_hash": null,
+        "created_at": "2026-08-13T19:47:12.965083+00:00",
+        "source_url": "https://mtbs.cz/clanek/filipa-podkrkonossky-maraton-74688/kategorie/xcm",
+        "external_id": "mtbs-filipa podkrkonossky maraton-2026-08-01",
+        "is_canonical": true,
+        "watched_url_id": "8ee0c534-448c-461e-bcd1-1f19564c0382"
+      }
+    ],
+    "location": {
+      "id": "4f8c52d6-9b5f-48bc-a153-3d60f06a14e8",
+      "lat": 50.4290274,
+      "lng": 15.5827632,
+      "geog": "0101000020E6100000E79F2AF05F2A2F40410BAE5EEA364940",
+      "name": "Lázně Bělohrad",
+      "venue": null,
+      "region": null,
+      "timezone": "Europe/Prague",
+      "created_at": "2026-08-13T19:47:12.881491+00:00",
+      "updated_at": "2026-08-13T20:38:50.558934+00:00",
+      "region_code": null,
+      "country_code": "CZ",
+      "municipality": "Lázně Bělohrad",
+      "geocode_query": "Lázně Bělohrad",
+      "geocode_status": "ok"
+    },
+    "override": {
+      "id": "87108118-a257-42ca-858b-dffaf3db745f",
+      "fields": {
+        "name": "FILIPA Podkrkonošský maraton",
+        "end_date": "2026-08-01",
+        "series_id": "8f2d11af-d170-4d54-9a9b-bf179840e09c",
+        "start_date": "2026-08-01",
+        "website_url": "https://www.iprimacup.cz/pm-2026/"
+      },
+      "event_id": "316f2a6e-9dd1-49e2-a20c-529dfff683f4",
+      "updated_at": "2026-09-17T06:43:38.788191+00:00",
+      "updated_by": "major series repair 2026-09-17",
+      "locked_fields": [
+        "name",
+        "start_date",
+        "end_date",
+        "series_id",
+        "website_url"
+      ]
+    },
+    "categories": null
+  },
+  {
+    "event": {
+      "id": "480a6a98-cb34-4305-ac45-75fde64678b9",
+      "name": "SPOKE maraton",
+      "slug": "spoke-maraton-2026",
+      "level": "local",
+      "season": "2026",
+      "status": "completed",
+      "formats": [
+        "xcm"
+      ],
+      "audience": "adults",
+      "end_date": "2026-08-29",
+      "timezone": "Europe/Prague",
+      "series_id": null,
+      "uci_class": null,
+      "created_at": "2026-08-13T19:46:50.943141+00:00",
+      "event_type": "race",
+      "start_date": "2026-08-29",
+      "updated_at": "2026-10-29T05:20:21.969+00:00",
+      "visibility": "public",
+      "class_label": null,
+      "description": null,
+      "disciplines": [
+        "xcm"
+      ],
+      "fingerprint": "2026-08-29:u2cs6:spoke maraton",
+      "location_id": "1ddf669e-364a-40df-aa39-65ac1fb3bd9b",
+      "results_url": null,
+      "search_text": "spoke maraton",
+      "source_kind": "scraped",
+      "website_url": "https://www.spokemaraton.cz",
+      "last_seen_at": "2026-10-28T21:15:08.08+00:00",
+      "age_categories": [
+        "amateur",
+        "masters"
+      ],
+      "age_confidence": "default",
+      "merged_into_id": null,
+      "name_normalized": "spoke maraton",
+      "regulations_url": "https://bavsesportem.cz/wp-content/uploads/2026/07/propozice_xco_chocen_6_2026.pdf",
+      "competition_type": "other",
+      "registration_url": "https://prihlasky.4timing.cz/spokemaraton/",
+      "registration_opens_at": null,
+      "registration_closes_at": null
+    },
+    "sources": [
+      {
+        "id": "7a37b04c-c2a9-4017-9816-ab58eb7f09b5",
+        "kind": "aggregator",
+        "event_id": "480a6a98-cb34-4305-ac45-75fde64678b9",
+        "raw_hash": null,
+        "created_at": "2026-08-13T19:46:50.983366+00:00",
+        "source_url": "https://mtbs.cz/clanek/spoke-maraton-74732/kategorie/mtbo",
+        "external_id": "mtbs-spoke maraton-2026-08-29",
+        "is_canonical": true,
+        "watched_url_id": "8ee0c534-448c-461e-bcd1-1f19564c0382"
+      },
+      {
+        "id": "5859164b-3772-4cac-82ab-a11b2988efe4",
+        "kind": "aggregator",
+        "event_id": "480a6a98-cb34-4305-ac45-75fde64678b9",
+        "raw_hash": null,
+        "created_at": "2026-08-25T09:41:19.551511+00:00",
+        "source_url": "https://sumator.cz/race/spoke-maraton-29-8-2026",
+        "external_id": "sumator-spoke maraton-2026-08-29",
+        "is_canonical": true,
+        "watched_url_id": "19cfe36f-637e-4bb6-83a9-7183a1b55621"
+      }
+    ],
+    "location": {
+      "id": "1ddf669e-364a-40df-aa39-65ac1fb3bd9b",
+      "lat": 49.981,
+      "lng": 13.4875,
+      "geog": null,
+      "name": "Kralovice",
+      "venue": null,
+      "region": null,
+      "timezone": "Europe/Prague",
+      "created_at": "2026-08-13T19:46:50.894982+00:00",
+      "updated_at": "2026-08-13T20:06:00.919+00:00",
+      "region_code": null,
+      "country_code": "CZ",
+      "municipality": "Kralovice",
+      "geocode_query": "Kralovice, CZ",
+      "geocode_status": "ok"
+    },
+    "override": null,
+    "categories": null
+  },
+  {
+    "event": {
+      "id": "4e051d55-b038-4c26-871f-9c4cb9faf8fd",
+      "name": "Bohemian Border Bash Race",
+      "slug": "bohemian-border-bash-race-2026",
+      "level": "local",
+      "season": "2026",
+      "status": "completed",
+      "formats": [],
+      "audience": "adults",
+      "end_date": "2026-09-05",
+      "timezone": "Europe/Prague",
+      "series_id": null,
+      "uci_class": null,
+      "created_at": "2026-08-13T20:38:03.510642+00:00",
+      "event_type": "race",
+      "start_date": "2026-09-05",
+      "updated_at": "2026-09-08T21:42:35.729+00:00",
+      "visibility": "public",
+      "class_label": "Local",
+      "description": null,
+      "disciplines": [
+        "gravel"
+      ],
+      "fingerprint": "2026-09-05:u2ffv:bohemian border bash race",
+      "location_id": "6db47f21-53d4-4021-b264-402eef6794d3",
+      "results_url": null,
+      "search_text": "bohemian border bash race",
+      "source_kind": "scraped",
+      "website_url": "https://www.borderbash.cc/race2025",
+      "last_seen_at": "2026-08-13T20:45:39.08+00:00",
+      "age_categories": [
+        "amateur",
+        "masters"
+      ],
+      "age_confidence": "default",
+      "merged_into_id": null,
+      "name_normalized": "bohemian border bash race",
+      "regulations_url": "https://www.borderbash.cc/bbbr26-info",
+      "competition_type": "community",
+      "registration_url": "https://www.borderbash.cc/race2025",
+      "registration_opens_at": null,
+      "registration_closes_at": null
+    },
+    "sources": [
+      {
+        "id": "80b93715-843f-4f57-8253-18c5f441c6d8",
+        "kind": "other",
+        "event_id": "4e051d55-b038-4c26-871f-9c4cb9faf8fd",
+        "raw_hash": null,
+        "created_at": "2026-08-13T20:45:39.177012+00:00",
+        "source_url": "https://eventivsport.com/events/bohemian-border-bash-race",
+        "external_id": "eventiv-a346c2ec-6ca4-4e88-93f9-43d0a796e7fa-2026-09-05",
+        "is_canonical": true,
+        "watched_url_id": "dab453d8-639d-4f6e-baba-b48130b7f852"
+      }
+    ],
+    "location": {
+      "id": "6db47f21-53d4-4021-b264-402eef6794d3",
+      "lat": null,
+      "lng": null,
+      "geog": null,
+      "name": "Czechia",
+      "venue": null,
+      "region": null,
+      "timezone": "Europe/Prague",
+      "created_at": "2026-08-13T20:45:39.064429+00:00",
+      "updated_at": "2026-09-08T21:34:59.787+00:00",
+      "region_code": null,
+      "country_code": "CZ",
+      "municipality": "Czechia",
+      "geocode_query": "Czechia",
+      "geocode_status": "skipped"
+    },
+    "override": null,
+    "categories": [
+      {
+        "id": "3b01276f-ca0b-4f1c-903d-5ab79b7076ad",
+        "name": "1420 km",
+        "gender": null,
+        "age_max": null,
+        "age_min": null,
+        "audience": "mixed",
+        "event_id": "4e051d55-b038-4c26-871f-9c4cb9faf8fd",
+        "distance_km": 1420,
+        "elevation_m": null
+      }
+    ]
+  },
+  {
+    "event": {
+      "id": "ed2f9eb0-c8f4-4ba4-aa46-d34274cbe81d",
+      "name": "Bohemian Border Bash",
+      "slug": "bohemian-border-bash-2026",
+      "level": "local",
+      "season": "2026",
+      "status": "hidden",
+      "formats": [],
+      "audience": "adults",
+      "end_date": "2026-09-12",
+      "timezone": "Europe/Prague",
+      "series_id": null,
+      "uci_class": null,
+      "created_at": "2026-08-24T05:38:13.195905+00:00",
+      "event_type": "race",
+      "start_date": "2026-09-05",
+      "updated_at": "2026-08-31T12:33:52.065+00:00",
+      "visibility": "hidden",
+      "class_label": "Local",
+      "description": null,
+      "disciplines": [
+        "gravel"
+      ],
+      "fingerprint": "2026-09-05:u341n:bohemian border bash",
+      "location_id": "183e57dc-b2af-4e66-9461-8f645624b65e",
+      "results_url": null,
+      "search_text": "bohemian border bash",
+      "source_kind": "scraped",
+      "website_url": "https://www.borderbash.cc/",
+      "last_seen_at": "2026-08-31T12:33:52.065+00:00",
+      "age_categories": [
+        "amateur",
+        "masters"
+      ],
+      "age_confidence": "default",
+      "merged_into_id": null,
+      "name_normalized": "bohemian border bash",
+      "regulations_url": null,
+      "competition_type": "community",
+      "registration_url": "https://www.borderbash.cc/",
+      "registration_opens_at": null,
+      "registration_closes_at": null
+    },
+    "sources": [
+      {
+        "id": "3d13386c-4d0e-474e-b2e0-b8cce7604809",
+        "kind": "aggregator",
+        "event_id": "ed2f9eb0-c8f4-4ba4-aa46-d34274cbe81d",
+        "raw_hash": null,
+        "created_at": "2026-08-13T20:38:03.551417+00:00",
+        "source_url": "https://radsport-events.de/events/27624",
+        "external_id": "radsport-27624-2026-09-05",
+        "is_canonical": true,
+        "watched_url_id": "2d6c4cb2-01e6-45f2-b70e-3113b6da50dc"
+      }
+    ],
+    "location": {
+      "id": "183e57dc-b2af-4e66-9461-8f645624b65e",
+      "lat": 50.8201997,
+      "lng": 14.3524436,
+      "geog": "0101000020E6100000785ECF7C73B42C4032D8C34DFC684940",
+      "name": "Srbská Kamenice",
+      "venue": null,
+      "region": null,
+      "timezone": "Europe/Prague",
+      "created_at": "2026-08-13T20:38:03.425494+00:00",
+      "updated_at": "2026-08-13T20:38:03.46912+00:00",
+      "region_code": null,
+      "country_code": "CZ",
+      "municipality": "Srbská Kamenice",
+      "geocode_query": "Srbská Kamenice",
+      "geocode_status": "ok"
+    },
+    "override": null,
+    "categories": [
+      {
+        "id": "75139e29-c570-4bd6-87c3-adae968b4214",
+        "name": "1420 km",
+        "gender": null,
+        "age_max": null,
+        "age_min": null,
+        "audience": "mixed",
+        "event_id": "ed2f9eb0-c8f4-4ba4-aa46-d34274cbe81d",
+        "distance_km": 1420,
+        "elevation_m": null
+      }
+    ]
+  },
+  {
+    "event": {
+      "id": "532e5fd5-a1eb-4dc8-a4a4-2a4c66908641",
+      "name": "DoKola!",
+      "slug": "dokola-2027",
+      "level": "local",
+      "season": "2027",
+      "status": "scheduled",
+      "formats": [],
+      "audience": "mixed",
+      "end_date": "2027-06-13",
+      "timezone": "Europe/Prague",
+      "series_id": null,
+      "uci_class": null,
+      "created_at": "2026-10-23T21:43:48.087315+00:00",
+      "event_type": "race",
+      "start_date": "2027-06-11",
+      "updated_at": "2026-10-29T09:34:33.752+00:00",
+      "visibility": "public",
+      "class_label": null,
+      "description": null,
+      "disciplines": [
+        "mtb"
+      ],
+      "fingerprint": "2027-06-11:u2g00:dokola",
+      "location_id": "4fc4c827-bfa3-49b9-85e6-adf25c5df91f",
+      "results_url": null,
+      "search_text": "dokola",
+      "source_kind": "scraped",
+      "website_url": "https://kalendar.winspace.cz/kalendar/2027-dokola-8c6cc475",
+      "last_seen_at": "2026-10-29T09:34:32.631+00:00",
+      "age_categories": [],
+      "age_confidence": null,
+      "merged_into_id": null,
+      "name_normalized": "dokola",
+      "regulations_url": "https://www.dokolamtb.cz/propozice/",
+      "competition_type": "other",
+      "registration_url": "https://www.dokolamtb.cz/registrace/",
+      "registration_opens_at": "2026-09-01T00:00:00+00:00",
+      "registration_closes_at": "2027-06-10T14:00:00+00:00"
+    },
+    "sources": [
+      {
+        "id": "636844e8-3946-4c23-91e0-76187cffe5f2",
+        "kind": "aggregator",
+        "event_id": "532e5fd5-a1eb-4dc8-a4a4-2a4c66908641",
+        "raw_hash": null,
+        "created_at": "2026-10-23T21:43:48.24858+00:00",
+        "source_url": "https://kalendar.winspace.cz/kalendar/2027-dokola-8c6cc475",
+        "external_id": "llm-kalendar.winspace.cz-dokola-2027-06-11",
+        "is_canonical": true,
+        "watched_url_id": "433af772-24e0-49ae-94a0-0ae65f80e8e1"
+      },
+      {
+        "id": "30977d06-75a5-4e93-8310-7bd5635c337e",
+        "kind": "official",
+        "event_id": "532e5fd5-a1eb-4dc8-a4a4-2a4c66908641",
+        "raw_hash": null,
+        "created_at": "2026-10-29T09:34:29.862938+00:00",
+        "source_url": "https://www.dokolamtb.cz/propozice/",
+        "external_id": "verified-cz2027-dokola",
+        "is_canonical": true,
+        "watched_url_id": "39adefee-de27-4cb1-9d44-a777576a23ea"
+      }
+    ],
+    "location": {
+      "id": "4fc4c827-bfa3-49b9-85e6-adf25c5df91f",
+      "lat": 49.2296292,
+      "lng": 15.4924747,
+      "geog": "0101000020E6100000FF36D5A425FC2E40731A587D649D4840",
+      "name": "Sedlejov",
+      "venue": null,
+      "region": "Kraj Vysočina",
+      "timezone": "Europe/Prague",
+      "created_at": "2026-10-29T09:34:32.334861+00:00",
+      "updated_at": "2026-10-29T09:34:32.453395+00:00",
+      "region_code": null,
+      "country_code": "CZ",
+      "municipality": "Sedlejov",
+      "geocode_query": "Sedlejov",
+      "geocode_status": "ok"
+    },
+    "override": {
+      "id": "81631832-783b-4fae-929f-389998d9064b",
+      "fields": {
+        "end_date": "2027-06-13",
+        "categories": [
+          {
+            "name": "DoKola! — přibližně 400 km",
+            "distanceKm": 400
+          },
+          {
+            "name": "DoKolečka! — přibližně 200 km",
+            "distanceKm": 200
+          },
+          {
+            "name": "1/2 DoKolečka! — přibližně 100 km",
+            "distanceKm": 100
+          }
+        ],
+        "start_date": "2027-06-11",
+        "updated_at": "2026-10-29T09:34:33.752Z",
+        "disciplines": [
+          "mtb"
+        ],
+        "registration_opens_at": "2026-09-01T00:00:00+00:00",
+        "registration_closes_at": "2027-06-10T14:00:00+00:00"
+      },
+      "event_id": "532e5fd5-a1eb-4dc8-a4a4-2a4c66908641",
+      "updated_at": "2026-10-29T09:34:34.165+00:00",
+      "updated_by": "admin",
+      "locked_fields": [
+        "start_date",
+        "end_date",
+        "disciplines",
+        "registration_opens_at",
+        "registration_closes_at",
+        "categories"
+      ]
+    },
+    "categories": [
+      {
+        "id": "ab5c6348-e1b3-4101-b1ad-a474e07a6b75",
+        "name": "DoKola! — přibližně 400 km",
+        "gender": null,
+        "age_max": null,
+        "age_min": null,
+        "audience": "mixed",
+        "event_id": "532e5fd5-a1eb-4dc8-a4a4-2a4c66908641",
+        "distance_km": 400,
+        "elevation_m": null
+      },
+      {
+        "id": "9db4f3d6-18a1-4e6a-9661-f360d00980b9",
+        "name": "DoKolečka! — přibližně 200 km",
+        "gender": null,
+        "age_max": null,
+        "age_min": null,
+        "audience": "mixed",
+        "event_id": "532e5fd5-a1eb-4dc8-a4a4-2a4c66908641",
+        "distance_km": 200,
+        "elevation_m": null
+      },
+      {
+        "id": "3dc67363-8951-4ef3-a25e-9b16dec36249",
+        "name": "1/2 DoKolečka! — přibližně 100 km",
+        "gender": null,
+        "age_max": null,
+        "age_min": null,
+        "audience": "mixed",
+        "event_id": "532e5fd5-a1eb-4dc8-a4a4-2a4c66908641",
+        "distance_km": 100,
+        "elevation_m": null
+      }
+    ]
+  },
+  {
+    "event": {
+      "id": "c27f3c85-837e-4963-941b-bdfe60747b45",
+      "name": "O DoKola!",
+      "slug": "o-dokola-2027",
+      "level": "local",
+      "season": "2027",
+      "status": "scheduled",
+      "formats": [],
+      "audience": "mixed",
+      "end_date": "2027-06-13",
+      "timezone": "Europe/Prague",
+      "series_id": null,
+      "uci_class": null,
+      "created_at": "2026-10-23T21:43:55.284137+00:00",
+      "event_type": "race",
+      "start_date": "2027-06-13",
+      "updated_at": "2026-10-30T03:44:54.733+00:00",
+      "visibility": "hidden",
+      "class_label": null,
+      "description": null,
+      "disciplines": [],
+      "fingerprint": "2027-06-13:nogps:o dokola",
+      "location_id": "5c22b37e-d35d-458d-8a17-a7710b2e54c6",
+      "results_url": null,
+      "search_text": "o dokola",
+      "source_kind": "scraped",
+      "website_url": "https://www.dokolamtb.cz/",
+      "last_seen_at": "2026-10-30T03:44:54.733+00:00",
+      "age_categories": [],
+      "age_confidence": null,
+      "merged_into_id": null,
+      "name_normalized": "o dokola",
+      "regulations_url": "https://www.dokolamtb.cz/pravidla-ochrany-soukromi/",
+      "competition_type": "other",
+      "registration_url": null,
+      "registration_opens_at": null,
+      "registration_closes_at": null
+    },
+    "sources": [
+      {
+        "id": "3ca77207-5dfa-4be6-a93a-9365644308c8",
+        "kind": "official",
+        "event_id": "c27f3c85-837e-4963-941b-bdfe60747b45",
+        "raw_hash": null,
+        "created_at": "2026-10-23T21:43:55.538083+00:00",
+        "source_url": "https://www.dokolamtb.cz/",
+        "external_id": "generic-o dokola-2027-06-13",
+        "is_canonical": true,
+        "watched_url_id": "3353ca67-d4a8-4faf-80f8-95fb3730da64"
+      }
+    ],
+    "location": {
+      "id": "5c22b37e-d35d-458d-8a17-a7710b2e54c6",
+      "lat": null,
+      "lng": null,
+      "geog": null,
+      "name": "Unknown",
+      "venue": null,
+      "region": null,
+      "timezone": "Europe/Prague",
+      "created_at": "2026-10-23T21:43:55.20933+00:00",
+      "updated_at": "2026-10-23T21:43:55.20933+00:00",
+      "region_code": null,
+      "country_code": "CZ",
+      "municipality": "O DoKola!",
+      "geocode_query": "O DoKola!",
+      "geocode_status": "pending"
+    },
+    "override": null,
+    "categories": null
+  },
+  {
+    "event": {
+      "id": "a73eb9a5-46de-4bbe-b9d7-1e141a026314",
+      "name": "V4 2027",
+      "slug": "v4-2027",
+      "level": "local",
+      "season": "2027",
+      "status": "scheduled",
+      "formats": [],
+      "audience": "adults",
+      "end_date": "2027-08-01",
+      "timezone": "Europe/Prague",
+      "series_id": null,
+      "uci_class": null,
+      "created_at": "2026-10-23T21:52:46.119+00:00",
+      "event_type": "race",
+      "start_date": "2027-08-01",
+      "updated_at": "2026-10-30T05:19:56.206+00:00",
+      "visibility": "public",
+      "class_label": "Local",
+      "description": null,
+      "disciplines": [
+        "gravel"
+      ],
+      "fingerprint": "2027-08-01:u2fyb:v4 2027",
+      "location_id": "f6b38eee-fc43-4d5b-ad3f-dc220ea62a4a",
+      "results_url": null,
+      "search_text": "v4 2027",
+      "source_kind": "scraped",
+      "website_url": "https://bike-paradise.cz/",
+      "last_seen_at": "2026-10-25T02:16:56.908+00:00",
+      "age_categories": [
+        "amateur",
+        "masters"
+      ],
+      "age_confidence": "default",
+      "merged_into_id": null,
+      "name_normalized": "v4 2027",
+      "regulations_url": null,
+      "competition_type": "community",
+      "registration_url": "https://bike-paradise.cz/registrace/",
+      "registration_opens_at": null,
+      "registration_closes_at": null
+    },
+    "sources": [
+      {
+        "id": "fcf11fef-8864-4d9b-b41c-8240a0e5c01a",
+        "kind": "series",
+        "event_id": "a73eb9a5-46de-4bbe-b9d7-1e141a026314",
+        "raw_hash": null,
+        "created_at": "2026-10-24T07:26:15.858376+00:00",
+        "source_url": "https://bike-paradise.cz/",
+        "external_id": "llm-bike-paradise.cz-v4-2027-08-01",
+        "is_canonical": true,
+        "watched_url_id": "9b33ecd5-6e68-4c54-890a-3b9f82b76b60"
+      }
+    ],
+    "location": {
+      "id": "f6b38eee-fc43-4d5b-ad3f-dc220ea62a4a",
+      "lat": 50.4384383,
+      "lng": 15.1276531,
+      "geog": "0101000020E61000004E7743BF5B412E402CE807BF1E384940",
+      "name": "Dolní Bousov",
+      "venue": null,
+      "region": "Středočeský kraj",
+      "timezone": "Europe/Prague",
+      "created_at": "2026-10-23T21:41:23.603324+00:00",
+      "updated_at": "2026-10-24T00:39:29.628+00:00",
+      "region_code": null,
+      "country_code": "CZ",
+      "municipality": "Dolní Bousov",
+      "geocode_query": "Dolní Bousov",
+      "geocode_status": "ok"
+    },
+    "override": {
+      "id": "9d8d5a2c-b0a2-4a6f-a2fc-fb550e87ac1e",
+      "fields": {
+        "name": "V4 2027",
+        "end_date": "2027-08-01",
+        "categories": [
+          {
+            "name": "V4 — přibližně 1684 km",
+            "distanceKm": 1684,
+            "elevationM": 17400
+          }
+        ],
+        "event_type": "race",
+        "start_date": "2027-08-01",
+        "updated_at": "2026-10-29T15:01:11.431Z",
+        "visibility": "public",
+        "disciplines": [
+          "gravel"
+        ],
+        "name_normalized": "v4 2027",
+        "registration_url": "https://bike-paradise.cz/registrace/"
+      },
+      "event_id": "a73eb9a5-46de-4bbe-b9d7-1e141a026314",
+      "updated_at": "2026-10-29T15:01:11.55+00:00",
+      "updated_by": "admin",
+      "locked_fields": [
+        "name",
+        "start_date",
+        "end_date",
+        "disciplines",
+        "registration_url",
+        "visibility",
+        "categories",
+        "event_type",
+        "name_normalized"
+      ]
+    },
+    "categories": [
+      {
+        "id": "c31bf4c4-87a9-4b50-bfd1-164c49911edc",
+        "name": "V4 — přibližně 1684 km",
+        "gender": null,
+        "age_max": null,
+        "age_min": null,
+        "audience": "mixed",
+        "event_id": "a73eb9a5-46de-4bbe-b9d7-1e141a026314",
+        "distance_km": 1684,
+        "elevation_m": 17400
+      }
+    ]
+  }
+]

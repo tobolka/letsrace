@@ -1,0 +1,2961 @@
+{
+ "at": "2026-11-18T20:24:31.394Z",
+ "apply": true,
+ "stats": {
+  "competitions": 288,
+  "skipped": 23,
+  "matched": 211,
+  "enriched": 139,
+  "published": 0,
+  "ambiguous": 52,
+  "ruledOut": 9,
+  "failed": 2
+ },
+ "report": [
+  {
+   "uci": "7b0dac03-082b-41a2-ad18-338be3800df0",
+   "name": "Czech National Championship - Park & Flatland",
+   "date": "2026-11-21",
+   "class": "CN",
+   "country": "CZ",
+   "outcome": "hidden",
+   "slug": "czech-national-championship-park-flatland-2026-11-21"
+  },
+  {
+   "uci": "88631ab5-438d-48f1-be0f-5dc2bd52969c",
+   "name": "Youth Grand Prix Ostrava",
+   "date": "2026-11-26",
+   "class": "C1",
+   "country": "CZ",
+   "outcome": "enriched",
+   "slug": "youth-grand-prix-ostrava-2026",
+   "changes": [
+    "web"
+   ]
+  },
+  {
+   "uci": "d4312274-a897-44bc-9380-c14e21c89860",
+   "name": "2026-2027 UCI Cyclo-cross World Cup #1, Ostrava",
+   "date": "2026-11-27",
+   "class": "CDM",
+   "country": "CZ",
+   "outcome": "same",
+   "slug": "uci-cyclo-cross-world-cup-1-ostrava-2026",
+   "changes": []
+  },
+  {
+   "uci": "361edf87-48b1-4e0d-a779-a4baa4256636",
+   "name": "2026-2027 UCI Cyclo-cross World Cup #2, Tábor",
+   "date": "2026-11-29",
+   "class": "CDM",
+   "country": "CZ",
+   "outcome": "same",
+   "slug": "uci-cyclo-cross-world-cup-2-tabor-2026",
+   "changes": []
+  },
+  {
+   "uci": "b6fbfe5c-cbb6-46a0-99cf-81593750fec1",
+   "name": "Janev Cup #6 - Kolín",
+   "date": "2026-12-05",
+   "class": "C2",
+   "country": "CZ",
+   "outcome": "same",
+   "slug": "janev-cup-uci-c2-kolin-2026",
+   "changes": []
+  },
+  {
+   "uci": "ddecd450-7126-44b2-bb0f-613937bcd833",
+   "name": "Janev Cup #7 - Veselí nad Lužnicí",
+   "date": "2026-12-12",
+   "class": "C1",
+   "country": "CZ",
+   "outcome": "ambiguous",
+   "candidates": [
+    "janev-cup-uci-c1-veseli-nad-luznici-2026",
+    "janev-cup-mcr-mladez-veseli-nad-luznici-2026"
+   ]
+  },
+  {
+   "uci": "b6286d68-71c0-4197-8de5-8454dfc94a8d",
+   "name": "Czech National Championships",
+   "date": "2027-01-10",
+   "class": "CN",
+   "country": "CZ",
+   "outcome": "same",
+   "slug": "mcr-cyklokros-mlada-boleslav-2027",
+   "changes": []
+  },
+  {
+   "uci": "fd494ab2-9a26-4f48-8f6f-7ec62fafbf99",
+   "name": "Czech MTB Cup",
+   "date": "2027-04-24",
+   "class": "1",
+   "country": "CZ",
+   "outcome": "same",
+   "slug": "czech-mtb-cup-2027",
+   "changes": []
+  },
+  {
+   "uci": "904c0f01-f878-48b4-81fc-cd359db1bb7f",
+   "name": "Gracia",
+   "date": "2027-04-29",
+   "class": "2.2",
+   "country": "CZ",
+   "outcome": "enriched",
+   "slug": "gracia-orlova-2027",
+   "changes": [
+    "kategorie potvrzené UCI"
+   ]
+  },
+  {
+   "uci": "4fa9f103-5886-47e0-9ccd-a43ecebb4f5e",
+   "name": "Grand Prix West Bohemia",
+   "date": "2027-05-01",
+   "class": "2.1",
+   "country": "CZ",
+   "outcome": "enriched",
+   "slug": "grand-prix-west-bohemia-2027",
+   "changes": [
+    "web"
+   ]
+  },
+  {
+   "uci": "ef3dfe8d-408d-4d38-995e-918c6013a113",
+   "name": "Course de la Paix Juniors",
+   "date": "2027-05-06",
+   "class": "2.Ncup",
+   "country": "CZ",
+   "outcome": "enriched",
+   "slug": "zavod-miru-junioru-2027",
+   "changes": [
+    "popisky kategorií",
+    "e-mail pořadatele"
+   ]
+  },
+  {
+   "uci": "26821250-61a5-4c4a-a321-4a80af0cb6a9",
+   "name": "Course de la Paix Juniors Féminines",
+   "date": "2027-05-07",
+   "class": "2.Ncup",
+   "country": "CZ",
+   "outcome": "unplaced",
+   "venue": "Jablonec nad Nisou / Terezín (date dependent)"
+  },
+  {
+   "uci": "2c5f924f-1d52-4fc2-993b-fb7bcbff3fe0",
+   "name": "GP Junek Velodromes",
+   "date": "2027-05-08",
+   "class": "2",
+   "country": "CZ",
+   "outcome": "unplaced",
+   "venue": "Nad Kapličkou"
+  },
+  {
+   "uci": "90e3ec28-84af-4e4e-9337-59e2230363c0",
+   "name": "Czech MTB Cup",
+   "date": "2027-05-08",
+   "class": "1",
+   "country": "CZ",
+   "outcome": "same",
+   "slug": "cesky-pohar-mtb-xco-xcc-vimperk-2027",
+   "changes": []
+  },
+  {
+   "uci": "120981fd-4a56-408b-a7dd-44e4bd580a67",
+   "name": "500+1 KOLO",
+   "date": "2027-05-11",
+   "class": "1",
+   "country": "CZ",
+   "outcome": "unplaced",
+   "venue": "Křížkovského 416/22"
+  },
+  {
+   "uci": "be64351e-f21b-4a29-9928-863fe416c72b",
+   "name": "Tessuti Sport Bike Race",
+   "date": "2027-05-15",
+   "class": "2",
+   "country": "CZ",
+   "outcome": "same",
+   "slug": "tessuti-sport-bike-race-2027",
+   "changes": []
+  },
+  {
+   "uci": "4192c5af-c56d-4851-b421-47c429ae84b2",
+   "name": "Tour de Feminin",
+   "date": "2027-05-20",
+   "class": "2.2",
+   "country": "CZ",
+   "outcome": "same",
+   "slug": "tour-de-feminin-2027",
+   "changes": []
+  },
+  {
+   "uci": "2130a972-e17f-4ebf-a41f-854670ec4fe3",
+   "name": "UCI XCO Junior Series - Nové Město na Moravě",
+   "date": "2027-05-21",
+   "class": "1",
+   "country": "CZ",
+   "outcome": "same",
+   "slug": "uci-mtb-world-cup-nove-mesto-na-morave-2027",
+   "changes": []
+  },
+  {
+   "uci": "ead3a164-66be-47d3-8964-b47edb46d311",
+   "name": "UCI Mountain Bike World Cup – XCO/XCC",
+   "date": "2027-05-21",
+   "class": "CDM",
+   "country": "CZ",
+   "outcome": "possible-duplicate",
+   "candidates": [
+    "uci-mtb-world-cup-nove-mesto-na-morave-2027"
+   ]
+  },
+  {
+   "uci": "5a69bca6-4688-485d-a1e6-86e975b47583",
+   "name": "Peace Race",
+   "date": "2027-05-27",
+   "class": "2.2U",
+   "country": "CZ",
+   "outcome": "unplaced",
+   "venue": "Hotel Perk"
+  },
+  {
+   "uci": "5ebeb700-209c-4e7d-9431-6059a88e23cd",
+   "name": "GP Framar",
+   "date": "2027-06-04",
+   "class": "1",
+   "country": "CZ",
+   "outcome": "unplaced",
+   "venue": "Nad Kapličkou"
+  },
+  {
+   "uci": "6dce3e08-bdae-4df7-b59f-76da0d4313c3",
+   "name": "Visegrad 4 Bicycle Race - GP Czech Republic",
+   "date": "2027-06-05",
+   "class": "1.2",
+   "country": "CZ",
+   "outcome": "enriched",
+   "slug": "visegrad-4-bicycle-race-grand-prix-czech-republic-uci-1-2-2027",
+   "changes": [
+    "web"
+   ]
+  },
+  {
+   "uci": "9651efbb-2fa6-49e3-b7fb-7f437245908d",
+   "name": "Czech MTB Cup",
+   "date": "2027-06-05",
+   "class": "1",
+   "country": "CZ",
+   "outcome": "same",
+   "slug": "cesky-pohar-mtb-xco-xcc-bedrichov-2027",
+   "changes": []
+  },
+  {
+   "uci": "74899aec-2436-4c51-a6ab-16f814827284",
+   "name": "GP Praha 10",
+   "date": "2027-06-06",
+   "class": "2",
+   "country": "CZ",
+   "outcome": "unplaced",
+   "venue": "Nad Kapličkou"
+  },
+  {
+   "uci": "6b40265f-cc03-459a-ac43-da5e95434f50",
+   "name": "GP Brno track cycling",
+   "date": "2027-06-11",
+   "class": "1",
+   "country": "CZ",
+   "outcome": "unplaced",
+   "venue": "Křížkovského 416/22"
+  },
+  {
+   "uci": "d9badc54-b891-4100-9f2b-705483b56561",
+   "name": "National Road Championships - Czechia",
+   "date": "2027-06-23",
+   "class": "CN",
+   "country": "CZ",
+   "outcome": "unplaced",
+   "venue": "Nová Baňa"
+  },
+  {
+   "uci": "39b3099d-7360-4c4b-abd0-7dfaf8029e45",
+   "name": "National Road Championships - Czechia (MU)",
+   "date": "2027-07-03",
+   "class": "CN",
+   "country": "CZ",
+   "outcome": "unplaced",
+   "venue": "TBC"
+  },
+  {
+   "uci": "72670b24-330d-436b-a10f-896aeca9ca54",
+   "name": "GP TUFO - VC Olomouckého kraje",
+   "date": "2027-07-08",
+   "class": "2",
+   "country": "CZ",
+   "outcome": "unplaced",
+   "venue": "Kostelecká 4468/49"
+  },
+  {
+   "uci": "bdf9db81-158e-4a51-9e45-b0bdd4e7a174",
+   "name": "4X Pro Tour - JBC 4X Revelations",
+   "date": "2027-07-09",
+   "class": "3",
+   "country": "CZ",
+   "outcome": "enriched",
+   "slug": "jbc-4x-revelations-2027",
+   "changes": [
+    "web"
+   ]
+  },
+  {
+   "uci": "d60fb2da-4481-46f8-ab1c-01260f2ed854",
+   "name": "GP Prostějov-Memoriál Otmara Malečka",
+   "date": "2027-07-09",
+   "class": "1",
+   "country": "CZ",
+   "outcome": "unplaced",
+   "venue": "Kostelecká 4468/49"
+  },
+  {
+   "uci": "de75e707-fba2-4719-8157-35ec0c3c05eb",
+   "name": "Czech National Championships - XCO",
+   "date": "2027-07-16",
+   "class": "CN",
+   "country": "CZ",
+   "outcome": "enriched",
+   "slug": "czech-national-championships-xco-2027",
+   "changes": [
+    "web"
+   ]
+  },
+  {
+   "uci": "eb74c669-e2e4-497a-a3a4-d3e653b70357",
+   "name": "Czech Tour",
+   "date": "2027-08-12",
+   "class": "2.Pro",
+   "country": "CZ",
+   "outcome": "enriched",
+   "slug": "czech-tour-2027",
+   "changes": [
+    "kategorie potvrzené UCI",
+    "web"
+   ]
+  },
+  {
+   "uci": "2336a0af-fd31-43dd-89e9-44a4f0c64efe",
+   "name": "Czech MTB Cup",
+   "date": "2027-08-14",
+   "class": "1",
+   "country": "CZ",
+   "outcome": "same",
+   "slug": "cesky-pohar-mtb-xco-xcc-stupno-2027",
+   "changes": []
+  },
+  {
+   "uci": "2707e470-b8ed-4b37-90d3-6831805f8f67",
+   "name": "West Bohemia Tour",
+   "date": "2027-08-19",
+   "class": "2.2U",
+   "country": "CZ",
+   "outcome": "enriched",
+   "slug": "west-bohemia-tour-2027",
+   "changes": [
+    "web"
+   ]
+  },
+  {
+   "uci": "df0de7f8-f0aa-48df-81f5-4c90d6645273",
+   "name": "Czech National Championships",
+   "date": "2027-09-04",
+   "class": "CN",
+   "country": "CZ",
+   "outcome": "enriched",
+   "slug": "czech-national-championships-2027",
+   "changes": [
+    "web"
+   ]
+  },
+  {
+   "uci": "b91ab1ca-48dd-4a1d-a2c3-c4c9075473f2",
+   "name": "Okolo jižních Čech / Tour of South Bohemia",
+   "date": "2027-09-09",
+   "class": "2.2",
+   "country": "CZ",
+   "outcome": "same",
+   "slug": "okolo-jiznich-cech-tour-of-south-bohemia-2027",
+   "changes": []
+  },
+  {
+   "uci": "2f608053-f40e-491f-835a-dae95dc02208",
+   "name": "Grand Prix Přilba Moravy",
+   "date": "2027-09-16",
+   "class": "2",
+   "country": "CZ",
+   "outcome": "unplaced",
+   "venue": "Křížkovského 416/22"
+  },
+  {
+   "uci": "618de142-62bf-4475-b05a-7b80d0d66a2a",
+   "name": "NoLimited Cup #5 Šamorín",
+   "date": "2026-11-21",
+   "class": "C1",
+   "country": "SK",
+   "outcome": "ambiguous",
+   "candidates": [
+    "7-kolo-nolimited-cup-v-cx-uci-c1-2026",
+    "cyklokros-sered-7-kolo-nolimited-cup-v-cx-uci-c1-cyklokros-2026"
+   ]
+  },
+  {
+   "uci": "a2940fa6-4b0b-4be9-a5be-bd37b8fe76d0",
+   "name": "Grand Prix Šamorín",
+   "date": "2026-11-22",
+   "class": "C2",
+   "country": "SK",
+   "outcome": "same",
+   "slug": "8-kolo-grand-prix-samorin-uci-c2-2026",
+   "changes": []
+  },
+  {
+   "uci": "3a825618-71ad-4219-b644-e068964e5f20",
+   "name": "Slovak National Championships",
+   "date": "2026-12-05",
+   "class": "CN",
+   "country": "SK",
+   "outcome": "same",
+   "slug": "msr-v-cyklokrose-9-kolo-selce-2026",
+   "changes": []
+  },
+  {
+   "uci": "70322870-d550-4933-9a38-46651f71f93b",
+   "name": "NoLimited Cup #6 Selce",
+   "date": "2026-12-06",
+   "class": "C2",
+   "country": "SK",
+   "outcome": "ambiguous",
+   "candidates": [
+    "10-kolo-nolimited-cup-v-cx-uci-c2-2026",
+    "cyklokros-selce-10-kolo-nolimited-cup-v-cx-uci-c2-cyklokros-2026"
+   ]
+  },
+  {
+   "uci": "2019dcbb-698b-4ab8-993b-8eaef89b0feb",
+   "name": "Sp XCO Zlatnicka Dolina",
+   "date": "2027-05-15",
+   "class": "3",
+   "country": "SK",
+   "outcome": "enriched",
+   "slug": "sp-xco-zlatnicka-dolina-2027",
+   "changes": [
+    "kategorie potvrzené UCI",
+    "web"
+   ]
+  },
+  {
+   "uci": "84db20ad-c63f-4858-bc1a-4dec9837204a",
+   "name": "10th GP Prešov",
+   "date": "2027-06-05",
+   "class": "1",
+   "country": "SK",
+   "outcome": "same",
+   "slug": "10th-gp-presov-2027",
+   "changes": []
+  },
+  {
+   "uci": "9b916735-ea81-4254-9ede-5df86f04cd41",
+   "name": "Majstrovstvá Slovenska Juniorov",
+   "date": "2027-06-05",
+   "class": "CN",
+   "country": "SK",
+   "outcome": "same",
+   "slug": "majstrovstva-slovenska-juniorov-2027",
+   "changes": []
+  },
+  {
+   "uci": "b9057464-096d-4845-84bb-a6e53f02dda1",
+   "name": "Sp XCO Bystricany",
+   "date": "2027-06-05",
+   "class": "2",
+   "country": "SK",
+   "outcome": "enriched",
+   "slug": "sp-xco-bystricany-2027",
+   "changes": [
+    "kategorie potvrzené UCI",
+    "web"
+   ]
+  },
+  {
+   "uci": "b2fdbb45-3fb2-4833-9d78-356ddecbc424",
+   "name": "Slovak National Championships - E-XC",
+   "date": "2027-06-06",
+   "class": "CN",
+   "country": "SK",
+   "outcome": "same",
+   "slug": "slovak-national-championships-e-xc-2027",
+   "changes": []
+  },
+  {
+   "uci": "17e5e9de-05ce-443c-bfea-44b60f0656f2",
+   "name": "National Road Championships - Slovakia (MU/WU IRR)",
+   "date": "2027-06-12",
+   "class": "CN",
+   "country": "SK",
+   "outcome": "same",
+   "slug": "national-road-championships-slovakia-mu-wu-irr-2027",
+   "changes": []
+  },
+  {
+   "uci": "867c4937-abb2-413d-8880-fac644368bee",
+   "name": "National Road Championships - Slovakia",
+   "date": "2027-06-24",
+   "class": "CN",
+   "country": "SK",
+   "outcome": "same",
+   "slug": "national-road-championships-slovakia-2027",
+   "changes": []
+  },
+  {
+   "uci": "a1b40cf5-5789-4204-8b23-7341fb187a2c",
+   "name": "Slovak National Championships - EDR",
+   "date": "2027-06-27",
+   "class": "CN",
+   "country": "SK",
+   "outcome": "same",
+   "slug": "slovak-national-championships-edr-2027",
+   "changes": []
+  },
+  {
+   "uci": "48a0d2af-1914-4259-969e-9f7ba34ac695",
+   "name": "Slovak National Championships",
+   "date": "2027-07-03",
+   "class": "CN",
+   "country": "SK",
+   "outcome": "same",
+   "slug": "slovak-national-championships-2027",
+   "changes": []
+  },
+  {
+   "uci": "4f594788-886d-4a43-a3a4-abf5fbf45850",
+   "name": "National Road Championships - Slovakia (MU)",
+   "date": "2027-07-03",
+   "class": "CN",
+   "country": "SK",
+   "outcome": "unplaced",
+   "venue": "Prague"
+  },
+  {
+   "uci": "66f3ba99-77f9-4fca-a12d-a4c87aa0ab87",
+   "name": "Respect Ladies Race Slovakia",
+   "date": "2027-07-10",
+   "class": "1.2",
+   "country": "SK",
+   "outcome": "enriched",
+   "slug": "respect-ladies-race-slovakia-2027",
+   "changes": [
+    "web"
+   ]
+  },
+  {
+   "uci": "88c101f7-54fa-499a-b622-0034b34529cc",
+   "name": "Visegrad 4 Bicycle Race - GP Slovakia",
+   "date": "2027-07-11",
+   "class": "1.2",
+   "country": "SK",
+   "outcome": "enriched",
+   "slug": "visegrad-4-bicycle-race-gp-slovakia-2027",
+   "changes": [
+    "web"
+   ]
+  },
+  {
+   "uci": "d315342c-880a-4f65-aa38-cd05c88f5810",
+   "name": "Medzinárodné Dni Cyklistiky Visegrad 4 Juniors",
+   "date": "2027-07-16",
+   "class": "2.1",
+   "country": "SK",
+   "outcome": "enriched",
+   "slug": "medzinarodne-dni-cyklistiky-visegrad-4-juniors-2027",
+   "changes": [
+    "web"
+   ]
+  },
+  {
+   "uci": "0acc39aa-fb8a-44e9-9a0d-91ede4b7f35c",
+   "name": "European Para Cycling Cup - Road",
+   "date": "2027-07-17",
+   "class": "1",
+   "country": "SK",
+   "outcome": "unplaced",
+   "venue": "Svätoplukova 1463/2"
+  },
+  {
+   "uci": "296ab591-6992-40f1-8e53-4d362954cb59",
+   "name": "Slovak National Championships - XCO/XCC",
+   "date": "2027-07-17",
+   "class": "CN",
+   "country": "SK",
+   "outcome": "enriched",
+   "slug": "slovak-national-championships-xco-xcc-2027",
+   "changes": [
+    "web"
+   ]
+  },
+  {
+   "uci": "ac09077e-f6fa-4fd1-a903-8d558ad64c04",
+   "name": "Slovak National Championships - PUM",
+   "date": "2027-07-17",
+   "class": "CN",
+   "country": "SK",
+   "outcome": "same",
+   "slug": "slovak-national-championships-pum-2027",
+   "changes": []
+  },
+  {
+   "uci": "279f7aec-5a0e-470f-a40b-a5093a43edd8",
+   "name": "Sp XCO Oslany",
+   "date": "2027-07-31",
+   "class": "2",
+   "country": "SK",
+   "outcome": "enriched",
+   "slug": "sp-xco-oslany-2027",
+   "changes": [
+    "kategorie potvrzené UCI",
+    "web"
+   ]
+  },
+  {
+   "uci": "7dc05b49-cc61-4190-a792-0d2bfa5d86fb",
+   "name": "GP Slovak Cycling Federation",
+   "date": "2027-08-07",
+   "class": "2",
+   "country": "SK",
+   "outcome": "same",
+   "slug": "gp-slovak-cycling-federation-2027",
+   "changes": []
+  },
+  {
+   "uci": "a41a885e-da53-4d6e-8651-697b1bfe81c3",
+   "name": "Majstrovstvá Slovenska Elite",
+   "date": "2027-08-07",
+   "class": "CN",
+   "country": "SK",
+   "outcome": "same",
+   "slug": "majstrovstva-slovenska-elite-2027",
+   "changes": []
+  },
+  {
+   "uci": "46477c8d-741e-42d5-8670-7e889bc13af1",
+   "name": "Sp XCO Poracpark",
+   "date": "2027-09-11",
+   "class": "2",
+   "country": "SK",
+   "outcome": "same",
+   "slug": "sp-xco-poracpark-2027",
+   "changes": []
+  },
+  {
+   "uci": "faf971b9-4dac-4bb2-b637-9642992e1791",
+   "name": "Okolo Slovenska / Tour de Slovaquie",
+   "date": "2027-09-15",
+   "class": "2.1",
+   "country": "SK",
+   "outcome": "unplaced",
+   "venue": "Slovensko"
+  },
+  {
+   "uci": "53cff2cd-ebce-4817-8d20-720aac7d1c4f",
+   "name": "Slovak National Championships - XCE",
+   "date": "2027-09-24",
+   "class": "CN",
+   "country": "SK",
+   "outcome": "same",
+   "slug": "slovak-national-championships-xce-2027",
+   "changes": []
+  },
+  {
+   "uci": "1bf7a1de-a469-4292-8598-436cfe705f06",
+   "name": "Slovak National Championships - Park",
+   "date": "2027-10-02",
+   "class": "CN",
+   "country": "SK",
+   "outcome": "same",
+   "slug": "slovak-national-championships-park-2027",
+   "changes": []
+  },
+  {
+   "uci": "31fcb66d-4595-4add-9ae1-6de7c6c692e7",
+   "name": "Deutsche Meisterschaft Cyclocross 2027",
+   "date": "2027-01-09",
+   "class": "CN",
+   "country": "DE",
+   "outcome": "same",
+   "slug": "deutsche-meisterschaft-cyclocross-2027",
+   "changes": []
+  },
+  {
+   "uci": "b8870b27-e367-4768-8f6d-60a2d4cab263",
+   "name": "Sixdays Bremen",
+   "date": "2027-01-15",
+   "class": "2",
+   "country": "DE",
+   "outcome": "enriched",
+   "slug": "sixdays-bremen-2027",
+   "changes": [
+    "kategorie potvrzené UCI",
+    "web"
+   ]
+  },
+  {
+   "uci": "d18ba894-3c3d-44e6-805b-ece373e2804c",
+   "name": "1. Lauf Brandenburger Sprint Cup",
+   "date": "2027-01-16",
+   "class": "1",
+   "country": "DE",
+   "outcome": "enriched",
+   "slug": "1-lauf-brandenburger-sprint-cup-2027",
+   "changes": [
+    "web"
+   ]
+  },
+  {
+   "uci": "14c9157b-6eb7-4c3c-9304-620750a3fb52",
+   "name": "Sixdays Weekend 2027",
+   "date": "2027-01-29",
+   "class": "2",
+   "country": "DE",
+   "outcome": "enriched",
+   "slug": "sixdays-weekend-berlin-2027",
+   "changes": [
+    "kategorie potvrzené UCI"
+   ]
+  },
+  {
+   "uci": "4fdbf20c-356e-4b86-b88b-cffcc494a4d6",
+   "name": "UEC Track European Championships",
+   "date": "2027-02-10",
+   "class": "CC",
+   "country": "DE",
+   "outcome": "enriched",
+   "slug": "uec-track-european-championships-2027",
+   "changes": [
+    "web"
+   ]
+  },
+  {
+   "uci": "8d9793fa-5049-4228-a9bb-215986fbca19",
+   "name": "UCI Mountain Bike Continental Series - Fullgaz Race + UCI XCO Junior Series",
+   "date": "2027-04-03",
+   "class": "CS",
+   "country": "DE",
+   "outcome": "same",
+   "slug": "15-fullgaz-race-2027",
+   "changes": []
+  },
+  {
+   "uci": "26f7f2f1-1e38-48c5-95f8-bfb76f03298b",
+   "name": "UEC BMX Racing European Cup - Round 5",
+   "date": "2027-04-17",
+   "class": "1",
+   "country": "DE",
+   "outcome": "enriched",
+   "slug": "uec-bmx-racing-european-cup-round-5-2027",
+   "changes": [
+    "kategorie potvrzené UCI",
+    "web"
+   ]
+  },
+  {
+   "uci": "f9a8fc01-f69c-4d6c-81cf-9fd0328ce0be",
+   "name": "UEC BMX Racing European Cup - Round 6",
+   "date": "2027-04-18",
+   "class": "HC",
+   "country": "DE",
+   "outcome": "enriched",
+   "slug": "uec-bmx-racing-european-cup-round-6-2027",
+   "changes": [
+    "kategorie potvrzené UCI",
+    "web"
+   ]
+  },
+  {
+   "uci": "08c12bbc-390a-4fc8-8017-b0ef345c79f4",
+   "name": "Eschborn-Frankfurt",
+   "date": "2027-05-01",
+   "class": "1.UWT",
+   "country": "DE",
+   "outcome": "possible-duplicate",
+   "candidates": [
+    "adac-velotour-eschborn-frankfurt-2027"
+   ]
+  },
+  {
+   "uci": "08da1916-c0ab-424e-a3e5-214e57728a91",
+   "name": "BMX-Bundesliga",
+   "date": "2027-05-01",
+   "class": "1",
+   "country": "DE",
+   "outcome": "same",
+   "slug": "bmx-bundesliga-2027",
+   "changes": []
+  },
+  {
+   "uci": "d076bf99-5454-4186-980f-3a2ae9948f5d",
+   "name": "Bahnen-Tournee - Silbernen Eulen von Ludwigshafen",
+   "date": "2027-05-12",
+   "class": "2",
+   "country": "DE",
+   "outcome": "same",
+   "slug": "bahnen-tournee-silbernen-eulen-von-ludwigshafen-2027",
+   "changes": []
+  },
+  {
+   "uci": "f8f46097-5dd5-4b11-b489-fe028f665dfb",
+   "name": "Bahnen-Tournee - Öschelbronn",
+   "date": "2027-05-13",
+   "class": "2",
+   "country": "DE",
+   "outcome": "same",
+   "slug": "bahnen-tournee-oschelbronn-2027",
+   "changes": []
+  },
+  {
+   "uci": "e85d69c2-938e-42a2-84cc-ac6d1bb6e424",
+   "name": "Bahnen-Tournee - Oberhausener Nachtrennen",
+   "date": "2027-05-14",
+   "class": "2",
+   "country": "DE",
+   "outcome": "same",
+   "slug": "bahnen-tournee-oberhausener-nachtrennen-2027",
+   "changes": []
+  },
+  {
+   "uci": "a679fb06-4b6b-4f5e-91b2-2ab6e8e0713d",
+   "name": "Bahnen-Tournee - Darmstadt",
+   "date": "2027-05-15",
+   "class": "1",
+   "country": "DE",
+   "outcome": "ambiguous",
+   "candidates": [
+    "bahnen-tournee-oberhausener-nachtrennen-2027",
+    "bahnen-tournee-dudenhofen-finale-2027",
+    "Bahnen-Tournee - Oberhausener Nachtrennen"
+   ]
+  },
+  {
+   "uci": "ebf97827-6e60-45e5-b746-9f7fa6fffadb",
+   "name": "Bahnen-Tournee Dudenhofen - Finale",
+   "date": "2027-05-17",
+   "class": "1",
+   "country": "DE",
+   "outcome": "same",
+   "slug": "bahnen-tournee-dudenhofen-finale-2027",
+   "changes": []
+  },
+  {
+   "uci": "2c1a1e53-d151-4472-b51b-db0201215512",
+   "name": "Rund um Köln",
+   "date": "2027-05-23",
+   "class": "1.1",
+   "country": "DE",
+   "outcome": "enriched",
+   "slug": "rund-um-koln-2027",
+   "changes": [
+    "web"
+   ]
+  },
+  {
+   "uci": "5370ee32-1915-4d12-959b-9d82d90de8c5",
+   "name": "LVM Saarland Trofeo",
+   "date": "2027-06-10",
+   "class": "2.1",
+   "country": "DE",
+   "outcome": "enriched",
+   "slug": "lvm-saarland-trofeo-2027",
+   "changes": [
+    "web"
+   ]
+  },
+  {
+   "uci": "9b7c3477-6b8f-43b5-815a-8016b9d55e43",
+   "name": "Einfach Extrem Essen",
+   "date": "2027-06-18",
+   "class": "1",
+   "country": "DE",
+   "outcome": "same",
+   "slug": "einfach-extrem-essen-2027",
+   "changes": []
+  },
+  {
+   "uci": "9eda9f81-a006-4278-8a3a-a5538ef7eccb",
+   "name": "35. Großer Preis von Deutschland im Sprint",
+   "date": "2027-06-18",
+   "class": "1",
+   "country": "DE",
+   "outcome": "enriched",
+   "slug": "35-grosser-preis-von-deutschland-im-sprint-2027",
+   "changes": [
+    "web"
+   ]
+  },
+  {
+   "uci": "9703103e-ccc7-48d7-bd79-b9d53f2deddb",
+   "name": "LOTTO Thüringen Women Cycling Challenge",
+   "date": "2027-06-20",
+   "class": "1.Pro",
+   "country": "DE",
+   "outcome": "enriched",
+   "slug": "lotto-thuringen-women-cycling-challenge-2027",
+   "changes": [
+    "web"
+   ]
+  },
+  {
+   "uci": "160d7639-625e-44c1-bb9f-dd10d2a4179e",
+   "name": "PARA CYCLING TRACK GERMAN OPEN",
+   "date": "2027-06-25",
+   "class": "1",
+   "country": "DE",
+   "outcome": "enriched",
+   "slug": "para-cycling-track-german-open-2027",
+   "changes": [
+    "web"
+   ]
+  },
+  {
+   "uci": "a1db716a-57c7-40f8-bf6f-3aaeeddd083f",
+   "name": "Shark Attack Bike-Festival",
+   "date": "2027-06-27",
+   "class": "2",
+   "country": "DE",
+   "outcome": "enriched",
+   "slug": "shark-attack-bike-festival-2027",
+   "changes": [
+    "web"
+   ]
+  },
+  {
+   "uci": "ed7e7b96-590d-4acb-876c-0ae8497613c9",
+   "name": "140. Deutsche Meisterschaft Bahn",
+   "date": "2027-06-30",
+   "class": "CN",
+   "country": "DE",
+   "outcome": "enriched",
+   "slug": "140-deutsche-meisterschaft-bahn-2027",
+   "changes": [
+    "web"
+   ]
+  },
+  {
+   "uci": "eb471ba1-fdd2-4e0f-87b7-23007bd09c79",
+   "name": "National Road Championships - Germany (MU/WU)",
+   "date": "2027-07-04",
+   "class": "CN",
+   "country": "DE",
+   "outcome": "unplaced",
+   "venue": "Niederwil"
+  },
+  {
+   "uci": "40f10009-444b-4d50-aa03-0de8ba9b2692",
+   "name": "BMX Freestyle European Series – Bremen",
+   "date": "2027-07-10",
+   "class": "1",
+   "country": "DE",
+   "outcome": "enriched",
+   "slug": "bmx-freestyle-european-series-bremen-2027",
+   "changes": [
+    "web"
+   ]
+  },
+  {
+   "uci": "c18199ad-f994-4334-a480-fcd65f20570e",
+   "name": "Woodstone Festival",
+   "date": "2027-07-16",
+   "class": "1",
+   "country": "DE",
+   "outcome": "unplaced",
+   "venue": "Skatepark Wendelstein (W-Stein Park)"
+  },
+  {
+   "uci": "21e7a0da-5314-4584-a8a7-c0904dd4accf",
+   "name": "German National Championships - XCO/XCC",
+   "date": "2027-07-17",
+   "class": "CN",
+   "country": "DE",
+   "outcome": "enriched",
+   "slug": "german-national-championships-xco-xcc-2027",
+   "changes": [
+    "web"
+   ]
+  },
+  {
+   "uci": "389033e0-dafc-4cc6-80e2-dda63ead9605",
+   "name": "HERO UCI Cross-country Marathon World Cup",
+   "date": "2027-07-25",
+   "class": "CDM",
+   "country": "DE",
+   "outcome": "enriched",
+   "slug": "black-forest-ultra-bike-marathon-2027",
+   "changes": [
+    "web"
+   ]
+  },
+  {
+   "uci": "3e40aef4-c461-463f-8fe2-faf5776795b1",
+   "name": "German National Championships - Park & Flatland",
+   "date": "2027-07-30",
+   "class": "CN",
+   "country": "DE",
+   "outcome": "enriched",
+   "slug": "german-national-championships-park-flatland-2027",
+   "changes": [
+    "web"
+   ]
+  },
+  {
+   "uci": "43544d4c-8d00-4421-b723-7c873aabbe2d",
+   "name": "Kometen Schmitter Nacht von Hürth",
+   "date": "2027-07-30",
+   "class": "CRTP",
+   "country": "DE",
+   "outcome": "same",
+   "slug": "kometen-schmitter-nacht-2027",
+   "changes": []
+  },
+  {
+   "uci": "a6bcd9eb-40df-4a48-a3a8-596f083b546f",
+   "name": "German National Championships",
+   "date": "2027-07-31",
+   "class": "CN",
+   "country": "DE",
+   "outcome": "ambiguous",
+   "candidates": [
+    "german-national-championships-park-flatland-2027",
+    "German National Championships - Park & Flatland"
+   ]
+  },
+  {
+   "uci": "3c6c7bc3-0398-4a1b-9b18-214d19e1079e",
+   "name": "Vulkan BMX",
+   "date": "2027-08-06",
+   "class": "1",
+   "country": "DE",
+   "outcome": "enriched",
+   "slug": "vulkan-bmx-2027",
+   "changes": [
+    "web"
+   ]
+  },
+  {
+   "uci": "b8825b3c-316d-443f-9316-cb6df6c92cc8",
+   "name": "ADAC Cyclassics",
+   "date": "2027-08-15",
+   "class": "1.UWT",
+   "country": "DE",
+   "outcome": "same",
+   "slug": "adac-cyclassics-2027",
+   "changes": []
+  },
+  {
+   "uci": "8b06e911-a2c7-4fe4-8585-3cbc2ee867a8",
+   "name": "Lidl Deutschland Tour",
+   "date": "2027-08-18",
+   "class": "2.Pro",
+   "country": "DE",
+   "outcome": "enriched",
+   "slug": "lidl-deutschland-tour-2027",
+   "changes": [
+    "kategorie potvrzené UCI"
+   ]
+  },
+  {
+   "uci": "836332a7-bb89-4aa6-a559-0018bca536f1",
+   "name": "Bike Park Freestyle Comp",
+   "date": "2027-08-20",
+   "class": "HC",
+   "country": "DE",
+   "outcome": "same",
+   "slug": "bike-park-freestyle-comp-2027",
+   "changes": []
+  },
+  {
+   "uci": "196985a6-e76f-4f7b-9b00-4354a61c73a2",
+   "name": "Sauerlandrundfahrt",
+   "date": "2027-09-02",
+   "class": "2.2",
+   "country": "DE",
+   "outcome": "enriched",
+   "slug": "sauerlandrundfahrt-2027",
+   "changes": [
+    "web"
+   ]
+  },
+  {
+   "uci": "857361c9-696f-4ee1-afec-65c2a52d6e94",
+   "name": "Internationales Meeting für Sprint & Ausdauer",
+   "date": "2027-09-10",
+   "class": "1",
+   "country": "DE",
+   "outcome": "same",
+   "slug": "internationales-meeting-fur-sprint-ausdauer-2027",
+   "changes": []
+  },
+  {
+   "uci": "53e11fd2-5ffe-4479-87c9-f6b37bbb8946",
+   "name": "3 Nations Cup - Esselbach",
+   "date": "2027-09-12",
+   "class": "1",
+   "country": "DE",
+   "outcome": "enriched",
+   "slug": "3-nations-cup-esselbach-2027",
+   "changes": [
+    "web"
+   ]
+  },
+  {
+   "uci": "6c2142ac-d5c7-4fc7-acf9-159deb35038d",
+   "name": "Majlen Sunshine Race",
+   "date": "2027-09-18",
+   "class": "1",
+   "country": "DE",
+   "outcome": "enriched",
+   "slug": "majlen-sunshine-race-2027",
+   "changes": [
+    "web"
+   ]
+  },
+  {
+   "uci": "782f2574-c25b-4636-b421-eefc0f037948",
+   "name": "Women’s Cycling Grand Prix Region Stuttgart",
+   "date": "2027-09-19",
+   "class": "1.Pro",
+   "country": "DE",
+   "outcome": "enriched",
+   "slug": "brezel-race-stuttgart-region-2027",
+   "changes": [
+    "web"
+   ]
+  },
+  {
+   "uci": "85a012c2-e5b8-4ccd-88ac-7a67f401dc5a",
+   "name": "Sparkassen Münsterland Giro",
+   "date": "2027-10-03",
+   "class": "1.Pro",
+   "country": "DE",
+   "outcome": "enriched",
+   "slug": "sparkassen-munsterland-giro-2027",
+   "changes": [
+    "web"
+   ]
+  },
+  {
+   "uci": "791e69ee-ee42-49c7-83a7-35a5a6991b5f",
+   "name": "Przełajowy Wyścig Kolarski Bryksy Cross",
+   "date": "2026-11-22",
+   "class": "C2",
+   "country": "PL",
+   "outcome": "same",
+   "slug": "xxxiii-bryksy-cross-miedzynarodowy-wyscig-w-kolarstwie-2026",
+   "changes": []
+  },
+  {
+   "uci": "4a7c28f4-974b-4fd8-b7de-5c512881fda2",
+   "name": "CX Włoszakowice \"Cześć i Chwała Zwycięzcom\"",
+   "date": "2026-12-05",
+   "class": "C2",
+   "country": "PL",
+   "outcome": "same",
+   "slug": "uci-c2-cx-wloszakowice-czesc-i-chwala-zwyciezcom-dla-2026",
+   "changes": []
+  },
+  {
+   "uci": "4cfd665f-06ce-4265-92fb-004721f7991b",
+   "name": "Lubuskie Warte Zachodu",
+   "date": "2026-12-06",
+   "class": "C2",
+   "country": "PL",
+   "outcome": "same",
+   "slug": "cx-lubuskie-warte-zachodu-uci-c2-2026",
+   "changes": []
+  },
+  {
+   "uci": "003919b2-3b9b-48b3-9772-8159aeb43ad6",
+   "name": "CycloCross Polish National Championships",
+   "date": "2027-01-08",
+   "class": "CN",
+   "country": "PL",
+   "outcome": "enriched",
+   "slug": "90-mistrzostwa-polski-w-kolarstwie-przelajowym-cybinka-2027",
+   "changes": [
+    "kategorie potvrzené UCI"
+   ]
+  },
+  {
+   "uci": "70a394f2-2b2d-48fa-bbc7-ad22ded34bf8",
+   "name": "Course de Cujavie-Poméranie pour la Coupe du Président de la Ville de Grudziądz",
+   "date": "2027-04-29",
+   "class": "2.1",
+   "country": "PL",
+   "outcome": "enriched",
+   "slug": "course-de-cujavie-pomeranie-pour-la-coupe-du-president-de-la-2027",
+   "changes": [
+    "web"
+   ]
+  },
+  {
+   "uci": "9e7f0b43-41d8-4078-80db-dd64f099606f",
+   "name": "Best Prima Cup Harrachov - Jakuszyce",
+   "date": "2027-05-08",
+   "class": "2",
+   "country": "PL",
+   "outcome": "same",
+   "slug": "best-prima-cup-harrachov-jakuszyce-2027",
+   "changes": []
+  },
+  {
+   "uci": "03602865-230e-4760-a453-6ad2a0c32b5e",
+   "name": "Szlakiem Powiatów Łódzkich",
+   "date": "2027-05-12",
+   "class": "2.2",
+   "country": "PL",
+   "outcome": "unplaced",
+   "venue": "Fundacja Razem Mierzymy Wyżej"
+  },
+  {
+   "uci": "02e1df1e-b051-4875-a21c-d35c9ca21880",
+   "name": "Maja Włoszczowska MTB Race",
+   "date": "2027-06-05",
+   "class": "1",
+   "country": "PL",
+   "outcome": "enriched",
+   "slug": "maja-wloszczowska-mtb-race-tor-cross-country-w-polanicy-2027",
+   "changes": [
+    "web"
+   ]
+  },
+  {
+   "uci": "3ab91456-1db9-4cc5-a030-ee538ca17729",
+   "name": "Visegrad 4 Bicycle Race Grand Prix Poland",
+   "date": "2027-06-06",
+   "class": "1.2",
+   "country": "PL",
+   "outcome": "enriched",
+   "slug": "visegrad-4-bicycle-race-grand-prix-poland-2027",
+   "changes": [
+    "web"
+   ]
+  },
+  {
+   "uci": "472bc99f-6377-4c08-857b-48b8b6311d20",
+   "name": "Małopolski Wyścig Górski",
+   "date": "2027-06-09",
+   "class": "2.2",
+   "country": "PL",
+   "outcome": "unplaced",
+   "venue": "Fundacja Razem Mierzymy Wyżej"
+  },
+  {
+   "uci": "21ecc08a-93b9-4ff7-b5a9-dd681db76ccf",
+   "name": "VeloBank Ślęża Tour Dolny Śląsk",
+   "date": "2027-06-10",
+   "class": "2.1",
+   "country": "PL",
+   "outcome": "enriched",
+   "slug": "velobank-sleza-tour-dolny-slask-2027",
+   "changes": [
+    "web"
+   ]
+  },
+  {
+   "uci": "03374b7f-2ab1-44b9-ad42-45b6cee4b929",
+   "name": "Course Cycliste de Solidarnosc et des Champions Olympiques",
+   "date": "2027-06-30",
+   "class": "2.2",
+   "country": "PL",
+   "outcome": "unplaced",
+   "venue": "Road"
+  },
+  {
+   "uci": "56dc6a42-72ec-42e1-93dd-925e944f5762",
+   "name": "Tour Szlakiem Mazurskich Twierdz",
+   "date": "2027-07-14",
+   "class": "2.2",
+   "country": "PL",
+   "outcome": "unplaced",
+   "venue": "Fundacja Razem Mierzymy Wyżej"
+  },
+  {
+   "uci": "556be8f0-8cf4-4e1f-b00c-fa86049b0ca9",
+   "name": "Princess Anna Vasa Tour",
+   "date": "2027-07-16",
+   "class": "2.2",
+   "country": "PL",
+   "outcome": "unplaced",
+   "venue": "TBC"
+  },
+  {
+   "uci": "845a8e48-ba4c-4b97-a14c-e1038427dfc2",
+   "name": "Memoriał Andrzeja Trochanowskiego",
+   "date": "2027-07-20",
+   "class": "1.2",
+   "country": "PL",
+   "outcome": "unplaced",
+   "venue": "podlasie"
+  },
+  {
+   "uci": "25253988-7b14-4c6a-b3d2-2b93e70886e4",
+   "name": "Dookoła Mazowsza",
+   "date": "2027-07-21",
+   "class": "2.2",
+   "country": "PL",
+   "outcome": "unplaced",
+   "venue": "mazowsze"
+  },
+  {
+   "uci": "05898a1e-31eb-4518-aad3-5b0b1d1fe8de",
+   "name": "Tour de Pologne Women",
+   "date": "2027-07-23",
+   "class": "2.Pro",
+   "country": "PL",
+   "outcome": "enriched",
+   "slug": "tour-de-pologne-women-2027",
+   "changes": [
+    "web"
+   ]
+  },
+  {
+   "uci": "3d2efe25-7711-427b-90fe-1b89943be5a5",
+   "name": "Puchar MON",
+   "date": "2027-07-25",
+   "class": "1.2",
+   "country": "PL",
+   "outcome": "unplaced",
+   "venue": "mazowsze"
+  },
+  {
+   "uci": "8c5d8739-676d-47dc-bbbf-a1be4b30e109",
+   "name": "UCI Mountain Bike Continental Series - iXS European Downhill Cup",
+   "date": "2027-07-30",
+   "class": "CS",
+   "country": "PL",
+   "outcome": "same",
+   "slug": "ixs-european-downhill-cup-szczyrk-2027",
+   "changes": []
+  },
+  {
+   "uci": "6c5bb558-e3d2-45a4-b9fa-e2c655027f88",
+   "name": "Tour de Pologne",
+   "date": "2027-08-02",
+   "class": "2.UWT",
+   "country": "PL",
+   "outcome": "enriched",
+   "slug": "tour-de-pologne-2027",
+   "changes": [
+    "kategorie potvrzené UCI"
+   ]
+  },
+  {
+   "uci": "86c4aadc-71df-4b49-ad75-34045765587d",
+   "name": "Maja Włoszczowska MTB Race",
+   "date": "2027-09-18",
+   "class": "1",
+   "country": "PL",
+   "outcome": "enriched",
+   "slug": "maja-wloszczowska-mtb-race-2027",
+   "changes": [
+    "web"
+   ]
+  },
+  {
+   "uci": "b345e877-352a-420f-9a6d-1a8c964ac6a3",
+   "name": "Int. Querfeldein GP Gunskirchen um das Sportzentrum",
+   "date": "2026-11-22",
+   "class": "C2",
+   "country": "AT",
+   "outcome": "same",
+   "slug": "int-querfeldein-gp-gunskirchen-um-das-sportzentrum-oberosterreich-2026",
+   "changes": []
+  },
+  {
+   "uci": "b0dde826-807b-4117-807c-53bc2dd50b71",
+   "name": "KTM Kamptal Trophy",
+   "date": "2027-04-03",
+   "class": "1",
+   "country": "AT",
+   "outcome": "same",
+   "slug": "35-ktm-kamptal-trophy-uci-xco-c1-niederosterreich-2027",
+   "changes": []
+  },
+  {
+   "uci": "248fc6e1-f383-4e46-b0c5-38bd6d398c57",
+   "name": "UCI Mountain Bike Continental Series - Ötztaler Mountainbike Festival",
+   "date": "2027-04-24",
+   "class": "CS",
+   "country": "AT",
+   "outcome": "enriched",
+   "slug": "otztaler-mountainbike-festival-2027",
+   "changes": [
+    "web"
+   ]
+  },
+  {
+   "uci": "6193a904-4320-4043-bc86-f36111254e31",
+   "name": "GP Vorarlberg p/b Radhaus Rankweil",
+   "date": "2027-05-01",
+   "class": "1.2",
+   "country": "AT",
+   "outcome": "same",
+   "slug": "16-gp-vorarlberg-p-b-radhaus-rankweil-uci-1-2-2027",
+   "changes": []
+  },
+  {
+   "uci": "dcc89bbd-e184-46fc-8bee-02dd451cfb87",
+   "name": "Wilder Kaiser MTB Race + UCI XCO Junior Series",
+   "date": "2027-05-08",
+   "class": "1",
+   "country": "AT",
+   "outcome": "same",
+   "slug": "8-wilder-kaiser-mtb-race-2027",
+   "changes": []
+  },
+  {
+   "uci": "d7c8a6a3-fc73-45fa-8065-b9821c7a44aa",
+   "name": "Weissensee DH",
+   "date": "2027-05-21",
+   "class": "1",
+   "country": "AT",
+   "outcome": "enriched",
+   "slug": "weissensee-downhill-2027",
+   "changes": [
+    "web"
+   ]
+  },
+  {
+   "uci": "d1af9a03-05d7-49ca-94e6-0a2ad7229ef2",
+   "name": "Oberösterreich Rundfahrt",
+   "date": "2027-05-27",
+   "class": "2.2",
+   "country": "AT",
+   "outcome": "same",
+   "slug": "17-int-oberosterreich-rundfahrt-2027",
+   "changes": []
+  },
+  {
+   "uci": "c24fa170-c9c4-4c35-a00f-06c95fab8970",
+   "name": "Zanzenberg Race",
+   "date": "2027-05-30",
+   "class": "1",
+   "country": "AT",
+   "outcome": "enriched",
+   "slug": "zanzenberg-race-2027",
+   "changes": [
+    "web"
+   ]
+  },
+  {
+   "uci": "140a8ec3-acb7-4ed0-9a4a-58e271edaf63",
+   "name": "Internationaler Raiffeisen Österreich Grand Prix",
+   "date": "2027-06-05",
+   "class": "1",
+   "country": "AT",
+   "outcome": "enriched",
+   "slug": "int-raiffeisen-osterreich-grand-prix-uci-xco-c1-2027",
+   "changes": [
+    "web"
+   ]
+  },
+  {
+   "uci": "7d1e559a-0919-4679-8b54-b660d39a8cb9",
+   "name": "UCI Mountain Bike World Cup – XCO/XCC/DHI",
+   "date": "2027-06-11",
+   "class": "CDM",
+   "country": "AT",
+   "outcome": "enriched",
+   "slug": "uci-mtb-world-cup-saalfelden-leogang-salzburgerland-2027",
+   "changes": [
+    "kategorie potvrzené UCI"
+   ]
+  },
+  {
+   "uci": "a60e0387-15f9-48d5-bc49-8d3f358eb91a",
+   "name": "Alpentour Trophy",
+   "date": "2027-06-17",
+   "class": "S1",
+   "country": "AT",
+   "outcome": "enriched",
+   "slug": "alpentour-schladming-dachstein-2027-06-17-717e94",
+   "changes": [
+    "web"
+   ]
+  },
+  {
+   "uci": "91ddc994-1f74-47ba-9a7a-fe9f1389bfd4",
+   "name": "National Road Championships - Austria (MU/WU)",
+   "date": "2027-07-04",
+   "class": "CN",
+   "country": "AT",
+   "outcome": "unplaced",
+   "venue": "Niederwil"
+  },
+  {
+   "uci": "288f2c5f-273b-46ea-862d-aea7bc1beacf",
+   "name": "Mountainbike Junior Festival + UCI XCO Junior Series",
+   "date": "2027-07-06",
+   "class": "1",
+   "country": "AT",
+   "outcome": "enriched",
+   "slug": "mountainbike-junior-festival-graz-stattegg-uci-c1-uci-junior-2027",
+   "changes": [
+    "web"
+   ]
+  },
+  {
+   "uci": "388528b5-80fb-424b-9b96-5074d2860d14",
+   "name": "Tour of Austria",
+   "date": "2027-07-07",
+   "class": "2.1",
+   "country": "AT",
+   "outcome": "enriched",
+   "slug": "lidl-tour-of-austria-2027",
+   "changes": [
+    "web"
+   ]
+  },
+  {
+   "uci": "7bdc853c-08c9-4891-befd-e21361e28f22",
+   "name": "Mountainbike Junior Festival",
+   "date": "2027-07-07",
+   "class": "3",
+   "country": "AT",
+   "outcome": "enriched",
+   "slug": "mountainbike-junior-festival-graz-stattegg-teambewerb-2027",
+   "changes": [
+    "web"
+   ]
+  },
+  {
+   "uci": "c2dffa3f-85d0-4876-bdb7-e23c6ff05a9f",
+   "name": "Mountainbike Junior Festival",
+   "date": "2027-07-09",
+   "class": "3",
+   "country": "AT",
+   "outcome": "enriched",
+   "slug": "mountainbike-junior-festival-graz-stattegg-uci-c3-steiermark-2027",
+   "changes": [
+    "web"
+   ]
+  },
+  {
+   "uci": "32938754-c199-4721-a19d-00fda74a2bdc",
+   "name": "Mountainbike Junior Festival",
+   "date": "2027-07-10",
+   "class": "2",
+   "country": "AT",
+   "outcome": "possible-duplicate",
+   "candidates": [
+    "mountainbike-junior-festival-graz-stattegg-teambewerb-2027",
+    "mountainbike-junior-festival-graz-stattegg-uci-c3-steiermark-2027"
+   ]
+  },
+  {
+   "uci": "c0736f72-bac1-481d-9005-c8c477ec83dd",
+   "name": "Junioren Rundfahrt",
+   "date": "2027-07-23",
+   "class": "2.1",
+   "country": "AT",
+   "outcome": "same",
+   "slug": "52-int-junioren-rundfahrt-2027",
+   "changes": []
+  },
+  {
+   "uci": "9dc3a3be-975a-4653-a4f9-76898ab935aa",
+   "name": "Roadlberg Race - PopaFlo",
+   "date": "2027-08-13",
+   "class": "1",
+   "country": "AT",
+   "outcome": "enriched",
+   "slug": "roadlbergrace-xcc-xco-velo-crew-popaflo-2027",
+   "changes": [
+    "web"
+   ]
+  },
+  {
+   "uci": "24075cdb-037e-43c8-a323-263a57d64deb",
+   "name": "NovaLabs Preis der Nationen",
+   "date": "2027-09-19",
+   "class": "1.2",
+   "country": "AT",
+   "outcome": "enriched",
+   "slug": "novalabs-preis-der-nationen-gratwein-strassengel-2027",
+   "changes": [
+    "web"
+   ]
+  },
+  {
+   "uci": "fe6bb003-46c7-4971-bfea-432b6338dd8b",
+   "name": "2026 UCI Masters Cyclo-cross World Championships",
+   "date": "2026-11-27",
+   "class": "CMM",
+   "country": "IT",
+   "outcome": "hidden",
+   "slug": "uci-masters-cyclo-cross-world-championships-2026"
+  },
+  {
+   "uci": "93552727-eff8-4700-bd16-c6555f6df0be",
+   "name": "Ciclocross del Brenta",
+   "date": "2026-12-06",
+   "class": "C2",
+   "country": "IT",
+   "outcome": "enriched",
+   "slug": "abbinata-naz-11-ciclocross-del-brenta-2026",
+   "changes": [
+    "web"
+   ]
+  },
+  {
+   "uci": "20ed3a64-c8ca-4da0-b9b3-517ab533c568",
+   "name": "Ciclocross Del Ponte",
+   "date": "2026-12-08",
+   "class": "C2",
+   "country": "IT",
+   "outcome": "enriched",
+   "slug": "ciclocross-del-ponte-internazionale-cx-2026",
+   "changes": [
+    "web"
+   ]
+  },
+  {
+   "uci": "8f3d8892-ae59-4d85-b2b4-c9d27cb2d77d",
+   "name": "CX La Montagnetta",
+   "date": "2026-12-13",
+   "class": "C2",
+   "country": "IT",
+   "outcome": "same",
+   "slug": "internazionale-ciclocross-3-cx-la-montagnetta-bari-2026",
+   "changes": []
+  },
+  {
+   "uci": "26337cd2-552a-4542-9b64-938319b94419",
+   "name": "Gran Premio Fontanabuona",
+   "date": "2026-12-20",
+   "class": "C2",
+   "country": "IT",
+   "outcome": "hidden",
+   "slug": "gran-premio-fontanabuona-2026"
+  },
+  {
+   "uci": "2350ab1d-5b28-4dc3-b034-b363af7bd991",
+   "name": "Italian National Championships",
+   "date": "2027-01-09",
+   "class": "CN",
+   "country": "IT",
+   "outcome": "hidden",
+   "slug": "italian-national-championships-2027"
+  },
+  {
+   "uci": "6470a831-b449-4c13-8540-c9f18c0efd93",
+   "name": "Giro di Sardegna",
+   "date": "2027-02-24",
+   "class": "2.1",
+   "country": "IT",
+   "outcome": "enriched",
+   "slug": "giro-di-sardegna-2027",
+   "changes": [
+    "kategorie potvrzené UCI",
+    "web"
+   ]
+  },
+  {
+   "uci": "4ace0671-b427-4968-b185-ea411467e500",
+   "name": "Trofeo Laigueglia",
+   "date": "2027-03-03",
+   "class": "1.Pro",
+   "country": "IT",
+   "outcome": "enriched",
+   "slug": "trofeo-laigueglia-2027",
+   "changes": [
+    "kategorie potvrzené UCI",
+    "web"
+   ]
+  },
+  {
+   "uci": "1a74d208-b827-44ef-a25d-506624b9e871",
+   "name": "UEC BMX Racing European Cup - Round 1",
+   "date": "2027-03-05",
+   "class": "1",
+   "country": "IT",
+   "outcome": "enriched",
+   "slug": "uec-bmx-racing-european-cup-round-1-2027",
+   "changes": [
+    "kategorie potvrzené UCI",
+    "web"
+   ]
+  },
+  {
+   "uci": "e585fd54-c4d7-438a-9d3a-a0165681caa3",
+   "name": "Internazionale XCO Coppa Città di Albenga + UCI XCO Junior Series",
+   "date": "2027-03-05",
+   "class": "HC",
+   "country": "IT",
+   "outcome": "enriched",
+   "slug": "internazionale-xco-coppa-citta-di-albenga-uci-xco-junior-2027",
+   "changes": [
+    "web"
+   ]
+  },
+  {
+   "uci": "61150570-0819-4ef2-867a-3a27d0cbaf22",
+   "name": "Strade Bianche Donne",
+   "date": "2027-03-06",
+   "class": "1.WWT",
+   "country": "IT",
+   "outcome": "ambiguous",
+   "candidates": [
+    "strade-bianche-pro-race-viewing-weekend-2027",
+    "strade-bianche-women-elite-2027",
+    "Strade Bianche"
+   ]
+  },
+  {
+   "uci": "bf1544f6-bf39-4456-abdb-c4eb7808940c",
+   "name": "UEC BMX Racing European Cup - Round 2",
+   "date": "2027-03-06",
+   "class": "HC",
+   "country": "IT",
+   "outcome": "enriched",
+   "slug": "uec-bmx-racing-european-cup-round-2-2027",
+   "changes": [
+    "kategorie potvrzené UCI",
+    "web"
+   ]
+  },
+  {
+   "uci": "eb7cac29-2f30-4667-be46-1bb12d807512",
+   "name": "Strade Bianche",
+   "date": "2027-03-06",
+   "class": "1.UWT",
+   "country": "IT",
+   "outcome": "ambiguous",
+   "candidates": [
+    "strade-bianche-pro-race-viewing-weekend-2027",
+    "strade-bianche-women-elite-2027",
+    "Strade Bianche Donne"
+   ]
+  },
+  {
+   "uci": "a79d6e8e-c096-4a1c-9128-30013e65dce0",
+   "name": "Trofeo Oro in Euro - Women's Bike Race",
+   "date": "2027-03-07",
+   "class": "1.1",
+   "country": "IT",
+   "outcome": "enriched",
+   "slug": "trofeo-oro-in-euro-women-s-bike-race-2027",
+   "changes": [
+    "kategorie potvrzené UCI",
+    "web"
+   ]
+  },
+  {
+   "uci": "7186f9a2-5f36-4c6b-9592-b09b94ddb759",
+   "name": "Tirreno-Adriatico",
+   "date": "2027-03-08",
+   "class": "2.UWT",
+   "country": "IT",
+   "outcome": "hidden",
+   "slug": "tirreno-adriatico-2027"
+  },
+  {
+   "uci": "09db69c6-ed8b-4224-ae9a-7810ffc8e7f1",
+   "name": "Trofeo Alfredo Binda - Comune di Cittiglio",
+   "date": "2027-03-14",
+   "class": "1.WWT",
+   "country": "IT",
+   "outcome": "hidden",
+   "slug": "trofeo-alfredo-binda-comune-di-cittiglio-2027"
+  },
+  {
+   "uci": "a92fadd2-8660-4a2e-948c-790cbe348411",
+   "name": "G.P. San Giuseppe",
+   "date": "2027-03-14",
+   "class": "1.2U",
+   "country": "IT",
+   "outcome": "enriched",
+   "slug": "g-p-san-giuseppe-2027",
+   "changes": [
+    "kategorie potvrzené UCI"
+   ]
+  },
+  {
+   "uci": "ac9064fc-f3fd-456c-8aef-791ae9db5c43",
+   "name": "Piccolo Trofeo Alfredo Binda - Valli del Verbano",
+   "date": "2027-03-14",
+   "class": "1.1",
+   "country": "IT",
+   "outcome": "ambiguous",
+   "candidates": [
+    "trofeo-alfredo-binda-comune-di-cittiglio-2027",
+    "Trofeo Alfredo Binda - Comune di Cittiglio"
+   ]
+  },
+  {
+   "uci": "b835bbc3-f1f2-4c4c-b2c0-a7f32e3520d0",
+   "name": "Milano - Torino",
+   "date": "2027-03-17",
+   "class": "1.Pro",
+   "country": "IT",
+   "outcome": "enriched",
+   "slug": "milano-torino-2027",
+   "changes": [
+    "kategorie potvrzené UCI",
+    "web"
+   ]
+  },
+  {
+   "uci": "223c1827-628c-493b-a535-00974fc841f2",
+   "name": "Milano Sanremo Women",
+   "date": "2027-03-20",
+   "class": "1.WWT",
+   "country": "IT",
+   "outcome": "ambiguous",
+   "candidates": [
+    "milano-sanremo-sanremo-italy-2027",
+    "sanremo-women-2027",
+    "Milano-Sanremo"
+   ]
+  },
+  {
+   "uci": "2884c9f1-e437-4541-ab2f-a32cbb724508",
+   "name": "Milano-Sanremo",
+   "date": "2027-03-20",
+   "class": "1.UWT",
+   "country": "IT",
+   "outcome": "ambiguous",
+   "candidates": [
+    "milano-sanremo-sanremo-italy-2027",
+    "sanremo-women-2027",
+    "Milano Sanremo Women"
+   ]
+  },
+  {
+   "uci": "aedfdff2-3172-44e9-aa46-d53764c8ab4a",
+   "name": "Italia Bike Cup - Verona MTB Internationale",
+   "date": "2027-03-20",
+   "class": "2",
+   "country": "IT",
+   "outcome": "same",
+   "slug": "italia-bike-cup-verona-mtb-internationale-2027",
+   "changes": []
+  },
+  {
+   "uci": "c2bb49d5-6e31-473d-9881-0d165988e8db",
+   "name": "Memorial Polese",
+   "date": "2027-03-20",
+   "class": "1.2",
+   "country": "IT",
+   "outcome": "enriched",
+   "slug": "memorial-polese-2027",
+   "changes": [
+    "kategorie potvrzené UCI"
+   ]
+  },
+  {
+   "uci": "5ef219d9-0da4-4b06-b282-263dc7053b3e",
+   "name": "Popolarissima",
+   "date": "2027-03-21",
+   "class": "1.2",
+   "country": "IT",
+   "outcome": "enriched",
+   "slug": "popolarissima-2027",
+   "changes": [
+    "kategorie potvrzené UCI",
+    "web"
+   ]
+  },
+  {
+   "uci": "95ba84cc-311f-4649-8b98-164ca644ca79",
+   "name": "Giro dell'Appennino Donne",
+   "date": "2027-03-21",
+   "class": "1.1",
+   "country": "IT",
+   "outcome": "enriched",
+   "slug": "giro-dell-appennino-donne-2027",
+   "changes": [
+    "kategorie potvrzené UCI",
+    "web"
+   ]
+  },
+  {
+   "uci": "60f5e605-1477-4c28-89ae-544ce1e1c45d",
+   "name": "Settimana Internazionale Coppi e Bartali",
+   "date": "2027-03-24",
+   "class": "2.1",
+   "country": "IT",
+   "outcome": "enriched",
+   "slug": "settimana-internazionale-coppi-e-bartali-2027",
+   "changes": [
+    "kategorie potvrzené UCI",
+    "web"
+   ]
+  },
+  {
+   "uci": "294c8b3c-e676-4d43-b27a-b4dc81c3e328",
+   "name": "Gran Premio del Perdono",
+   "date": "2027-03-29",
+   "class": "1.1",
+   "country": "IT",
+   "outcome": "enriched",
+   "slug": "gran-premio-del-perdono-2027",
+   "changes": [
+    "kategorie potvrzené UCI",
+    "web"
+   ]
+  },
+  {
+   "uci": "3e9ff4bb-b9b9-4ed0-bff4-e4692e44fddb",
+   "name": "Giro del Belvedere",
+   "date": "2027-03-29",
+   "class": "1.2U",
+   "country": "IT",
+   "outcome": "unplaced",
+   "venue": "Via Doge Alvise IV Mocenigo"
+  },
+  {
+   "uci": "dd14fd17-3e7b-45eb-99e1-fa2206cbf2a7",
+   "name": "G.P. Emilia",
+   "date": "2027-03-29",
+   "class": "1.1",
+   "country": "IT",
+   "outcome": "enriched",
+   "slug": "g-p-emilia-2027",
+   "changes": [
+    "kategorie potvrzené UCI",
+    "web"
+   ]
+  },
+  {
+   "uci": "0ae78d57-111e-406c-becd-7b7823860d57",
+   "name": "G.P. Palio del Recioto",
+   "date": "2027-03-30",
+   "class": "1.2U",
+   "country": "IT",
+   "outcome": "enriched",
+   "slug": "g-p-palio-del-recioto-2027",
+   "changes": [
+    "web"
+   ]
+  },
+  {
+   "uci": "a638887b-ff53-4c49-806f-a04f597585d8",
+   "name": "Trofeo Piva",
+   "date": "2027-04-03",
+   "class": "1.2",
+   "country": "IT",
+   "outcome": "enriched",
+   "slug": "trofeo-piva-2027",
+   "changes": [
+    "kategorie potvrzené UCI"
+   ]
+  },
+  {
+   "uci": "4a8aa63e-fd71-4ceb-9f89-03ea338a7d64",
+   "name": "Genoa Cup - Marathon dell'Appennino MTB",
+   "date": "2027-04-04",
+   "class": "2",
+   "country": "IT",
+   "outcome": "enriched",
+   "slug": "genoa-cup-marathon-dell-appennino-mtb-2027",
+   "changes": [
+    "web"
+   ]
+  },
+  {
+   "uci": "a927e055-795e-42ec-ae3f-4272e2e6b463",
+   "name": "Tr. Città di S.Vendemiano - GP Industria & Commercio",
+   "date": "2027-04-04",
+   "class": "1.2",
+   "country": "IT",
+   "outcome": "enriched",
+   "slug": "tr-citta-di-s-vendemiano-gp-industria-commercio-2027",
+   "changes": [
+    "kategorie potvrzené UCI",
+    "web"
+   ]
+  },
+  {
+   "uci": "01a73588-0206-4b99-874e-6575607c7785",
+   "name": "12° DUE GIORNI DEL MARE 2026 - ROAD",
+   "date": "2027-04-10",
+   "class": "1",
+   "country": "IT",
+   "outcome": "failed",
+   "error": "Basic data conflict requires review"
+  },
+  {
+   "uci": "10fc1f90-06eb-42f7-8766-37a1b0f3f783",
+   "name": "Marlene Südtirol Sunshine Race + UCI XCO Junior Series",
+   "date": "2027-04-10",
+   "class": "HC",
+   "country": "IT",
+   "outcome": "enriched",
+   "slug": "marlene-sudtirol-sunshine-race-uci-xco-junior-series-2027",
+   "changes": [
+    "web"
+   ]
+  },
+  {
+   "uci": "b2a325b6-453c-4804-b537-f3c6e2af9290",
+   "name": "Giro Ciclistico della Città Metropolitana di Reggio Calabria",
+   "date": "2027-04-10",
+   "class": "1.1",
+   "country": "IT",
+   "outcome": "enriched",
+   "slug": "giro-ciclistico-della-citta-metropolitana-di-reggio-calabria-2027",
+   "changes": [
+    "kategorie potvrzené UCI",
+    "web"
+   ]
+  },
+  {
+   "uci": "1b47bbc2-56f4-4b59-8492-567418c8dbb1",
+   "name": "Giro di Primavera - Trofeo Gino Mazzer",
+   "date": "2027-04-18",
+   "class": "1.1",
+   "country": "IT",
+   "outcome": "enriched",
+   "slug": "giro-di-primavera-trofeo-gino-mazzer-2027",
+   "changes": [
+    "kategorie potvrzené UCI",
+    "web"
+   ]
+  },
+  {
+   "uci": "8b1c128e-3fe2-4a3c-8623-607572036e5e",
+   "name": "Italian National Championships - XCM",
+   "date": "2027-04-18",
+   "class": "CN",
+   "country": "IT",
+   "outcome": "same",
+   "slug": "italian-national-championships-xcm-2027",
+   "changes": []
+  },
+  {
+   "uci": "977978b4-d919-47e8-b88f-1830c40c0f2b",
+   "name": "Giro della Provincia di Biella - Torino-Biella",
+   "date": "2027-04-18",
+   "class": "1.2",
+   "country": "IT",
+   "outcome": "enriched",
+   "slug": "31-giro-della-provincia-di-biella-85-torino-biella-2027",
+   "changes": [
+    "kategorie potvrzené UCI",
+    "web"
+   ]
+  },
+  {
+   "uci": "d5e5440f-9842-40d0-b93f-ee7caf18178f",
+   "name": "Tour of the Alps",
+   "date": "2027-04-19",
+   "class": "2.Pro",
+   "country": "IT",
+   "outcome": "unplaced",
+   "venue": "TBC"
+  },
+  {
+   "uci": "27ad3818-935d-4ad2-8f7a-8a662352c5b1",
+   "name": "Liberazione Juniores",
+   "date": "2027-04-24",
+   "class": "1.1",
+   "country": "IT",
+   "outcome": "enriched",
+   "slug": "liberazione-juniores-2027",
+   "changes": [
+    "web"
+   ]
+  },
+  {
+   "uci": "50dbc13c-5cf0-4e7d-b602-da5e5149adb8",
+   "name": "Giro dell'Appennino",
+   "date": "2027-04-25",
+   "class": "1.1",
+   "country": "IT",
+   "outcome": "enriched",
+   "slug": "giro-dell-appennino-2027",
+   "changes": [
+    "web"
+   ]
+  },
+  {
+   "uci": "91bf61bc-9cfd-45b6-9116-e37fa616258b",
+   "name": "Coppa Montes Gran Premio della Resistenza",
+   "date": "2027-04-25",
+   "class": "1.1",
+   "country": "IT",
+   "outcome": "enriched",
+   "slug": "72-coppa-montes-gran-premio-della-resistenza-2027",
+   "changes": [
+    "kategorie potvrzené UCI",
+    "web"
+   ]
+  },
+  {
+   "uci": "e5fa93fe-43ac-494e-a56b-4a11fee1e3e5",
+   "name": "Gran Premio Della Liberazione Donne",
+   "date": "2027-04-25",
+   "class": "1.1",
+   "country": "IT",
+   "outcome": "ambiguous",
+   "candidates": [
+    "liberazione-juniores-2027",
+    "Liberazione Juniores"
+   ]
+  },
+  {
+   "uci": "f5d0f405-652d-4562-b0be-78a09acc28cd",
+   "name": "Gran Premio della Liberazione",
+   "date": "2027-04-25",
+   "class": "1.2U",
+   "country": "IT",
+   "outcome": "enriched",
+   "slug": "80-gran-premio-della-liberazione-2027",
+   "changes": [
+    "kategorie potvrzené UCI"
+   ]
+  },
+  {
+   "uci": "7a6633dc-e3a5-4315-834e-673fd9d5e037",
+   "name": "HERO UCI Cross-country Marathon World Cup",
+   "date": "2027-05-01",
+   "class": "CDM",
+   "country": "IT",
+   "outcome": "enriched",
+   "slug": "hero-uci-cross-country-marathon-world-cup-2027",
+   "changes": [
+    "web"
+   ]
+  },
+  {
+   "uci": "ba29afc2-83c8-49f2-8575-6e361d9102a5",
+   "name": "Italia Bike Cup - MTB Caneva Trophy",
+   "date": "2027-05-08",
+   "class": "1",
+   "country": "IT",
+   "outcome": "enriched",
+   "slug": "italia-bike-cup-mtb-caneva-trophy-2027",
+   "changes": [
+    "web"
+   ]
+  },
+  {
+   "uci": "e23b594a-bc97-4f2c-b608-fa43744f8a6e",
+   "name": "Giro d'Italia",
+   "date": "2027-05-08",
+   "class": "2.UWT",
+   "country": "IT",
+   "outcome": "hidden",
+   "slug": "giro-d-italia-2027"
+  },
+  {
+   "uci": "047e5cc0-9cf5-46de-b29a-0ae6991c7c40",
+   "name": "Gran Premio Industrie del Marmo",
+   "date": "2027-05-09",
+   "class": "1.2U",
+   "country": "IT",
+   "outcome": "enriched",
+   "slug": "38-gran-premio-industrie-del-marmo-2027",
+   "changes": [
+    "kategorie potvrzené UCI",
+    "web"
+   ]
+  },
+  {
+   "uci": "47410c33-5560-4f09-b9e2-c60f9679cff7",
+   "name": "Circuito del Porto - Trofeo Arvedi",
+   "date": "2027-05-16",
+   "class": "1.2",
+   "country": "IT",
+   "outcome": "enriched",
+   "slug": "60-circuito-del-porto-trofeo-arvedi-2027",
+   "changes": [
+    "kategorie potvrzené UCI",
+    "web"
+   ]
+  },
+  {
+   "uci": "56e2ac0a-d805-4574-84f4-72f6b52d0894",
+   "name": "UCI Para Cycling Road World Cup - Maniago-Montereale Italy",
+   "date": "2027-05-20",
+   "class": "CDM",
+   "country": "IT",
+   "outcome": "same",
+   "slug": "uci-para-cycling-road-world-cup-maniago-montereale-italy-2027",
+   "changes": []
+  },
+  {
+   "uci": "6a3c2e2a-1683-4aa6-b084-b43dbc3e1435",
+   "name": "Due Giorni Marchigiana - G.P. Santa Rita",
+   "date": "2027-05-22",
+   "class": "1.2",
+   "country": "IT",
+   "outcome": "enriched",
+   "slug": "45-due-giorni-marchigiana-g-p-santa-rita-2027",
+   "changes": [
+    "kategorie potvrzené UCI"
+   ]
+  },
+  {
+   "uci": "0d3edd95-d255-4443-8715-8fbe15ff5cf0",
+   "name": "Eroica Juniores - Coppa Andrea Meneghelli",
+   "date": "2027-05-23",
+   "class": "1.1",
+   "country": "IT",
+   "outcome": "same",
+   "slug": "eroica-juniores-coppa-andrea-meneghelli-2027",
+   "changes": []
+  },
+  {
+   "uci": "2268dd7d-d772-481a-a095-0486da19d5d7",
+   "name": "Due Giorni Marchigiana - Trofeo Città di Castelfidardo",
+   "date": "2027-05-23",
+   "class": "1.2",
+   "country": "IT",
+   "outcome": "enriched",
+   "slug": "45-due-giorni-marchigiana-trofeo-citta-castelfidardo-2027",
+   "changes": [
+    "kategorie potvrzené UCI"
+   ]
+  },
+  {
+   "uci": "14f4c9d4-545c-434e-93b6-94054e963d4c",
+   "name": "Giro d'Italia Women",
+   "date": "2027-05-29",
+   "class": "2.WWT",
+   "country": "IT",
+   "outcome": "hidden",
+   "slug": "giro-d-italia-women-2027"
+  },
+  {
+   "uci": "3554b3f6-0e74-4335-a06c-122582a7a5e0",
+   "name": "TrofeoAlcide Degasperi",
+   "date": "2027-06-02",
+   "class": "1.2",
+   "country": "IT",
+   "outcome": "enriched",
+   "slug": "71-trofeo-alcide-de-gasperi-2027",
+   "changes": [
+    "kategorie potvrzené UCI",
+    "web"
+   ]
+  },
+  {
+   "uci": "508ddc0a-2077-408a-b4ca-5c1adb48c4e5",
+   "name": "Internazionali d'Italia DH Rider Cup",
+   "date": "2027-06-04",
+   "class": "1",
+   "country": "IT",
+   "outcome": "enriched",
+   "slug": "internazionali-d-italia-dh-rider-cup-2027",
+   "changes": [
+    "web"
+   ]
+  },
+  {
+   "uci": "3a5eb068-b361-4cd2-a773-3d0a63b2dd01",
+   "name": "15° G.P.  F.W.R. BARON - VENETO - ITALIA",
+   "date": "2027-06-05",
+   "class": "2.1",
+   "country": "IT",
+   "outcome": "enriched",
+   "slug": "15-g-p-f-w-r-baron-veneto-italia-2027",
+   "changes": [
+    "kategorie potvrzené UCI"
+   ]
+  },
+  {
+   "uci": "901d43bc-6949-49ed-8ca8-7450a9f5e4a9",
+   "name": "Italia Bike Cup + UCI XCO Junior Series",
+   "date": "2027-06-05",
+   "class": "1",
+   "country": "IT",
+   "outcome": "enriched",
+   "slug": "italia-bike-cup-uci-xco-junior-series-2027",
+   "changes": [
+    "web"
+   ]
+  },
+  {
+   "uci": "ebf56488-db46-4a7c-ad2e-6cb18777ca63",
+   "name": "Coppa della Pace - Trofeo Fratelli Anelli",
+   "date": "2027-06-06",
+   "class": "1.2U",
+   "country": "IT",
+   "outcome": "enriched",
+   "slug": "55-coppa-della-pace-52-trofeo-fratelli-anelli-2027",
+   "changes": [
+    "kategorie potvrzené UCI"
+   ]
+  },
+  {
+   "uci": "e6ac714f-2e8a-49ab-80a5-1f5fab38996f",
+   "name": "HERO UCI Cross-country Marathon World Cup",
+   "date": "2027-06-12",
+   "class": "CDM",
+   "country": "IT",
+   "outcome": "enriched",
+   "slug": "hero-sudtirol-dolomites-2027",
+   "changes": [
+    "web"
+   ]
+  },
+  {
+   "uci": "ed3dfea2-c104-429d-8fb7-0e06c2ce21b2",
+   "name": "Trofeo Emozione",
+   "date": "2027-06-12",
+   "class": "1.1",
+   "country": "IT",
+   "outcome": "enriched",
+   "slug": "7-trofeo-emozione-2027",
+   "changes": [
+    "kategorie potvrzené UCI",
+    "web"
+   ]
+  },
+  {
+   "uci": "06f4d402-db1e-4333-82a8-d70b88b024cc",
+   "name": "Giro d'Italia Next Gen",
+   "date": "2027-06-13",
+   "class": "2.2U",
+   "country": "IT",
+   "outcome": "enriched",
+   "slug": "giro-d-italia-next-gen-2027",
+   "changes": [
+    "web"
+   ]
+  },
+  {
+   "uci": "7e4226df-1a3a-4ff8-ad16-129cb1392352",
+   "name": "Trofeo GD Dorigo - M.O. Sogno Veneto - Trofeo Merotto Spumanti",
+   "date": "2027-06-13",
+   "class": "1.1",
+   "country": "IT",
+   "outcome": "enriched",
+   "slug": "39-trofeo-gd-dorigo-16-m-o-sogno-veneto-5-trofeo-merotto-2027",
+   "changes": [
+    "kategorie potvrzené UCI",
+    "web"
+   ]
+  },
+  {
+   "uci": "4edbb19c-c928-4e38-ae62-7e9320fe882d",
+   "name": "National Road Championships - Italy",
+   "date": "2027-06-23",
+   "class": "CN",
+   "country": "IT",
+   "outcome": "unplaced",
+   "venue": "Via Giovanni Battista Piranesi, 46"
+  },
+  {
+   "uci": "43df4c9d-cb8f-4803-838d-1b7cb0002c05",
+   "name": "Internazionali d'Italia DH Rider Cup",
+   "date": "2027-07-02",
+   "class": "3",
+   "country": "IT",
+   "outcome": "enriched",
+   "slug": "internazionali-d-italia-dh-rider-cup-madesimo-2027",
+   "changes": [
+    "web"
+   ]
+  },
+  {
+   "uci": "6e5b0743-b485-44d3-aabb-f9cbf200ea57",
+   "name": "UCI Mountain Bike World Cup – XCO/XCC/DHI",
+   "date": "2027-07-02",
+   "class": "CDM",
+   "country": "IT",
+   "outcome": "enriched",
+   "slug": "uci-mtb-world-cup-la-thuile-valle-d-aosta-2027",
+   "changes": [
+    "kategorie potvrzené UCI"
+   ]
+  },
+  {
+   "uci": "97753523-5d83-4ca2-9e18-56ab473e69bc",
+   "name": "Italian National Championships",
+   "date": "2027-07-03",
+   "class": "CN",
+   "country": "IT",
+   "outcome": "same",
+   "slug": "italian-national-championships-verona-2027",
+   "changes": []
+  },
+  {
+   "uci": "0a369eb0-5281-4b4d-8f47-26e020c7b8d8",
+   "name": "Giro del Medio Brenta",
+   "date": "2027-07-04",
+   "class": "1.2",
+   "country": "IT",
+   "outcome": "enriched",
+   "slug": "41-giro-del-medio-brenta-2027",
+   "changes": [
+    "web"
+   ]
+  },
+  {
+   "uci": "6da700e5-4835-4a8c-8682-35627e471569",
+   "name": "Trofeo Città di Brescia - Mem. Rino Fiori",
+   "date": "2027-07-06",
+   "class": "1.2",
+   "country": "IT",
+   "outcome": "enriched",
+   "slug": "64-trofeo-citta-di-brescia-mem-rino-fiori-2027",
+   "changes": [
+    "web"
+   ]
+  },
+  {
+   "uci": "cc93b364-53d5-40e6-add8-aa550a065116",
+   "name": "3 Sere Internazionale Città di Pordenone",
+   "date": "2027-07-12",
+   "class": "1",
+   "country": "IT",
+   "outcome": "enriched",
+   "slug": "3-sere-internazionale-citta-di-pordenone-2027",
+   "changes": [
+    "web"
+   ]
+  },
+  {
+   "uci": "34e02536-eba2-4c25-a2a4-9a8620874479",
+   "name": "Giro Ciclistico della Valle d'Aosta - Mont Blanc",
+   "date": "2027-07-14",
+   "class": "2.2U",
+   "country": "IT",
+   "outcome": "enriched",
+   "slug": "63-giro-ciclistico-della-valle-d-aosta-mont-blanc-2027",
+   "changes": [
+    "web"
+   ]
+  },
+  {
+   "uci": "ca626086-785c-4b49-b282-5ed3bd925edb",
+   "name": "Red Bull Cerro Abajo - Genova",
+   "date": "2027-07-16",
+   "class": "2",
+   "country": "IT",
+   "outcome": "same",
+   "slug": "red-bull-cerro-abajo-genova-2027",
+   "changes": []
+  },
+  {
+   "uci": "25f6363a-c62f-4c6f-b11d-838a8064973d",
+   "name": "Italian National Championships - DHI",
+   "date": "2027-07-17",
+   "class": "CN",
+   "country": "IT",
+   "outcome": "same",
+   "slug": "italian-national-championships-dhi-2027",
+   "changes": []
+  },
+  {
+   "uci": "30229d41-065a-45ef-b93e-af3ac18fc8e8",
+   "name": "Internazionali d'Italia DH Rider Cup",
+   "date": "2027-07-23",
+   "class": "3",
+   "country": "IT",
+   "outcome": "same",
+   "slug": "internazionali-d-italia-dh-rider-cup-sestriere-2027",
+   "changes": []
+  },
+  {
+   "uci": "26743194-960e-48ea-abac-51380a635abc",
+   "name": "Bassano - Monte Grappa",
+   "date": "2027-07-25",
+   "class": "1.2U",
+   "country": "IT",
+   "outcome": "enriched",
+   "slug": "84-bassano-monte-grappa-2027",
+   "changes": [
+    "web"
+   ]
+  },
+  {
+   "uci": "32d21034-2e45-4e53-8327-2fd95c6d3377",
+   "name": "Piccola Tre Valli Varesine Women",
+   "date": "2027-07-29",
+   "class": "1.Ncup",
+   "country": "IT",
+   "outcome": "enriched",
+   "slug": "piccola-tre-valli-varesine-women-2027",
+   "changes": [
+    "web"
+   ]
+  },
+  {
+   "uci": "d2f0b3ac-2c62-410b-90c0-06bb762ca0e2",
+   "name": "Piccola Tre Valli Varesine",
+   "date": "2027-07-29",
+   "class": "1.Ncup",
+   "country": "IT",
+   "outcome": "enriched",
+   "slug": "piccola-tre-valli-varesine-2027",
+   "changes": [
+    "web"
+   ]
+  },
+  {
+   "uci": "c63ec47c-ef10-4f3a-85c5-f8906caa71a8",
+   "name": "G. P. Internazionali di Fiorenzuola - 6 giorni delle rose",
+   "date": "2027-07-30",
+   "class": "1",
+   "country": "IT",
+   "outcome": "enriched",
+   "slug": "g-p-internazionali-di-fiorenzuola-6-giorni-delle-rose-2027",
+   "changes": [
+    "web"
+   ]
+  },
+  {
+   "uci": "fd2d7ab5-e6e7-4392-9410-48615bc76dbf",
+   "name": "Gran Premio Sportivi di Poggiana - Trofeo Bonin Costruzioni",
+   "date": "2027-08-08",
+   "class": "1.2U",
+   "country": "IT",
+   "outcome": "enriched",
+   "slug": "51-gran-premio-sportivi-di-poggiana-51-trofeo-bonin-2027",
+   "changes": [
+    "web"
+   ]
+  },
+  {
+   "uci": "2d1d4053-3a17-4680-a6df-9444f696662f",
+   "name": "GP Capodarco Comunita Di Capodarco",
+   "date": "2027-08-16",
+   "class": "1.2U",
+   "country": "IT",
+   "outcome": "same",
+   "slug": "55-gran-premio-capodarco-comunita-di-capodarco-2027",
+   "changes": []
+  },
+  {
+   "uci": "d4e824c5-3a66-4db0-ab3f-5515bac8a978",
+   "name": "GP Colli Rovescalesi - Trofeo Enertrade",
+   "date": "2027-08-22",
+   "class": "1.2",
+   "country": "IT",
+   "outcome": "enriched",
+   "slug": "74-gran-premio-colli-rovescalesi-18-trofeo-enertrade-2027",
+   "changes": [
+    "web"
+   ]
+  },
+  {
+   "uci": "cc1e7d4a-7d3c-497c-b7e0-ea62728e7e61",
+   "name": "Premondiale Giro Toscana Int. Femminile - Memorial Michela Fanini",
+   "date": "2027-08-26",
+   "class": "2.2",
+   "country": "IT",
+   "outcome": "enriched",
+   "slug": "premondiale-giro-di-toscana-int-le-femminile-memorial-2027",
+   "changes": [
+    "web"
+   ]
+  },
+  {
+   "uci": "ceb06bfd-136d-4cc5-865a-a311e5fe7c62",
+   "name": "Trofeo Comune di Vertova - Memorial Pietro e Giovanni Merelli",
+   "date": "2027-08-28",
+   "class": "1.1",
+   "country": "IT",
+   "outcome": "enriched",
+   "slug": "29-trofeo-comune-di-vertova-24-mem-pietro-giovanni-merelli-2027",
+   "changes": [
+    "web"
+   ]
+  },
+  {
+   "uci": "f4977b88-6738-4fcf-b785-844cedbd26fd",
+   "name": "Trofeo Emilio Paganessi",
+   "date": "2027-08-29",
+   "class": "1.1",
+   "country": "IT",
+   "outcome": "enriched",
+   "slug": "55-trofeo-emilio-paganessi-2027",
+   "changes": [
+    "web"
+   ]
+  },
+  {
+   "uci": "83585be7-6e85-447a-9a71-2ad5ed1ea7ea",
+   "name": "Giro della Regione Friuli Venezia Giulia",
+   "date": "2027-09-02",
+   "class": "2.2",
+   "country": "IT",
+   "outcome": "enriched",
+   "slug": "giro-della-regione-friuli-venezia-giulia-2027",
+   "changes": [
+    "web"
+   ]
+  },
+  {
+   "uci": "11b88437-2360-4e23-979d-29229e717100",
+   "name": "UCI Mountain Bike Continental Series - Pila Continental Series- IXS Downhill Cup",
+   "date": "2027-09-03",
+   "class": "CS",
+   "country": "IT",
+   "outcome": "same",
+   "slug": "uci-mountain-bike-continental-series-pila-continental-series-2027",
+   "changes": []
+  },
+  {
+   "uci": "4c6edc4e-65c4-41d5-87fe-cf6621f2a5d8",
+   "name": "Giro Della Lunigiana",
+   "date": "2027-09-07",
+   "class": "2.1",
+   "country": "IT",
+   "outcome": "enriched",
+   "slug": "giro-della-lunigiana-2027",
+   "changes": [
+    "web"
+   ]
+  },
+  {
+   "uci": "d8e666e0-c6e0-407f-845f-fa101010eca2",
+   "name": "UCI Mountain Bike World Cup – XCO/XCC/DHI",
+   "date": "2027-09-10",
+   "class": "CDM",
+   "country": "IT",
+   "outcome": "enriched",
+   "slug": "uci-mtb-world-cup-val-di-sole-trentino-2027",
+   "changes": [
+    "kategorie potvrzené UCI"
+   ]
+  },
+  {
+   "uci": "2c03cbef-4a38-472e-a724-231732aaef97",
+   "name": "Italian National Championships - EDR",
+   "date": "2027-09-11",
+   "class": "CN",
+   "country": "IT",
+   "outcome": "same",
+   "slug": "italian-national-championships-edr-2027",
+   "changes": []
+  },
+  {
+   "uci": "6e079d84-c862-490d-97de-098d3110bf96",
+   "name": "Memorial Marco Pantani",
+   "date": "2027-09-11",
+   "class": "1.1",
+   "country": "IT",
+   "outcome": "enriched",
+   "slug": "memorial-marco-pantani-2027",
+   "changes": [
+    "web"
+   ]
+  },
+  {
+   "uci": "8cb06aa7-e1dd-4b7a-9d49-2356685ee511",
+   "name": "Trofeo Matteotti",
+   "date": "2027-09-12",
+   "class": "1.1",
+   "country": "IT",
+   "outcome": "unplaced",
+   "venue": "sede Trofeo Matteotti"
+  },
+  {
+   "uci": "db273bd5-f208-4db7-be1d-aa61498ecf51",
+   "name": "Trofeo Buffoni",
+   "date": "2027-09-12",
+   "class": "1.1",
+   "country": "IT",
+   "outcome": "enriched",
+   "slug": "trofeo-buffoni-2027",
+   "changes": [
+    "web"
+   ]
+  },
+  {
+   "uci": "6e5361b8-c219-4659-85c5-3ba2ae4b162c",
+   "name": "Il Giro d'Abruzzo",
+   "date": "2027-09-14",
+   "class": "2.1",
+   "country": "IT",
+   "outcome": "enriched",
+   "slug": "il-giro-d-abruzzo-2027",
+   "changes": [
+    "web"
+   ]
+  },
+  {
+   "uci": "697f9915-09b0-4bf7-9a45-845b483a262a",
+   "name": "Internazionali d'Italia DH Rider Cup",
+   "date": "2027-09-17",
+   "class": "3",
+   "country": "IT",
+   "outcome": "enriched",
+   "slug": "internazionali-d-italia-dh-rider-cup-prali-2027",
+   "changes": [
+    "web"
+   ]
+  },
+  {
+   "uci": "cfd13c08-3273-4ba6-8867-4cd57e7e1be1",
+   "name": "Gran Premio del Lazio",
+   "date": "2027-09-18",
+   "class": "1.1",
+   "country": "IT",
+   "outcome": "enriched",
+   "slug": "gran-premio-del-lazio-2027",
+   "changes": [
+    "web"
+   ]
+  },
+  {
+   "uci": "860ba7ee-f37e-453d-96c3-5c1bb8e1974b",
+   "name": "Trofeo Top Automazioni-Memorial Davide Bertozzi",
+   "date": "2027-09-19",
+   "class": "1.1",
+   "country": "IT",
+   "outcome": "unplaced",
+   "venue": "STABILIMENTO TOP AUTOMAZIONI"
+  },
+  {
+   "uci": "abb1c202-12e3-491a-8d5c-d7d34e53dd21",
+   "name": "Giro Della Romagna",
+   "date": "2027-09-19",
+   "class": "1.1",
+   "country": "IT",
+   "outcome": "failed",
+   "error": "Out-of-scope or tentative candidate cannot be published"
+  },
+  {
+   "uci": "45a0685e-5495-4a44-8bda-9613915f37ae",
+   "name": "GP Industria & Artigianato",
+   "date": "2027-09-26",
+   "class": "1.Pro",
+   "country": "IT",
+   "outcome": "enriched",
+   "slug": "gp-industria-artigianato-2027",
+   "changes": [
+    "web"
+   ]
+  },
+  {
+   "uci": "5bfda92c-59d8-4492-be68-48044f8af67d",
+   "name": "La Dario Acquaroli Internazionale",
+   "date": "2027-09-26",
+   "class": "3",
+   "country": "IT",
+   "outcome": "enriched",
+   "slug": "la-dario-acquaroli-internazionale-2027",
+   "changes": [
+    "web"
+   ]
+  },
+  {
+   "uci": "ba8c180b-6a49-4b47-94a2-ad19cc4dbd44",
+   "name": "Ruota d'Oro - GP Festa del Perdono",
+   "date": "2027-09-28",
+   "class": "1.2U",
+   "country": "IT",
+   "outcome": "enriched",
+   "slug": "ruota-d-oro-gp-festa-del-perdono-2027",
+   "changes": [
+    "web"
+   ]
+  },
+  {
+   "uci": "52fed23d-5dea-428e-84e0-3d03f4a8a56b",
+   "name": "Giro della Toscana - Memorial Alfredo Martini",
+   "date": "2027-09-29",
+   "class": "1.1",
+   "country": "IT",
+   "outcome": "enriched",
+   "slug": "giro-della-toscana-memorial-alfredo-martini-2027",
+   "changes": [
+    "web"
+   ]
+  },
+  {
+   "uci": "1a139b13-c05f-4185-8a8e-e16a6be19a31",
+   "name": "Gran Premio città di Peccioli - Coppa Sabatini",
+   "date": "2027-09-30",
+   "class": "1.Pro",
+   "country": "IT",
+   "outcome": "enriched",
+   "slug": "gran-premio-citta-di-peccioli-coppa-sabatini-2027",
+   "changes": [
+    "web"
+   ]
+  },
+  {
+   "uci": "805b8aaf-157f-47d1-a4d4-9ee32c774d0a",
+   "name": "Giro dell'Emilia",
+   "date": "2027-10-02",
+   "class": "1.Pro",
+   "country": "IT",
+   "outcome": "unplaced",
+   "venue": "Emilia-Romagna"
+  },
+  {
+   "uci": "c3381752-3591-4995-bb59-f1e1d792550c",
+   "name": "Giro dell'Emilia Internazionale Donne Elite",
+   "date": "2027-10-02",
+   "class": "1.Pro",
+   "country": "IT",
+   "outcome": "unplaced",
+   "venue": "Emilia-Romagna"
+  },
+  {
+   "uci": "f2d53d7f-23c3-44fe-89d1-e3ff28834b31",
+   "name": "Il Lombardia Under 23",
+   "date": "2027-10-02",
+   "class": "1.2U",
+   "country": "IT",
+   "outcome": "unplaced",
+   "venue": "Via Papa Paolo VI"
+  },
+  {
+   "uci": "73e58a3a-8671-49c2-9367-3cbbe782e9a8",
+   "name": "Gran Premio Ezio Del Rosso",
+   "date": "2027-10-03",
+   "class": "1.2",
+   "country": "IT",
+   "outcome": "unplaced",
+   "venue": "Viale Giuseppe Verdi"
+  },
+  {
+   "uci": "8b669f57-b414-490b-8c2f-c33f886ae215",
+   "name": "Coppa Agostoni - Giro delle Brianze",
+   "date": "2027-10-03",
+   "class": "1.1",
+   "country": "IT",
+   "outcome": "enriched",
+   "slug": "coppa-agostoni-giro-delle-brianze-2027",
+   "changes": [
+    "web"
+   ]
+  },
+  {
+   "uci": "f3783cf4-83c3-423d-9cf2-be2b413aee02",
+   "name": "Coppa Bernocchi - GP Banco BPM",
+   "date": "2027-10-04",
+   "class": "1.Pro",
+   "country": "IT",
+   "outcome": "enriched",
+   "slug": "coppa-bernocchi-gp-banco-bpm-2027",
+   "changes": [
+    "web"
+   ]
+  },
+  {
+   "uci": "16891110-316d-4aed-8cd5-deb0a352db3d",
+   "name": "Tre Valli Varesine",
+   "date": "2027-10-05",
+   "class": "1.Pro",
+   "country": "IT",
+   "outcome": "ambiguous",
+   "candidates": [
+    "tre-valli-varesine-women-s-race-2027",
+    "Tre Valli Varesine Women's Race"
+   ]
+  },
+  {
+   "uci": "9540c7b0-0077-4499-ae76-f5cb8a52ff06",
+   "name": "Tre Valli Varesine Women's Race",
+   "date": "2027-10-05",
+   "class": "1.Pro",
+   "country": "IT",
+   "outcome": "enriched",
+   "slug": "tre-valli-varesine-women-s-race-2027",
+   "changes": [
+    "web"
+   ]
+  },
+  {
+   "uci": "bb0d9377-5e3b-458d-8032-574a7351a8ec",
+   "name": "Coppa Citta Di San Daniele",
+   "date": "2027-10-05",
+   "class": "1.2",
+   "country": "IT",
+   "outcome": "same",
+   "slug": "coppa-citta-di-san-daniele-2027",
+   "changes": []
+  },
+  {
+   "uci": "3506ff2b-7ea3-4512-a04a-dfdb47875f92",
+   "name": "Gran Piemonte",
+   "date": "2027-10-07",
+   "class": "1.Pro",
+   "country": "IT",
+   "outcome": "unplaced",
+   "venue": "Piemonte"
+  },
+  {
+   "uci": "fa69dba3-80d9-4397-b7d3-a017093ccb1a",
+   "name": "Il Lombardia",
+   "date": "2027-10-09",
+   "class": "1.UWT",
+   "country": "IT",
+   "outcome": "hidden",
+   "slug": "il-lombardia-2027"
+  },
+  {
+   "uci": "0ab1c40f-8c54-4eeb-9660-ae395e02dccc",
+   "name": "Trofeo Tessile & Moda - Comuni di Valdengo e Biella",
+   "date": "2027-10-10",
+   "class": "1.1",
+   "country": "IT",
+   "outcome": "enriched",
+   "slug": "trofeo-tessile-moda-comuni-di-valdengo-e-biella-2027",
+   "changes": [
+    "web"
+   ]
+  },
+  {
+   "uci": "3ab9ea8c-89de-405e-a974-f5a759be78f8",
+   "name": "Trofeo Tessile & Moda - Valdengo Oropa",
+   "date": "2027-10-10",
+   "class": "1.1",
+   "country": "IT",
+   "outcome": "ambiguous",
+   "candidates": [
+    "trofeo-tessile-moda-comuni-di-valdengo-e-biella-2027",
+    "Trofeo Tessile & Moda - Comuni di Valdengo e Biella"
+   ]
+  },
+  {
+   "uci": "d7f85d4d-76f0-4458-ae3b-402af30793b7",
+   "name": "Veneto Women",
+   "date": "2027-10-13",
+   "class": "1.1",
+   "country": "IT",
+   "outcome": "enriched",
+   "slug": "veneto-women-2027",
+   "changes": [
+    "web"
+   ]
+  },
+  {
+   "uci": "fa215944-53aa-469e-b727-dd6d1b506111",
+   "name": "Giro del Veneto",
+   "date": "2027-10-13",
+   "class": "1.Pro",
+   "country": "IT",
+   "outcome": "enriched",
+   "slug": "giro-del-veneto-2027",
+   "changes": [
+    "web"
+   ]
+  },
+  {
+   "uci": "2887a4cb-8b5d-4741-a7a6-4dfbd64aa500",
+   "name": "Veneto Classic",
+   "date": "2027-10-17",
+   "class": "1.Pro",
+   "country": "IT",
+   "outcome": "enriched",
+   "slug": "veneto-classic-2027",
+   "changes": [
+    "web"
+   ]
+  }
+ ]
+}

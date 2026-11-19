@@ -1,0 +1,230 @@
+[
+  {
+    "action": "update",
+    "id": "d5c275f9-8259-4527-bece-d060774f5221",
+    "before": {
+      "name": "Canyon Rhein Hunsrück Gravel Marathon",
+      "disciplines": [
+        "xcm"
+      ],
+      "event_type": "ride",
+      "registration_url": "https://my.raceresult.com/383989/registration",
+      "name_normalized": "canyon rhein hunsruck gravel marathon"
+    },
+    "after": {
+      "name": "CANYON Rhein-Hunsrück Bike Marathon",
+      "disciplines": [
+        "mtb",
+        "xcm",
+        "gravel"
+      ],
+      "event_type": "race",
+      "registration_url": null,
+      "name_normalized": "canyon rhein hunsruck bike marathon"
+    },
+    "why": "Organiser: 'Bikemarathon mit MTB, Gravel, RTF + Kids-Race', 'Termin 2027: 05. + 06. Juni 2027'. The entry link was the 2026 Kids-Race form (raceresult 383989); 2027 sign-up is not open.",
+    "source": "https://www.mtb-rhens.de/"
+  },
+  {
+    "action": "update",
+    "id": "717e94dc-2e41-4f44-b0f8-87d625c10ea0",
+    "before": {
+      "disciplines": [
+        "road"
+      ],
+      "formats": [
+        "xco"
+      ],
+      "age_categories": [
+        "elite"
+      ],
+      "website_url": "https://www.alpen-tour.at/?utm_medium=referral"
+    },
+    "after": {
+      "disciplines": [
+        "mtb",
+        "xcm"
+      ],
+      "formats": [
+        "xcm"
+      ],
+      "age_categories": [
+        "elite",
+        "amateur"
+      ],
+      "website_url": "https://alpen-tour.at/"
+    },
+    "why": "Organiser: 'one of Europe’s toughest ... mountain bike stage races', 4 stages, 17.-20. June 2027, 'Whether you’re a professional or a passionate amateur'.",
+    "source": "https://alpen-tour.at/"
+  },
+  {
+    "action": "update",
+    "id": "23b63e35-476a-4418-b635-1351534decff",
+    "before": {
+      "name": "ARBÖ Kärnten Radmarathon Bad Kleinkirchheim 2027",
+      "disciplines": [
+        "xcm"
+      ],
+      "event_type": "race",
+      "website_url": "https://www.rc-feldamsee.at/?utm_medium=referral",
+      "registration_url": null,
+      "name_normalized": "arbo karnten radmarathon bad kleinkirchheim"
+    },
+    "after": {
+      "name": "ARBÖ Kärnten Radmarathon Bad Kleinkirchheim",
+      "disciplines": [
+        "road",
+        "gran_fondo"
+      ],
+      "event_type": "gran_fondo",
+      "website_url": "https://www.kaernten-radmarathon.at/",
+      "registration_url": "https://entry.racetime.pro/event/1472",
+      "name_normalized": "arbo karnten radmarathon bad kleinkirchheim"
+    },
+    "why": "A road marathon, filed as XCM because the federation reader took any 'marathon' for MTB. Organiser: '6. Juni 2027 07:30 Uhr', entry on racetime event 1472 ('ARBÖ Kärnten Radmarathon, 06. Juni 2027').",
+    "source": "https://www.kaernten-radmarathon.at/"
+  },
+  {
+    "action": "update",
+    "id": "c4ba0a71-6c75-47cb-a329-4a5762ae8147",
+    "before": {
+      "disciplines": [
+        "xcm"
+      ]
+    },
+    "after": {
+      "disciplines": [
+        "road",
+        "gran_fondo"
+      ]
+    },
+    "why": "A road Radmarathon filed as XCM by the same 'marathon' rule.",
+    "source": "https://www.imster-radmarathon.at/"
+  },
+  {
+    "action": "update",
+    "id": "806ee1bd-ceaf-40bb-8735-3275a0be9370",
+    "before": {
+      "end_date": "2027-05-02",
+      "registration_url": "https://www.uci.org/competition-details/2027/ROA/79692",
+      "website_url": "https://www.eschborn-frankfurt.de/de"
+    },
+    "after": {
+      "end_date": "2027-05-01",
+      "registration_url": "https://in.timeto.com/adac-velotour-2027",
+      "website_url": "https://adac-velotour.de/"
+    },
+    "why": "Organiser: 'ADAC Velotour Eschborn-Frankfurt / 1 Mai 2027', 'Die Anmeldung für die ADAC Velotour 2027 ist jetzt geöffnet!'. The entry link pointed at a UCI calendar page.",
+    "source": "https://adac-velotour.de/"
+  },
+  {
+    "action": "update",
+    "id": "b8141764-3d56-419a-91a2-3651a6e30248",
+    "before": {
+      "start_date": "2027-06-19",
+      "end_date": "2027-06-19"
+    },
+    "after": {
+      "start_date": "2027-07-31",
+      "end_date": "2027-07-31"
+    },
+    "why": "Federation entry now reads 'Sa, 31. Juli 2027'; the organiser lists the international criterium on the Saturday of the Arlberg Giro weekend (Giro on 1 August 2027). 19 June was an earlier date.",
+    "source": "https://www.cyclingaustria.at/index.php?option=com_events&view=event&id=12B0C9A21F7641899018A28997A3897D"
+  },
+  {
+    "action": "update",
+    "id": "4d0e57fa-1674-4b60-ae7f-3eea600fa15b",
+    "before": {
+      "website_url": "https://rmg.rc-grieskirchen.at/wp/"
+    },
+    "after": {
+      "website_url": "https://rmg.rc-grieskirchen.at/"
+    },
+    "why": "Organiser's race site; the /wp/ path was an old install.",
+    "source": "https://rmg.rc-grieskirchen.at/event/24h/"
+  },
+  {
+    "action": "update",
+    "id": "bb1399cd-3baf-4f88-84b8-740bf49afe56",
+    "before": {
+      "registration_url": "https://my.raceresult.com/419718/",
+      "regulations_url": null
+    },
+    "after": {
+      "registration_url": "https://events.racetime.pro/de/event/1523",
+      "regulations_url": "https://www.dolomitensport.at/images/dolomitenradrundfahrt-supergirodolomiti/2027/DRR_SGD_Ausschreibung_2027_DE.pdf"
+    },
+    "why": "2027 programme page: 'Download Ausschreibung' (2027 PDF) and 'Jetzt anmelden!' to racetime 1523. The old link was the Tiroler Rennrad Cup season entry.",
+    "source": "https://www.dolomitensport.at/de/dolomitenradrundfahrt-rennen-programm.html"
+  },
+  {
+    "action": "update",
+    "id": "e2258c9f-8aed-4cad-a73e-5f26275c82d9",
+    "before": {
+      "registration_url": null,
+      "regulations_url": null
+    },
+    "after": {
+      "registration_url": "https://events.racetime.pro/de/event/1523",
+      "regulations_url": "https://www.dolomitensport.at/images/dolomitenradrundfahrt-supergirodolomiti/2027/DRR_SGD_Ausschreibung_2027_DE.pdf"
+    },
+    "why": "Same 2027 programme, entry and regulations as the Dolomitenradrundfahrt.",
+    "source": "https://www.dolomitensport.at/de/supergirodolomiti-rennen-programm.html"
+  },
+  {
+    "action": "update",
+    "id": "ad9ff574-89b8-40ef-a362-37a1f0709546",
+    "before": {
+      "end_date": null,
+      "registration_url": null
+    },
+    "after": {
+      "end_date": "2027-06-19",
+      "registration_url": "https://my.raceresult.com/387179/registration?regname=Single%20Registration"
+    },
+    "why": "Propozice 2027: 'Sobota 19. 6. 2027', 'Přihlášky Předem ONLINE'.",
+    "source": "https://rohanskestezky.cz/mtb-zavod/propozice/"
+  },
+  {
+    "action": "merge",
+    "keep": "717e94dc-2e41-4f44-b0f8-87d625c10ea0",
+    "drop": "4922db6b-041b-4792-847d-38f51cf9d998",
+    "name": "Alpentour Schladming Dachstein",
+    "why": "Hidden one-day copy of the same 2027 stage race."
+  },
+  {
+    "action": "merge",
+    "keep": "23b63e35-476a-4418-b635-1351534decff",
+    "drop": "53f8ace7-add2-413b-9f07-b43363a03969",
+    "name": "Kärnten Radmarathon",
+    "why": "Hidden copy filed under Czechia; same race, same day, same town."
+  },
+  {
+    "action": "merge",
+    "keep": "b8141764-3d56-419a-91a2-3651a6e30248",
+    "drop": "6079dce1-842d-4cae-a14b-aa32745f1804",
+    "name": "Arlberg Giro Kriterium",
+    "why": "Hidden copy on the correct day (31 July 2027), placed only in 'Vorarlberg'."
+  },
+  {
+    "action": "create",
+    "name": "Münsterland Giro – Stadtwerke-Kids-Cup",
+    "slug": "munsterland-giro-stadtwerke-kids-cup-2027",
+    "why": "2027 preliminary schedule on the LeezenCups page: '15.00 Uhr: Start Stadtwerke-Kids-Cup 1'. Ranked: 'Mädchen und Jungen werden getrennt gewertet', 'Pokale für die drei Erstplatzierten', ages 5–12 in three classes (2026 page, so ages marked as last year's). The Girolino balance-bike run ('Es gibt nur Gewinner') is not a race and is left out.",
+    "source": "https://muensterland-giro.de/leezencups/"
+  },
+  {
+    "action": "create",
+    "name": "St. Anton night:sprint",
+    "slug": "st-anton-night-sprint-2027",
+    "why": "Organiser: 'Die Anmeldung für den St. Anton night:sprint am 30. Juli 2027 ist geöffnet.' A sprint through the pedestrian zone, open 'unabhängig von deiner Teilnahme am Arlberg Giro'.",
+    "source": "https://arlberg-giro.com/at/anmeldung"
+  },
+  {
+    "action": "create",
+    "name": "Dolomitenradrundfahrt – Kinderradrennen",
+    "slug": "dolomitenradrundfahrt-kinderradrennen-2027",
+    "why": "2027 programme: 'Samstag, 12. Juni 2027 ... 10:00 Uhr: Kinderradrennen am Lienzer Hauptplatz'. Categories for 2027 are not published (only a 2026 image).",
+    "source": "https://www.dolomitensport.at/de/dolomitenradrundfahrt-rennen-programm.html"
+  }
+]

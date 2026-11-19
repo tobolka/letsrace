@@ -1,0 +1,348 @@
+{
+  "version": 1,
+  "at": "2026-10-29T15:01:34.772Z",
+  "pid": 21522,
+  "root": "/Users/radektobolka/Library/Application Support/LetsRace/runtime",
+  "data": "/Users/radektobolka/Library/Application Support/LetsRace/data",
+  "status": "attention",
+  "activeTask": null,
+  "pendingTasks": [],
+  "paused": false,
+  "childPid": null,
+  "stage": null,
+  "startedAt": 1793279363396,
+  "lastOutputAt": 1793279449098,
+  "lastFinishedAt": 1793279449099,
+  "lastExitCode": 1,
+  "nextRunAt": 1793286649099,
+  "server": {
+    "at": "2026-10-29T14:57:54.980Z",
+    "jobs": [
+      {
+        "key": "server-free",
+        "run_id": "b264300f-3526-46a9-9de8-b56d9a74422f",
+        "started_at": "2026-10-29T09:02:31.977184+00:00",
+        "finished_at": "2026-10-29T09:02:51.665+00:00",
+        "status": "attention",
+        "summary": {
+          "ok": false,
+          "count": 1,
+          "failed": 1,
+          "created": 0,
+          "geocode": {
+            "failed": 0,
+            "skipped": 7,
+            "updated": 0,
+            "attempted": 813
+          },
+          "updated": 19,
+          "problems": [
+            {
+              "url": "https://pzkol.pl/kalendarz",
+              "error": "write_failed:pzkol-2792:pipeline_data_review_required:name_year_conflict"
+            }
+          ],
+          "unchanged": 0
+        }
+      }
+    ],
+    "due": 0,
+    "health": {
+      "due": 0,
+      "ok24h": 78,
+      "sources": 1560,
+      "reads24h": 206,
+      "failed24h": 128,
+      "lastSuccessAt": "2026-10-29T13:09:36.736+00:00"
+    },
+    "attentionSources": 136,
+    "reviewCandidates": 112,
+    "schedules": {
+      "free": "denně",
+      "ai": "na Macu"
+    },
+    "countries": [
+      "CZ",
+      "SK",
+      "DE",
+      "AT",
+      "CH",
+      "IT",
+      "PL"
+    ],
+    "checkedAt": "2026-10-29T14:57:54.998Z",
+    "error": null
+  },
+  "serverRequestRunning": false,
+  "serverRequestError": null,
+  "estimates": {
+    "federation": [
+      74195,
+      222325,
+      106258,
+      190101,
+      127748
+    ],
+    "refresh": [
+      2214200,
+      2177496,
+      84570,
+      80104,
+      85703
+    ]
+  },
+  "catalogueAt": "2026-10-29T13:10:49.074Z",
+  "lastResult": {
+    "reads": 3,
+    "created": 0,
+    "updated": 211,
+    "failed": 1,
+    "deferred": 0,
+    "unchanged": 0,
+    "leads": 0,
+    "queued": 0,
+    "problems": [
+      {
+        "url": "https://portal.czechcyclingfederation.com/Races/Race/Pub",
+        "error": "write_failed:csc-1695:pipeline_data_review_required:end_before_start"
+      }
+    ],
+    "at": 1793279449099,
+    "exitCode": 1,
+    "logPath": "/Users/radektobolka/Library/Application Support/LetsRace/data/refresh-2026-10-29T13-09-23-395Z.log"
+  },
+  "lastActivityResult": {
+    "reads": 3,
+    "created": 0,
+    "updated": 211,
+    "failed": 1,
+    "deferred": 0,
+    "unchanged": 0,
+    "leads": 0,
+    "queued": 0,
+    "problems": [
+      {
+        "url": "https://portal.czechcyclingfederation.com/Races/Race/Pub",
+        "error": "write_failed:csc-1695:pipeline_data_review_required:end_before_start"
+      }
+    ],
+    "at": 1793279449099,
+    "exitCode": 1,
+    "logPath": "/Users/radektobolka/Library/Application Support/LetsRace/data/refresh-2026-10-29T13-09-23-395Z.log"
+  },
+  "recent": {
+    "runs": 8,
+    "reads": 152,
+    "created": 21,
+    "updated": 281,
+    "failed": 87,
+    "deferred": 0,
+    "problems": [
+      {
+        "url": "https://bikeri.cz/zavod/kraslicka-casovka",
+        "error": "fetch failed"
+      },
+      {
+        "url": "https://bikeri.cz/zavod/casovka-na-andelskou-horu",
+        "error": "fetch failed"
+      },
+      {
+        "url": "https://bikeri.cz/clanek/chebsky-pohar-skoncil",
+        "error": "fetch failed"
+      },
+      {
+        "url": "https://www.spindlerovka-cup.cz/",
+        "error": "unsupported_or_empty_source"
+      },
+      {
+        "url": "https://prazska50.cz",
+        "error": "unsupported_or_empty_source"
+      },
+      {
+        "url": "https://www.svatobortour.cz/",
+        "error": "unsupported_or_empty_source"
+      },
+      {
+        "url": "https://www.arkadygaragerace.cz/",
+        "error": "unsupported_or_empty_source"
+      },
+      {
+        "url": "https://www.chronometrtour.cz/",
+        "error": "unsupported_or_empty_source"
+      },
+      {
+        "url": "https://zlinska50.cz",
+        "error": "unsupported_or_empty_source"
+      },
+      {
+        "url": "http://okolohor.cz",
+        "error": "unsupported_or_empty_source"
+      },
+      {
+        "url": "https://www.tjsokolchotebuz.cz/index.php?Itemid=36&id=17&option=com_content&view=article",
+        "error": "fetch failed"
+      },
+      {
+        "url": "https://www.spmtb.cz/",
+        "error": "unsupported_or_empty_source"
+      },
+      {
+        "url": "https://odjazd.pl/",
+        "error": "write_failed:odjazd-3edfd396-9165-4eaa-828a-a49e381b271b:Updating race: TypeError: fetch failed; write_failed:odjazd-c4906b65-a478-41bd-b90b-62bf747ece21:write_time_budget_exhausted; write_failed:odjazd-22403436-82b8-4401-aad6-3b652922e467:write_time_budget_exhausted; write_failed:odjazd-67eaf4d6-5799-4f0d-b798-5d69c58680c7:write_time_budget_exhausted; write_failed:odjazd-15a306af-d41f-4c5c-9671-e1b74d84a4ac:write_time_budget_exhausted; write_failed:odjazd-ceb6244f-385e-4cf0-a947-53fcbb778c2f:write_time_budget_exhausted; write_failed:odjazd-6476a0bd-7038-4025-bb3b-338d54db4f69:write_time_budget_exhausted; write_failed:odjazd-8bf75e1e-7ca8-4b08-968c-4385a8bb4750:write_time_budget_exhausted; write_failed:odjazd-0d1149f9-52e9-4621-bff8-d844daa5ef65:write_time_budget_exhausted; write_failed:odjazd-db9c5ac2-e35e-4d81-bc37-fb47df7d1c79:write_time_budget_exhausted; write_failed:odjazd-6c0a3cec-16ff-423b-bcbd-55ed377d3a38:write_time_budget_exhausted; write_failed:odjazd-65636bdc-914b-4364-bf3d-46952832c8f9:write_time_budget_exhausted; write_failed:odjazd-82d9ce59-357e-4d01-94bf-463938ecde4a:write_time_budget_exhausted; write_failed:odjazd-4083cf88-6324-4a14-b190-d7f3e7326e03:write_time_budget_exhausted; write_failed:odjazd-207e9e96-d5aa-43b6-b19e-8685c2ff7127:write_time_budget_exhausted; write_failed:odjazd-2a3ae668-80b8-437f-afff-cda88154fa8d:write_time_budget_exhausted; write_failed:odjazd-f099a9bf-dc55-4314-ac62-9bee53031426:write_time_budget_exhausted; write_failed:odjazd-07fdfeae-934c-487b-86f0-6e8d9db29bbf:write_time_budget_exhausted; write_failed:odjazd-7c52478c-e2ea-44e8-942d-d0300a939007:write_time_budget_exhausted; write_failed:odjazd-e82036ec-d25e-4699-a0e4-06242c29c4c8:write_time_budget_exhausted; write_failed:odjazd-519db5fd-176d-4637-87bd-16c43c722eb2:write_time_budget_exhausted; write_failed:odjazd-9a4e823d-044c-4b18-8c5e-d92de326ba85:write_time_budget_exhausted; write_failed:odjazd-59129770-9ddc-4ca5-a0c6-1d8f70b2ae8c:write_time_budget_exhausted; write_faile"
+      },
+      {
+        "url": "http://bikesportmh.cz",
+        "error": "unsupported_or_empty_source"
+      },
+      {
+        "url": "http://clcyklo.cz",
+        "error": "unsupported_or_empty_source"
+      },
+      {
+        "url": "http://www.mazurymtb.pl/aktualnosci/bitwa-o-twierdze-boyen-zakonczyla-sezon-laciate-mazury-mtb-2027",
+        "error": "HTTP 500"
+      },
+      {
+        "url": "https://bikeri.cz/zavod/kolem-sindelove",
+        "error": "fetch failed"
+      },
+      {
+        "url": "https://rsv-bad-hersfeld.de/images/content/gpx_data/RSV_Bad_Hersfeld_Permanente_2019_Streckenplaene.pdf",
+        "error": "source_document_too_large"
+      },
+      {
+        "url": "https://www.edieteam.cz/images/aktuality/pdf/propozice-2026.pdf",
+        "error": "source_document_too_large"
+      },
+      {
+        "url": "https://www.mazurymtb.pl/aktualnosci/laciate-mazury-mtb-sorkwity-2027-poznaj-trase-wyscigu-przez-jary-lampasza",
+        "error": "HTTP 500"
+      },
+      {
+        "url": "https://bikeri.cz/zavod/chodovska-casovka",
+        "error": "fetch failed"
+      },
+      {
+        "url": "https://www.edieteam.cz/component/phocadownload/category/3-propozice?download=13:propozice-valassky-pohar-mtb-2026",
+        "error": "source_document_too_large"
+      },
+      {
+        "url": "https://www.mazurymtb.pl/aktualnosci/bitwa-o-twierdze-boyen-zakonczyla-sezon-laciate-mazury-mtb-2027",
+        "error": "HTTP 500"
+      },
+      {
+        "url": "https://bikeri.cz/zavod/kraslicky-sip",
+        "error": "fetch failed"
+      },
+      {
+        "url": "https://bikeri.cz/zavod/kraslicka-casovka",
+        "error": "fetch failed"
+      },
+      {
+        "url": "https://bikeri.cz/zavod/casovka-na-andelskou-horu",
+        "error": "fetch failed"
+      },
+      {
+        "url": "https://bikeri.cz/clanek/chebsky-pohar-skoncil",
+        "error": "fetch failed"
+      },
+      {
+        "url": "https://www.okolojiznichcech.cz/",
+        "error": "unsupported_or_empty_source"
+      },
+      {
+        "url": "https://www.tjsokolchotebuz.cz/index.php?Itemid=36&id=17&option=com_content&view=article",
+        "error": "fetch failed"
+      },
+      {
+        "url": "https://portal.czechcyclingfederation.com/Races/Race/Pub",
+        "error": "write_failed:csc-1695:pipeline_data_review_required:end_before_start"
+      }
+    ]
+  },
+  "logPath": "/Users/radektobolka/Library/Application Support/LetsRace/data/refresh-2026-10-29T13-09-23-395Z.log",
+  "lastError": "!!! Due calendars and sources failed",
+  "counters": {
+    "reads": 3,
+    "created": 0,
+    "updated": 211,
+    "failed": 1,
+    "deferred": 0,
+    "unchanged": 0,
+    "leads": 0,
+    "queued": 0
+  },
+  "browser": {
+    "status": "needs_review",
+    "read": 424,
+    "written": 249,
+    "created": 0,
+    "updated": 196,
+    "issue": "write_failed:csc-1695:pipeline_data_review_required:end_before_start",
+    "at": "2026-10-29T13:10:21.407Z",
+    "log": "/Users/radektobolka/Library/Application Support/LetsRace/data/refresh-2026-10-29T13-09-23-395Z.log",
+    "lastReadAt": "2026-10-29T13:10:21.407Z",
+    "lastReadCount": 424
+  },
+  "totals": [
+    {
+      "season": "2026",
+      "total": 343,
+      "essentials": 333
+    },
+    {
+      "season": "2027",
+      "total": 945,
+      "essentials": 874
+    }
+  ],
+  "ai": {
+    "lastRunAt": null,
+    "month": "2026-10",
+    "spentUsd": 7.683967400000007,
+    "monthCapUsd": 5,
+    "dayCapUsd": 0.5,
+    "schedule": "Mac · úterý a pátek"
+  },
+  "system": {
+    "cpuPercent": 38,
+    "memoryFreePercent": 44,
+    "processes": [
+      {
+        "pid": 7288,
+        "cpu": 71.7,
+        "name": "fileproviderd"
+      },
+      {
+        "pid": 29069,
+        "cpu": 52.4,
+        "name": "com.apple.WebKit.WebContent"
+      },
+      {
+        "pid": 426,
+        "cpu": 18.4,
+        "name": "WindowServer"
+      },
+      {
+        "pid": 1205,
+        "cpu": 16.8,
+        "name": "Safari"
+      },
+      {
+        "pid": 16238,
+        "cpu": 8.5,
+        "name": "Codex (Renderer)"
+      }
+    ]
+  },
+  "countries": [
+    "CZ",
+    "SK",
+    "DE",
+    "AT",
+    "CH",
+    "IT",
+    "PL"
+  ],
+  "interrupted": false
+}

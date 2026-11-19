@@ -1,0 +1,60 @@
+PART Mem. Cyrila Schejbala: u13,u15,u17,youth,junior,u23,elite → u13,u15,u17,youth,junior,u23,elite
+PART Lorsbacher Cross-Duathlon: u9,u11,u13,u15,u17,kids,youth,junior,elite,amateur → u9,u11,u13,u15,u17,kids,youth,junior,elite,amateur
+PART LEGNAGO BIKE CICLOCROSS - GARA NAZIONALE: u13,u15,youth,junior,amateur,masters → u13,u15,youth,junior,amateur,masters
+OK   GIOCO CICLISMO - 3^ GINCANA DEL LUPO: u7,u9,u11,u13,kids,youth → u7,u9,u11,u13,kids,youth
+PART ČP Motol: u13,u15,u17,youth,junior,elite → u13,u15,u17,youth,junior,elite
+OK   6° MEMORIAL AMERICO SEVERINI GARA CICLOCROSS BARBARA: u13,u15,youth,junior,amateur,masters → u13,u15,youth,junior,amateur,masters
+OK   8. kolo: Grand Prix Šamorín (UCI C2): u13,u15,u17,kids,youth,junior,u23,elite,masters → u13,u15,u17,youth,junior,u23,elite,masters
+OK   Swiss Cyclo-cross Cup #4 - Radquer Hittnau: u7,u9,u11,u13,u15,kids,youth,junior,elite → u7,u9,u11,u13,u15,u17,kids,youth,junior,elite,masters
+OK   4° GIMKANA BELTRAMI TSA: u7,u9,u11,u13,u15,u17,kids,youth → u7,u9,u11,u13,u15,u17,kids,youth
+PART 7° TROFEO CICLOCROSS CASENTINO - CAMPIONATO REGIONALE IN PROVA UNICA: u7,u9,u11,kids,youth → u7,u9,u11,kids,youth
+PART BELTRAMI CX CUP - CAMPIONATO REGIONALE EMILIA ROMAGNA CATEGORIE AGONISTICHE: u13,u15,youth,junior,u23 → u13,u15,youth,junior,u23
+PART Int. Querfeldein GP Gunskirchen um das Sportzentrum: u7,u9,u11,u13,u15,u17,kids,youth,junior,u23,elite,amateur,masters → u7,u9,u11,u13,u15,u17,kids,youth,junior,u23,elite,amateur,masters
+OK   CICLOCROSS DI S.MARTINO - MASTERCROSS EMILIA ROMAGNA - CAT. GIOVANILI - JUNIOR E OPEN UNDER 35 M/F: u13,u15,u17,youth,junior,u23,elite,amateur → u13,u15,u17,youth,junior,u23,elite
+PART Gravelowy Mikołaj: u17,youth,junior,elite,amateur,masters → u17,youth,junior,elite,amateur,masters
+PART MSR v cyklokrose (9. kolo): u13,u15,u17,kids,youth,junior,u23,elite,masters → u13,u15,u17,youth,junior,u23,elite,masters
+OK   1^ PROVA CIRCUITO CX DEL SUD: amateur → amateur
+OK   10. kolo: NoLimited cup v CX (UCI C2): u13,u15,u17,kids,youth,junior,u23,elite,masters → u13,u15,u17,youth,junior,u23,elite,masters
+OK   ABBINATA NAZ. - 11° CICLOCROSS DEL BRENTA: masters → masters
+OK   CICLOCROSS DEI PINI - 5#CAMPIONATO ITALIANO DI SOCIETA': u13,u15,u17,youth,junior,amateur,masters → u13,u15,u17,youth,junior,amateur,masters
+OK   IL CICLOCROSS A SANTA GIUSTA: u13,u15,youth → u13,u15,youth
+PART Mistrovství Planety: u13,u15,u17,youth,junior,elite → u13,u15,u17,youth,junior,elite
+PART 4. Zima: elite,amateur,masters → elite,amateur,masters
+PART INTERNAZIONALE CICLOCROSS 3° CX LA MONTAGNETTA - BARI: youth,amateur,masters → youth,amateur,masters
+PART CX-MAS Cross Vol.4: u13,u15,u17,youth,junior,u23,elite,amateur,masters → u13,u15,u17,youth,junior,u23,elite,amateur,masters
+PART CROSS CITTA' DI URBANIA: u23,masters → u23,masters
+PART CX LEGNARO CAMPIONATO REGIONALE GIOVANILE: youth,masters → youth,masters
+OK   COPPA ITALIA GIOVANILE CICLOCROSS - CROSS DEL SILE: u13,u15,kids,youth → u13,u15,youth
+PART 40° GP DI CICLOCROSS CITTA' DI VITTORIO VENETO: u13,u15,youth,junior,u23,elite,amateur → u13,u15,youth,junior,u23,elite,amateur
+PART WWBT #1 - SC Capelle: youth,amateur → youth,amateur
+PART Waltroper CTF - WWBT #3: youth,amateur → youth,amateur
+PART WWBT #4 - RV Witten: youth,amateur → youth,amateur
+PART WWBT #5- RSV Unna: youth,amateur → youth,amateur
+PART Čergovská reťaz 2027: u17,youth,junior,elite,amateur,masters → u7,u9,u11,u13,u15,u17,kids,youth,junior,elite,amateur,masters
+PART Hansa CTF - WWBT #6: u7,u9,u11,u13,u15,u17,kids,youth,junior,amateur → u7,u9,u11,u13,u15,u17,kids,youth,junior,amateur
+PART WWBT #9 - RSV Lippe 23 Lünen: youth,amateur → youth,amateur
+OK   Steppencross: u7,u11,u15,u17,kids,youth,junior → u7,u11,u15,u17,kids,youth,junior
+PART Granfondo Sanremo Sanremo: junior,elite,amateur,masters → junior,elite,amateur,masters
+PART Devils Rock Trails CTF 2027: junior,amateur → junior,amateur
+PART Granfondo Via del Sale: junior,amateur,masters → junior,amateur,masters
+PART Nova Eroica Buonconvento: junior,elite,amateur,masters → junior,elite,amateur,masters
+OK   Autofreier Rad-Erlebnistag 2027 am Attersee: kids → kids
+OK   UCI Gran Fondo Burgenland: amateur,masters → u15,u17,youth,amateur,masters
+PART E3NEXUS MTB MARATHON 2027: u7,u9,u11,u13,u15,kids,youth,amateur,masters → u7,u9,u11,u13,u15,kids,youth,amateur,masters
+PART Gravel Epic Šternberk: u17,youth,junior,elite,amateur,masters → u17,youth,junior,elite,amateur,masters
+PART Race Around Niederösterreich 2027: elite,amateur,masters → elite,amateur,masters
+PART Erztaler Offroad: kids,amateur → kids,amateur
+PART Volksradfahren Wenigumstadt: u15,youth,amateur → u15,youth,amateur
+PART Sehenswert-Zeitfahrcup: u7,u11,u13,u15,u17,kids,youth,junior,elite,amateur,masters → u7,u11,u13,u15,u17,kids,youth,junior,elite,amateur,masters
+PART WOLFman: junior,elite,amateur,masters → junior,elite,amateur,masters
+PART Humenský MTB maratón Singletracky Hubková 2027: u7,u9,u11,u13,u15,kids,youth,junior,amateur,masters → u7,u9,u11,u13,u15,kids,youth,junior,amateur,masters
+PART Brittnauer Ironbike: u7,u9,u11,u13,u15,u17,kids,youth,amateur → u7,u9,u11,u13,u15,u17,kids,youth,amateur
+PART Rad-Marathon Tannheimer Tal: elite,amateur,masters → elite,amateur,masters
+PART The Majestics Gravel: elite,amateur → elite,amateur
+PART Dunkelwald Marathon: amateur,masters → amateur,masters
+PART MTB Maratón Bike4you Hlohovec – Poniklec: u7,u9,u11,u17,kids,youth,amateur,masters → u7,u9,u11,u17,kids,youth,elite,amateur,masters
+PART Shelter Attack: elite,amateur → elite,amateur
+PART Road Stage Hradec Králové: u15,youth,elite,amateur,masters → u15,youth,elite,amateur,masters
+PART Engteraner Wadenkneifer CTF: junior,amateur → junior,amateur
+OK   Road Stage Grande Finale: u15,u17,youth,junior,amateur,masters → u15,u17,youth,junior,elite,amateur,masters
+{ read: 209, updated: 59 }

@@ -1,0 +1,20 @@
+{
+  "baseDeployment": "dpl_Bf1EWgdtwAvHnnA68eKSUYe5J3BC",
+  "baseSource": "/private/tmp/letsrace-seo-release-20261029",
+  "releaseSource": "/private/tmp/letsrace-ui-release-20261029",
+  "files": {
+    "src/components/calendar/month-calendar.tsx": "870490b1ef8ba1b4d90248795002d04110df14bd305b4de61e11e511e0239010",
+    "src/components/explore/event-rows.tsx": "125d0e29e5a5ae99e05c60c351ec2e11fbd8395c4d4c0c78e882f52a659b4b6e",
+    "src/components/explore/map-account-button.tsx": "b3d6c6cf3c18b2c577bd4af062d195fbd8cd0e53fea0a84cea695d2debe593f9",
+    "src/components/shell/more-sheet.tsx": "5f6b05f2882bbb6488d62ed475d068ea01fe96681a5ddbda32a76406e92770e7",
+    "src/components/shell/race-table.tsx": "d502899e00d42dc1d329425d641ef0564be906b037184b8339e03df890a50324",
+    "src/components/shell/use-nav-counts.ts": "ebdeb86b2eb7f7d5d107fd62019a1e0a05b9180d5dafd0e1a921a64a11cfa323",
+    "src/components/race/planned-race-marker.tsx": "1faffae534e184ff0ed6552ec7a91f8dd498183cfb76fd80e9165b59ef5a2520",
+    "src/hooks/use-saved-races.ts": "60aad9e1199294cdd48d556b5eda85628639bb680a2718103d52c21112c6ff92",
+    "src/lib/discover-seen.ts": "39188ac860b642fb3fd7869a53b2c828d29aac8a082ec2711dd94b277d012087",
+    "src/lib/i18n/locale-preference.ts": "92c0cb393b511ed269f18e0ee8174fc6707078877c4d7f59ece806bbdbe11699",
+    "src/lib/__tests__/discover-seen.test.ts": "77abc5cd6f2f145f877a413d1303ce5fc86e6d89a7a75e8cc908dcb9864c0c18",
+    "src/lib/__tests__/preferred-locale.test.ts": "91daf1e7fc1c31777c9191bcccc383949681bef8c939fc0389a829c821d5879a",
+    "src/proxy.ts": "b7af2c53d85ef101c5848c32fd0a9dbe53ba3bd24e837a0be1fa24baf01f78eb"
+  }
+}

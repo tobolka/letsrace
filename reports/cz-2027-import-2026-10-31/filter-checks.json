@@ -1,0 +1,165 @@
+[
+  {
+    "name": "mtbo",
+    "url": "https://letsrace.cz/api/events?country=CZ&dateFrom=2027-01-01&dateTo=2027-12-31&disciplines=mtbo",
+    "status": 200,
+    "count": 7,
+    "mtbo": [
+      {
+        "id": "39a6fc31-96e9-431d-90c9-2811c7412fd5",
+        "disciplines": [
+          "mtb",
+          "mtbo"
+        ],
+        "formats": [
+          "mtbo"
+        ]
+      },
+      {
+        "id": "2cea23e1-d7ce-4606-84c3-7533bebd087c",
+        "disciplines": [
+          "mtb",
+          "mtbo"
+        ],
+        "formats": [
+          "mtbo"
+        ]
+      },
+      {
+        "id": "97aec3a7-aac3-4ef6-8798-21d90ca1ddd0",
+        "disciplines": [
+          "mtb",
+          "mtbo"
+        ],
+        "formats": [
+          "mtbo"
+        ]
+      },
+      {
+        "id": "36878ddd-54c4-482d-a99f-0bbfa0314d19",
+        "disciplines": [
+          "mtb",
+          "mtbo"
+        ],
+        "formats": [
+          "mtbo"
+        ]
+      },
+      {
+        "id": "547e9dd0-a712-42d4-a4df-46ba695739ac",
+        "disciplines": [
+          "mtb",
+          "mtbo"
+        ],
+        "formats": [
+          "mtbo"
+        ]
+      },
+      {
+        "id": "f705559e-8c58-4a50-b10b-340ba19e0c52",
+        "disciplines": [
+          "mtb",
+          "mtbo"
+        ],
+        "formats": [
+          "mtbo"
+        ]
+      },
+      {
+        "id": "6683713d-8659-4db5-84b4-d1136c19df78",
+        "disciplines": [
+          "mtb",
+          "mtbo"
+        ],
+        "formats": [
+          "mtbo"
+        ]
+      }
+    ]
+  },
+  {
+    "name": "xco",
+    "url": "https://letsrace.cz/api/events?country=CZ&dateFrom=2027-01-01&dateTo=2027-12-31&disciplines=xco",
+    "status": 200,
+    "count": 21,
+    "mtbo": []
+  },
+  {
+    "name": "shared",
+    "url": "https://letsrace.cz/api/events?catalogue=1",
+    "status": 200,
+    "count": 985,
+    "mtbo": [
+      {
+        "id": "39a6fc31-96e9-431d-90c9-2811c7412fd5",
+        "disciplines": [
+          "mtb",
+          "mtbo"
+        ],
+        "formats": [
+          "mtbo"
+        ]
+      },
+      {
+        "id": "2cea23e1-d7ce-4606-84c3-7533bebd087c",
+        "disciplines": [
+          "mtb",
+          "mtbo"
+        ],
+        "formats": [
+          "mtbo"
+        ]
+      },
+      {
+        "id": "97aec3a7-aac3-4ef6-8798-21d90ca1ddd0",
+        "disciplines": [
+          "mtb",
+          "mtbo"
+        ],
+        "formats": [
+          "mtbo"
+        ]
+      },
+      {
+        "id": "36878ddd-54c4-482d-a99f-0bbfa0314d19",
+        "disciplines": [
+          "mtb",
+          "mtbo"
+        ],
+        "formats": [
+          "mtbo"
+        ]
+      },
+      {
+        "id": "547e9dd0-a712-42d4-a4df-46ba695739ac",
+        "disciplines": [
+          "mtb",
+          "mtbo"
+        ],
+        "formats": [
+          "mtbo"
+        ]
+      },
+      {
+        "id": "f705559e-8c58-4a50-b10b-340ba19e0c52",
+        "disciplines": [
+          "mtb",
+          "mtbo"
+        ],
+        "formats": [
+          "mtbo"
+        ]
+      },
+      {
+        "id": "6683713d-8659-4db5-84b4-d1136c19df78",
+        "disciplines": [
+          "mtb",
+          "mtbo"
+        ],
+        "formats": [
+          "mtbo"
+        ]
+      }
+    ]
+  }
+]

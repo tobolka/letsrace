@@ -1,0 +1,87 @@
+{
+  "schedule": {
+    "id": "3dadbafa-c27c-4280-b0ee-f22f50088661",
+    "revision": "b6e2213f-2258-47c2-a396-e0a78568e2f9",
+    "previous": {
+      "quote": "Parkoviště: V prostoru konání akce – na parkovišti. Harmonogram akce: 08:00 – 09:55    Trénink na trati 08:30 – 09:30    Registrace dětských kategorií CTW Junior cupu 10:00                Start starších žáků a žákyň, kategorie M14 a Z14 (3 dlouhé okruhy) 10:40                Start mladších žáků a žákyň, kategorie M12 a Z12 (2 dlouhé okruhy) * Chlapci a dívky startují odděleně ve dvou vlnách, které startují přibližně 30 sekund po sobě. 11:00 – 12:15    Závody dětí a mládeže do 9 let – CTW Junior cup 11:00                Start dětí do 9 let, kategorie M09 a Z09 (2 střední okruhy) 11:20                Start dětí do 7 let, kategorie M07 a Z07 (1 střední okruh) 11:40                Start dětí do 5 let, kategorie M05 a Z05 (1 krátký okruh) 11:50                Start dětí do 3 let na odrážedlech, kategorie M03 a Z03 (nejkratší trať) * Chlapci a dívky startují odděleně ve dvou vlnách, které startují přibližně 30 sekund po sobě. 12:00                Vyhlášení dětských a žákovských kategorií 11:30 – 12:30    Registrace kategorií TBC Série 12:15 – 13:00    Trénink na trati 13:00               Závod kadetů, kadetek, juniorek, žen a mužů v kategoriích E a OPEN (30 minut) 13:45               Vyhlášení výsledků 13:00 – 13:30    Registrace kategorií TBC Série 13:30 – 13:50    Trénink na trati 14:00               Závod juniorů a mužů (50 minut) 15:10               Vyhlášení výsledků Kategorie:",
+      "value": [
+        {
+          "date": "2026-11-22",
+          "time": "10:00",
+          "label": "Start starších žáků a žákyň, kategorie M14 a Z14 (3 dlouhé okruhy)",
+          "checkedAt": "2026-11-06T08:59:03.826Z",
+          "sourceUrl": "https://tbcserie.cz/kalendar-2026/zavod-201/",
+          "approximate": true,
+          "sourceQuote": "Parkoviště: V prostoru konání akce – na parkovišti. Harmonogram akce: 08:00 – 09:55    Trénink na trati 08:30 – 09:30    Registrace dětských kategorií CTW Junior cupu 10:00                Start starších žáků a žákyň, kategorie M14 a Z14 (3 dlouhé okruhy) 10:40                Start mladších žáků a žákyň, kategorie M12 a Z12 (2 dlouhé okruhy) * Chlapci a dívky startují odděleně ve dvou vlnách, které startují přibližně 30 sekund po sobě. 11:00 – 12:15    Závody dětí a mládeže do 9 let – CTW Junior cup 11:00                Start dětí do 9 let, kategorie M09 a Z09 (2 střední okruhy) 11:20                Start dětí do 7 let, kategorie M07 a Z07 (1 střední okruh) 11:40                Start dětí do 5 let, kategorie M05 a Z05 (1 krátký okruh) 11:50                Start dětí do 3 let na odrážedlech, kategorie M03 a Z03 (nejkratší trať) * Chlapci a dívky startují odděleně ve dvou vlnách, které startují přibližně 30 sekund po sobě. 12:00                Vyhlášení dětských a žákovských kategorií 11:30 – 12:30    Registrace kategorií TBC Série 12:15 – 13:00    Trénink na trati 13:00               Závod kadetů, kadetek, juniorek, žen a mužů v kategoriích E a OPEN (30 minut) 13:45               Vyhlášení výsledků 13:00 – 13:30    Registrace kategorií TBC Série 13:30 – 13:50    Trénink na trati 14:00               Závod juniorů a mužů (50 minut) 15:10               Vyhlášení výsledků Kategorie:"
+        },
+        {
+          "date": "2026-11-22",
+          "time": "10:40",
+          "label": "Start mladších žáků a žákyň, kategorie M12 a Z12 (2 dlouhé okruhy)",
+          "checkedAt": "2026-11-06T08:59:03.827Z",
+          "sourceUrl": "https://tbcserie.cz/kalendar-2026/zavod-201/",
+          "approximate": true,
+          "sourceQuote": "Parkoviště: V prostoru konání akce – na parkovišti. Harmonogram akce: 08:00 – 09:55    Trénink na trati 08:30 – 09:30    Registrace dětských kategorií CTW Junior cupu 10:00                Start starších žáků a žákyň, kategorie M14 a Z14 (3 dlouhé okruhy) 10:40                Start mladších žáků a žákyň, kategorie M12 a Z12 (2 dlouhé okruhy) * Chlapci a dívky startují odděleně ve dvou vlnách, které startují přibližně 30 sekund po sobě. 11:00 – 12:15    Závody dětí a mládeže do 9 let – CTW Junior cup 11:00                Start dětí do 9 let, kategorie M09 a Z09 (2 střední okruhy) 11:20                Start dětí do 7 let, kategorie M07 a Z07 (1 střední okruh) 11:40                Start dětí do 5 let, kategorie M05 a Z05 (1 krátký okruh) 11:50                Start dětí do 3 let na odrážedlech, kategorie M03 a Z03 (nejkratší trať) * Chlapci a dívky startují odděleně ve dvou vlnách, které startují přibližně 30 sekund po sobě. 12:00                Vyhlášení dětských a žákovských kategorií 11:30 – 12:30    Registrace kategorií TBC Série 12:15 – 13:00    Trénink na trati 13:00               Závod kadetů, kadetek, juniorek, žen a mužů v kategoriích E a OPEN (30 minut) 13:45               Vyhlášení výsledků 13:00 – 13:30    Registrace kategorií TBC Série 13:30 – 13:50    Trénink na trati 14:00               Závod juniorů a mužů (50 minut) 15:10               Vyhlášení výsledků Kategorie:"
+        },
+        {
+          "date": "2026-11-22",
+          "time": "11:20",
+          "label": "Start dětí do 7 let, kategorie M07 a Z07 (1 střední okruh)",
+          "checkedAt": "2026-11-06T08:59:03.828Z",
+          "sourceUrl": "https://tbcserie.cz/kalendar-2026/zavod-201/",
+          "approximate": true,
+          "sourceQuote": "Parkoviště: V prostoru konání akce – na parkovišti. Harmonogram akce: 08:00 – 09:55    Trénink na trati 08:30 – 09:30    Registrace dětských kategorií CTW Junior cupu 10:00                Start starších žáků a žákyň, kategorie M14 a Z14 (3 dlouhé okruhy) 10:40                Start mladších žáků a žákyň, kategorie M12 a Z12 (2 dlouhé okruhy) * Chlapci a dívky startují odděleně ve dvou vlnách, které startují přibližně 30 sekund po sobě. 11:00 – 12:15    Závody dětí a mládeže do 9 let – CTW Junior cup 11:00                Start dětí do 9 let, kategorie M09 a Z09 (2 střední okruhy) 11:20                Start dětí do 7 let, kategorie M07 a Z07 (1 střední okruh) 11:40                Start dětí do 5 let, kategorie M05 a Z05 (1 krátký okruh) 11:50                Start dětí do 3 let na odrážedlech, kategorie M03 a Z03 (nejkratší trať) * Chlapci a dívky startují odděleně ve dvou vlnách, které startují přibližně 30 sekund po sobě. 12:00                Vyhlášení dětských a žákovských kategorií 11:30 – 12:30    Registrace kategorií TBC Série 12:15 – 13:00    Trénink na trati 13:00               Závod kadetů, kadetek, juniorek, žen a mužů v kategoriích E a OPEN (30 minut) 13:45               Vyhlášení výsledků 13:00 – 13:30    Registrace kategorií TBC Série 13:30 – 13:50    Trénink na trati 14:00               Závod juniorů a mužů (50 minut) 15:10               Vyhlášení výsledků Kategorie:"
+        },
+        {
+          "date": "2026-11-22",
+          "time": "11:40",
+          "label": "Start dětí do 5 let, kategorie M05 a Z05 (1 krátký okruh)",
+          "checkedAt": "2026-11-06T08:59:03.829Z",
+          "sourceUrl": "https://tbcserie.cz/kalendar-2026/zavod-201/",
+          "approximate": true,
+          "sourceQuote": "Parkoviště: V prostoru konání akce – na parkovišti. Harmonogram akce: 08:00 – 09:55    Trénink na trati 08:30 – 09:30    Registrace dětských kategorií CTW Junior cupu 10:00                Start starších žáků a žákyň, kategorie M14 a Z14 (3 dlouhé okruhy) 10:40                Start mladších žáků a žákyň, kategorie M12 a Z12 (2 dlouhé okruhy) * Chlapci a dívky startují odděleně ve dvou vlnách, které startují přibližně 30 sekund po sobě. 11:00 – 12:15    Závody dětí a mládeže do 9 let – CTW Junior cup 11:00                Start dětí do 9 let, kategorie M09 a Z09 (2 střední okruhy) 11:20                Start dětí do 7 let, kategorie M07 a Z07 (1 střední okruh) 11:40                Start dětí do 5 let, kategorie M05 a Z05 (1 krátký okruh) 11:50                Start dětí do 3 let na odrážedlech, kategorie M03 a Z03 (nejkratší trať) * Chlapci a dívky startují odděleně ve dvou vlnách, které startují přibližně 30 sekund po sobě. 12:00                Vyhlášení dětských a žákovských kategorií 11:30 – 12:30    Registrace kategorií TBC Série 12:15 – 13:00    Trénink na trati 13:00               Závod kadetů, kadetek, juniorek, žen a mužů v kategoriích E a OPEN (30 minut) 13:45               Vyhlášení výsledků 13:00 – 13:30    Registrace kategorií TBC Série 13:30 – 13:50    Trénink na trati 14:00               Závod juniorů a mužů (50 minut) 15:10               Vyhlášení výsledků Kategorie:"
+        },
+        {
+          "date": "2026-11-22",
+          "time": "11:50",
+          "label": "Start dětí do 3 let na odrážedlech, kategorie M03 a Z03 (nejkratší trať)",
+          "checkedAt": "2026-11-06T08:59:03.829Z",
+          "sourceUrl": "https://tbcserie.cz/kalendar-2026/zavod-201/",
+          "approximate": true,
+          "sourceQuote": "Parkoviště: V prostoru konání akce – na parkovišti. Harmonogram akce: 08:00 – 09:55    Trénink na trati 08:30 – 09:30    Registrace dětských kategorií CTW Junior cupu 10:00                Start starších žáků a žákyň, kategorie M14 a Z14 (3 dlouhé okruhy) 10:40                Start mladších žáků a žákyň, kategorie M12 a Z12 (2 dlouhé okruhy) * Chlapci a dívky startují odděleně ve dvou vlnách, které startují přibližně 30 sekund po sobě. 11:00 – 12:15    Závody dětí a mládeže do 9 let – CTW Junior cup 11:00                Start dětí do 9 let, kategorie M09 a Z09 (2 střední okruhy) 11:20                Start dětí do 7 let, kategorie M07 a Z07 (1 střední okruh) 11:40                Start dětí do 5 let, kategorie M05 a Z05 (1 krátký okruh) 11:50                Start dětí do 3 let na odrážedlech, kategorie M03 a Z03 (nejkratší trať) * Chlapci a dívky startují odděleně ve dvou vlnách, které startují přibližně 30 sekund po sobě. 12:00                Vyhlášení dětských a žákovských kategorií 11:30 – 12:30    Registrace kategorií TBC Série 12:15 – 13:00    Trénink na trati 13:00               Závod kadetů, kadetek, juniorek, žen a mužů v kategoriích E a OPEN (30 minut) 13:45               Vyhlášení výsledků 13:00 – 13:30    Registrace kategorií TBC Série 13:30 – 13:50    Trénink na trati 14:00               Závod juniorů a mužů (50 minut) 15:10               Vyhlášení výsledků Kategorie:"
+        },
+        {
+          "date": "2026-11-22",
+          "time": "14:00",
+          "label": "Závod juniorů a mužů (50 minut)",
+          "checkedAt": "2026-11-06T08:59:03.831Z",
+          "sourceUrl": "https://tbcserie.cz/kalendar-2026/zavod-201/",
+          "approximate": true,
+          "sourceQuote": "Parkoviště: V prostoru konání akce – na parkovišti. Harmonogram akce: 08:00 – 09:55    Trénink na trati 08:30 – 09:30    Registrace dětských kategorií CTW Junior cupu 10:00                Start starších žáků a žákyň, kategorie M14 a Z14 (3 dlouhé okruhy) 10:40                Start mladších žáků a žákyň, kategorie M12 a Z12 (2 dlouhé okruhy) * Chlapci a dívky startují odděleně ve dvou vlnách, které startují přibližně 30 sekund po sobě. 11:00 – 12:15    Závody dětí a mládeže do 9 let – CTW Junior cup 11:00                Start dětí do 9 let, kategorie M09 a Z09 (2 střední okruhy) 11:20                Start dětí do 7 let, kategorie M07 a Z07 (1 střední okruh) 11:40                Start dětí do 5 let, kategorie M05 a Z05 (1 krátký okruh) 11:50                Start dětí do 3 let na odrážedlech, kategorie M03 a Z03 (nejkratší trať) * Chlapci a dívky startují odděleně ve dvou vlnách, které startují přibližně 30 sekund po sobě. 12:00                Vyhlášení dětských a žákovských kategorií 11:30 – 12:30    Registrace kategorií TBC Série 12:15 – 13:00    Trénink na trati 13:00               Závod kadetů, kadetek, juniorek, žen a mužů v kategoriích E a OPEN (30 minut) 13:45               Vyhlášení výsledků 13:00 – 13:30    Registrace kategorií TBC Série 13:30 – 13:50    Trénink na trati 14:00               Závod juniorů a mužů (50 minut) 15:10               Vyhlášení výsledků Kategorie:"
+        }
+      ],
+      "status": "current",
+      "checkedAt": "2026-11-06T08:59:03.831Z",
+      "sourceUrl": "https://tbcserie.cz/kalendar-2026/zavod-201/",
+      "editionYear": 2026
+    }
+  },
+  "rides": [
+    {
+      "id": "29396a2f-e529-4a01-be9e-89f3be2165ed",
+      "slug": "pedala-con-il-puma-di-taino-2026",
+      "source": "https://members.federciclismo.it/race/detail/183195",
+      "quote": "Classe: NON COMPETITIVA",
+      "revision": "ca5c889b-72fc-41a8-94d6-0a0bb5f55b9e",
+      "eventType": "race"
+    },
+    {
+      "id": "8ba0c47a-5d1f-4a42-9ff2-0e1ec362a43f",
+      "slug": "lastragravel-5-edizione-2026",
+      "source": "https://www.lastragravel.it/regolamento/",
+      "quote": "manifestazione non competitiva senza classifiche",
+      "revision": "b8cd553a-fae1-4ab3-b6eb-f8555f7dfe20",
+      "eventType": "race"
+    }
+  ]
+}

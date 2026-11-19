@@ -1,0 +1,1074 @@
+import { cache } from "react";
+import { unstable_cache } from "next/cache";
+import { PUBLIC_CATALOGUE_TAG } from "@/lib/catalogue-cache";
+import { refreshPublicCatalogue } from "@/lib/refresh-public-catalogue";
+import { createServerSupabase } from "@/lib/supabase/server";
+import { readAllRows } from "@/lib/supabase/read-all";
+import {
+  fingerprint,
+  normalizeName,
+  type Audience,
+  type Discipline,
+} from "@/lib/domain";
+import { publicRaceUrl, resolveEventOutboundUrls } from "@/lib/watcher/public-url";
+import {
+  ageCategoryMatch,
+  ageMatchRank,
+  canonicalEventDisciplines,
+  expandAgeCategoryFilter,
+  expandDisciplineFilter,
+  matchesAgeCategoryFilter,
+  matchesDisciplineFilter,
+} from "@/lib/taxonomy";
+import { eventIdsForSeries } from "@/lib/catalog/event-series";
+import { formatPlaceName, joinPlace, splitPlace } from "@/lib/places";
+import { repairText } from "@/lib/text";
+import { freeEventSlug, parseRaceSlug, rankRacesForSlug } from "@/lib/event-slug";
+import { PUBLIC_COUNTRY_CODES, isListedCountry } from "@/lib/geo/europe";
+import { PUBLIC_EVENT_STATUSES, PUBLIC_VISIBILITY, isPublicMapWorthy, shouldHideFromMap } from "@/lib/event-visibility";
+import type { Insert, Json, Update } from "@/lib/supabase/tables";
+
+export type EventListItem = {
+  id: string;
+  slug: string;
+  name: string;
+  startDate: string;
+  endDate: string | null;
+  disciplines: string[];
+  formats: string[];
+  audience: string;
+  ageCategories: string[];
+  /** 'explicit' when a source stated the categories, 'default' when guessed. */
+  ageConfidence: "explicit" | "previous" | "default" | null;
+  /** Set when a category filter is on: 'possible' marks an unconfirmed fit. */
+  ageMatch?: "match" | "possible";
+  /** Set with it: 0 confirmed … 3 guessed otherwise — lists sort by it first. */
+  ageRank?: number;
+  status: string;
+  visibility: string;
+  eventType: string;
+  competitionType: string;
+  season: string | null;
+  websiteUrl: string | null;
+  registrationUrl: string | null;
+  regulationsUrl: string | null;
+  resultsUrl: string | null;
+  /** When online entry closes, if the organiser says. */
+  registrationClosesAt?: string | null;
+  listingUrl: string | null;
+  sourceKind: string;
+  level: string;
+  classLabel: string | null;
+  uciClass: string | null;
+  lastSeenAt: string | null;
+  location: {
+    id: string;
+    name: string;
+    municipality: string | null;
+    countryCode: string;
+    lat: number | null;
+    lng: number | null;
+  } | null;
+  series: { id: string; name: string; slug: string } | null;
+  categories?: {
+    id: string;
+    name: string;
+    ageMin: number | null;
+    ageMax: number | null;
+    distanceKm: number | null;
+    audience?: string | null;
+  }[];
+};
+
+export type EventFilters = {
+  q?: string;
+  audience?: string[];
+  disciplines?: string[];
+  levels?: string[];
+  ageCategories?: string[];
+  /** Only races whose stated categories fit — hide the unconfirmed ones. */
+  seriesSlug?: string;
+  countryCodes?: string[];
+  season?: string;
+  eventTypes?: string[];
+  dateFrom?: string;
+  dateTo?: string;
+  /** Look back on purpose: no "today" floor when the date filter is empty. */
+  anyDate?: boolean;
+  west?: number;
+  south?: number;
+  east?: number;
+  north?: number;
+  /** GeoJSON Polygon coordinates [lng,lat][] ring */
+  polygon?: [number, number][];
+};
+
+const EVENT_LIST_COLUMNS = `id, slug, name, start_date, end_date, disciplines, formats, audience, age_categories, age_confidence, status, visibility, event_type, competition_type, season, website_url, registration_url, regulations_url, results_url, registration_closes_at, source_kind, level, class_label, uci_class, last_seen_at, updated_at`;
+
+/** `YYYY-MM-DD`, and a real day — the only date shape this catalogue stores. */
+export function isIsoDay(value: string | null | undefined): value is string {
+  if (!value || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
+  const t = Date.parse(`${value}T00:00:00Z`);
+  return Number.isFinite(t) && new Date(t).toISOString().slice(0, 10) === value;
+}
+
+export async function listEvents(filters: EventFilters = {}): Promise<EventListItem[]> {
+  const supabase = createServerSupabase();
+
+  const hasBbox =
+    filters.west != null &&
+    filters.south != null &&
+    filters.east != null &&
+    filters.north != null;
+  const bySeries = Boolean(filters.seriesSlug);
+  const locationSelect = bySeries
+    ? "location:locations(id, name, municipality, country_code, lat, lng)"
+    : "location:locations!inner(id, name, municipality, country_code, lat, lng)";
+
+  // No `event_sources` embed here: every list call used to pull ~1.4 source
+  // URLs per race across the whole catalogue, and that nested JSON was a large
+  // share of Supabase egress + API log ingestion on Free. Detail pages still
+  // load sources; the list uses website/registration columns for outbound links.
+  let query = supabase
+    .from("events")
+    .select(
+      `${EVENT_LIST_COLUMNS},
+       ${locationSelect},
+       series:series!events_series_id_fkey(id, name, slug, visibility, website_url, age_categories)`,
+    )
+    .order("start_date", { ascending: true })
+    .order("id", { ascending: true });
+
+  if (!bySeries) {
+    query = query.in("location.country_code", [...PUBLIC_COUNTRY_CODES]);
+  }
+
+  // Apply map viewport in SQL *before* the limit so off-map races can't starve the list
+  if (hasBbox) {
+    query = query
+      .gte("location.lat", filters.south!)
+      .lte("location.lat", filters.north!)
+      .gte("location.lng", filters.west!)
+      .lte("location.lng", filters.east!)
+      .not("location.lat", "is", null)
+      .not("location.lng", "is", null);
+  }
+
+  // A date PostgREST cannot parse is an error from the database, which reaches
+  // the caller as a 500 — `?dateFrom=notadate` took the whole list down. A
+  // filter nobody can read is no filter.
+  const dateFrom = isIsoDay(filters.dateFrom) ? filters.dateFrom : undefined;
+  const dateTo = isIsoDay(filters.dateTo) ? filters.dateTo : undefined;
+  // Clearing the date filter meant no floor at all, and the rows come back
+  // oldest first: a Europe-wide view answered with 999 races, every one of
+  // them already run, and not a single upcoming one. A race finder's floor is
+  // today unless a caller asks to look back on purpose.
+  // A series is read as a season, not a window: someone opening Prima Cup in
+  // September wants the rounds already run beside the ones to come, so the
+  // floor drops to the start of the year instead of today.
+  const today = new Date().toISOString().slice(0, 10);
+  const floor = filters.anyDate
+    ? "1900-01-01"
+    : filters.seriesSlug
+      ? `${today.slice(0, 4)}-01-01`
+      : today;
+  query = query.gte("start_date", dateFrom ?? floor);
+  if (dateTo) query = query.lte("start_date", dateTo);
+  if (filters.audience?.length === 1) {
+    query = query.eq("audience", filters.audience[0]);
+  } else if (filters.audience && filters.audience.length > 1) {
+    query = query.in("audience", filters.audience);
+  }
+  if (filters.disciplines?.length) {
+    query = query.overlaps("disciplines", expandDisciplineFilter(filters.disciplines));
+  }
+  if (filters.levels?.length) {
+    query = query.in("level", filters.levels);
+  }
+  if (filters.ageCategories?.length) {
+    const expanded = expandAgeCategoryFilter(filters.ageCategories);
+    // A coarse cut only: a race with no categories of its own may borrow its
+    // series' set, and one we know nothing about is not ours to hide — both
+    // are decided per row below, once the series is joined.
+    if (!filters.q) {
+      query = query.or(
+        [
+          `age_categories.ov.{${expanded.join(",")}}`,
+          "age_categories.is.null",
+          "age_categories.eq.{}",
+          // Only a stated list may rule a race out here; guesses go through.
+          "age_confidence.is.null",
+          "age_confidence.eq.default",
+          "age_confidence.eq.previous",
+        ].join(","),
+      );
+    }
+  }
+  if (filters.seriesSlug) {
+    const { data: series } = await supabase
+      .from("series")
+      .select("id, visibility")
+      .eq("slug", filters.seriesSlug)
+      .maybeSingle();
+    if (series?.id && series.visibility !== "hidden") {
+      const memberIds = await eventIdsForSeries(supabase, series.id as string);
+      if (!memberIds.length) return [];
+      // Cap OR-list size; a series calendar is never thousands of rows.
+      query = query.in("id", memberIds.slice(0, 500));
+    } else {
+      return [];
+    }
+  }
+  if (filters.countryCodes?.length) {
+    const allowed = filters.countryCodes.filter((c) => isListedCountry(c));
+    if (!allowed.length) return [];
+    query = query.in("location.country_code", allowed);
+  }
+  if (filters.season) {
+    query = query.eq("season", filters.season);
+  }
+  if (filters.eventTypes?.length) {
+    query = query.in("event_type", filters.eventTypes);
+  } else {
+    // A recreational ride, a výšlap or an RTF is not a race: the catalogue
+    // keeps them, the race views do not show them.
+    query = query.neq("event_type", "ride");
+  }
+  if (filters.q?.trim()) {
+    // "prazky pohar" is Pražský MTB pohár: the database folds diacritics,
+    // matches every word against the race and its series names in any order,
+    // and only when nothing matches does it forgive a typo per word
+    // (supabase/migrations/*_search_levenshtein_fallback.sql).
+    const { data: hits, error } = await supabase.rpc("search_event_ids", {
+      q: filters.q,
+      date_from: dateFrom ?? floor,
+      ...(dateTo ? { date_to: dateTo } : {}),
+      max_results: 500,
+    });
+    if (error) throw new Error(error.message);
+    const ids = ((hits ?? []) as { event_id: string }[]).map((h) => h.event_id);
+    if (!ids.length) return [];
+    query = query.in("id", ids);
+  }
+
+  // Public explore: races only (hide camps, cancelled, manually hidden)
+  query = query.in("status", [...PUBLIC_EVENT_STATUSES]).eq("visibility", PUBLIC_VISIBILITY);
+
+  // PostgREST returns at most 1,000 rows per request. The old 800/1,000-row
+  // cap silently hid later races on broad maps and searches, even though the
+  // database held them. Stable ordering keeps pages from overlapping.
+  const data: Record<string, unknown>[] = [];
+  for (let from = 0; ; from += 1000) {
+    const page = await query.range(from, from + 999);
+    if (page.error) throw new Error(page.error.message);
+    data.push(...((page.data ?? []) as Record<string, unknown>[]));
+    if (!page.data || page.data.length < 1000) break;
+  }
+
+  let rows = data
+    .map(mapEventRow)
+    .filter((e) => {
+      if (shouldHideFromMap(e.name, e.status, e.visibility)) return false;
+      if (!bySeries && !isPublicMapWorthy(e)) return false;
+      if (!e.location?.countryCode) return bySeries;
+      return isListedCountry(e.location.countryCode);
+    });
+
+  if (filters.ageCategories?.length) {
+    rows = rows.flatMap((e) => {
+      const m = ageCategoryMatch(e, filters.ageCategories!);
+      if (m === "no") return [];
+      return [{ ...e, ageMatch: m, ageRank: ageMatchRank(e, filters.ageCategories!) }];
+    });
+  }
+
+  if (filters.disciplines?.length) {
+    rows = rows.filter((e) => matchesDisciplineFilter(e.disciplines, filters.disciplines!));
+  }
+
+  if (
+    filters.west != null &&
+    filters.south != null &&
+    filters.east != null &&
+    filters.north != null
+  ) {
+    // Keep as safety net if nested PostgREST geo filters are ignored
+    rows = rows.filter((e) => {
+      const lat = e.location?.lat;
+      const lng = e.location?.lng;
+      if (lat == null || lng == null) return false;
+      return (
+        lng >= filters.west! &&
+        lng <= filters.east! &&
+        lat >= filters.south! &&
+        lat <= filters.north!
+      );
+    });
+  }
+
+  if (filters.polygon && filters.polygon.length >= 3) {
+    const { booleanPointInPolygon } = await import("@turf/boolean-point-in-polygon");
+    const { polygon, point } = await import("@turf/helpers");
+    const ring = [...filters.polygon];
+    if (ring[0][0] !== ring[ring.length - 1][0] || ring[0][1] !== ring[ring.length - 1][1]) {
+      ring.push(ring[0]);
+    }
+    const poly = polygon([ring]);
+    rows = rows.filter((e) => {
+      if (e.location?.lat == null || e.location?.lng == null) return false;
+      return booleanPointInPolygon(point([e.location.lng, e.location.lat]), poly);
+    });
+  }
+
+  return rows;
+}
+
+export type SeriesListItem = {
+  id: string;
+  name: string;
+  slug: string;
+  shortName: string | null;
+  description: string | null;
+  websiteUrl: string | null;
+  countryCode: string | null;
+  disciplines: string[];
+  ageCategories: string[];
+  seriesType: string;
+  level: string;
+  competitionType: string;
+  season: string | null;
+  eventCount: number;
+};
+
+function mapSeriesRow(row: Record<string, unknown>, eventCount = 0): SeriesListItem {
+  return {
+    id: String(row.id),
+    name: String(row.name),
+    slug: String(row.slug),
+    shortName: (row.short_name as string) ?? null,
+    description: (row.description as string) ?? null,
+    websiteUrl: publicRaceUrl(row.website_url as string | null),
+    countryCode: (row.country_code as string) ?? null,
+    disciplines: (row.disciplines as string[]) ?? [],
+    ageCategories: (row.age_categories as string[]) ?? [],
+    seriesType: String(row.series_type ?? "other"),
+    level: String(row.level ?? "local"),
+    competitionType: String(row.competition_type ?? "other"),
+    season: row.season ? String(row.season) : null,
+    eventCount,
+  };
+}
+
+const SERIES_PUBLIC_COLUMNS =
+  "id, name, slug, short_name, description, website_url, country_code, disciplines, age_categories, series_type, level, competition_type, season";
+
+export async function listSeries(filters: EventFilters = {}): Promise<SeriesListItem[]> {
+  const supabase = createServerSupabase();
+
+  const { data: series, error } = await supabase
+    .from("series")
+    .select(SERIES_PUBLIC_COLUMNS)
+    .eq("visibility", "public")
+    .order("name");
+  if (error) throw new Error(error.message);
+
+  // `.limit(20_000)` does not lift PostgREST's thousand-row ceiling. This tally
+  // is each series' race count, and a series whose races all fall past the cut
+  // vanishes from /series altogether — it stands at 1,034 rows today.
+  const countsPage = (from: number, to: number) => {
+    let query = supabase
+      .from("events")
+      .select("id, series_id, audience, age_categories, disciplines")
+      .not("series_id", "is", null)
+      .eq("visibility", PUBLIC_VISIBILITY)
+      .in("status", [...PUBLIC_EVENT_STATUSES]);
+
+    if (isIsoDay(filters.dateFrom)) query = query.gte("start_date", filters.dateFrom);
+    if (isIsoDay(filters.dateTo)) query = query.lte("start_date", filters.dateTo);
+    if (filters.disciplines?.length) {
+      query = query.overlaps("disciplines", expandDisciplineFilter(filters.disciplines));
+    }
+    if (filters.levels?.length) {
+      query = query.in("level", filters.levels);
+    }
+    if (filters.ageCategories?.length) {
+      const expanded = expandAgeCategoryFilter(filters.ageCategories);
+      const parts = [`age_categories.ov.{${expanded.join(",")}}`];
+      if (filters.ageCategories.includes("kids")) parts.push("audience.eq.kids");
+      if (filters.ageCategories.includes("youth")) parts.push("audience.eq.youth");
+      query =
+        parts.length > 1 ? query.or(parts.join(",")) : query.overlaps("age_categories", expanded);
+    }
+    return query.order("id", { ascending: true }).range(from, to);
+  };
+
+  const counts = await readAllRows<{
+    series_id: string | null;
+    audience: string | null;
+    age_categories: string[] | null;
+    disciplines: string[] | null;
+  }>(countsPage);
+  const tally = new Map<string, number>();
+  for (const row of counts) {
+    if (
+      filters.disciplines?.length &&
+      !matchesDisciplineFilter((row.disciplines as string[]) ?? [], filters.disciplines)
+    ) {
+      continue;
+    }
+    if (
+      filters.ageCategories?.length &&
+      !matchesAgeCategoryFilter(
+        {
+          audience: row.audience as string,
+          ageCategories: (row.age_categories as string[]) ?? [],
+        },
+        filters.ageCategories,
+      )
+    ) {
+      continue;
+    }
+    const id = row.series_id as string;
+    tally.set(id, (tally.get(id) ?? 0) + 1);
+  }
+  // One-off "series" with a single race clutter the cup filter — keep real
+  // multi-round cups (≥2). Deep links to a one-race series still work via
+  // getSeriesBySlug / ?series=… on the events API.
+  return (series ?? [])
+    .map((s) => mapSeriesRow(s as Record<string, unknown>, tally.get(s.id as string) ?? 0))
+    .filter((s) => s.eventCount >= 2)
+    .filter((s) => !s.countryCode || isListedCountry(s.countryCode))
+    .sort((a, b) => b.eventCount - a.eventCount || a.name.localeCompare(b.name, "cs"));
+}
+
+/**
+ * Whether a public series has this slug — one row, no rounds. The series page
+ * asks this before it streams anything, so a dead address can still answer 404.
+ */
+export const getPublicSeriesRow = cache(unstable_cache(async function getPublicSeriesRow(slug: string) {
+  const supabase = createServerSupabase();
+  const { data: row, error } = await supabase
+    .from("series")
+    .select(SERIES_PUBLIC_COLUMNS)
+    .eq("slug", slug)
+    .eq("visibility", "public")
+    .maybeSingle();
+  if (error) throw new Error(error.message);
+  return row;
+}, ["public-series-row-v1"], { revalidate: 3600, tags: [PUBLIC_CATALOGUE_TAG] }));
+
+export const getSeriesBySlug = cache(unstable_cache(async function getSeriesBySlug(
+  slug: string,
+): Promise<{ series: SeriesListItem; events: EventListItem[] } | null> {
+  const supabase = createServerSupabase();
+  const row = await getPublicSeriesRow(slug);
+  if (!row) return null;
+
+  const { data: eventRows, error: eventError } = await supabase
+    .from("events")
+    .select(
+      `${EVENT_LIST_COLUMNS},
+       location:locations!inner(id, name, municipality, country_code, lat, lng),
+       series:series!events_series_id_fkey(id, name, slug, visibility, website_url, age_categories)`,
+    )
+    .eq("series_id", row.id)
+    .eq("visibility", "public")
+    .in("location.country_code", [...PUBLIC_COUNTRY_CODES])
+    .order("start_date", { ascending: true })
+    .limit(200);
+  if (eventError) throw new Error(eventError.message);
+
+  const events = (eventRows ?? []).map((e) => mapEventRow(e as Record<string, unknown>));
+  return {
+    series: mapSeriesRow(row as Record<string, unknown>, events.length),
+    events,
+  };
+}, ["public-series-rounds-v1"], { revalidate: 3600, tags: [PUBLIC_CATALOGUE_TAG] }));
+
+export async function getEventById(id: string) {
+  const supabase = createServerSupabase();
+  const { data, error } = await supabase
+    .from("events")
+    .select(
+      `*, location:locations(*), series:series!events_series_id_fkey(*), categories:event_categories(*),
+       overrides:event_overrides(*), sources:event_sources(*)`,
+    )
+    .eq("id", id)
+    .maybeSingle();
+  if (error) throw new Error(error.message);
+  return data;
+}
+
+export async function getEventBySlug(slug: string) {
+  const supabase = createServerSupabase();
+  const { data, error } = await supabase
+    .from("events")
+    .select(
+      `*, location:locations(*), series:series!events_series_id_fkey(*), categories:event_categories(*),
+       overrides:event_overrides(*), sources:event_sources(*)`,
+    )
+    .eq("slug", slug)
+    .maybeSingle();
+  if (error) throw new Error(error.message);
+  return data;
+}
+
+/** Public race by slug for SEO pages and deep links. */
+export const getPublicEventBySlug = cache(unstable_cache(async function getPublicEventBySlug(
+  slug: string,
+): Promise<EventListItem | null> {
+  const supabase = createServerSupabase();
+  const { data, error } = await supabase
+    .from("events")
+    .select(
+      `${EVENT_LIST_COLUMNS},
+       location:locations(id, name, municipality, country_code, lat, lng),
+       series:series!events_series_id_fkey(id, name, slug, visibility, website_url, age_categories),
+       sources:event_sources(source_url)`,
+    )
+    .eq("slug", slug)
+    .eq("visibility", PUBLIC_VISIBILITY)
+    .in("status", [...PUBLIC_EVENT_STATUSES])
+    .maybeSingle();
+  if (error) throw new Error(error.message);
+  if (!data) {
+    const { data: alias, error: aliasError } = await supabase
+      .from("events")
+      .select("merged_into_id")
+      .eq("slug", slug)
+      .not("merged_into_id", "is", null)
+      .maybeSingle();
+    if (aliasError) throw new Error(aliasError.message);
+    if (!alias?.merged_into_id) return null;
+    const { data: canonical, error: canonicalError } = await supabase
+      .from("events")
+      .select("slug,merged_into_id")
+      .eq("id", alias.merged_into_id)
+      .maybeSingle();
+    if (canonicalError) throw new Error(canonicalError.message);
+    // Merges flatten aliases. Never follow a corrupt cycle or an unpublished target.
+    if (!canonical?.slug || canonical.slug === slug || canonical.merged_into_id) return null;
+    return getPublicEventBySlug(canonical.slug);
+  }
+  const event = mapEventRow(data as Record<string, unknown>);
+  if (shouldHideFromMap(event.name, event.status, event.visibility)) return null;
+  const cc = event.location?.countryCode;
+  if (cc && !isListedCountry(cc)) return null;
+  return event;
+}, ["public-event-by-slug-v1"], { revalidate: 3600, tags: [PUBLIC_CATALOGUE_TAG] }));
+
+/**
+ * Races an address no race has may mean: the one to send it to, when the
+ * address clearly names it (a slug from before slugs were whole names, like
+ * `ct-author-2026-10-10`), and otherwise the nearest few to offer instead of a
+ * dead end.
+ */
+export async function findRacesForMissingSlug(
+  slug: string,
+): Promise<{ match: EventListItem | null; near: EventListItem[] }> {
+  const { words, date, year } = parseRaceSlug(slug);
+  const searchable = words.filter((w) => w.length >= 3 && /^[a-z0-9]+$/.test(w)).slice(0, 6);
+  if (!searchable.length) return { match: null, near: [] };
+  const supabase = createServerSupabase();
+  // Slugs and days only: a common word ("cup") matches hundreds of races, and
+  // all of them are scored before any is loaded whole.
+  let query = supabase
+    .from("events")
+    .select("id, slug, start_date")
+    .eq("visibility", PUBLIC_VISIBILITY)
+    .in("status", [...PUBLIC_EVENT_STATUSES])
+    .is("merged_into_id", null)
+    .or(searchable.map((w) => `slug.ilike.%${w}%`).join(","));
+  if (date) query = query.eq("start_date", date);
+  else if (year) query = query.gte("start_date", `${year}-01-01`).lte("start_date", `${year}-12-31`);
+  else query = query.gte("start_date", new Date(Date.now() - 365 * 864e5).toISOString().slice(0, 10));
+  const { data, error } = await query.limit(2000);
+  if (error) throw new Error(error.message);
+  const ranked = rankRacesForSlug(
+    slug,
+    (data ?? []).map((r) => ({ id: String(r.id), slug: String(r.slug), startDate: String(r.start_date) })),
+  );
+  const ids = [ranked.match, ...ranked.near].filter((r) => r != null).map((r) => r.id);
+  if (!ids.length) return { match: null, near: [] };
+  const { data: rows, error: rowsError } = await supabase
+    .from("events")
+    .select(`${EVENT_LIST_COLUMNS}, location:locations(id, name, municipality, country_code, lat, lng)`)
+    .in("id", ids);
+  if (rowsError) throw new Error(rowsError.message);
+  const byId = new Map(
+    (rows ?? [])
+      .map((row) => mapEventRow(row as Record<string, unknown>))
+      .filter((e) => !shouldHideFromMap(e.name, e.status, e.visibility))
+      .filter((e) => !e.location?.countryCode || isListedCountry(e.location.countryCode))
+      .map((e) => [e.id, e] as const),
+  );
+  return {
+    match: (ranked.match && byId.get(ranked.match.id)) ?? null,
+    near: ranked.near.map((r) => byId.get(r.id)).filter((e) => e != null),
+  };
+}
+
+/** Upcoming public races for sitemap (capped). */
+/**
+ * Series with a race still to come — the hubs worth indexing.
+ *
+ * These pages have existed all along and were absent from the sitemap, so 122
+ * ready-made landing pages had no way in. A series whose season is over is left
+ * out: an empty page earns nothing and dilutes the rest.
+ */
+export async function listSitemapSeries(
+  limit = 500,
+): Promise<{ slug: string; updatedAt: string | null }[]> {
+  const supabase = createServerSupabase();
+  const today = new Date().toISOString().slice(0, 10);
+  // One row per (series, race) pair, so `limit` counts pairs, not series.
+  const data = await readAllRows<{
+    id: string;
+    slug: string;
+    updated_at: string | null;
+    events: { name: string; status: string; visibility: string }[];
+  }>(
+    (from, to) =>
+      supabase
+        .from("series")
+        // Two foreign keys join events and series: name the one a race belongs by,
+        // or the join is ambiguous and the database answers with an error.
+        .select("id, slug, updated_at, events!events_series_id_fkey!inner(id, name, status, visibility, start_date, location:locations!inner(country_code))")
+        .eq("visibility", "public")
+        .eq("events.visibility", "public")
+        .in("events.status", [...PUBLIC_EVENT_STATUSES])
+        .in("events.location.country_code", [...PUBLIC_COUNTRY_CODES])
+        .gte("events.start_date", today)
+        .order("id", { ascending: true })
+        .range(from, to),
+    { max: limit },
+  );
+  const seen = new Set<string>();
+  const out: { slug: string; updatedAt: string | null }[] = [];
+  for (const row of data) {
+    if (!row.events?.some((event) => !shouldHideFromMap(event.name, event.status, event.visibility))) continue;
+    const slug = row.slug as string;
+    if (!slug || seen.has(slug)) continue;
+    seen.add(slug);
+    out.push({ slug, updatedAt: (row.updated_at as string) ?? null });
+  }
+  return out;
+}
+
+export async function listSitemapEvents(limit = 4000): Promise<
+  { slug: string; startDate: string; updatedAt: string | null }[]
+> {
+  const supabase = createServerSupabase();
+  // A race just ridden is still searched for, for its results and next year's
+  // date: its page stays offered for a month after.
+  const today = new Date(Date.now() - 30 * 86_400_000).toISOString().slice(0, 10);
+  // 1,896 races are upcoming and public; `.limit(4000)` shipped a thousand of
+  // them, so nine hundred race pages were never offered to Google at all.
+  const data = await readAllRows<{
+    id: string;
+    slug: string;
+    start_date: string;
+    updated_at: string | null;
+    website_url: string | null;
+    registration_url: string | null;
+    location: { country_code?: string } | { country_code?: string }[] | null;
+  }>(
+    (from, to) =>
+      supabase
+        .from("events")
+        .select(
+          "id, slug, start_date, updated_at, website_url, registration_url, location:locations(country_code)",
+        )
+        .eq("visibility", PUBLIC_VISIBILITY)
+        .in("status", [...PUBLIC_EVENT_STATUSES])
+        .gte("start_date", today)
+        .order("start_date", { ascending: true })
+        .order("id", { ascending: true })
+        .range(from, to),
+    { max: limit },
+  );
+  return data
+    .filter((row) => {
+      const loc = row.location as { country_code?: string } | { country_code?: string }[] | null;
+      const countryCode = Array.isArray(loc) ? loc[0]?.country_code : loc?.country_code;
+      if (countryCode && !isListedCountry(countryCode)) return false;
+      return isPublicMapWorthy({
+        websiteUrl: row.website_url as string | null,
+        registrationUrl: row.registration_url as string | null,
+        location: countryCode ? { countryCode } : null,
+      });
+    })
+    .map((row) => ({
+      slug: String(row.slug),
+      startDate: String(row.start_date),
+      updatedAt: row.updated_at ? String(row.updated_at) : null,
+    }));
+}
+
+function sourceUrlsFromRow(row: Record<string, unknown>): string[] {
+  const sources = row.sources as { source_url?: string | null }[] | null;
+  if (!sources?.length) return [];
+  return sources.map((s) => s.source_url).filter((u): u is string => Boolean(u));
+}
+
+function mapEventRow(row: Record<string, unknown>): EventListItem {
+  const location = row.location as Record<string, unknown> | null;
+  const series = row.series as Record<string, unknown> | null;
+  const categories = row.categories as Record<string, unknown>[] | null;
+  const outbound = resolveEventOutboundUrls({
+    websiteUrl: row.website_url as string | null,
+    registrationUrl: row.registration_url as string | null,
+    regulationsUrl: row.regulations_url as string | null,
+    resultsUrl: row.results_url as string | null,
+    seriesWebsiteUrl: series?.website_url as string | null,
+    sourceUrls: sourceUrlsFromRow(row),
+  });
+  return {
+    id: String(row.id),
+    slug: String(row.slug),
+    // Names arrive from a hundred calendars, some of them mis-decoded on the
+    // way. Repairing here means the list, the map, the panel and the share card
+    // all show the apostrophe rather than an empty box.
+    name: repairText(String(row.name)),
+    startDate: String(row.start_date),
+    endDate: row.end_date ? String(row.end_date) : null,
+    disciplines: canonicalEventDisciplines((row.disciplines as string[]) ?? []),
+    formats: (row.formats as string[]) ?? [],
+    audience: String(row.audience),
+    ageCategories: (() => {
+      const own = (row.age_categories as string[]) ?? [];
+      if (own.length) return own;
+      return (series?.age_categories as string[]) ?? [];
+    })(),
+    // A set borrowed from the series is the series' claim, not this race's.
+    ageConfidence: ((row.age_categories as string[]) ?? []).length
+      ? ((row.age_confidence as "explicit" | "previous" | "default" | null) ?? null)
+      : ((series?.age_categories as string[]) ?? []).length
+        ? "default"
+        : null,
+    status: String(row.status),
+    visibility: String(row.visibility ?? "public"),
+    eventType: String(row.event_type ?? "race"),
+    competitionType: String(row.competition_type ?? "other"),
+    season: row.season ? String(row.season) : null,
+    websiteUrl: outbound.websiteUrl,
+    registrationUrl: outbound.registrationUrl,
+    regulationsUrl: outbound.regulationsUrl,
+    resultsUrl: outbound.resultsUrl,
+    registrationClosesAt: (row.registration_closes_at as string | null) ?? null,
+    listingUrl: outbound.listingUrl,
+    sourceKind: String(row.source_kind ?? "scraped"),
+    level: String(row.level ?? "local"),
+    classLabel: (row.class_label as string) ?? null,
+    uciClass: (row.uci_class as string) ?? null,
+    lastSeenAt: row.last_seen_at
+      ? String(row.last_seen_at)
+      : row.updated_at
+        ? String(row.updated_at)
+        : null,
+    location: location
+      ? {
+          id: String(location.id),
+          // A tenth of our sources publish place names in capitals. Fixing it
+          // here rather than at each screen means the list, the map, the
+          // detail panel, the share card and the structured data all say the
+          // same thing, and none of them has to remember to.
+          // Free text from the sources: "Festhalle, Güntersleben",
+          // "Kirchzarten, Germany", "DE". `name` keeps the venue and town;
+          // `municipality` is the town alone, or null when there is none.
+          name: joinPlace(splitPlace(formatPlaceName(repairText(String(location.name))) ?? String(location.name))),
+          municipality: splitPlace(formatPlaceName(repairText(location.municipality as string | null))).town,
+          countryCode: String(location.country_code),
+          lat: (location.lat as number) ?? null,
+          lng: (location.lng as number) ?? null,
+        }
+      : null,
+    series:
+      series && String(series.visibility ?? "public") !== "hidden"
+        ? {
+            id: String(series.id),
+            name: repairText(String(series.name)),
+            slug: String(series.slug),
+          }
+        : null,
+    categories: (categories ?? []).map((c) => ({
+      id: String(c.id),
+      name: String(c.name),
+      ageMin: (c.age_min as number) ?? null,
+      ageMax: (c.age_max as number) ?? null,
+      distanceKm: (c.distance_km as number) ?? null,
+      audience: (c.audience as string) ?? null,
+    })),
+  };
+}
+
+export type ManualEventInput = {
+  name: string;
+  startDate: string;
+  endDate?: string;
+  placeName: string;
+  municipality?: string;
+  countryCode: string;
+  lat?: number;
+  lng?: number;
+  disciplines?: Discipline[];
+  audience?: Audience;
+  websiteUrl?: string;
+  registrationUrl?: string;
+  regulationsUrl?: string;
+  status?: string;
+  visibility?: string;
+  notes?: string;
+  categories?: { name: string; distanceKm?: number; ageMin?: number; ageMax?: number }[];
+  lockFields?: boolean;
+};
+
+export async function upsertManualEvent(input: ManualEventInput, eventId?: string) {
+  const supabase = createServerSupabase();
+  const fp = fingerprint({
+    startDate: input.startDate,
+    name: input.name,
+    lat: input.lat,
+    lng: input.lng,
+  });
+  const slug = eventId ? undefined : await freeEventSlug(supabase, { name: input.name, startDate: input.startDate, place: input.municipality ?? input.placeName });
+
+  let locationId: string | null = null;
+  if (input.placeName) {
+    const locPayload: Insert<"locations"> = {
+      name: input.placeName,
+      municipality: input.municipality ?? input.placeName,
+      country_code: input.countryCode,
+      lat: input.lat ?? null,
+      lng: input.lng ?? null,
+      geocode_status: input.lat != null && input.lng != null ? "ok" : "pending",
+      geocode_query: `${input.placeName}, ${input.countryCode}`,
+      updated_at: new Date().toISOString(),
+    };
+    if (input.lat != null && input.lng != null) {
+      // geog set via raw SQL if needed; lat/lng enough for map MVP
+    }
+    const { data: loc, error: locErr } = await supabase
+      .from("locations")
+      .insert(locPayload)
+      .select("id")
+      .single();
+    if (locErr) throw new Error(locErr.message);
+    locationId = loc.id;
+    if (input.lat != null && input.lng != null) {
+      await supabase.rpc("set_location_geog", {
+        loc_id: locationId,
+        lng: input.lng,
+        lat: input.lat,
+      }).maybeSingle();
+    }
+  }
+
+  const eventPayload = {
+    slug,
+    name: input.name,
+    name_normalized: normalizeName(input.name),
+    location_id: locationId,
+    start_date: input.startDate,
+    end_date: input.endDate ?? input.startDate,
+    disciplines: input.disciplines ?? [],
+    audience: input.audience ?? "mixed",
+    status: input.status === "hidden" ? "scheduled" : (input.status ?? "scheduled"),
+    visibility: input.visibility ?? (input.status === "hidden" ? "hidden" : "public"),
+    website_url: input.websiteUrl ?? null,
+    registration_url: input.registrationUrl ?? null,
+    regulations_url: input.regulationsUrl ?? null,
+    fingerprint: fp,
+    source_kind: "manual",
+    season: input.startDate.slice(0, 4),
+    updated_at: new Date().toISOString(),
+    last_seen_at: new Date().toISOString(),
+  };
+
+  let id = eventId;
+  if (eventId) {
+    const { error } = await supabase.from("events").update(eventPayload).eq("id", eventId);
+    if (error) throw new Error(error.message);
+  } else {
+    const { data, error } = await supabase
+      .from("events")
+      // `slug` is only unset when updating an existing race, which is the branch above.
+      .insert({ ...eventPayload, slug: slug! })
+      .select("id")
+      .single();
+    if (error) throw new Error(error.message);
+    id = data.id;
+  }
+
+  if (input.categories?.length && id) {
+    await supabase.from("event_categories").delete().eq("event_id", id);
+    await supabase.from("event_categories").insert(
+      input.categories.map((c) => ({
+        event_id: id,
+        name: c.name,
+        distance_km: c.distanceKm ?? null,
+        age_min: c.ageMin ?? null,
+        age_max: c.ageMax ?? null,
+        audience: input.audience ?? null,
+      })),
+    );
+  }
+
+  if (input.lockFields && id) {
+    await supabase.from("event_overrides").upsert(
+      {
+        event_id: id,
+        fields: {
+          name: input.name,
+          start_date: input.startDate,
+          website_url: input.websiteUrl,
+          audience: input.audience,
+          disciplines: input.disciplines,
+        },
+        locked_fields: [
+          "name",
+          "start_date",
+          "website_url",
+          "audience",
+          "disciplines",
+          "location_id",
+        ],
+        updated_by: "admin",
+        updated_at: new Date().toISOString(),
+      },
+      { onConflict: "event_id" },
+    );
+  }
+
+  if (input.websiteUrl) {
+    await supabase.from("watched_urls").upsert(
+      {
+        url: input.websiteUrl,
+        kind: "race",
+        status: "active",
+        added_by: "manual-event",
+        next_poll_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      },
+      { onConflict: "url" },
+    );
+  }
+
+  refreshPublicCatalogue();
+  return id!;
+}
+
+export async function updateEventFields(
+  eventId: string,
+  fields: Partial<{
+    name: string;
+    startDate: string;
+    endDate: string;
+    audience: string;
+    disciplines: string[];
+    websiteUrl: string;
+    registrationUrl: string;
+    regulationsUrl: string;
+    status: string;
+    visibility: string;
+  }>,
+  lock = true,
+) {
+  const supabase = createServerSupabase();
+  const payload: Update<"events"> = { updated_at: new Date().toISOString() };
+  if (fields.name != null) {
+    payload.name = fields.name;
+    payload.name_normalized = normalizeName(fields.name);
+  }
+  if (fields.startDate != null) payload.start_date = fields.startDate;
+  if (fields.endDate != null) payload.end_date = fields.endDate;
+  if (fields.audience != null) payload.audience = fields.audience;
+  if (fields.disciplines != null) payload.disciplines = fields.disciplines;
+  if (fields.websiteUrl != null) payload.website_url = fields.websiteUrl;
+  if (fields.registrationUrl != null) payload.registration_url = fields.registrationUrl;
+  if (fields.regulationsUrl != null) payload.regulations_url = fields.regulationsUrl;
+  if (fields.visibility != null) payload.visibility = fields.visibility;
+  if (fields.status != null) {
+    // Legacy admin "hidden" status → visibility split
+    if (fields.status === "hidden") {
+      payload.visibility = "hidden";
+      payload.status = "scheduled";
+    } else {
+      payload.status = fields.status;
+      if (fields.visibility == null && fields.status !== "cancelled") {
+        payload.visibility = "public";
+      }
+    }
+  }
+
+  const { error } = await supabase.from("events").update(payload).eq("id", eventId);
+  if (error) throw new Error(error.message);
+
+  if (lock) {
+    const { data: existing } = await supabase
+      .from("event_overrides")
+      .select("locked_fields, fields")
+      .eq("event_id", eventId)
+      .maybeSingle();
+    const prevLocked = (existing?.locked_fields as string[] | null) ?? [];
+    const nextKeys = Object.keys(payload).filter((k) => k !== "updated_at");
+    const locked = [...new Set([...prevLocked, ...nextKeys])];
+    const prevFields =
+      existing?.fields && typeof existing.fields === "object"
+        ? (existing.fields as Record<string, unknown>)
+        : {};
+    await supabase.from("event_overrides").upsert(
+      {
+        event_id: eventId,
+        fields: { ...prevFields, ...payload } as Json,
+        locked_fields: locked,
+        updated_by: "admin",
+        updated_at: new Date().toISOString(),
+      },
+      { onConflict: "event_id" },
+    );
+  }
+
+  refreshPublicCatalogue();
+}
+
+/**
+ * Show or hide many races at once, as an admin does from the list.
+ *
+ * What `updateEventFields(id, { visibility }, true)` does for one race, in
+ * three queries for all of them instead of three each: set the column, then
+ * lock it so the watcher leaves the choice alone, and drop the public
+ * catalogue's cache once.
+ */
+export async function setEventsVisibility(ids: string[], visibility: "public" | "hidden") {
+  if (ids.length === 0) return;
+  const supabase = createServerSupabase();
+  const now = new Date().toISOString();
+
+  const { error } = await supabase.from("events").update({ visibility, updated_at: now }).in("id", ids);
+  if (error) throw new Error(error.message);
+
+  const { data: existing, error: readError } = await supabase
+    .from("event_overrides")
+    .select("event_id, locked_fields, fields")
+    .in("event_id", ids);
+  if (readError) throw new Error(readError.message);
+  const byEvent = new Map((existing ?? []).map((row) => [row.event_id, row]));
+
+  const rows = ids.map((id) => {
+    const prev = byEvent.get(id);
+    const prevFields =
+      prev?.fields && typeof prev.fields === "object" && !Array.isArray(prev.fields) ? prev.fields : {};
+    return {
+      event_id: id,
+      fields: { ...prevFields, visibility, updated_at: now } as Json,
+      locked_fields: [...new Set([...(prev?.locked_fields ?? []), "visibility"])],
+      updated_by: "admin",
+      updated_at: now,
+    };
+  });
+  const { error: lockError } = await supabase.from("event_overrides").upsert(rows, { onConflict: "event_id" });
+  if (lockError) throw new Error(lockError.message);
+
+  refreshPublicCatalogue();
+}

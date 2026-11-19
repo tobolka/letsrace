@@ -1,0 +1,45 @@
+{
+  "heldRaceChild": {
+    "send": [
+      {
+        "tab": "public.event_sources",
+        "pk": {
+          "id": "fixture-source"
+        },
+        "op": "update",
+        "before": {
+          "source_url": "old"
+        },
+        "after": {
+          "source_url": "new"
+        }
+      }
+    ],
+    "held": [
+      {
+        "tab": "public.events",
+        "pk": {
+          "id": "fixture-a"
+        },
+        "op": "update",
+        "before": {
+          "start_date": "2027-05-01"
+        },
+        "after": {
+          "start_date": "2027-06-01"
+        },
+        "heldBecause": [
+          "start_date"
+        ]
+      }
+    ]
+  },
+  "explicitTypeCorrection": "series",
+  "unlocatedTownVersusPrecisePin": true,
+  "differentVenuesInSameTown": true,
+  "noSourceEvidenceRequired": [],
+  "secondIncomingRaceWithAllNewIdsExcluded": [],
+  "sameRaceWhenComparedWithPeer": [
+    "may_already_be_listed"
+  ]
+}

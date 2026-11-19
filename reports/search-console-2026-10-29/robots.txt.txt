@@ -1,0 +1,12 @@
+# Let's Race robots.txt
+User-agent: *
+Content-Signal: ai-train=no, search=yes, ai-input=yes
+Allow: /
+Disallow: /admin
+Disallow: /admin/
+Disallow: /api/
+
+# Agent catalogue: https://letsrace.cz/.well-known/ai-catalog.json
+
+Sitemap: https://letsrace.cz/sitemap.xml
+Host: https://letsrace.cz

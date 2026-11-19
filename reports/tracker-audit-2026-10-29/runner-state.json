@@ -1,0 +1,59 @@
+{
+  "childPid": null,
+  "stage": null,
+  "interrupted": false,
+  "nextRunAt": 1793272076717,
+  "startedAt": 1793264792147,
+  "lastOutputAt": 1793264876711,
+  "lastError": null,
+  "counters": {
+    "reads": 0,
+    "created": 0,
+    "updated": 0,
+    "failed": 0,
+    "unchanged": 0,
+    "leads": 0,
+    "queued": 0
+  },
+  "logPath": "/Users/radektobolka/Library/Application Support/LetsRace/data/refresh-2026-10-29T09-06-32-146Z.log",
+  "handledRunNow": "8D2C7239-0D3B-4319-B159-EB4EF0DDF491",
+  "lastExitCode": 0,
+  "lastFinishedAt": 1793264876717,
+  "scanNowAt": "C73947C7-67C8-41AD-857E-556B5E7509CC",
+  "pendingTasks": [],
+  "activeTask": null,
+  "lastResult": {
+    "reads": 0,
+    "created": 0,
+    "updated": 0,
+    "failed": 0,
+    "unchanged": 0,
+    "leads": 0,
+    "queued": 0,
+    "problems": [],
+    "at": 1793264876717,
+    "exitCode": 0
+  },
+  "durations": {
+    "federation": [
+      87443,
+      84010,
+      151682,
+      74195,
+      222325
+    ],
+    "refresh": [
+      128234,
+      3102253,
+      2214200,
+      2177496,
+      84570
+    ]
+  },
+  "serverRequestRunning": false,
+  "aiDetected": false,
+  "problems": [],
+  "handledServer": "01C36A5D-F6FF-4570-87E3-449C8F50B290",
+  "serverRequestError": null,
+  "refreshNowAt": "0ED7E473-73C5-41FC-8FEF-2E9E97AC0912"
+}

@@ -1,0 +1,53 @@
+[
+  {
+    "id": "8d5f24e0-0367-4be2-b51b-b0e309374c3d",
+    "evidenceHash": "3144ad7ef60346c66f09583d42715059190f85d0483e3409862c44478624bd39",
+    "reviewer": "Codex",
+    "reviewedAt": "2026-10-29T15:26:37.373054+00:00",
+    "sourceUrl": "https://www.bikepoint.sk/kalendar/",
+    "action": "reject",
+    "owner": "Codex",
+    "reason": "Live UCI API and competition detail now confirm exact identity, Slovak venue, XCO discipline and full two-day 2027 span. Corrected primary assertion published successfully; original incomplete model assertion superseded.",
+    "category": "fulfilled_with_fresh_evidence",
+    "resolvedEventId": "1e89401b-7414-467e-99ff-26a9ff5751a2",
+    "supersededBy": "6dfd1968-0424-496f-ad70-9cf42528e93e"
+  },
+  {
+    "id": "85234aa2-cae3-4adb-b909-87d072b6785c",
+    "evidenceHash": "23798e72afcac1b686538ef20a16041bf834cb4a670b36d22bc583a10439cc2a",
+    "reviewer": "Codex",
+    "reviewedAt": "2026-10-29T15:26:37.373204+00:00",
+    "sourceUrl": "https://www.bikepoint.sk/kalendar/",
+    "action": "reject",
+    "owner": "Codex",
+    "reason": "Live UCI API and competition detail now confirm exact identity, Slovak venue, XCO discipline and full two-day 2027 span. Corrected primary assertion published successfully; original incomplete model assertion superseded.",
+    "category": "fulfilled_with_fresh_evidence",
+    "resolvedEventId": "909f3f21-1c77-4814-ac72-895b6f2977ac",
+    "supersededBy": "e479582c-0c6a-4821-9cac-243392cfed00"
+  },
+  {
+    "id": "b4761274-1511-45e2-801d-9043c68ec78f",
+    "evidenceHash": "b46973794d154bbe7d51827228666aa6e0bea5dd3c4a2c88183c645183a90258",
+    "reviewer": "Codex",
+    "reviewedAt": "2026-10-29T15:26:37.373207+00:00",
+    "sourceUrl": "https://www.bikepoint.sk/kalendar/",
+    "action": "reject",
+    "owner": "Codex",
+    "reason": "Live UCI API and competition detail now confirm exact identity, Slovak venue, XCO discipline and full two-day 2027 span. Corrected primary assertion published successfully; original incomplete model assertion superseded.",
+    "category": "fulfilled_with_fresh_evidence",
+    "resolvedEventId": "2e2b3ce3-6eb9-4d8b-bb94-e0f4eed3b2f2",
+    "supersededBy": "d1b94caa-3b76-4fe7-8ea4-55f68eeb6b3b"
+  },
+  {
+    "id": "91cf3687-ccae-45d6-92d1-ba8c91321db4",
+    "evidenceHash": "9bc2ccb7a22e8565d2abacf62c2370e24119c653ecba84534f7450ee00dde35d",
+    "reviewer": "Codex",
+    "reviewedAt": "2026-10-29T15:26:37.373210+00:00",
+    "sourceUrl": "https://www.bikepoint.sk/kalendar/",
+    "action": "reject",
+    "owner": "Codex",
+    "reason": "Original one-day row has the same combined umbrella name as the 31 July–1 August Oslany weekend. The complete UCI XCO weekend is now published. No primary evidence identifies this combined-sport aggregate as a separate cycling race; reject duplicate umbrella publication.",
+    "category": "overlapping_aggregate",
+    "resolvedEventId": "2e2b3ce3-6eb9-4d8b-bb94-e0f4eed3b2f2"
+  }
+]

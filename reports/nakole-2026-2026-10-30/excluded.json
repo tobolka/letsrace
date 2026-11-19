@@ -1,0 +1,354 @@
+[
+  {
+    "url": "https://www.nakole.cz/akce/3299-louceni-se-sezonou-na-macose.html",
+    "name": "Loučení se sezónou na Macoše",
+    "date": "24.10.2026",
+    "type": "vyjížďka / sraz",
+    "place": "Brno",
+    "reason": "listing_not_race"
+  },
+  {
+    "url": "https://www.nakole.cz/akce/3298-lontbent-2026-coffeeneuring-2.html",
+    "name": "LontBent 2026 - Coffeeneuring 2",
+    "date": "18.10.2026",
+    "type": "vyjížďka / sraz",
+    "place": "Rosice",
+    "reason": "listing_not_race"
+  },
+  {
+    "url": "https://www.nakole.cz/akce/3297-lontbent-2026-coffeeneuring-1.html",
+    "name": "LontBent 2026 - Coffeeneuring 1",
+    "date": "11.10.2026",
+    "type": "vyjížďka / sraz",
+    "place": "Brno",
+    "reason": "listing_not_race"
+  },
+  {
+    "url": "https://www.nakole.cz/akce/3248-galasova-cyklojizda-c-413-svarovska-beseda-lany-rakovnik.html",
+    "name": "Galasova Cyklojízda Č.413 \"Svárovská Beseda - Lány - Rakovník",
+    "date": "04.10.2026",
+    "type": "vyjížďka / sraz",
+    "place": "Praha",
+    "reason": "listing_not_race"
+  },
+  {
+    "url": "https://www.nakole.cz/akce/3295-podzimni-cernokostelecke-kolvetrani-23-rocnik.html",
+    "name": "Podzimní černokostelecké kolvětrání - 23. ročník",
+    "date": "03.10.2026",
+    "type": "vyjížďka / sraz",
+    "place": "Kostelec nad Černými Lesy",
+    "reason": "listing_not_race"
+  },
+  {
+    "url": "https://www.nakole.cz/akce/3296-podzimni-cernokostelecke-kolvetrani-23-rocnik.html",
+    "name": "Podzimní černokostelecké kolvětrání - 23. ročník",
+    "date": "03.10.2026",
+    "type": "vyjížďka / sraz",
+    "place": "Kostelec nad Černými Lesy",
+    "reason": "listing_not_race"
+  },
+  {
+    "url": "https://www.nakole.cz/akce/3277-podzimni-sraz-litomerice.html",
+    "name": "podzimní sraz Litoměřice",
+    "date": "25.09.2026",
+    "type": "vyjížďka / sraz",
+    "place": "Litoměřice",
+    "reason": "listing_not_race"
+  },
+  {
+    "url": "https://www.nakole.cz/akce/3247-galasova-cyklojizda-c-412-v-ramci-evropskeho-tydne-mobility.html",
+    "name": "Galasova Cyklojízda Č.412 - V Rámci Evropského Týdne Mobility",
+    "date": "20.09.2026",
+    "type": "vyjížďka / sraz",
+    "place": "Praha",
+    "reason": "listing_not_race"
+  },
+  {
+    "url": "https://www.nakole.cz/akce/3280-mezinarodni-setkani-lehokol-ceska-republika-2026.html",
+    "name": "Mezinárodní setkání lehokol Česká republika 2026",
+    "date": "09.09.2026",
+    "type": "vyjížďka / sraz",
+    "place": "Žirovnice",
+    "reason": "listing_not_race"
+  },
+  {
+    "url": "https://www.nakole.cz/akce/3231-svejkova-sobota-turistika-cyklojizda-i-setkani-s-dobrym-vojake.html",
+    "name": "ŠVEJKOVA SOBOTA: Turistika, cyklojízda i setkání s dobrým vojáke",
+    "date": "29.08.2026",
+    "type": "vyjížďka / sraz",
+    "place": "Písek",
+    "reason": "listing_not_race"
+  },
+  {
+    "url": "https://www.nakole.cz/akce/3273-2-cyklo-pohoda-z-oresan-do-oresan.html",
+    "name": "2. CYKLO - POHODA - Z Orešán do Orešán",
+    "date": "29.08.2026",
+    "type": "vyjížďka / sraz",
+    "place": "Trnava",
+    "reason": "listing_not_race"
+  },
+  {
+    "url": "https://www.nakole.cz/akce/3245-galasova-cyklojizda-c-411-dobrichovice-davle-koupaci.html",
+    "name": "Galasova Cyklojízda Č.411 ' Dobřichovice - Davle - Koupací",
+    "date": "22.08.2026",
+    "type": "vyjížďka / sraz",
+    "place": "Praha",
+    "reason": "listing_not_race"
+  },
+  {
+    "url": "https://www.nakole.cz/akce/3288-oziveni-historie-na-hrade-tocnik.html",
+    "name": "Oživení Historie na hradě Točník",
+    "date": "08.08.2026",
+    "type": "vyjížďka / sraz",
+    "place": "Beroun",
+    "reason": "listing_not_race"
+  },
+  {
+    "url": "https://www.nakole.cz/akce/3276-katanga-2.html",
+    "name": "Katanga 2",
+    "date": "31.07.2026",
+    "type": "vyjížďka / sraz",
+    "place": "Znojmo",
+    "reason": "listing_not_race"
+  },
+  {
+    "url": "https://www.nakole.cz/akce/3289-vystava-drobnych-zvirat-ivancice.html",
+    "name": "Výstava drobných zvířat Ivančice",
+    "date": "25.07.2026",
+    "type": "výstava",
+    "place": "Ivančice",
+    "reason": "listing_not_race"
+  },
+  {
+    "url": "https://www.nakole.cz/akce/3244-galasova-cyklojizda-c-410-kulata-jezero-mezi-mosty-hajenka.html",
+    "name": "Galasova Cyklojízda Č.410 \"Kulatá -Jezero Mezi Mosty - Hájenka",
+    "date": "11.07.2026",
+    "type": "vyjížďka / sraz",
+    "place": "Praha",
+    "reason": "listing_not_race"
+  },
+  {
+    "url": "https://www.nakole.cz/akce/3292-podhurim-jeseniku.html",
+    "name": "PODHŮŘÍM JESENÍKŮ",
+    "date": "10.07.2026",
+    "type": "vyjížďka / sraz",
+    "place": "Zábřeh",
+    "reason": "listing_not_race"
+  },
+  {
+    "url": "https://www.nakole.cz/akce/3286-detske-cyklo-kempy-2026.html",
+    "name": "Dětské cyklo kempy 2026",
+    "date": "07.07.2026",
+    "type": "vyjížďka / sraz",
+    "place": "Vimperk",
+    "reason": "listing_not_race"
+  },
+  {
+    "url": "https://www.nakole.cz/akce/3285-vikendova-bikova-skola-zadov.html",
+    "name": "Víkendová biková škola Zadov",
+    "date": "04.07.2026",
+    "type": "vyjížďka / sraz",
+    "place": "Vimperk",
+    "reason": "listing_not_race"
+  },
+  {
+    "url": "https://www.nakole.cz/akce/3284-mezinarodni-sraz-lehokol-polsko.html",
+    "name": "Mezinárodní sraz lehokol Polsko",
+    "date": "01.07.2026",
+    "type": "vyjížďka / sraz",
+    "place": "Jelenia Góra",
+    "reason": "listing_not_race"
+  },
+  {
+    "url": "https://www.nakole.cz/akce/3242-galasova-cylojizda-c-409-32-marianskolazenska-a-23-mezinarodni.html",
+    "name": "Galasova Cylojízda Č.409 \"32.Mariánskolázeňská A 23 Mezinárodní",
+    "date": "28.06.2026",
+    "type": "vyjížďka / sraz",
+    "place": "Mariánské Lázně",
+    "reason": "listing_not_race"
+  },
+  {
+    "url": "https://www.nakole.cz/akce/3241-galasova-cyklojizda-c-408-31-marianskolazenska.html",
+    "name": "Galasova Cyklojízda č.408 \"31. Mariánskolázeňská",
+    "date": "27.06.2026",
+    "type": "vyjížďka / sraz",
+    "place": "Mariánské Lázně",
+    "reason": "listing_not_race"
+  },
+  {
+    "url": "https://www.nakole.cz/akce/3230-moravskoslezske-setkani-lehokol.html",
+    "name": "Moravskoslezské setkání lehokol",
+    "date": "26.06.2026",
+    "type": "vyjížďka / sraz",
+    "place": "Rožnov pod Radhoštěm",
+    "reason": "listing_not_race"
+  },
+  {
+    "url": "https://www.nakole.cz/akce/3251-bike-sraz-na-vysocine-23-rocnik.html",
+    "name": "Bike sraz na Vysočině - 23. ročník",
+    "date": "19.06.2026",
+    "type": "vyjížďka / sraz",
+    "place": "Bystřice nad Pernštejnem",
+    "reason": "listing_not_race"
+  },
+  {
+    "url": "https://www.nakole.cz/akce/3240-galasova-cyklojizda-c-407-narozeninova-aneb-oslava-mych-48-naro.html",
+    "name": "Galasova Cyklojízda Č.407 \"Narozeninová Aneb Oslava Mých 48 Naro",
+    "date": "06.06.2026",
+    "type": "vyjížďka / sraz",
+    "place": "Praha",
+    "reason": "listing_not_race"
+  },
+  {
+    "url": "https://www.nakole.cz/akce/3238-jm-sleh-2026.html",
+    "name": "JM Sleh 2026",
+    "date": "04.06.2026",
+    "type": "vyjížďka / sraz",
+    "place": "Hodonín",
+    "reason": "listing_not_race"
+  },
+  {
+    "url": "https://www.nakole.cz/akce/3237-svc-2026.html",
+    "name": "SVČ 2026",
+    "date": "29.05.2026",
+    "type": "vyjížďka / sraz",
+    "place": "Mšeno",
+    "reason": "listing_not_race"
+  },
+  {
+    "url": "https://www.nakole.cz/akce/3278-lontbent-2026-kveten.html",
+    "name": "LontBent 2026 - květen",
+    "date": "23.05.2026",
+    "type": "vyjížďka / sraz",
+    "place": "Slavkov u Brna",
+    "reason": "listing_not_race"
+  },
+  {
+    "url": "https://www.nakole.cz/akce/3239-galasova-cyklojizda-c-406-letiste-tocna-hlinena-basta.html",
+    "name": "Galasova Cyklojízda Č.406 \"Letište Točná - Hlinená Bašta \"",
+    "date": "17.05.2026",
+    "type": "vyjížďka / sraz",
+    "place": "Praha",
+    "reason": "listing_not_race"
+  },
+  {
+    "url": "https://www.nakole.cz/akce/3229-za-kvetouci-mesicnici.html",
+    "name": "Za kvetoucí měsíčnicí",
+    "date": "16.05.2026",
+    "type": "vyjížďka / sraz",
+    "place": "Kamenický Šenov",
+    "reason": "listing_not_race"
+  },
+  {
+    "url": "https://www.nakole.cz/akce/3228-v-medzinarodne-stretnutie-lehokolistov-tata-madarsko.html",
+    "name": "V. MEDZINÁRODNÉ STRETNUTIE LEHOKOLISTOV TATA - MAĎARSKO",
+    "date": "14.05.2026",
+    "type": "vyjížďka / sraz",
+    "place": "Budapešť",
+    "reason": "listing_not_race"
+  },
+  {
+    "url": "https://www.nakole.cz/akce/3225-jarni-sraz-2026-trebon.html",
+    "name": "Jarní sraz 2026 Třeboň",
+    "date": "07.05.2026",
+    "type": "vyjížďka / sraz",
+    "place": "Jindřichův Hradec",
+    "reason": "listing_not_race"
+  },
+  {
+    "url": "https://www.nakole.cz/akce/3227-slovensky-lehozraz.html",
+    "name": "Slovensky lehozraz",
+    "date": "30.04.2026",
+    "type": "vyjížďka / sraz",
+    "place": "Martin",
+    "reason": "listing_not_race"
+  },
+  {
+    "url": "https://www.nakole.cz/akce/3271-jarni-cernokostelecke-kolvetrani-23-rocnik.html",
+    "name": "Jarní černokostelecké kolvětrání - 23. ročník",
+    "date": "25.04.2026",
+    "type": "vyjížďka / sraz",
+    "place": "Kostelec nad Černými Lesy",
+    "reason": "listing_not_race"
+  },
+  {
+    "url": "https://www.nakole.cz/akce/3236-galasova-cyklojizda-c-405-narozeninova-slavime-17-let-od-zaloze.html",
+    "name": "Galasova Cyklojízda Č.405 „Narozeninová Slavíme 17 Let Od Založe",
+    "date": "25.04.2026",
+    "type": "vyjížďka / sraz",
+    "place": "Praha",
+    "reason": "listing_not_race"
+  },
+  {
+    "url": "https://www.nakole.cz/akce/3275-lontbent-2026-duben.html",
+    "name": "LontBent 2026 - duben",
+    "date": "18.04.2026",
+    "type": "vyjížďka / sraz",
+    "place": "Brno",
+    "reason": "listing_not_race"
+  },
+  {
+    "url": "https://www.nakole.cz/akce/3272-pozvanka-na-testovani-kol-a-elektrokol-2026.html",
+    "name": "Pozvánka na testování kol a elektrokol 2026",
+    "date": "16.04.2026",
+    "type": "vyjížďka / sraz",
+    "place": "Písek",
+    "reason": "listing_not_race"
+  },
+  {
+    "url": "https://www.nakole.cz/akce/3243-velkonocny-vyjazd.html",
+    "name": "Veľkonočný výjazd",
+    "date": "06.04.2026",
+    "type": "vyjížďka / sraz",
+    "place": "Trenčín",
+    "reason": "listing_not_race"
+  },
+  {
+    "url": "https://www.nakole.cz/akce/3235-galasova-cyklojizda-c-404-22-mezinarodni-a-10-vicemezinarodni.html",
+    "name": "Galasova Cyklojízda Č.404 „22 . Mezinárodní A 10 Vícemezinárodní",
+    "date": "30.03.2026",
+    "type": "vyjížďka / sraz",
+    "place": "Vídeň",
+    "reason": "listing_not_race"
+  },
+  {
+    "url": "https://www.nakole.cz/akce/3234-galasova-cyklojizda-c-403-okor.html",
+    "name": "Galasova Cyklojízda Č.403 – Okoř",
+    "date": "15.03.2026",
+    "type": "vyjížďka / sraz",
+    "place": "Praha",
+    "reason": "listing_not_race"
+  },
+  {
+    "url": "https://www.nakole.cz/akce/3252-lontbent-2026-brezen.html",
+    "name": "LontBent 2026 - březen",
+    "date": "01.03.2026",
+    "type": "vyjížďka / sraz",
+    "place": "Brno",
+    "reason": "listing_not_race"
+  },
+  {
+    "url": "https://www.nakole.cz/akce/3233-festival-cyklocestovani-frydek-mistek-30-31-1-2026.html",
+    "name": "Festival CYKLOCESTOVÁNÍ (Frýdek-Místek 30.-31.1.2026)",
+    "date": "30.01.2026",
+    "type": "beseda",
+    "place": "Frýdek-Místek",
+    "reason": "listing_not_race"
+  },
+  {
+    "url": "https://www.nakole.cz/akce/3232-festival-cyklocestovani-hradec-kralove-24-1-2026.html",
+    "name": "Festival CYKLOCESTOVÁNÍ (Hradec Králové 24.1.2026)",
+    "date": "24.01.2026",
+    "type": "beseda",
+    "place": "Hradec Králové",
+    "reason": "listing_not_race"
+  },
+  {
+    "url": "https://www.nakole.cz/akce/3224-novorocni-drakiada.html",
+    "name": "Novoroční drakiáda",
+    "date": "01.01.2026",
+    "type": "vyjížďka / sraz",
+    "place": "Praha",
+    "reason": "listing_not_race"
+  }
+]

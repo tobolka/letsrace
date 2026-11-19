@@ -1,0 +1,301 @@
+[
+  {
+    "slug": "road-stage-orlicke-hory-2027",
+    "url": "https://letsrace.cz/en/race/road-stage-orlicke-hory-2027",
+    "status": 200,
+    "cache": "MISS",
+    "ld": [
+      {
+        "@context": "https://schema.org",
+        "@type": "SportsEvent",
+        "name": "RoadStage — Deštné v Orlických horách",
+        "url": "https://letsrace.cz/en/race/road-stage-orlicke-hory-2027",
+        "startDate": "2027-06-05",
+        "eventStatus": "https://schema.org/EventScheduled",
+        "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+        "inLanguage": "en",
+        "endDate": "2027-06-05",
+        "sameAs": [
+          "https://kalendar.winspace.cz/kalendar/2027-road-stage-orlicke-hory-a399804a"
+        ],
+        "description": "RoadStage — Deštné v Orlických horách is a road race held in Deštné v Orlických horách, Czechia, on 5 June 2027. It is a round of RoadStage. Categories: Elite, Amateur. Entries are taken online.",
+        "sport": "Cycling",
+        "image": [
+          "https://letsrace.cz/race-card/en/road-stage-orlicke-hory-2027"
+        ],
+        "superEvent": {
+          "@type": "EventSeries",
+          "name": "RoadStage",
+          "url": "https://letsrace.cz/en/series/roadstage"
+        },
+        "offers": {
+          "@type": "Offer",
+          "url": "https://registrace.sportsoft.cz/registration.aspx?e=3630",
+          "availability": "https://schema.org/InStock"
+        },
+        "location": {
+          "@type": "Place",
+          "name": "Deštné v Orlických horách",
+          "address": {
+            "@type": "PostalAddress",
+            "addressCountry": "CZ",
+            "addressLocality": "Deštné v Orlických horách"
+          },
+          "geo": {
+            "@type": "GeoCoordinates",
+            "latitude": 50.304743,
+            "longitude": 16.350751
+          }
+        }
+      },
+      {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Let's Race",
+            "item": "https://letsrace.cz/en"
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Czechia",
+            "item": "https://letsrace.cz/en/races/cz"
+          },
+          {
+            "@type": "ListItem",
+            "position": 3,
+            "name": "Road",
+            "item": "https://letsrace.cz/en/races/cz/road"
+          },
+          {
+            "@type": "ListItem",
+            "position": 4,
+            "name": "RoadStage — Deštné v Orlických horách",
+            "item": "https://letsrace.cz/en/race/road-stage-orlicke-hory-2027"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "slug": "ischgl-ironbike-2027",
+    "url": "https://letsrace.cz/en/race/ischgl-ironbike-2027",
+    "status": 200,
+    "cache": "MISS",
+    "ld": [
+      {
+        "@context": "https://schema.org",
+        "@type": "SportsEvent",
+        "name": "Ischgl Ironbike Short-Track",
+        "url": "https://letsrace.cz/en/race/ischgl-ironbike-2027",
+        "startDate": "2027-08-06",
+        "eventStatus": "https://schema.org/EventScheduled",
+        "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+        "inLanguage": "en",
+        "endDate": "2027-08-06",
+        "sameAs": [
+          "https://www.ischgl.com/en/events-experiences/ischgl-ironbike"
+        ],
+        "description": "Ischgl Ironbike Short-Track is a MTB race held in Ischgl, Austria, on 6 August 2027. Categories: Amateur. We have not found an online entry for it yet; check with the organiser.",
+        "sport": "Cycling",
+        "image": [
+          "https://letsrace.cz/race-card/en/ischgl-ironbike-2027"
+        ],
+        "location": {
+          "@type": "Place",
+          "name": "Ischgl",
+          "address": {
+            "@type": "PostalAddress",
+            "addressCountry": "AT",
+            "addressLocality": "Ischgl"
+          },
+          "geo": {
+            "@type": "GeoCoordinates",
+            "latitude": 47.0120228,
+            "longitude": 10.2913166
+          }
+        }
+      },
+      {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Let's Race",
+            "item": "https://letsrace.cz/en"
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Austria",
+            "item": "https://letsrace.cz/en/races/at"
+          },
+          {
+            "@type": "ListItem",
+            "position": 3,
+            "name": "MTB",
+            "item": "https://letsrace.cz/en/races/at/mtb"
+          },
+          {
+            "@type": "ListItem",
+            "position": 4,
+            "name": "Ischgl Ironbike Short-Track",
+            "item": "https://letsrace.cz/en/race/ischgl-ironbike-2027"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "slug": "glpk-gravel-2027",
+    "url": "https://letsrace.cz/en/race/glpk-gravel-2027",
+    "status": 200,
+    "cache": "MISS",
+    "ld": [
+      {
+        "@context": "https://schema.org",
+        "@type": "SportsEvent",
+        "name": "GLPK Gravel",
+        "url": "https://letsrace.cz/en/race/glpk-gravel-2027",
+        "startDate": "2027-04-17",
+        "eventStatus": "https://schema.org/EventScheduled",
+        "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+        "inLanguage": "en",
+        "endDate": "2027-04-17",
+        "sameAs": [
+          "https://www.glpkgravel.pl/"
+        ],
+        "description": "GLPK Gravel is a gravel race held in Ruda koło Górzna, Poland, on 17 April 2027. We have not found an online entry for it yet; check with the organiser.",
+        "sport": "Cycling",
+        "image": [
+          "https://letsrace.cz/race-card/en/glpk-gravel-2027"
+        ],
+        "location": {
+          "@type": "Place",
+          "name": "Ruda koło Górzna",
+          "address": {
+            "@type": "PostalAddress",
+            "addressCountry": "PL",
+            "addressLocality": "Ruda koło Górzna"
+          },
+          "geo": {
+            "@type": "GeoCoordinates",
+            "latitude": 53.2253987,
+            "longitude": 19.6560676
+          }
+        }
+      },
+      {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Let's Race",
+            "item": "https://letsrace.cz/en"
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Poland",
+            "item": "https://letsrace.cz/en/races/pl"
+          },
+          {
+            "@type": "ListItem",
+            "position": 3,
+            "name": "Gravel",
+            "item": "https://letsrace.cz/en/races/pl/gravel"
+          },
+          {
+            "@type": "ListItem",
+            "position": 4,
+            "name": "GLPK Gravel",
+            "item": "https://letsrace.cz/en/race/glpk-gravel-2027"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "slug": "bl-cyclo-cross-stahnsdorf-2026",
+    "url": "https://letsrace.cz/en/race/bl-cyclo-cross-stahnsdorf-2026",
+    "status": 200,
+    "cache": "MISS",
+    "ld": [
+      {
+        "@context": "https://schema.org",
+        "@type": "SportsEvent",
+        "name": "CX Bundesliga 12 — Stahnsdorf / Tag 1",
+        "url": "https://letsrace.cz/en/race/bl-cyclo-cross-stahnsdorf-2026",
+        "startDate": "2026-11-14",
+        "eventStatus": "https://schema.org/EventScheduled",
+        "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+        "inLanguage": "en",
+        "endDate": "2026-11-14",
+        "sameAs": [
+          "https://www.dsergebnis.de/"
+        ],
+        "description": "CX Bundesliga 12 — Stahnsdorf / Tag 1 is a cyclocross race held in Stahnsdorf, Germany, on 14 November 2026. It is a round of Cyclo-Cross Bundesliga 2026/2027. Categories: U13, U15, U17, Youth, Junior, U23, Elite, Amateur, Masters. We have not found an online entry for it yet; check with the organiser.",
+        "sport": "Cycling",
+        "image": [
+          "https://letsrace.cz/race-card/en/bl-cyclo-cross-stahnsdorf-2026"
+        ],
+        "superEvent": {
+          "@type": "EventSeries",
+          "name": "Cyclo-Cross Bundesliga 2026/2027",
+          "url": "https://letsrace.cz/en/series/cyclo-cross-bundesliga-2026-2027"
+        },
+        "location": {
+          "@type": "Place",
+          "name": "Stahnsdorf",
+          "address": {
+            "@type": "PostalAddress",
+            "addressCountry": "DE",
+            "addressLocality": "Stahnsdorf"
+          },
+          "geo": {
+            "@type": "GeoCoordinates",
+            "latitude": 52.392,
+            "longitude": 13.217
+          }
+        }
+      },
+      {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Let's Race",
+            "item": "https://letsrace.cz/en"
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Germany",
+            "item": "https://letsrace.cz/en/races/de"
+          },
+          {
+            "@type": "ListItem",
+            "position": 3,
+            "name": "Cyclocross",
+            "item": "https://letsrace.cz/en/races/de/cx"
+          },
+          {
+            "@type": "ListItem",
+            "position": 4,
+            "name": "CX Bundesliga 12 — Stahnsdorf / Tag 1",
+            "item": "https://letsrace.cz/en/race/bl-cyclo-cross-stahnsdorf-2026"
+          }
+        ]
+      }
+    ]
+  }
+]

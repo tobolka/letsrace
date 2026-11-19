@@ -1,0 +1,17 @@
+import fs from "node:fs"; import cp from "node:child_process"; import { resolvePracticalEvidence, verifyPracticalExtraction } from "@/lib/catalog/practical-extraction";
+async function main() {
+const SP = process.argv[2]; const file = process.argv[3] ?? "practical-ai.json"; const rows = JSON.parse(fs.readFileSync(`${SP}/${file}`, "utf8")).filter((r: {raw?: unknown}) => r.raw);
+const ids = rows.map((r: {id: string}) => `'${r.id}'`).join(",");
+const db = JSON.parse(cp.execFileSync("/opt/homebrew/opt/postgresql@17/bin/psql", ["-h","127.0.0.1","-p","54329","-U","postgres","-d","letsrace","-qAt","-c",`select json_agg(t) from (select e.id,e.name,e.start_date "startDate",e.end_date "endDate",l.venue,l.municipality,json_build_array(e.website_url,e.regulations_url) "ownUrls" from events e left join locations l on l.id=e.location_id where e.id in (${ids})) t`],{encoding:"utf8",env:{...process.env,NODE_OPTIONS:""}}));
+const reviewed: unknown[] = [];
+const tally: Record<string, [number,number]> = {}, reasons: Record<string,number> = {}; const verbose = process.argv[4] === "v";
+for (const r of rows) { const c = db.find((d: {id: string}) => d.id === r.id);
+  const out = verifyPracticalExtraction(resolvePracticalEvidence(r.raw, r.documents), { ...c, documents: r.documents });
+  reviewed.push({ context: c, details: out.details, reasons: out.reasons });
+  for (const k of Object.keys(out.details ?? {})) { (tally[k] ??= [0,0])[0]++; if (verbose) console.log("OK ", c.name.slice(0,28), k, JSON.stringify((out.details as Record<string,{value?:unknown}>)[k]?.value ?? (out.details as Record<string,unknown>)[k]).slice(0,150)); }
+  for (const [k, why] of Object.entries(out.reasons ?? {}) as [string,string][]) { (tally[k] ??= [0,0])[1]++; reasons[why] = (reasons[why]??0)+1; if (verbose) { const raw = (resolvePracticalEvidence(r.raw, r.documents) as {facts:Record<string,{value?:unknown;quote?:string}>}).facts?.[k]; console.log("REJ", c.name.slice(0,28), k, why, JSON.stringify({ v: raw?.value, q: raw?.quote }).slice(0,520)); } }
+}
+fs.writeFileSync(`${SP}/continuation/replay-${file}`, JSON.stringify(reviewed, null, 2));
+console.log(JSON.stringify(tally)); console.log(JSON.stringify(reasons));
+}
+main();

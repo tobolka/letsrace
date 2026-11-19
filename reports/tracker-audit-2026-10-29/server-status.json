@@ -1,0 +1,56 @@
+{
+  "at": "2026-10-29T09:13:03.117Z",
+  "jobs": [
+    {
+      "key": "server-free",
+      "run_id": "b264300f-3526-46a9-9de8-b56d9a74422f",
+      "started_at": "2026-10-29T09:02:31.977184+00:00",
+      "finished_at": "2026-10-29T09:02:51.665+00:00",
+      "status": "attention",
+      "summary": {
+        "ok": false,
+        "count": 1,
+        "failed": 1,
+        "created": 0,
+        "geocode": {
+          "failed": 0,
+          "skipped": 7,
+          "updated": 0,
+          "attempted": 813
+        },
+        "updated": 19,
+        "problems": [
+          {
+            "url": "https://pzkol.pl/kalendarz",
+            "error": "write_failed:pzkol-2792:pipeline_data_review_required:name_year_conflict"
+          }
+        ],
+        "unchanged": 0
+      }
+    }
+  ],
+  "due": 0,
+  "health": {
+    "due": 0,
+    "ok24h": 73,
+    "sources": 1565,
+    "reads24h": 181,
+    "failed24h": 108,
+    "lastSuccessAt": "2026-10-29T07:26:53.523+00:00"
+  },
+  "schedules": {
+    "free": "denně",
+    "ai": "na Macu"
+  },
+  "countries": [
+    "CZ",
+    "SK",
+    "DE",
+    "AT",
+    "CH",
+    "IT",
+    "PL"
+  ],
+  "checkedAt": "2026-10-29T09:13:03.132Z",
+  "error": null
+}

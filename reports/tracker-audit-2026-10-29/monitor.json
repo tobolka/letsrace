@@ -1,0 +1,187 @@
+{
+  "version": 1,
+  "at": "2026-10-29T09:15:42.583Z",
+  "pid": 784,
+  "root": "/Users/radektobolka/Library/Application Support/LetsRace/runtime",
+  "data": "/Users/radektobolka/Library/Application Support/LetsRace/data",
+  "status": "waiting",
+  "activeTask": null,
+  "pendingTasks": [],
+  "paused": false,
+  "childPid": null,
+  "stage": null,
+  "startedAt": 1793264792147,
+  "lastOutputAt": 1793264876711,
+  "lastFinishedAt": 1793264876717,
+  "lastExitCode": 0,
+  "nextRunAt": 1793272076717,
+  "server": {
+    "at": "2026-10-29T09:13:03.117Z",
+    "jobs": [
+      {
+        "key": "server-free",
+        "run_id": "b264300f-3526-46a9-9de8-b56d9a74422f",
+        "started_at": "2026-10-29T09:02:31.977184+00:00",
+        "finished_at": "2026-10-29T09:02:51.665+00:00",
+        "status": "attention",
+        "summary": {
+          "ok": false,
+          "count": 1,
+          "failed": 1,
+          "created": 0,
+          "geocode": {
+            "failed": 0,
+            "skipped": 7,
+            "updated": 0,
+            "attempted": 813
+          },
+          "updated": 19,
+          "problems": [
+            {
+              "url": "https://pzkol.pl/kalendarz",
+              "error": "write_failed:pzkol-2792:pipeline_data_review_required:name_year_conflict"
+            }
+          ],
+          "unchanged": 0
+        }
+      }
+    ],
+    "due": 0,
+    "health": {
+      "due": 0,
+      "ok24h": 73,
+      "sources": 1565,
+      "reads24h": 181,
+      "failed24h": 108,
+      "lastSuccessAt": "2026-10-29T07:26:53.523+00:00"
+    },
+    "schedules": {
+      "free": "denně",
+      "ai": "na Macu"
+    },
+    "countries": [
+      "CZ",
+      "SK",
+      "DE",
+      "AT",
+      "CH",
+      "IT",
+      "PL"
+    ],
+    "checkedAt": "2026-10-29T09:13:03.132Z",
+    "error": null
+  },
+  "serverRequestRunning": false,
+  "serverRequestError": null,
+  "estimates": {
+    "federation": [
+      87443,
+      84010,
+      151682,
+      74195,
+      222325
+    ],
+    "refresh": [
+      128234,
+      3102253,
+      2214200,
+      2177496,
+      84570
+    ]
+  },
+  "catalogueAt": "2026-10-29T09:07:56.468Z",
+  "lastResult": {
+    "reads": 0,
+    "created": 0,
+    "updated": 0,
+    "failed": 0,
+    "unchanged": 0,
+    "leads": 0,
+    "queued": 0,
+    "problems": [],
+    "at": 1793264876717,
+    "exitCode": 0
+  },
+  "logPath": "/Users/radektobolka/Library/Application Support/LetsRace/data/refresh-2026-10-29T09-06-32-146Z.log",
+  "lastError": null,
+  "counters": {
+    "reads": 0,
+    "created": 0,
+    "updated": 0,
+    "failed": 0,
+    "unchanged": 0,
+    "leads": 0,
+    "queued": 0
+  },
+  "browser": {
+    "status": "failed",
+    "read": 0,
+    "written": 0,
+    "created": 0,
+    "updated": 0,
+    "issue": "ČSC portal did not render its calendar grid",
+    "at": "2026-10-29T09:06:22.565Z",
+    "log": "/Users/radektobolka/Library/Application Support/LetsRace/data/refresh-2026-10-29T09-02-40-528Z.log"
+  },
+  "totals": [
+    {
+      "season": "2026",
+      "total": 338,
+      "essentials": 329
+    },
+    {
+      "season": "2027",
+      "total": 931,
+      "essentials": 866
+    }
+  ],
+  "ai": {
+    "lastRunAt": null,
+    "month": "2026-10",
+    "spentUsd": 7.683967400000007,
+    "monthCapUsd": 5,
+    "dayCapUsd": 0.5,
+    "schedule": "Mac · úterý a pátek"
+  },
+  "system": {
+    "cpuPercent": null,
+    "memoryFreePercent": 42,
+    "processes": [
+      {
+        "pid": 7288,
+        "cpu": 70.4,
+        "name": "fileproviderd"
+      },
+      {
+        "pid": 10035,
+        "cpu": 35.8,
+        "name": "Codex (Renderer)"
+      },
+      {
+        "pid": 426,
+        "cpu": 21.5,
+        "name": "WindowServer"
+      },
+      {
+        "pid": 9684,
+        "cpu": 6.4,
+        "name": "Codex (Service)"
+      },
+      {
+        "pid": 52882,
+        "cpu": 5.6,
+        "name": "Claude"
+      }
+    ]
+  },
+  "countries": [
+    "CZ",
+    "SK",
+    "DE",
+    "AT",
+    "CH",
+    "IT",
+    "PL"
+  ],
+  "interrupted": false
+}

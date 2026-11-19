@@ -1,0 +1,46 @@
+--- a/src/lib/watcher/run.ts
++++ b/src/lib/watcher/run.ts
+@@ -1608,6 +1608,10 @@
+     "@/lib/taxonomy"
+   );
+   if (!isIngestibleDate(ev.startDate)) return null;
++  const { reviewed2027Identity } = await import("@/lib/watcher/reviewed-2027-identities");
++  const reviewedIdentity = reviewed2027Identity(ev);
++  if (reviewedIdentity?.reject) return null;
++  if (reviewedIdentity) ev = { ...ev, startDate: reviewedIdentity.startDate, endDate: reviewedIdentity.endDate };
+   const basicIssues = overviewIssues({ name: ev.name, start_date: ev.startDate, end_date: ev.endDate, status: ev.status }, new Date().toISOString().slice(0, 10));
+   if (basicIssues.length) throw new Error(`pipeline_data_review_required:${basicIssues.join(",")}`);
+ 
+@@ -1926,6 +1930,9 @@
+     const { differentInstalment } = await import("@/lib/catalog/merge-duplicates");
+     if (matched?.name && differentInstalment(matched.name, ev.name)) existingId = undefined;
+   }
++
++  // A reviewed identity also covers new external ids and stale calendar dates.
++  if (reviewedIdentity && !reviewedIdentity.reject) existingId = reviewedIdentity.canonicalId;
+ 
+   if (!existingId && ambiguousIdentity) throw new Error("identity_review_required: multiple matching races; source row deferred");
+ 
+--- a/src/lib/release-notes.ts
++++ b/src/lib/release-notes.ts
+@@ -19,6 +19,20 @@
+ 
+ export const RELEASE_NOTES: ReleaseNote[] = [
+   {
++    date: "2026-11-01",
++    items: {
++      en: [
++        "Sudety Tour Mediofondo is on 9 May 2027, with the time trial on 8 May and both Sunday routes clearly described.",
++        "L’Etape Czech Republic’s Hilly Stage appears once on 19 June 2027, with its route options and registration link together.",
++      ],
++      cs: [
++        "Mediofondo Sudety Tour má termín 9. května 2027, časovka 8. května a obě nedělní trasy mají přehledný popis.",
++        "Kopcovitá etapa L’Etape Czech Republic se zobrazuje jednou 19. června 2027 a má pohromadě varianty tras i odkaz na přihlášky.",
++      ],
++    },
++  },
++
++  {
+     date: "2026-10-31",
+     items: {
+       en: [

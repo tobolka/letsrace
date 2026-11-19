@@ -1,0 +1,35 @@
+{
+  "status": "ok",
+  "deployment": {
+    "id": "dpl_Bf1EWgdtwAvHnnA68eKSUYe5J3BC",
+    "url": "https://letsrace-6n3o530ai-tobolkas-projects.vercel.app",
+    "productionUrl": "https://letsrace-tobolkas-projects.vercel.app",
+    "inspectorUrl": "https://vercel.com/tobolkas-projects/letsrace/Bf1EWgdtwAvHnnA68eKSUYe5J3BC",
+    "readyState": "READY",
+    "target": "production",
+    "deploymentApiUrl": "https://api.vercel.com/v13/deployments/dpl_Bf1EWgdtwAvHnnA68eKSUYe5J3BC",
+    "buildMachine": {
+      "cores": 2,
+      "memory": 8192,
+      "machine": "basic",
+      "selectionType": "fixed",
+      "selectionSource": "plan-default"
+    },
+    "deploymentProtection": []
+  },
+  "message": "Deployment letsrace-6n3o530ai-tobolkas-projects.vercel.app ready. Production URL: https://letsrace-tobolkas-projects.vercel.app",
+  "next": [
+    {
+      "command": "vercel curl https://letsrace-tobolkas-projects.vercel.app",
+      "when": "Verify deployment, including when Deployment Protection is enabled"
+    },
+    {
+      "command": "vercel inspect letsrace-6n3o530ai-tobolkas-projects.vercel.app",
+      "when": "Inspect deployment"
+    },
+    {
+      "command": "vercel deploy --prod",
+      "when": "Promote to production"
+    }
+  ]
+}

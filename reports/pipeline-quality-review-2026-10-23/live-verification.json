@@ -1,0 +1,44 @@
+{
+  "commit": "fca254d92596680eb0b1e35f15b8f69be91a3c8a",
+  "deploymentId": "dpl_9g2bzD36CEo6WbbtCCJj7JpdHyrX",
+  "deploymentState": "READY",
+  "target": "production",
+  "buildSeconds": 68.32,
+  "checks": [
+    {
+      "status": "fulfilled",
+      "value": {
+        "path": "/cs/e/rsv-wenigumstadt-gravel-day-2027",
+        "status": 200,
+        "title": "RSV Wenigumstadt Gravel Day 2027 – Grossostheim · Let&#x27;s Race"
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "path": "/cs/e/volksradfahren-wenigumstadt-2027",
+        "status": 200,
+        "title": "Volksradfahren Wenigumstadt 2027 – silniční závod · Let&#x27;s Race"
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "path": "/cs/e/rozpis-2026",
+        "status": 404,
+        "title": "Všechny cyklistické závody na jedné mapě · Let&#x27;s Race"
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "path": "/api/events?catalogue=1",
+        "status": 200,
+        "count": 865,
+        "hasQuarantined": false
+      }
+    }
+  ],
+  "runtimeErrorsInCheckedWindow": 0,
+  "localProcessPid": 61064
+}

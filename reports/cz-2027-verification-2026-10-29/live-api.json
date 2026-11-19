@@ -1,0 +1,558 @@
+{
+  "checkedAt": "2026-10-29T09:48:02.834Z",
+  "results": [
+    {
+      "name": "moravia",
+      "status": 200,
+      "events": [
+        {
+          "id": "3044fcbe-3b85-42a5-aa66-b9dee3fff9b4",
+          "slug": "moravia-divide-2027",
+          "name": "Moravia Divide",
+          "startDate": "2027-05-28",
+          "endDate": "2027-06-03",
+          "disciplines": [
+            "mtb"
+          ],
+          "formats": [],
+          "audience": "mixed",
+          "ageCategories": [],
+          "ageConfidence": null,
+          "status": "scheduled",
+          "visibility": "public",
+          "eventType": "race",
+          "competitionType": "other",
+          "season": "2027",
+          "websiteUrl": "https://moraviadivide.eu/md27/",
+          "registrationUrl": null,
+          "regulationsUrl": null,
+          "resultsUrl": null,
+          "registrationClosesAt": null,
+          "listingUrl": null,
+          "sourceKind": "scraped",
+          "level": "local",
+          "classLabel": null,
+          "uciClass": null,
+          "lastSeenAt": "2026-10-29T09:32:49.842+00:00",
+          "location": {
+            "id": "087dec38-97a2-431f-b293-d4b4d6a67151",
+            "name": "Javorník",
+            "municipality": "Javorník",
+            "countryCode": "CZ",
+            "lat": 50.390324,
+            "lng": 17.002821
+          },
+          "series": null,
+          "categories": []
+        }
+      ],
+      "error": null
+    },
+    {
+      "name": "mtbo",
+      "status": 200,
+      "events": [
+        {
+          "id": "39a6fc31-96e9-431d-90c9-2811c7412fd5",
+          "slug": "cesky-pohar-mtbo-tri-dvory-2027",
+          "name": "Český pohár MTBO — Tři Dvory",
+          "startDate": "2027-04-17",
+          "endDate": "2027-04-18",
+          "disciplines": [
+            "mtb"
+          ],
+          "formats": [],
+          "audience": "mixed",
+          "ageCategories": [],
+          "ageConfidence": null,
+          "status": "scheduled",
+          "visibility": "public",
+          "eventType": "race",
+          "competitionType": "national_federation",
+          "season": "2027",
+          "websiteUrl": "https://mtbo.ceskyorientak.cz/vyberove-rizeni-na-poradatele-cp-mtbo-2027-je-u-konce/",
+          "registrationUrl": null,
+          "regulationsUrl": null,
+          "resultsUrl": null,
+          "registrationClosesAt": null,
+          "listingUrl": null,
+          "sourceKind": "scraped",
+          "level": "national",
+          "classLabel": "National",
+          "uciClass": null,
+          "lastSeenAt": "2026-10-29T09:33:03.162+00:00",
+          "location": {
+            "id": "aba641c1-cf91-466b-bda9-c9b5750f9164",
+            "name": "Tři Dvory",
+            "municipality": "Tři Dvory",
+            "countryCode": "CZ",
+            "lat": 50.0319554,
+            "lng": 15.2564873
+          },
+          "series": null,
+          "categories": []
+        },
+        {
+          "id": "2cea23e1-d7ce-4606-84c3-7533bebd087c",
+          "slug": "mistrovstvi-evropy-mtbo-hradec-kralove-2027",
+          "name": "Mistrovství Evropy MTBO — Hradec Králové",
+          "startDate": "2027-05-05",
+          "endDate": "2027-05-08",
+          "disciplines": [
+            "mtb"
+          ],
+          "formats": [],
+          "audience": "mixed",
+          "ageCategories": [
+            "elite",
+            "junior",
+            "youth"
+          ],
+          "ageConfidence": "explicit",
+          "status": "scheduled",
+          "visibility": "public",
+          "eventType": "race",
+          "competitionType": "national_federation",
+          "season": "2027",
+          "websiteUrl": "https://emtboc2027.cz/en/programme/",
+          "registrationUrl": "https://eventor.orienteering.sport/Events/Show/8961",
+          "regulationsUrl": "https://eventor-iof-storage.orientering.se/eventdocuments/8961/b377e385-af7b-4d10-abe9-f21884bd9087/Bulletin%202.Pdf",
+          "resultsUrl": null,
+          "registrationClosesAt": null,
+          "listingUrl": null,
+          "sourceKind": "scraped",
+          "level": "european_championship",
+          "classLabel": "European Championship",
+          "uciClass": null,
+          "lastSeenAt": "2026-10-29T09:33:17.847+00:00",
+          "location": {
+            "id": "bcaa8913-e13b-416b-a70e-f1b580afd203",
+            "name": "Hradec Králové",
+            "municipality": "Hradec Králové",
+            "countryCode": "CZ",
+            "lat": 50.20346,
+            "lng": 15.89233
+          },
+          "series": null,
+          "categories": []
+        },
+        {
+          "id": "97aec3a7-aac3-4ef6-8798-21d90ca1ddd0",
+          "slug": "cesky-pohar-mtbo-nejdek-2027",
+          "name": "Český pohár MTBO — Nejdek",
+          "startDate": "2027-05-22",
+          "endDate": "2027-05-23",
+          "disciplines": [
+            "mtb"
+          ],
+          "formats": [],
+          "audience": "mixed",
+          "ageCategories": [],
+          "ageConfidence": null,
+          "status": "scheduled",
+          "visibility": "public",
+          "eventType": "race",
+          "competitionType": "national_federation",
+          "season": "2027",
+          "websiteUrl": "https://mtbo.ceskyorientak.cz/vyberove-rizeni-na-poradatele-cp-mtbo-2027-je-u-konce/",
+          "registrationUrl": null,
+          "regulationsUrl": null,
+          "resultsUrl": null,
+          "registrationClosesAt": null,
+          "listingUrl": null,
+          "sourceKind": "scraped",
+          "level": "national",
+          "classLabel": "National",
+          "uciClass": null,
+          "lastSeenAt": "2026-10-29T09:33:05.38+00:00",
+          "location": {
+            "id": "cdfce875-1e08-4144-b6cb-3bdce1427803",
+            "name": "Nejdek",
+            "municipality": "Nejdek",
+            "countryCode": "CZ",
+            "lat": 50.3247878,
+            "lng": 12.7332967
+          },
+          "series": null,
+          "categories": []
+        },
+        {
+          "id": "36878ddd-54c4-482d-a99f-0bbfa0314d19",
+          "slug": "cesky-pohar-mtbo-marianske-lazne-2027",
+          "name": "Český pohár MTBO — Mariánské Lázně",
+          "startDate": "2027-06-19",
+          "endDate": "2027-06-20",
+          "disciplines": [
+            "mtb"
+          ],
+          "formats": [],
+          "audience": "mixed",
+          "ageCategories": [],
+          "ageConfidence": null,
+          "status": "scheduled",
+          "visibility": "public",
+          "eventType": "race",
+          "competitionType": "national_federation",
+          "season": "2027",
+          "websiteUrl": "https://mtbo.ceskyorientak.cz/vyberove-rizeni-na-poradatele-cp-mtbo-2027-je-u-konce/",
+          "registrationUrl": null,
+          "regulationsUrl": null,
+          "resultsUrl": null,
+          "registrationClosesAt": null,
+          "listingUrl": null,
+          "sourceKind": "scraped",
+          "level": "national",
+          "classLabel": "National",
+          "uciClass": null,
+          "lastSeenAt": "2026-10-29T09:33:07.619+00:00",
+          "location": {
+            "id": "cd3f1c69-698e-41ea-ae87-a5ffec5b6a02",
+            "name": "Mariánské Lázně",
+            "municipality": "Mariánské Lázně",
+            "countryCode": "CZ",
+            "lat": 49.9646,
+            "lng": 12.701
+          },
+          "series": null,
+          "categories": []
+        },
+        {
+          "id": "547e9dd0-a712-42d4-a4df-46ba695739ac",
+          "slug": "cesky-pohar-mtbo-plzen-2027",
+          "name": "Český pohár MTBO — Plzeň",
+          "startDate": "2027-07-02",
+          "endDate": "2027-07-06",
+          "disciplines": [
+            "mtb"
+          ],
+          "formats": [],
+          "audience": "mixed",
+          "ageCategories": [],
+          "ageConfidence": null,
+          "status": "scheduled",
+          "visibility": "public",
+          "eventType": "race",
+          "competitionType": "national_federation",
+          "season": "2027",
+          "websiteUrl": "https://mtbo.ceskyorientak.cz/vyberove-rizeni-na-poradatele-cp-mtbo-2027-je-u-konce/",
+          "registrationUrl": null,
+          "regulationsUrl": null,
+          "resultsUrl": null,
+          "registrationClosesAt": null,
+          "listingUrl": null,
+          "sourceKind": "scraped",
+          "level": "national",
+          "classLabel": "National",
+          "uciClass": null,
+          "lastSeenAt": "2026-10-29T09:33:10.112+00:00",
+          "location": {
+            "id": "90e91e30-ba60-42a5-8f0c-d2500972e11b",
+            "name": "Plzeň",
+            "municipality": "Plzeň",
+            "countryCode": "CZ",
+            "lat": 49.7384,
+            "lng": 13.3736
+          },
+          "series": null,
+          "categories": []
+        },
+        {
+          "id": "f705559e-8c58-4a50-b10b-340ba19e0c52",
+          "slug": "cesky-pohar-mtbo-jedovnice-2027",
+          "name": "Český pohár MTBO — Jedovnice",
+          "startDate": "2027-09-11",
+          "endDate": "2027-09-12",
+          "disciplines": [
+            "mtb"
+          ],
+          "formats": [],
+          "audience": "mixed",
+          "ageCategories": [],
+          "ageConfidence": null,
+          "status": "scheduled",
+          "visibility": "public",
+          "eventType": "race",
+          "competitionType": "national_federation",
+          "season": "2027",
+          "websiteUrl": "https://mtbo.ceskyorientak.cz/vyberove-rizeni-na-poradatele-cp-mtbo-2027-je-u-konce/",
+          "registrationUrl": null,
+          "regulationsUrl": null,
+          "resultsUrl": null,
+          "registrationClosesAt": null,
+          "listingUrl": null,
+          "sourceKind": "scraped",
+          "level": "national",
+          "classLabel": "National",
+          "uciClass": null,
+          "lastSeenAt": "2026-10-29T09:33:12.487+00:00",
+          "location": {
+            "id": "54fa4b58-493e-4c4a-9f7b-1a27c266bff8",
+            "name": "Jedovnice",
+            "municipality": "Jedovnice",
+            "countryCode": "CZ",
+            "lat": 49.3445314,
+            "lng": 16.7559491
+          },
+          "series": null,
+          "categories": []
+        },
+        {
+          "id": "6683713d-8659-4db5-84b4-d1136c19df78",
+          "slug": "cesky-pohar-mtbo-vrchlabi-2027",
+          "name": "Český pohár MTBO — Vrchlabí",
+          "startDate": "2027-10-02",
+          "endDate": "2027-10-03",
+          "disciplines": [
+            "mtb"
+          ],
+          "formats": [],
+          "audience": "mixed",
+          "ageCategories": [],
+          "ageConfidence": null,
+          "status": "scheduled",
+          "visibility": "public",
+          "eventType": "race",
+          "competitionType": "national_federation",
+          "season": "2027",
+          "websiteUrl": "https://mtbo.ceskyorientak.cz/vyberove-rizeni-na-poradatele-cp-mtbo-2027-je-u-konce/",
+          "registrationUrl": null,
+          "regulationsUrl": null,
+          "resultsUrl": null,
+          "registrationClosesAt": null,
+          "listingUrl": null,
+          "sourceKind": "scraped",
+          "level": "national",
+          "classLabel": "National",
+          "uciClass": null,
+          "lastSeenAt": "2026-10-29T09:33:14.96+00:00",
+          "location": {
+            "id": "9a6411f8-86e0-47f6-b792-1f52ee728ff3",
+            "name": "Vrchlabí",
+            "municipality": "Vrchlabí",
+            "countryCode": "CZ",
+            "lat": 50.627,
+            "lng": 15.609
+          },
+          "series": null,
+          "categories": []
+        }
+      ],
+      "error": null
+    },
+    {
+      "name": "v4",
+      "status": 200,
+      "events": [
+        {
+          "id": "a73eb9a5-46de-4bbe-b9d7-1e141a026314",
+          "slug": "v4-2027",
+          "name": "V4 2027",
+          "startDate": "2027-08-01",
+          "endDate": "2027-08-01",
+          "disciplines": [
+            "gravel"
+          ],
+          "formats": [],
+          "audience": "mixed",
+          "ageCategories": [],
+          "ageConfidence": null,
+          "status": "scheduled",
+          "visibility": "public",
+          "eventType": "race",
+          "competitionType": "community",
+          "season": "2027",
+          "websiteUrl": "https://bike-paradise.cz/",
+          "registrationUrl": "https://bike-paradise.cz/registrace/",
+          "regulationsUrl": null,
+          "resultsUrl": null,
+          "registrationClosesAt": null,
+          "listingUrl": null,
+          "sourceKind": "scraped",
+          "level": "local",
+          "classLabel": "Local",
+          "uciClass": null,
+          "lastSeenAt": "2026-10-25T02:16:56.908+00:00",
+          "location": {
+            "id": "f6b38eee-fc43-4d5b-ad3f-dc220ea62a4a",
+            "name": "Dolní Bousov",
+            "municipality": "Dolní Bousov",
+            "countryCode": "CZ",
+            "lat": 50.4384383,
+            "lng": 15.1276531
+          },
+          "series": null,
+          "categories": []
+        }
+      ],
+      "error": null
+    },
+    {
+      "name": "krakonos",
+      "status": 200,
+      "events": [
+        {
+          "id": "58a25cf9-06dd-47a1-91f8-a29b91c6ffed",
+          "slug": "casia-krakonosuv-cyklomaraton-2027",
+          "name": "CASIA Krakonošův cyklomaraton",
+          "startDate": "2027-06-12",
+          "endDate": "2027-06-12",
+          "disciplines": [
+            "road"
+          ],
+          "formats": [
+            "gran_fondo"
+          ],
+          "audience": "mixed",
+          "ageCategories": [
+            "u13",
+            "youth",
+            "junior",
+            "elite",
+            "amateur"
+          ],
+          "ageConfidence": "explicit",
+          "status": "scheduled",
+          "visibility": "public",
+          "eventType": "race",
+          "competitionType": "other",
+          "season": "2027",
+          "websiteUrl": "https://www.roadcycling.cz/roadcup/rocnik-2027",
+          "registrationUrl": "https://krakonosuvcyklomaraton.cz/registrace/",
+          "regulationsUrl": "https://krakonosuvcyklomaraton.cz/propozice/",
+          "resultsUrl": null,
+          "registrationClosesAt": null,
+          "listingUrl": null,
+          "sourceKind": "scraped",
+          "level": "local",
+          "classLabel": null,
+          "uciClass": null,
+          "lastSeenAt": "2026-10-29T09:33:21.436+00:00",
+          "location": {
+            "id": "98a3063d-1b03-4157-91d6-00c5e4f0f8cc",
+            "name": "Trutnov",
+            "municipality": "Trutnov",
+            "countryCode": "CZ",
+            "lat": 50.561,
+            "lng": 15.9128
+          },
+          "series": null,
+          "categories": []
+        }
+      ],
+      "error": null
+    },
+    {
+      "name": "lost",
+      "status": 200,
+      "events": [],
+      "error": null
+    },
+    {
+      "name": "rides",
+      "status": 200,
+      "events": [
+        {
+          "id": "312cc064-57d5-49cd-ac34-f8be58715d98",
+          "slug": "oremon-krusky-open-2027",
+          "name": "Oremon Krušky Open",
+          "startDate": "2027-05-21",
+          "endDate": "2027-05-23",
+          "disciplines": [
+            "mtb",
+            "gravel"
+          ],
+          "formats": [],
+          "audience": "adults",
+          "ageCategories": [
+            "amateur"
+          ],
+          "ageConfidence": "explicit",
+          "status": "scheduled",
+          "visibility": "public",
+          "eventType": "ride",
+          "competitionType": "other",
+          "season": "2027",
+          "websiteUrl": "https://oremon.cz/en/home_en/",
+          "registrationUrl": "https://oremon.cz/en/registrace_en/",
+          "regulationsUrl": null,
+          "resultsUrl": null,
+          "registrationClosesAt": null,
+          "listingUrl": null,
+          "sourceKind": "scraped",
+          "level": "local",
+          "classLabel": null,
+          "uciClass": null,
+          "lastSeenAt": "2026-10-29T09:33:24.397+00:00",
+          "location": {
+            "id": "458b4ff7-c96a-461a-a3f8-9557bb3a0475",
+            "name": "Český Jiřetín",
+            "municipality": "Český Jiřetín",
+            "countryCode": "CZ",
+            "lat": 50.7073002,
+            "lng": 13.5471241
+          },
+          "series": null,
+          "categories": []
+        }
+      ],
+      "error": null
+    },
+    {
+      "name": "south",
+      "status": 200,
+      "events": [
+        {
+          "id": "3226e52e-8105-4f49-be0d-0d4afdc2af30",
+          "slug": "okolo-jiznich-cech-tour-of-south-bohemia-2027",
+          "name": "Okolo jižních Čech / Tour of South Bohemia",
+          "startDate": "2027-09-09",
+          "endDate": "2027-09-12",
+          "disciplines": [
+            "road_race"
+          ],
+          "formats": [
+            "road_race"
+          ],
+          "audience": "adults",
+          "ageCategories": [
+            "elite"
+          ],
+          "ageConfidence": "explicit",
+          "status": "scheduled",
+          "visibility": "public",
+          "eventType": "race",
+          "competitionType": "other",
+          "season": "2027",
+          "websiteUrl": "https://www.okolojiznichcech.cz/",
+          "registrationUrl": null,
+          "regulationsUrl": null,
+          "resultsUrl": null,
+          "registrationClosesAt": null,
+          "listingUrl": null,
+          "sourceKind": "manual",
+          "level": "international",
+          "classLabel": "UCI 2.2",
+          "uciClass": "2.2",
+          "lastSeenAt": "2026-10-29T09:41:01.032+00:00",
+          "location": {
+            "id": "1cd291a9-c7ce-4a15-bdd5-19664cc381d4",
+            "name": "Jižní Čechy — místa etap zatím nezveřejněna",
+            "municipality": null,
+            "countryCode": "CZ",
+            "lat": null,
+            "lng": null
+          },
+          "series": null,
+          "categories": []
+        }
+      ],
+      "error": null
+    },
+    {
+      "name": "fichtl",
+      "status": 200,
+      "events": [],
+      "error": null
+    }
+  ]
+}

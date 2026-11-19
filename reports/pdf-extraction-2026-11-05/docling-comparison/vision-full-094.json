@@ -1,0 +1,35 @@
+{
+  "index": 94,
+  "name": "Ogólnopolski wyścig w kolarstwie przełajowym - memoriał Mieczysława Brzezińskiego",
+  "url": "https://pzkol.pl/pobierz/14487/s/14487_regulamin_zawodowogolnopolski_wys.pdf",
+  "mode": "vision-full",
+  "docling": "2.148.0",
+  "page_range": [
+    1,
+    7
+  ],
+  "ocr_options": {
+    "mode": "full_page",
+    "lang": [
+      "cs-CZ",
+      "pl-PL",
+      "de-DE",
+      "it-IT",
+      "fr-FR",
+      "en-US"
+    ],
+    "scale": 3.0,
+    "replace_broken_text_layer": false,
+    "recognition": "accurate",
+    "framework": "vision",
+    "force_full_page_ocr": true
+  },
+  "device": "cpu",
+  "threads": 4,
+  "status": "ConversionStatus.SUCCESS",
+  "errors": [],
+  "characters": 13651,
+  "tables": 2,
+  "pages": 7,
+  "seconds": 6.836
+}

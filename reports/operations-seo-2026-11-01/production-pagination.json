@@ -1,0 +1,72 @@
+[
+  {
+    "path": "/cs/zavody/cz",
+    "status": 200,
+    "canonical": "https://letsrace.cz/cs/zavody/cz",
+    "alternate": "https://letsrace.cz/en/races/cz",
+    "share": "https://letsrace.cz/cs/zavody/cz",
+    "schemaUrl": "https://letsrace.cz/cs/zavody/cz",
+    "raceLinks": 50,
+    "bytes": 426348
+  },
+  {
+    "path": "/cs/zavody/cz?page=2",
+    "status": 200,
+    "canonical": "https://letsrace.cz/cs/zavody/cz?page=2",
+    "alternate": "https://letsrace.cz/en/races/cz?page=2",
+    "share": "https://letsrace.cz/cs/zavody/cz?page=2",
+    "schemaUrl": "https://letsrace.cz/cs/zavody/cz?page=2",
+    "raceLinks": 50,
+    "bytes": 427138
+  },
+  {
+    "path": "/cs/zavody/cz/mtb?page=2",
+    "status": 200,
+    "canonical": "https://letsrace.cz/cs/zavody/cz/mtb?page=2",
+    "alternate": "https://letsrace.cz/en/races/cz/mtb?page=2",
+    "share": "https://letsrace.cz/cs/zavody/cz/mtb?page=2",
+    "schemaUrl": "https://letsrace.cz/cs/zavody/cz/mtb?page=2",
+    "raceLinks": 27,
+    "bytes": 290101
+  },
+  {
+    "path": "/cs/zavody/amateri?page=2",
+    "status": 200,
+    "canonical": "https://letsrace.cz/cs/zavody/amateri?page=2",
+    "alternate": "https://letsrace.cz/en/races/amateur?page=2",
+    "share": "https://letsrace.cz/cs/zavody/amateri?page=2",
+    "schemaUrl": "https://letsrace.cz/cs/zavody/amateri?page=2",
+    "raceLinks": 50,
+    "bytes": 862382
+  },
+  {
+    "path": "/cs/zavody/cz/mtb?page=999",
+    "status": 200,
+    "canonical": "https://letsrace.cz/cs/zavody/cz/mtb?page=2",
+    "alternate": "https://letsrace.cz/en/races/cz/mtb?page=2",
+    "share": "https://letsrace.cz/cs/zavody/cz/mtb?page=2",
+    "schemaUrl": "https://letsrace.cz/cs/zavody/cz/mtb?page=2",
+    "raceLinks": 27,
+    "bytes": 290105
+  },
+  {
+    "path": "/cs/zavody/cz/mtb?page=bad",
+    "status": 200,
+    "canonical": "https://letsrace.cz/cs/zavody/cz/mtb",
+    "alternate": "https://letsrace.cz/en/races/cz/mtb",
+    "share": "https://letsrace.cz/cs/zavody/cz/mtb",
+    "schemaUrl": "https://letsrace.cz/cs/zavody/cz/mtb",
+    "raceLinks": 75,
+    "bytes": 549019
+  },
+  {
+    "path": "/en/races/cz/mtb?page=2",
+    "status": 200,
+    "canonical": "https://letsrace.cz/en/races/cz/mtb?page=2",
+    "alternate": "https://letsrace.cz/en/races/cz/mtb?page=2",
+    "share": "https://letsrace.cz/en/races/cz/mtb?page=2",
+    "schemaUrl": "https://letsrace.cz/en/races/cz/mtb?page=2",
+    "raceLinks": 27,
+    "bytes": 289517
+  }
+]

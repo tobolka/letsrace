@@ -1,0 +1,1281 @@
+[
+  {
+    "id": "df880db5-363c-4737-a069-d736e2723a06",
+    "candidate_key": "6068be2316c6d5b7b836ead857ebb80ac23b3807b49c24562e8d0665c1206631",
+    "evidence_hash": "b0668aa2f50318f69e0cf460be28f2a8906a7c5970997af4c630077cbfab93c7",
+    "source_url": "https://prazska50.cz/tiskova-zprava/",
+    "watched_url_id": null,
+    "country": "CZ",
+    "season": 2027,
+    "payload": {
+      "name": "Pražská 50",
+      "evidence": {
+        "model": "claude-haiku-5-5",
+        "quote": "TISKOVÁ ZPRÁVA 2026 – prazska50.cz\n29. ročník Pražské 50 se uskuteční v sobotu 18. září 2027.",
+        "method": "llm_calendar",
+        "version": "calendar-v6",
+        "sourceUrl": "https://prazska50.cz/tiskova-zprava/"
+      },
+      "placeText": "",
+      "sourceUrl": "https://prazska50.cz/tiskova-zprava/",
+      "startDate": "2027-09-18",
+      "confidence": 0.7,
+      "externalId": "llm-prazska50.cz-prazska 50-2027-09-18"
+    },
+    "evidence": {
+      "quote": "TISKOVÁ ZPRÁVA 2026 – prazska50.cz\n29. ročník Pražské 50 se uskuteční v sobotu 18. září 2027.",
+      "reader": "calendar-v6",
+      "textHash": "9386f18b48050df5bc88b9f9cbc8a1a4845218533e4d9dd762662889940f9ff7",
+      "documentHash": "05a52594b351618f85a62a24f4349c35460dd7bbba4d55b2e711f39cd7421114"
+    },
+    "reason": "independent_discovery_requires_identity_and_authority_review",
+    "status": "waiting",
+    "decision": {
+      "id": "df880db5-363c-4737-a069-d736e2723a06",
+      "action": "wait",
+      "reason": "2027 place and discipline need edition-specific primary evidence; do not carry the 2026 route or registration.",
+      "followUp": {
+        "outcome": "unchanged",
+        "version": 1,
+        "attempts": 1,
+        "failures": 0,
+        "checkedAt": "2026-11-02T07:24:45.238Z",
+        "documents": [
+          {
+            "url": "https://prazska50.cz/tiskova-zprava/",
+            "outcome": "read",
+            "snapshot": "/Users/radektobolka/Documents/GitHub/letsrace/tmp/candidate-follow-ups/a716259eefff8614bac24c101990349fcd352adbff32b4ad951cf8335617c55b-7a80b63c664c480e0682d16291a61570cb0125725c0bd3526ad96a45b60ccf44.json",
+            "textHash": "9386f18b48050df5bc88b9f9cbc8a1a4845218533e4d9dd762662889940f9ff7",
+            "documentHash": "7a80b63c664c480e0682d16291a61570cb0125725c0bd3526ad96a45b60ccf44"
+          }
+        ],
+        "needsReview": false,
+        "nextCheckAt": "2026-11-09T07:24:45.238Z"
+      },
+      "evidenceHash": "b0668aa2f50318f69e0cf460be28f2a8906a7c5970997af4c630077cbfab93c7"
+    },
+    "event_id": null,
+    "created_at": "2026-10-25T14:21:55.331204+00:00",
+    "updated_at": "2026-11-02T07:24:45.238+00:00"
+  },
+  {
+    "id": "cb209d18-ff5b-435b-8061-4303b7727353",
+    "candidate_key": "68624683e1937db88eed7f093c2ef0b965567c4fdd1c4c5c81efa4bc220205e1",
+    "evidence_hash": "b4bec65b7a7922c464630af713560329545176f1d6ece80c72df72d0c2d3b52d",
+    "source_url": "https://www.roadstage.cz/",
+    "watched_url_id": null,
+    "country": "CZ",
+    "season": 2027,
+    "payload": {
+      "name": "ROAD STAGE SERIES 2027 — Orlické hory",
+      "evidence": {
+        "model": "claude-haiku-5-5",
+        "quote": "ROAD STAGE SERIES 2027\n5. 6. 2027 Orlické hory\n05 / 06 / 2027 ORLICKÉ HORY",
+        "method": "llm_calendar",
+        "version": "calendar-v7",
+        "sourceUrl": "https://www.roadstage.cz/"
+      },
+      "placeText": "Orlické hory",
+      "sourceUrl": "https://www.roadstage.cz/",
+      "startDate": "2027-06-05",
+      "confidence": 0.7,
+      "externalId": "llm-roadstage.cz-road stage series orlicke hory-2027-06-05",
+      "seriesName": "ROAD STAGE SERIES 2027"
+    },
+    "evidence": {
+      "quote": "ROAD STAGE SERIES 2027\n5. 6. 2027 Orlické hory\n05 / 06 / 2027 ORLICKÉ HORY",
+      "reader": "calendar-v7",
+      "textHash": "b7e0ac972c7899ab385935598764e9de0119b520d56f1bd91ab37d52c66417fa",
+      "documentHash": "46e60434f45beaabb6b9fb094f8406c4d2445bc581c95aa87076c422b913b5f2"
+    },
+    "reason": "independent_discovery_requires_identity_and_authority_review",
+    "status": "waiting",
+    "decision": {
+      "id": "cb209d18-ff5b-435b-8061-4303b7727353",
+      "action": "wait",
+      "reason": "Same-day catalogue representation is hidden; preserve visibility and review identity and conflicting June 6 aggregator date before any publication.",
+      "followUp": {
+        "outcome": "changed",
+        "version": 1,
+        "attempts": 1,
+        "failures": 0,
+        "checkedAt": "2026-11-02T07:24:45.566Z",
+        "documents": [
+          {
+            "url": "https://www.roadstage.cz/",
+            "outcome": "read",
+            "snapshot": "/Users/radektobolka/Documents/GitHub/letsrace/tmp/candidate-follow-ups/7d1de8661aa74529f97c592fa9ac782d05121369ce566c1161eaa9e8d6ccc8b3-c5a7295898ff52eb270ad55ebba05f4951c252f323e02363c14bdeacabe970b0.json",
+            "textHash": "c31a371e2dbf13f7d90a167e2cdfed52285d5dcd470d1caf8e7a9f64319acae0",
+            "documentHash": "c5a7295898ff52eb270ad55ebba05f4951c252f323e02363c14bdeacabe970b0"
+          }
+        ],
+        "needsReview": true,
+        "nextCheckAt": "2026-11-03T07:24:45.566Z"
+      },
+      "evidenceHash": "b4bec65b7a7922c464630af713560329545176f1d6ece80c72df72d0c2d3b52d"
+    },
+    "event_id": null,
+    "created_at": "2026-10-25T19:42:33.955336+00:00",
+    "updated_at": "2026-11-02T07:24:45.566+00:00"
+  },
+  {
+    "id": "5629a8fe-da76-46fd-903f-23b7cacb0748",
+    "candidate_key": "e4fef89322601400e131c898018f8664e7aab07b923d79d2d6eda2295a651575",
+    "evidence_hash": "1b3be5eec2afaeed60be90b86e16d63476197b8a3481cca5f3b17a978a0b31c9",
+    "source_url": "https://www.bikepoint.sk/kalendar/",
+    "watched_url_id": null,
+    "country": "SK",
+    "season": 2027,
+    "payload": {
+      "name": "QUICK SPORT JARNÝ ŠPRINT",
+      "evidence": {
+        "model": "claude-haiku-5-5",
+        "quote": "25. 04. 2027 | [QUICK SPORT JARNÝ ŠPRINT](https://www.bikepoint.sk/kalendar/april/25-04-2027/quick-sport-jarny-sprint/) | Bystrička\n25. 04. 2027 | [QUICK SPORT JARNÝ ŠPRINT](https://www.bikepoint.sk/kalendar/april/25-04-2027/quick-sport-jarny-sprint/) | Bystrička",
+        "method": "llm_calendar",
+        "version": "calendar-v7",
+        "sourceUrl": "https://www.bikepoint.sk/kalendar/"
+      },
+      "placeText": "Bystrička",
+      "sourceUrl": "https://www.bikepoint.sk/kalendar/april/25-04-2027/quick-sport-jarny-sprint/",
+      "startDate": "2027-04-25",
+      "confidence": 0.7,
+      "externalId": "llm-bikepoint.sk-quick sport jarny sprint-2027-04-25"
+    },
+    "evidence": {
+      "quote": "25. 04. 2027 | [QUICK SPORT JARNÝ ŠPRINT](https://www.bikepoint.sk/kalendar/april/25-04-2027/quick-sport-jarny-sprint/) | Bystrička\n25. 04. 2027 | [QUICK SPORT JARNÝ ŠPRINT](https://www.bikepoint.sk/kalendar/april/25-04-2027/quick-sport-jarny-sprint/) | Bystrička",
+      "reader": "calendar-v7",
+      "textHash": "5281d2f1c406ea472b630838ab9e9122e811e18d344cadfe70c82590a67cd986",
+      "documentHash": "e8ef907b4439bc6e8e8ee677fcdccc8b83a8669081a9264fad40f767336395ab"
+    },
+    "reason": "independent_discovery_requires_identity_and_authority_review",
+    "status": "waiting",
+    "decision": {
+      "id": "5629a8fe-da76-46fd-903f-23b7cacb0748",
+      "owner": "Codex",
+      "action": "wait",
+      "reason": "jarnysprint.sk confirms a return in 2027, but does not specify 25 April 2027. Bikepoint supplies that day.",
+      "category": "edition_not_confirmed",
+      "followUp": {
+        "outcome": "changed",
+        "version": 1,
+        "attempts": 1,
+        "failures": 0,
+        "checkedAt": "2026-11-02T07:24:57.272Z",
+        "documents": [
+          {
+            "url": "https://www.bikepoint.sk/kalendar/",
+            "outcome": "read",
+            "snapshot": "/Users/radektobolka/Documents/GitHub/letsrace/tmp/candidate-follow-ups/a6e3db4651d192e36044c00fd7c62ae0c1dc16341d47f7424d7d6b467e878b0b-fd359f09c0a502b28058516de222012dbd70c9ca4803061d03874fcaace0a849.json",
+            "textHash": "1537ee1e80ef2d195b064a2c58e0ca7cc83e2a332891551baf13abb1364b054c",
+            "documentHash": "fd359f09c0a502b28058516de222012dbd70c9ca4803061d03874fcaace0a849"
+          },
+          {
+            "url": "https://www.bikepoint.sk/kalendar/april/25-04-2027/quick-sport-jarny-sprint/",
+            "outcome": "read",
+            "snapshot": "/Users/radektobolka/Documents/GitHub/letsrace/tmp/candidate-follow-ups/a4c20773024e9bd7b227720cbe6f117521a6cd9eea31115eb99a9711d78ca82a-98bafeebe7d1c904893272157eee5941dad79518dd17fb183af5682db4d19d16.json",
+            "textHash": "411136f5c7974c1b7294b5414f08bbf26f41738d03ad4be296578c988a45d05a",
+            "documentHash": "98bafeebe7d1c904893272157eee5941dad79518dd17fb183af5682db4d19d16"
+          }
+        ],
+        "needsReview": true,
+        "nextCheckAt": "2026-11-03T07:24:57.272Z"
+      },
+      "reviewer": "Codex",
+      "sourceUrl": "https://www.bikepoint.sk/kalendar/",
+      "reviewedAt": "2026-10-29T15:18:20.168066+00:00",
+      "evidenceHash": "1b3be5eec2afaeed60be90b86e16d63476197b8a3481cca5f3b17a978a0b31c9",
+      "neededEvidence": "Organizer announcement giving the complete 2027 day/month/year."
+    },
+    "event_id": null,
+    "created_at": "2026-10-25T19:44:04.758213+00:00",
+    "updated_at": "2026-11-02T07:24:57.272+00:00"
+  },
+  {
+    "id": "a5fe9884-ffd5-489a-ab87-a818392f6d1b",
+    "candidate_key": "cfcd33d190d4ce23b29258d014ff53419a4dc688a239b6945157c4cbe5a637bd",
+    "evidence_hash": "48569239d28c2547c5ed6490d01e89063ea30e3f184a79e594cc2602b219c839",
+    "source_url": "https://www.bikepoint.sk/kalendar/",
+    "watched_url_id": null,
+    "country": "SK",
+    "season": 2027,
+    "payload": {
+      "name": "Majstrovstvá Slovenska E-XC EBIKE CUP 2026",
+      "evidence": {
+        "model": "claude-haiku-5-5",
+        "quote": "06. 05. 2027 | [Majstrovstvá Slovenska E-XC EBIKE CUP 2026](https://www.bikepoint.sk/kalendar/maj/06-05-2027/majstrovstva-slovenska-e-xc-ebike-cup-2026/) | Skalica /Zlatnická dolina\n06. 05. 2027 | [Majstrovstvá Slovenska E-XC EBIKE CUP 2026](https://www.bikepoint.sk/kalendar/maj/06-05-2027/majstrovstva-slovenska-e-xc-ebike-cup-2026/) | Skalica /Zlatnická dolina",
+        "method": "llm_calendar",
+        "version": "calendar-v7",
+        "sourceUrl": "https://www.bikepoint.sk/kalendar/"
+      },
+      "placeText": "Skalica /Zlatnická dolina",
+      "sourceUrl": "https://www.bikepoint.sk/kalendar/maj/06-05-2027/majstrovstva-slovenska-e-xc-ebike-cup-2026/",
+      "startDate": "2027-05-06",
+      "confidence": 0.7,
+      "externalId": "llm-bikepoint.sk-majstrovstva slovenska e xc ebike-2027-05-06"
+    },
+    "evidence": {
+      "quote": "06. 05. 2027 | [Majstrovstvá Slovenska E-XC EBIKE CUP 2026](https://www.bikepoint.sk/kalendar/maj/06-05-2027/majstrovstva-slovenska-e-xc-ebike-cup-2026/) | Skalica /Zlatnická dolina\n06. 05. 2027 | [Majstrovstvá Slovenska E-XC EBIKE CUP 2026](https://www.bikepoint.sk/kalendar/maj/06-05-2027/majstrovstva-slovenska-e-xc-ebike-cup-2026/) | Skalica /Zlatnická dolina",
+      "reader": "calendar-v7",
+      "textHash": "5281d2f1c406ea472b630838ab9e9122e811e18d344cadfe70c82590a67cd986",
+      "documentHash": "e8ef907b4439bc6e8e8ee677fcdccc8b83a8669081a9264fad40f767336395ab"
+    },
+    "reason": "independent_discovery_requires_identity_and_authority_review",
+    "status": "waiting",
+    "decision": {
+      "id": "a5fe9884-ffd5-489a-ab87-a818392f6d1b",
+      "owner": "Codex",
+      "action": "wait",
+      "reason": "Bikepoint title names EBIKE CUP 2026 but assigns 6 May 2027. Linked Fandíme cyklistike site supplies no matching 2027 announcement.",
+      "category": "name_year_conflict",
+      "followUp": {
+        "outcome": "changed",
+        "version": 1,
+        "attempts": 1,
+        "failures": 0,
+        "checkedAt": "2026-11-02T07:24:55.301Z",
+        "documents": [
+          {
+            "url": "https://www.bikepoint.sk/kalendar/",
+            "outcome": "read",
+            "snapshot": "/Users/radektobolka/Documents/GitHub/letsrace/tmp/candidate-follow-ups/a6e3db4651d192e36044c00fd7c62ae0c1dc16341d47f7424d7d6b467e878b0b-fd359f09c0a502b28058516de222012dbd70c9ca4803061d03874fcaace0a849.json",
+            "textHash": "1537ee1e80ef2d195b064a2c58e0ca7cc83e2a332891551baf13abb1364b054c",
+            "documentHash": "fd359f09c0a502b28058516de222012dbd70c9ca4803061d03874fcaace0a849"
+          },
+          {
+            "url": "https://www.bikepoint.sk/kalendar/maj/06-05-2027/majstrovstva-slovenska-e-xc-ebike-cup-2026/",
+            "outcome": "read",
+            "snapshot": "/Users/radektobolka/Documents/GitHub/letsrace/tmp/candidate-follow-ups/4d2669dcd1c499c8bf1261d41cdfbf03fbe771ae2df6fa31988395b2060128a1-99ddfb3c2a5df946cc1b5a8464acd8497f6dbf8cd26d29ba5dcdf9098837f3ed.json",
+            "textHash": "2044b9efb69e107d2afdf51109bcd02d8f824c92281f9c6858337cc57ecce752",
+            "documentHash": "99ddfb3c2a5df946cc1b5a8464acd8497f6dbf8cd26d29ba5dcdf9098837f3ed"
+          }
+        ],
+        "needsReview": true,
+        "nextCheckAt": "2026-11-03T07:24:55.301Z"
+      },
+      "reviewer": "Codex",
+      "sourceUrl": "https://www.bikepoint.sk/kalendar/",
+      "reviewedAt": "2026-10-29T15:18:20.168066+00:00",
+      "evidenceHash": "48569239d28c2547c5ed6490d01e89063ea30e3f184a79e594cc2602b219c839",
+      "neededEvidence": "Authoritative 2027 championship entry identifying correct edition, venue and date."
+    },
+    "event_id": null,
+    "created_at": "2026-10-25T19:44:04.814886+00:00",
+    "updated_at": "2026-11-02T07:24:55.301+00:00"
+  },
+  {
+    "id": "506455da-b3b3-41ac-9912-508076e012fd",
+    "candidate_key": "ee7d0f2974512c48d4959a7005084a244b0b00690a28242f8d0915990c0e83e8",
+    "evidence_hash": "8ec50b06d7437448e819a8a7103f99fb5ea9fd28ad6d84d768aab66b1e9d0f62",
+    "source_url": "https://www.bikepoint.sk/kalendar/",
+    "watched_url_id": null,
+    "country": "SK",
+    "season": 2027,
+    "payload": {
+      "name": "BikeFest maratón 2027",
+      "evidence": {
+        "model": "claude-haiku-5-5",
+        "quote": "30. 05. 2027 | [BikeFest maratón 2027](https://www.bikepoint.sk/kalendar/maj/30-05-2027/bikefest-maraton-2027/) | Kálnica\n30. 05. 2027 | [BikeFest maratón 2027](https://www.bikepoint.sk/kalendar/maj/30-05-2027/bikefest-maraton-2027/) | Kálnica",
+        "method": "llm_calendar",
+        "version": "calendar-v7",
+        "sourceUrl": "https://www.bikepoint.sk/kalendar/"
+      },
+      "placeText": "Kálnica",
+      "sourceUrl": "https://www.bikepoint.sk/kalendar/maj/30-05-2027/bikefest-maraton-2027/",
+      "startDate": "2027-05-30",
+      "confidence": 0.7,
+      "discipline": [
+        "xcm"
+      ],
+      "externalId": "llm-bikepoint.sk-bikefest maraton-2027-05-30"
+    },
+    "evidence": {
+      "quote": "30. 05. 2027 | [BikeFest maratón 2027](https://www.bikepoint.sk/kalendar/maj/30-05-2027/bikefest-maraton-2027/) | Kálnica\n30. 05. 2027 | [BikeFest maratón 2027](https://www.bikepoint.sk/kalendar/maj/30-05-2027/bikefest-maraton-2027/) | Kálnica",
+      "reader": "calendar-v7",
+      "textHash": "5281d2f1c406ea472b630838ab9e9122e811e18d344cadfe70c82590a67cd986",
+      "documentHash": "e8ef907b4439bc6e8e8ee677fcdccc8b83a8669081a9264fad40f767336395ab"
+    },
+    "reason": "independent_discovery_requires_identity_and_authority_review",
+    "status": "waiting",
+    "decision": {
+      "id": "506455da-b3b3-41ac-9912-508076e012fd",
+      "owner": "Codex",
+      "action": "wait",
+      "reason": "Official Bikefest site is still the 2026 festival. Proposed MTB marathon on 30 May 2027 is only on Bikepoint.",
+      "category": "edition_not_confirmed",
+      "followUp": {
+        "outcome": "changed",
+        "version": 1,
+        "attempts": 1,
+        "failures": 0,
+        "checkedAt": "2026-11-02T07:24:58.162Z",
+        "documents": [
+          {
+            "url": "https://www.bikepoint.sk/kalendar/",
+            "outcome": "read",
+            "snapshot": "/Users/radektobolka/Documents/GitHub/letsrace/tmp/candidate-follow-ups/a6e3db4651d192e36044c00fd7c62ae0c1dc16341d47f7424d7d6b467e878b0b-fd359f09c0a502b28058516de222012dbd70c9ca4803061d03874fcaace0a849.json",
+            "textHash": "1537ee1e80ef2d195b064a2c58e0ca7cc83e2a332891551baf13abb1364b054c",
+            "documentHash": "fd359f09c0a502b28058516de222012dbd70c9ca4803061d03874fcaace0a849"
+          },
+          {
+            "url": "https://www.bikepoint.sk/kalendar/maj/30-05-2027/bikefest-maraton-2027/",
+            "outcome": "read",
+            "snapshot": "/Users/radektobolka/Documents/GitHub/letsrace/tmp/candidate-follow-ups/e86ea7cf6f5efc56bfe52e4594413993f730743f279873df2be87f68c69c6a9c-8d04b2925344e523dea1c5894c4f7b4c970b8fc45db976d5eeac5296ff9993de.json",
+            "textHash": "382169cf410ac2995573f72092fd81f5f69bd091dc97a3d9932dfa111214420c",
+            "documentHash": "8d04b2925344e523dea1c5894c4f7b4c970b8fc45db976d5eeac5296ff9993de"
+          }
+        ],
+        "needsReview": true,
+        "nextCheckAt": "2026-11-03T07:24:58.162Z"
+      },
+      "reviewer": "Codex",
+      "sourceUrl": "https://www.bikepoint.sk/kalendar/",
+      "reviewedAt": "2026-10-29T15:18:20.168066+00:00",
+      "evidenceHash": "8ec50b06d7437448e819a8a7103f99fb5ea9fd28ad6d84d768aab66b1e9d0f62",
+      "neededEvidence": "2027 official festival race programme with marathon date."
+    },
+    "event_id": null,
+    "created_at": "2026-10-25T19:44:05.118194+00:00",
+    "updated_at": "2026-11-02T07:24:58.162+00:00"
+  },
+  {
+    "id": "19815d62-5a3d-4c18-870f-b587f8b4c531",
+    "candidate_key": "bf876769578fc2346382247ab509f04ad01d2a9b392453667349f5b15f5fdce7",
+    "evidence_hash": "8656261051b56cf129a563100376577698d7267c9be75f7035752a4761fa3a00",
+    "source_url": "https://www.bikepoint.sk/kalendar/",
+    "watched_url_id": null,
+    "country": "SK",
+    "season": 2027,
+    "payload": {
+      "name": "ŠKODA MARATÓN SLOVENSKÝ RAJ",
+      "evidence": {
+        "model": "claude-haiku-5-5",
+        "quote": "05. 06. 2027 | [ŠKODA MARATÓN SLOVENSKÝ RAJ](https://www.bikepoint.sk/kalendar/jun/05-06-2027/skoda-maraton-slovensky-raj/) | Hrabušice\n05. 06. 2027 | [ŠKODA MARATÓN SLOVENSKÝ RAJ](https://www.bikepoint.sk/kalendar/jun/05-06-2027/skoda-maraton-slovensky-raj/) | Hrabušice",
+        "method": "llm_calendar",
+        "version": "calendar-v7",
+        "sourceUrl": "https://www.bikepoint.sk/kalendar/"
+      },
+      "placeText": "Hrabušice",
+      "sourceUrl": "https://www.bikepoint.sk/kalendar/jun/05-06-2027/skoda-maraton-slovensky-raj/",
+      "startDate": "2027-06-05",
+      "confidence": 0.7,
+      "discipline": [
+        "xcm"
+      ],
+      "externalId": "llm-bikepoint.sk-skoda maraton slovensky raj-2027-06-05"
+    },
+    "evidence": {
+      "quote": "05. 06. 2027 | [ŠKODA MARATÓN SLOVENSKÝ RAJ](https://www.bikepoint.sk/kalendar/jun/05-06-2027/skoda-maraton-slovensky-raj/) | Hrabušice\n05. 06. 2027 | [ŠKODA MARATÓN SLOVENSKÝ RAJ](https://www.bikepoint.sk/kalendar/jun/05-06-2027/skoda-maraton-slovensky-raj/) | Hrabušice",
+      "reader": "calendar-v7",
+      "textHash": "5281d2f1c406ea472b630838ab9e9122e811e18d344cadfe70c82590a67cd986",
+      "documentHash": "e8ef907b4439bc6e8e8ee677fcdccc8b83a8669081a9264fad40f767336395ab"
+    },
+    "reason": "independent_discovery_requires_identity_and_authority_review",
+    "status": "waiting",
+    "decision": {
+      "id": "19815d62-5a3d-4c18-870f-b587f8b4c531",
+      "owner": "Codex",
+      "action": "wait",
+      "reason": "Official maratonslovenskyraj.sk retains 2026 race information; no retrieved organizer confirmation of 5 June 2027.",
+      "category": "edition_not_confirmed",
+      "followUp": {
+        "outcome": "changed",
+        "version": 1,
+        "attempts": 1,
+        "failures": 0,
+        "checkedAt": "2026-11-02T07:24:53.287Z",
+        "documents": [
+          {
+            "url": "https://www.bikepoint.sk/kalendar/",
+            "outcome": "read",
+            "snapshot": "/Users/radektobolka/Documents/GitHub/letsrace/tmp/candidate-follow-ups/a6e3db4651d192e36044c00fd7c62ae0c1dc16341d47f7424d7d6b467e878b0b-fd359f09c0a502b28058516de222012dbd70c9ca4803061d03874fcaace0a849.json",
+            "textHash": "1537ee1e80ef2d195b064a2c58e0ca7cc83e2a332891551baf13abb1364b054c",
+            "documentHash": "fd359f09c0a502b28058516de222012dbd70c9ca4803061d03874fcaace0a849"
+          },
+          {
+            "url": "https://www.bikepoint.sk/kalendar/jun/05-06-2027/skoda-maraton-slovensky-raj/",
+            "outcome": "read",
+            "snapshot": "/Users/radektobolka/Documents/GitHub/letsrace/tmp/candidate-follow-ups/d70aab239cdfaf2359246c52020610db8f9ceb70bb7ef18ca20759c0f0c35097-7ff753acb17a80e45c760e7e07b7158e05aa019933d49fcd9e57d3b697c65f4b.json",
+            "textHash": "deca95ac9edc7afc273a4656db06235dcb34b48a6a4e6a6aeb538d1373078999",
+            "documentHash": "7ff753acb17a80e45c760e7e07b7158e05aa019933d49fcd9e57d3b697c65f4b"
+          }
+        ],
+        "needsReview": true,
+        "nextCheckAt": "2026-11-03T07:24:53.287Z"
+      },
+      "reviewer": "Codex",
+      "sourceUrl": "https://www.bikepoint.sk/kalendar/",
+      "reviewedAt": "2026-10-29T15:18:20.168066+00:00",
+      "evidenceHash": "8656261051b56cf129a563100376577698d7267c9be75f7035752a4761fa3a00",
+      "neededEvidence": "2027 organizer/series schedule confirming Hrabušice date."
+    },
+    "event_id": null,
+    "created_at": "2026-10-25T19:44:05.238211+00:00",
+    "updated_at": "2026-11-02T07:24:53.288+00:00"
+  },
+  {
+    "id": "0e13ed64-21e6-47d5-acef-4a6120efeea9",
+    "candidate_key": "c3a73aac5db8ca9485603702da24e0428cd87c4795740f45bb14160f4c7935d6",
+    "evidence_hash": "7f65044bb7da99d8768467881237c993a35c55e1885d5466cef8068911088d98",
+    "source_url": "https://www.bikepoint.sk/kalendar/",
+    "watched_url_id": null,
+    "country": "SK",
+    "season": 2027,
+    "payload": {
+      "name": "ŠKODA CYKLOMARATÓN TOPOLČIANKY",
+      "evidence": {
+        "model": "claude-haiku-5-5",
+        "quote": "19. 06. 2027 | [ŠKODA CYKLOMARATÓN TOPOLČIANKY](https://www.bikepoint.sk/kalendar/jun/19-06-2027/skoda-cyklomaraton-topolcianky/) | Topoľčianky\n19. 06. 2027 | [ŠKODA CYKLOMARATÓN TOPOLČIANKY](https://www.bikepoint.sk/kalendar/jun/19-06-2027/skoda-cyklomaraton-topolcianky/) | Topoľčianky",
+        "method": "llm_calendar",
+        "version": "calendar-v7",
+        "sourceUrl": "https://www.bikepoint.sk/kalendar/"
+      },
+      "placeText": "Topoľčianky",
+      "sourceUrl": "https://www.bikepoint.sk/kalendar/jun/19-06-2027/skoda-cyklomaraton-topolcianky/",
+      "startDate": "2027-06-19",
+      "confidence": 0.7,
+      "externalId": "llm-bikepoint.sk-skoda cyklomaraton topolcianky-2027-06-19"
+    },
+    "evidence": {
+      "quote": "19. 06. 2027 | [ŠKODA CYKLOMARATÓN TOPOLČIANKY](https://www.bikepoint.sk/kalendar/jun/19-06-2027/skoda-cyklomaraton-topolcianky/) | Topoľčianky\n19. 06. 2027 | [ŠKODA CYKLOMARATÓN TOPOLČIANKY](https://www.bikepoint.sk/kalendar/jun/19-06-2027/skoda-cyklomaraton-topolcianky/) | Topoľčianky",
+      "reader": "calendar-v7",
+      "textHash": "5281d2f1c406ea472b630838ab9e9122e811e18d344cadfe70c82590a67cd986",
+      "documentHash": "e8ef907b4439bc6e8e8ee677fcdccc8b83a8669081a9264fad40f767336395ab"
+    },
+    "reason": "independent_discovery_requires_identity_and_authority_review",
+    "status": "waiting",
+    "decision": {
+      "id": "0e13ed64-21e6-47d5-acef-4a6120efeea9",
+      "owner": "Codex",
+      "action": "wait",
+      "reason": "Official cyklotopolcianky.sk/cyklomaraton still carries 2026 edition information; 19 June 2027 currently comes from Bikepoint.",
+      "category": "edition_not_confirmed",
+      "followUp": {
+        "outcome": "changed",
+        "version": 1,
+        "attempts": 1,
+        "failures": 0,
+        "checkedAt": "2026-11-02T07:24:54.233Z",
+        "documents": [
+          {
+            "url": "https://www.bikepoint.sk/kalendar/",
+            "outcome": "read",
+            "snapshot": "/Users/radektobolka/Documents/GitHub/letsrace/tmp/candidate-follow-ups/a6e3db4651d192e36044c00fd7c62ae0c1dc16341d47f7424d7d6b467e878b0b-fd359f09c0a502b28058516de222012dbd70c9ca4803061d03874fcaace0a849.json",
+            "textHash": "1537ee1e80ef2d195b064a2c58e0ca7cc83e2a332891551baf13abb1364b054c",
+            "documentHash": "fd359f09c0a502b28058516de222012dbd70c9ca4803061d03874fcaace0a849"
+          },
+          {
+            "url": "https://www.bikepoint.sk/kalendar/jun/19-06-2027/skoda-cyklomaraton-topolcianky/",
+            "outcome": "read",
+            "snapshot": "/Users/radektobolka/Documents/GitHub/letsrace/tmp/candidate-follow-ups/b4b604dc34dedbbd012319531db371529230915799ca8c13e7e6dbad7711e494-d7c9fe743e45ac29ed0b9b642f615384ad724443089ef803556ee4feb9c2404d.json",
+            "textHash": "ff370d3b72be5915ad2a8dd1ff5a8fd3ac2d01d34e5c290959d088d359a220e1",
+            "documentHash": "d7c9fe743e45ac29ed0b9b642f615384ad724443089ef803556ee4feb9c2404d"
+          }
+        ],
+        "needsReview": true,
+        "nextCheckAt": "2026-11-03T07:24:54.233Z"
+      },
+      "reviewer": "Codex",
+      "sourceUrl": "https://www.bikepoint.sk/kalendar/",
+      "reviewedAt": "2026-10-29T15:18:20.168066+00:00",
+      "evidenceHash": "7f65044bb7da99d8768467881237c993a35c55e1885d5466cef8068911088d98",
+      "neededEvidence": "2027 organizer or official series calendar."
+    },
+    "event_id": null,
+    "created_at": "2026-10-25T19:44:05.28934+00:00",
+    "updated_at": "2026-11-02T07:24:54.233+00:00"
+  },
+  {
+    "id": "42d4cf90-5713-4e32-ab17-736efc7c26dc",
+    "candidate_key": "d3344c065e0c4cfc075f477a50688725defdb35570f2a35633bf2bbcb23f3dca",
+    "evidence_hash": "e1adbb5a5902e0ef0a3ec816d9f0f5cbb86f020ee249b88b78c5b55c16e58a8a",
+    "source_url": "https://www.bikepoint.sk/kalendar/",
+    "watched_url_id": null,
+    "country": "SK",
+    "season": 2027,
+    "payload": {
+      "name": "Považský MTB ŠPECIÁL MARATÓN Považská Bystrica",
+      "evidence": {
+        "model": "claude-haiku-5-5",
+        "quote": "03. 07. 2027 | [Považský MTB ŠPECIÁL MARATÓN Považská Bystrica](https://www.bikepoint.sk/kalendar/jul/03-07-2027/povazsky-mtb-special-maraton-povazska-bystrica/) | Považská Bystrica\n03. 07. 2027 | [Považský MTB ŠPECIÁL MARATÓN Považská Bystrica](https://www.bikepoint.sk/kalendar/jul/03-07-2027/povazsky-mtb-special-maraton-povazska-bystrica/) | Považská Bystrica",
+        "method": "llm_calendar",
+        "version": "calendar-v7",
+        "sourceUrl": "https://www.bikepoint.sk/kalendar/"
+      },
+      "placeText": "Považská Bystrica",
+      "sourceUrl": "https://www.bikepoint.sk/kalendar/jul/03-07-2027/povazsky-mtb-special-maraton-povazska-bystrica/",
+      "startDate": "2027-07-03",
+      "confidence": 0.7,
+      "discipline": [
+        "xcm",
+        "mtb"
+      ],
+      "externalId": "llm-bikepoint.sk-povazsky special maraton povazska bystrica-2027-07-03"
+    },
+    "evidence": {
+      "quote": "03. 07. 2027 | [Považský MTB ŠPECIÁL MARATÓN Považská Bystrica](https://www.bikepoint.sk/kalendar/jul/03-07-2027/povazsky-mtb-special-maraton-povazska-bystrica/) | Považská Bystrica\n03. 07. 2027 | [Považský MTB ŠPECIÁL MARATÓN Považská Bystrica](https://www.bikepoint.sk/kalendar/jul/03-07-2027/povazsky-mtb-special-maraton-povazska-bystrica/) | Považská Bystrica",
+      "reader": "calendar-v7",
+      "textHash": "5281d2f1c406ea472b630838ab9e9122e811e18d344cadfe70c82590a67cd986",
+      "documentHash": "e8ef907b4439bc6e8e8ee677fcdccc8b83a8669081a9264fad40f767336395ab"
+    },
+    "reason": "independent_discovery_requires_identity_and_authority_review",
+    "status": "waiting",
+    "decision": {
+      "id": "42d4cf90-5713-4e32-ab17-736efc7c26dc",
+      "owner": "Codex",
+      "action": "wait",
+      "reason": "Active Process official site advertises Považský MTB Špeciál on 30 May 2026; no retrieved 2027 announcement for 3 July 2027.",
+      "category": "edition_not_confirmed",
+      "followUp": {
+        "outcome": "changed",
+        "version": 1,
+        "attempts": 1,
+        "failures": 0,
+        "checkedAt": "2026-11-02T07:24:56.266Z",
+        "documents": [
+          {
+            "url": "https://www.bikepoint.sk/kalendar/",
+            "outcome": "read",
+            "snapshot": "/Users/radektobolka/Documents/GitHub/letsrace/tmp/candidate-follow-ups/a6e3db4651d192e36044c00fd7c62ae0c1dc16341d47f7424d7d6b467e878b0b-fd359f09c0a502b28058516de222012dbd70c9ca4803061d03874fcaace0a849.json",
+            "textHash": "1537ee1e80ef2d195b064a2c58e0ca7cc83e2a332891551baf13abb1364b054c",
+            "documentHash": "fd359f09c0a502b28058516de222012dbd70c9ca4803061d03874fcaace0a849"
+          },
+          {
+            "url": "https://www.bikepoint.sk/kalendar/jul/03-07-2027/povazsky-mtb-special-maraton-povazska-bystrica/",
+            "outcome": "read",
+            "snapshot": "/Users/radektobolka/Documents/GitHub/letsrace/tmp/candidate-follow-ups/a6f0c15d1ee092544de4a5b8d1377406686d3da02feeaa50e3b0481322980f41-c6db1c057b3d61d995d1977baf3dd630da0e0e7e58347520a8283e45b3c78e28.json",
+            "textHash": "9cd83dd841ecadcc38515b19a31d1c16d685721ce62b3dd13cef1c56f037b895",
+            "documentHash": "c6db1c057b3d61d995d1977baf3dd630da0e0e7e58347520a8283e45b3c78e28"
+          }
+        ],
+        "needsReview": true,
+        "nextCheckAt": "2026-11-03T07:24:56.266Z"
+      },
+      "reviewer": "Codex",
+      "sourceUrl": "https://www.bikepoint.sk/kalendar/",
+      "reviewedAt": "2026-10-29T15:18:20.168066+00:00",
+      "evidenceHash": "e1adbb5a5902e0ef0a3ec816d9f0f5cbb86f020ee249b88b78c5b55c16e58a8a",
+      "neededEvidence": "Organizer announcement for 2027 marathon, separate from next-day child event."
+    },
+    "event_id": null,
+    "created_at": "2026-10-25T19:44:05.339333+00:00",
+    "updated_at": "2026-11-02T07:24:56.266+00:00"
+  },
+  {
+    "id": "415144cf-44e4-4dd1-9268-1a0b6c8b08b5",
+    "candidate_key": "9e4f94ad091870648b92b59adabfe3bf780868985f1c37ca177959bb27705bef",
+    "evidence_hash": "23969c64695c6dc45e4180b2d2752fde2d4d352d928ed667df7f6f46515ffee8",
+    "source_url": "https://www.bikepoint.sk/kalendar/",
+    "watched_url_id": null,
+    "country": "SK",
+    "season": 2027,
+    "payload": {
+      "name": "POVAŽSKÝ MTB ŠPECIALIK",
+      "evidence": {
+        "model": "claude-haiku-5-5",
+        "quote": "04. 07. 2027 | [POVAŽSKÝ MTB ŠPECIALIK](https://www.bikepoint.sk/kalendar/jul/04-07-2027/povazsky-mtb-specialik/) | Považská Bystrica\n04. 07. 2027 | [POVAŽSKÝ MTB ŠPECIALIK](https://www.bikepoint.sk/kalendar/jul/04-07-2027/povazsky-mtb-specialik/) | Považská Bystrica",
+        "method": "llm_calendar",
+        "version": "calendar-v7",
+        "sourceUrl": "https://www.bikepoint.sk/kalendar/"
+      },
+      "placeText": "Považská Bystrica",
+      "sourceUrl": "https://www.bikepoint.sk/kalendar/jul/04-07-2027/povazsky-mtb-specialik/",
+      "startDate": "2027-07-04",
+      "confidence": 0.7,
+      "discipline": [
+        "mtb"
+      ],
+      "externalId": "llm-bikepoint.sk-povazsky specialik-2027-07-04",
+      "countryHint": "SK"
+    },
+    "evidence": {
+      "quote": "04. 07. 2027 | [POVAŽSKÝ MTB ŠPECIALIK](https://www.bikepoint.sk/kalendar/jul/04-07-2027/povazsky-mtb-specialik/) | Považská Bystrica\n04. 07. 2027 | [POVAŽSKÝ MTB ŠPECIALIK](https://www.bikepoint.sk/kalendar/jul/04-07-2027/povazsky-mtb-specialik/) | Považská Bystrica",
+      "reader": "calendar-v7",
+      "textHash": "5281d2f1c406ea472b630838ab9e9122e811e18d344cadfe70c82590a67cd986",
+      "documentHash": "e8ef907b4439bc6e8e8ee677fcdccc8b83a8669081a9264fad40f767336395ab"
+    },
+    "reason": "independent_discovery_requires_identity_and_authority_review",
+    "status": "waiting",
+    "decision": {
+      "id": "415144cf-44e4-4dd1-9268-1a0b6c8b08b5",
+      "owner": "Codex",
+      "action": "wait",
+      "reason": "Active Process official site publishes CYKLOšpeciálik on 31 May 2026; no retrieved 2027 announcement. Bikepoint proposes 4 July 2027.",
+      "category": "edition_not_confirmed",
+      "followUp": {
+        "outcome": "changed",
+        "version": 1,
+        "attempts": 1,
+        "failures": 0,
+        "checkedAt": "2026-11-02T07:24:52.415Z",
+        "documents": [
+          {
+            "url": "https://www.bikepoint.sk/kalendar/",
+            "outcome": "read",
+            "snapshot": "/Users/radektobolka/Documents/GitHub/letsrace/tmp/candidate-follow-ups/a6e3db4651d192e36044c00fd7c62ae0c1dc16341d47f7424d7d6b467e878b0b-fd359f09c0a502b28058516de222012dbd70c9ca4803061d03874fcaace0a849.json",
+            "textHash": "1537ee1e80ef2d195b064a2c58e0ca7cc83e2a332891551baf13abb1364b054c",
+            "documentHash": "fd359f09c0a502b28058516de222012dbd70c9ca4803061d03874fcaace0a849"
+          },
+          {
+            "url": "https://www.bikepoint.sk/kalendar/jul/04-07-2027/povazsky-mtb-specialik/",
+            "outcome": "read",
+            "snapshot": "/Users/radektobolka/Documents/GitHub/letsrace/tmp/candidate-follow-ups/05c6793cebf2b7af7fc6b47298d70b8bb4233f8a2ed8a8b00b14c07999c70b22-f5933724ed834ceea0691924be731a34cb1f91035542fe0316630cea41b87642.json",
+            "textHash": "dcc528e41d928b34e63b627882731561f9fc6dba49dcb97f5b68af7f9bbe0531",
+            "documentHash": "f5933724ed834ceea0691924be731a34cb1f91035542fe0316630cea41b87642"
+          }
+        ],
+        "needsReview": true,
+        "nextCheckAt": "2026-11-03T07:24:52.415Z"
+      },
+      "reviewer": "Codex",
+      "sourceUrl": "https://www.bikepoint.sk/kalendar/",
+      "reviewedAt": "2026-10-29T15:18:20.168066+00:00",
+      "evidenceHash": "23969c64695c6dc45e4180b2d2752fde2d4d352d928ed667df7f6f46515ffee8",
+      "neededEvidence": "Organizer 2027 programme stating this separate child/event race day."
+    },
+    "event_id": null,
+    "created_at": "2026-10-25T19:44:05.388389+00:00",
+    "updated_at": "2026-11-02T07:24:52.415+00:00"
+  },
+  {
+    "id": "074faf63-97e6-4323-bebd-e2b9c2542b79",
+    "candidate_key": "0d327fe5e0a37af401e13a427cbf4106f773923f09f6d4579e57b2c5c479e0b7",
+    "evidence_hash": "e82f8626dc188468ba1549bf31c14cda22f16caf02b77de719518195fc3f53c6",
+    "source_url": "https://www.bikepoint.sk/kalendar/",
+    "watched_url_id": null,
+    "country": "SK",
+    "season": 2027,
+    "payload": {
+      "name": "MTB maratón Bike4you Hlohovec - Poniklec",
+      "evidence": {
+        "model": "claude-haiku-5-5",
+        "quote": "21. 08. 2027 | [MTB maratón Bike4you Hlohovec - Poniklec](https://www.bikepoint.sk/kalendar/august/21-08-2027/mtb-maraton-bike4you-hlohovec-poniklec/) | Hlohovec\n21. 08. 2027 | [MTB maratón Bike4you Hlohovec - Poniklec](https://www.bikepoint.sk/kalendar/august/21-08-2027/mtb-maraton-bike4you-hlohovec-poniklec/) | Hlohovec",
+        "method": "llm_calendar",
+        "version": "calendar-v7",
+        "sourceUrl": "https://www.bikepoint.sk/kalendar/"
+      },
+      "placeText": "Hlohovec",
+      "sourceUrl": "https://www.bikepoint.sk/kalendar/august/21-08-2027/mtb-maraton-bike4you-hlohovec-poniklec/",
+      "startDate": "2027-08-21",
+      "confidence": 0.7,
+      "discipline": [
+        "xcm",
+        "mtb"
+      ],
+      "externalId": "llm-bikepoint.sk-maraton bike4you hlohovec poniklec-2027-08-21"
+    },
+    "evidence": {
+      "quote": "21. 08. 2027 | [MTB maratón Bike4you Hlohovec - Poniklec](https://www.bikepoint.sk/kalendar/august/21-08-2027/mtb-maraton-bike4you-hlohovec-poniklec/) | Hlohovec\n21. 08. 2027 | [MTB maratón Bike4you Hlohovec - Poniklec](https://www.bikepoint.sk/kalendar/august/21-08-2027/mtb-maraton-bike4you-hlohovec-poniklec/) | Hlohovec",
+      "reader": "calendar-v7",
+      "textHash": "5281d2f1c406ea472b630838ab9e9122e811e18d344cadfe70c82590a67cd986",
+      "documentHash": "e8ef907b4439bc6e8e8ee677fcdccc8b83a8669081a9264fad40f767336395ab"
+    },
+    "reason": "independent_discovery_requires_identity_and_authority_review",
+    "status": "waiting",
+    "decision": {
+      "id": "074faf63-97e6-4323-bebd-e2b9c2542b79",
+      "owner": "Codex",
+      "action": "wait",
+      "reason": "Official maratonhlohovec.sk still advertises 15 August 2026. Proposed 21 August 2027 is only on the aggregator.",
+      "category": "edition_not_confirmed",
+      "followUp": {
+        "outcome": "changed",
+        "version": 1,
+        "attempts": 1,
+        "failures": 0,
+        "checkedAt": "2026-11-02T07:24:51.418Z",
+        "documents": [
+          {
+            "url": "https://www.bikepoint.sk/kalendar/",
+            "outcome": "read",
+            "snapshot": "/Users/radektobolka/Documents/GitHub/letsrace/tmp/candidate-follow-ups/a6e3db4651d192e36044c00fd7c62ae0c1dc16341d47f7424d7d6b467e878b0b-fd359f09c0a502b28058516de222012dbd70c9ca4803061d03874fcaace0a849.json",
+            "textHash": "1537ee1e80ef2d195b064a2c58e0ca7cc83e2a332891551baf13abb1364b054c",
+            "documentHash": "fd359f09c0a502b28058516de222012dbd70c9ca4803061d03874fcaace0a849"
+          },
+          {
+            "url": "https://www.bikepoint.sk/kalendar/august/21-08-2027/mtb-maraton-bike4you-hlohovec-poniklec/",
+            "outcome": "read",
+            "snapshot": "/Users/radektobolka/Documents/GitHub/letsrace/tmp/candidate-follow-ups/625c651afbf90094b4baf47d8b49c26f619c7dc7c75057a55911d028006eeb4a-1e2c06dc231e3ea9161b4710680e484f51265d792555e0fa7f8f005ca01694ad.json",
+            "textHash": "d76e9dbe0c6c8022d9a571d4464763bbe9e152a5ab9c85b1b7a968eafe980a95",
+            "documentHash": "1e2c06dc231e3ea9161b4710680e484f51265d792555e0fa7f8f005ca01694ad"
+          }
+        ],
+        "needsReview": true,
+        "nextCheckAt": "2026-11-03T07:24:51.418Z"
+      },
+      "reviewer": "Codex",
+      "sourceUrl": "https://www.bikepoint.sk/kalendar/",
+      "reviewedAt": "2026-10-29T15:18:20.168066+00:00",
+      "evidenceHash": "e82f8626dc188468ba1549bf31c14cda22f16caf02b77de719518195fc3f53c6",
+      "neededEvidence": "2027 announcement or registration page from BIKE4YOU Hlohovec."
+    },
+    "event_id": null,
+    "created_at": "2026-10-25T19:44:05.731205+00:00",
+    "updated_at": "2026-11-02T07:24:51.418+00:00"
+  },
+  {
+    "id": "4ad37087-1496-4de4-8da1-a6b2d246da11",
+    "candidate_key": "0c44f814005d9c2a6a278bdaa28d8bbb8f13a825b4447957b24a1eb3d3d4dfe3",
+    "evidence_hash": "faf43670ae0da32870d7c55cf103c218585d3dd96675c88951f301df3ab55b57",
+    "source_url": "https://www.bikepoint.sk/kalendar/",
+    "watched_url_id": null,
+    "country": "SK",
+    "season": 2027,
+    "payload": {
+      "name": "BREZNIANSKY MTB MARATÓN 2027",
+      "evidence": {
+        "model": "claude-haiku-5-5",
+        "quote": "18. 09. 2027 | [BREZNIANSKY MTB MARATÓN 2027](https://www.bikepoint.sk/kalendar/september/18-09-2027/brezniansky-mtb-maraton-2027/) | Brezno\n18. 09. 2027 | [BREZNIANSKY MTB MARATÓN 2027](https://www.bikepoint.sk/kalendar/september/18-09-2027/brezniansky-mtb-maraton-2027/) | Brezno",
+        "method": "llm_calendar",
+        "version": "calendar-v7",
+        "sourceUrl": "https://www.bikepoint.sk/kalendar/"
+      },
+      "placeText": "Brezno",
+      "sourceUrl": "https://www.bikepoint.sk/kalendar/september/18-09-2027/brezniansky-mtb-maraton-2027/",
+      "startDate": "2027-09-18",
+      "confidence": 0.7,
+      "discipline": [
+        "xcm",
+        "mtb"
+      ],
+      "externalId": "llm-bikepoint.sk-brezniansky maraton-2027-09-18"
+    },
+    "evidence": {
+      "quote": "18. 09. 2027 | [BREZNIANSKY MTB MARATÓN 2027](https://www.bikepoint.sk/kalendar/september/18-09-2027/brezniansky-mtb-maraton-2027/) | Brezno\n18. 09. 2027 | [BREZNIANSKY MTB MARATÓN 2027](https://www.bikepoint.sk/kalendar/september/18-09-2027/brezniansky-mtb-maraton-2027/) | Brezno",
+      "reader": "calendar-v7",
+      "textHash": "5281d2f1c406ea472b630838ab9e9122e811e18d344cadfe70c82590a67cd986",
+      "documentHash": "e8ef907b4439bc6e8e8ee677fcdccc8b83a8669081a9264fad40f767336395ab"
+    },
+    "reason": "independent_discovery_requires_identity_and_authority_review",
+    "status": "waiting",
+    "decision": {
+      "id": "4ad37087-1496-4de4-8da1-a6b2d246da11",
+      "owner": "Codex",
+      "action": "wait",
+      "reason": "Organizer-linked timing page states 19.09.2026; Bikepoint proposes 18.09.2027. The latter is a lead, not organizer confirmation.",
+      "category": "edition_not_confirmed",
+      "followUp": {
+        "outcome": "changed",
+        "version": 1,
+        "attempts": 1,
+        "failures": 0,
+        "checkedAt": "2026-11-02T07:24:50.525Z",
+        "documents": [
+          {
+            "url": "https://www.bikepoint.sk/kalendar/",
+            "outcome": "read",
+            "snapshot": "/Users/radektobolka/Documents/GitHub/letsrace/tmp/candidate-follow-ups/a6e3db4651d192e36044c00fd7c62ae0c1dc16341d47f7424d7d6b467e878b0b-fd359f09c0a502b28058516de222012dbd70c9ca4803061d03874fcaace0a849.json",
+            "textHash": "1537ee1e80ef2d195b064a2c58e0ca7cc83e2a332891551baf13abb1364b054c",
+            "documentHash": "fd359f09c0a502b28058516de222012dbd70c9ca4803061d03874fcaace0a849"
+          },
+          {
+            "url": "https://www.bikepoint.sk/kalendar/september/18-09-2027/brezniansky-mtb-maraton-2027/",
+            "outcome": "read",
+            "snapshot": "/Users/radektobolka/Documents/GitHub/letsrace/tmp/candidate-follow-ups/8b9439de13e5745671af4bfd06333a5db8b41c13f7c1caa95abf00c208e9603e-524bdc8bea03c6c81df0a565e003cf5352c13a7f6e7d31762305c862ec5078eb.json",
+            "textHash": "a6cc8e19478dd8eea7dbb60f98b4414c3b9b85a6fabb5698f9513d6763dd83c1",
+            "documentHash": "524bdc8bea03c6c81df0a565e003cf5352c13a7f6e7d31762305c862ec5078eb"
+          }
+        ],
+        "needsReview": true,
+        "nextCheckAt": "2026-11-03T07:24:50.525Z"
+      },
+      "reviewer": "Codex",
+      "sourceUrl": "https://www.bikepoint.sk/kalendar/",
+      "reviewedAt": "2026-10-29T15:18:20.168066+00:00",
+      "evidenceHash": "faf43670ae0da32870d7c55cf103c218585d3dd96675c88951f301df3ab55b57",
+      "neededEvidence": "2027 date published by Brezno organizer or its registration/timing service."
+    },
+    "event_id": null,
+    "created_at": "2026-10-25T19:44:05.82786+00:00",
+    "updated_at": "2026-11-02T07:24:50.525+00:00"
+  },
+  {
+    "id": "206f42f6-97a3-460c-8978-3e0a5939cbb1",
+    "candidate_key": "f56eb60f20c2a546480ba2deb51b78a9d6f7043f30426dc7dcc89b65c556fab3",
+    "evidence_hash": "1f14c218a36da5df9dab903d13e53d2570b6a2056b28421aba978d346af97d6e",
+    "source_url": "https://www.soof.sk/podujatia-a-akcie",
+    "watched_url_id": "9ee2f4c5-b671-4f02-bdbf-052df059479d",
+    "country": "SK",
+    "season": 2026,
+    "payload": {
+      "name": "Detská VRL — Šarišské Bohdanovce",
+      "audience": "kids",
+      "placeText": "Šarišské Bohdanovce",
+      "sourceUrl": "https://www.soof.sk/podujatia-a-akcie",
+      "startDate": "2026-07-12",
+      "confidence": 0.86,
+      "discipline": [
+        "xco"
+      ],
+      "externalId": "detska-vrl-2026-07-12-sarisske bohdanovce",
+      "seriesName": "Detská VRL Adriána Babiča",
+      "seriesSlug": "detska-vrl",
+      "websiteUrl": "https://vychodroadliga.eu/",
+      "countryHint": "SK",
+      "seriesWebsite": "https://vychodroadliga.eu/",
+      "regulationsUrl": "https://ctkzabokrekynn.sk/propozicie-6-rocnika-zabokreky-tour-2026/"
+    },
+    "evidence": {
+      "quote": null,
+      "reader": null,
+      "textHash": null,
+      "documentHash": "cccff12e9d8552ab4855826f3a970c7f2a19dfa3fe88722ab8467b47f4822a6f"
+    },
+    "reason": "identity_review_required: conflicting fingerprint owned by 71d5b977-658f-4a1b-bedc-770356737272",
+    "status": "waiting",
+    "decision": {
+      "id": "206f42f6-97a3-460c-8978-3e0a5939cbb1",
+      "owner": "Codex",
+      "action": "wait",
+      "reason": "Historical child race exists but contains gravel classification and an unrelated Zabokreky regulations URL. SOOF lists adult NyNa Gravel and Detská VRL at the same venue/date; identity/category cannot be equated.",
+      "category": "discipline_conflict",
+      "followUp": {
+        "outcome": "baseline",
+        "version": 1,
+        "attempts": 1,
+        "failures": 0,
+        "checkedAt": "2026-11-02T07:24:48.221Z",
+        "documents": [
+          {
+            "url": "https://www.soof.sk/podujatia-a-akcie",
+            "outcome": "read",
+            "snapshot": "/Users/radektobolka/Documents/GitHub/letsrace/tmp/candidate-follow-ups/25776ed3b1204ee69eff8eab8caf9a67d045fd07026715985abfa25b61e07697-3b17d80005e9021ee39b69dd4d106323f170bf0a9369204b31bd32024b04032d.json",
+            "textHash": "0d7e4cfb4d67e8d5fbfcdf3a2f631868d8e4b4e21ed47ff29851098aee37b852",
+            "documentHash": "3b17d80005e9021ee39b69dd4d106323f170bf0a9369204b31bd32024b04032d"
+          },
+          {
+            "url": "https://vychodroadliga.eu/",
+            "outcome": "read",
+            "snapshot": "/Users/radektobolka/Documents/GitHub/letsrace/tmp/candidate-follow-ups/c0a0ebc1334f665c1be82a35db1f444e8e78bbb1c2eb9317e62efc9e452bacff-1b55a81255a48133897a1743d23143999eb08b2ab8fa67b7cb5e02c59c482655.json",
+            "textHash": "94174134fd7b24b7111429d50b2f12016e47a26699a69b71f639a05e4bd69179",
+            "documentHash": "1b55a81255a48133897a1743d23143999eb08b2ab8fa67b7cb5e02c59c482655"
+          }
+        ],
+        "needsReview": false,
+        "nextCheckAt": "2026-11-09T07:24:48.221Z"
+      },
+      "reviewer": "Codex",
+      "sourceUrl": "https://www.soof.sk/podujatia-a-akcie",
+      "reviewedAt": "2026-10-29T15:18:20.168066+00:00",
+      "evidenceHash": "1f14c218a36da5df9dab903d13e53d2570b6a2056b28421aba978d346af97d6e",
+      "neededEvidence": "Individual child-race regulations/results identifying cycling discipline; keep separate from adult gravel race."
+    },
+    "event_id": null,
+    "created_at": "2026-10-28T21:16:28.980006+00:00",
+    "updated_at": "2026-11-02T07:24:48.221+00:00"
+  },
+  {
+    "id": "cb504b8d-0bf5-42e6-bdc5-e862b9f27ba7",
+    "candidate_key": "e106aaba591686bd3bc0233c55fa819abba596c302b02c8bee6ce8fc8fb00eb9",
+    "evidence_hash": "3898e80a78c9b5b1af2f8b3c2030188fa1055f0679441e9de241e354b330dffa",
+    "source_url": "https://my.raceresult.com/382600/",
+    "watched_url_id": "668e7812-a809-422f-8478-f03ce14d5460",
+    "country": "DE",
+    "season": 2027,
+    "payload": {
+      "name": "Zeitfahren Hintersee 2026",
+      "endDate": "2027-05-17",
+      "placeText": "Hintersee",
+      "sourceUrl": "https://my.raceresult.com/382600/",
+      "startDate": "2027-05-17",
+      "confidence": 0,
+      "discipline": [
+        "road"
+      ],
+      "externalId": "rr-382600",
+      "countryHint": "DE"
+    },
+    "evidence": {
+      "note": "Conflicting dates or title edition; quarantine the existing assertion for source review, never guess a replacement date.",
+      "method": "existing_catalogue_audit"
+    },
+    "reason": "existing_data_quarantined:date_conflict",
+    "status": "waiting",
+    "decision": {
+      "id": "cb504b8d-0bf5-42e6-bdc5-e862b9f27ba7",
+      "owner": "Codex",
+      "action": "wait",
+      "reason": "Current timing-page header says 2027-05-17 while title still says Zeitfahren Hintersee 2026; an older indexed timing page says 2026-05-25. Conflicting edition assertions, no currently retrieved organizer confirmation. Keep hidden.",
+      "category": "edition_conflict",
+      "followUp": {
+        "outcome": "baseline",
+        "version": 1,
+        "attempts": 1,
+        "failures": 0,
+        "checkedAt": "2026-11-02T07:24:47.033Z",
+        "documents": [
+          {
+            "url": "https://my.raceresult.com/382600/",
+            "outcome": "read",
+            "snapshot": "/Users/radektobolka/Documents/GitHub/letsrace/tmp/candidate-follow-ups/7d2a673e89a996aa9e9781bd0065bd39ab3ef9fe92a9cd6dcbd4381cd4858d42-5c6acfeb47d2ba49dd67aae6af5c07a9b9281f1cc67ba09c2ff9c7b1f900d322.json",
+            "textHash": "6acf336f00032063fbbd01b8e0e0330611431a6115c6a75a5a03f7e98526e9ec",
+            "documentHash": "5c6acfeb47d2ba49dd67aae6af5c07a9b9281f1cc67ba09c2ff9c7b1f900d322"
+          }
+        ],
+        "needsReview": false,
+        "nextCheckAt": "2026-11-09T07:24:47.033Z"
+      },
+      "reviewer": "Codex",
+      "sourceUrl": "https://my.raceresult.com/382600/",
+      "reviewedAt": "2026-10-29T15:18:20.168066+00:00",
+      "evidenceHash": "3898e80a78c9b5b1af2f8b3c2030188fa1055f0679441e9de241e354b330dffa",
+      "neededEvidence": "Organizer must explicitly identify the edition and date; do not merge with the separate 2027 record."
+    },
+    "event_id": "aa7ce393-5666-4361-97ef-51cde8ae2564",
+    "created_at": "2026-10-29T09:30:58.897018+00:00",
+    "updated_at": "2026-11-02T07:24:47.033+00:00"
+  },
+  {
+    "id": "16a1f07c-8810-4290-b559-d9ceaced491f",
+    "candidate_key": "bedb01facdbfbaa8834a0d88923a3b93fa16d1e4f77542ce8453f7dbe9c34d60",
+    "evidence_hash": "0f04ea14816fa1cb359febe2a9c39583217a51ce30f41f953babe8cebd3ea067",
+    "source_url": "https://lost-ride.cz/",
+    "watched_url_id": null,
+    "country": "CZ",
+    "season": 2027,
+    "payload": {
+      "name": "Lost Ride",
+      "evidence": {
+        "quote": "the date is still under discussion and may move 1-2 days earlier or later.",
+        "method": "manual_primary_source_review",
+        "version": "cz-2027-2026-10-29",
+        "sourceUrl": "https://lost-ride.cz/"
+      },
+      "placeText": "Česko — místo bude oznámeno",
+      "sourceUrl": "https://lost-ride.cz/",
+      "startDate": "2027-06-01",
+      "confidence": 0.5,
+      "discipline": [
+        "gravel"
+      ],
+      "externalId": "review-cz2027-lost",
+      "websiteUrl": "https://lost-ride.cz/",
+      "countryHint": "CZ"
+    },
+    "evidence": {
+      "quote": "the date is still under discussion and may move 1-2 days earlier or later.",
+      "reader": "cz-2027-2026-10-29",
+      "textHash": null,
+      "documentHash": "c8dcf0d11fa93b216566016a67467567548e726c84f7db13ec2a662a304d8679"
+    },
+    "reason": "Provisional date or edition: Change existing scheduled/public→tbc/hidden and lock. Candidate June1 22:00 preserved only as provisional admin value; exact start/finish town unpublished. Distance800+ and12–18k elevation not exact. Start list confirms entries exist, does not confirm final date or venue.",
+    "status": "waiting",
+    "decision": {
+      "action": "wait",
+      "reason": "Change existing scheduled/public→tbc/hidden and lock. Candidate June1 22:00 preserved only as provisional admin value; exact start/finish town unpublished. Distance800+ and12–18k elevation not exact. Start list confirms entries exist, does not confirm final date or venue.",
+      "followUp": {
+        "outcome": "baseline",
+        "version": 1,
+        "attempts": 1,
+        "failures": 0,
+        "checkedAt": "2026-11-02T07:24:45.968Z",
+        "documents": [
+          {
+            "url": "https://lost-ride.cz/",
+            "outcome": "read",
+            "snapshot": "/Users/radektobolka/Documents/GitHub/letsrace/tmp/candidate-follow-ups/09ff803ddc4fdb733ebb33ffe063bb5d5ea8f9a5937b42f53a952f7e16fe11a0-447cd9bd2267c0f9dba3299e31e388fdef70ecd3ac29c7cdc8dc2a29e7abcc1e.json",
+            "textHash": "debddc056c0ff1a2ef9b9752370ea9a3d94a03f44a5f645dddeddd4a0f9eeda0",
+            "documentHash": "447cd9bd2267c0f9dba3299e31e388fdef70ecd3ac29c7cdc8dc2a29e7abcc1e"
+          }
+        ],
+        "needsReview": false,
+        "nextCheckAt": "2026-11-09T07:24:45.968Z"
+      }
+    },
+    "event_id": "ce93409c-87ee-4886-8ff9-5a07000b0dc0",
+    "created_at": "2026-10-29T09:42:27.710215+00:00",
+    "updated_at": "2026-11-02T07:24:45.968+00:00"
+  },
+  {
+    "id": "d7e8f6c7-dd91-47c7-9e32-c01308d7d2e3",
+    "candidate_key": "083e84711b0f6d1f794797093469a849ff38458607208fadf5e876093e0238d1",
+    "evidence_hash": "f48a94534b75191a25970aa3f7cabd968c326c9d0375b8bf0b702b9b98fe5df7",
+    "source_url": "https://www.cyklobrani.cz/o-zavodu/propozice-zavodu",
+    "watched_url_id": null,
+    "country": "CZ",
+    "season": 2027,
+    "payload": {
+      "name": "Author Valtické Cyklobraní",
+      "evidence": {
+        "quote": "Propozice závodu - dočasně neplatné. | Termín a místo | září 2027 | Místo startu a cíle | Bude oznámeno.",
+        "method": "manual_primary_source_review",
+        "version": "cz-2027-2026-10-29",
+        "sourceUrl": "https://www.cyklobrani.cz/o-zavodu/propozice-zavodu"
+      },
+      "placeText": "Valtice",
+      "sourceUrl": "https://www.cyklobrani.cz/o-zavodu/propozice-zavodu",
+      "startDate": "2027-09-24",
+      "confidence": 0.5,
+      "discipline": [
+        "mtb",
+        "gravel"
+      ],
+      "externalId": "review-cz2027-cyklobrani",
+      "websiteUrl": "https://www.cyklobrani.cz/o-zavodu/propozice-zavodu",
+      "countryHint": "CZ"
+    },
+    "evidence": {
+      "quote": "Propozice závodu - dočasně neplatné. | Termín a místo | září 2027 | Místo startu a cíle | Bude oznámeno.",
+      "reader": "cz-2027-2026-10-29",
+      "textHash": null,
+      "documentHash": "332e3a69c253211179154f523cd3fee3745c1da20a52c7fba36aca1257891b4e"
+    },
+    "reason": "Provisional date or edition: Existing locked September24 day is not a confirmed race day. Organizer says September only, temporary invalid rules; registration on Sep24/25 does not confirm race date. Preserve locked date in admin and set tbc/hidden pending official confirmation.",
+    "status": "waiting",
+    "decision": {
+      "action": "wait",
+      "reason": "Existing locked September24 day is not a confirmed race day. Organizer says September only, temporary invalid rules; registration on Sep24/25 does not confirm race date. Preserve locked date in admin and set tbc/hidden pending official confirmation.",
+      "followUp": {
+        "outcome": "baseline",
+        "version": 1,
+        "attempts": 1,
+        "failures": 0,
+        "checkedAt": "2026-11-02T07:24:46.276Z",
+        "documents": [
+          {
+            "url": "https://www.cyklobrani.cz/o-zavodu/propozice-zavodu",
+            "outcome": "read",
+            "snapshot": "/Users/radektobolka/Documents/GitHub/letsrace/tmp/candidate-follow-ups/b8db3d4c1875347d6eb6432a47c1dc3ae1ebae391d39537f79c76c8b94ce567e-dff2f66dcc6727fe78a3e631a44d393302317000dc4b611f60a51b94abb06383.json",
+            "textHash": "e91e4ba9ef2cd73bae5150f070f5ed4d3e2951799a35a92ae477734442b32788",
+            "documentHash": "dff2f66dcc6727fe78a3e631a44d393302317000dc4b611f60a51b94abb06383"
+          }
+        ],
+        "needsReview": false,
+        "nextCheckAt": "2026-11-09T07:24:46.276Z"
+      }
+    },
+    "event_id": "13b431c4-84a9-4ab3-97b4-5e2d1a6d82e2",
+    "created_at": "2026-10-29T09:42:27.815179+00:00",
+    "updated_at": "2026-11-02T07:24:46.276+00:00"
+  },
+  {
+    "id": "38b6c306-c67d-463b-9f45-0aecd1af0405",
+    "candidate_key": "a5c10819e0d1eaa773e011179d55761b456872c0586c01a3f9cdadf622334ac1",
+    "evidence_hash": "58e7c118df5561044a3bb94943b53de373ee8a2d4e333185639deb2ef048e854",
+    "source_url": "https://unlimitedcycling.cz/our-race",
+    "watched_url_id": null,
+    "country": "CZ",
+    "season": 2027,
+    "payload": {
+      "name": "KM TRADING CZ trophy",
+      "evidence": {
+        "quote": "Závod 2026 je za námi | O ročníku 2027 vás budeme s předstihem informovat. | 15. srpna 2026",
+        "method": "manual_primary_source_review",
+        "version": "cz-2027-2026-10-29",
+        "sourceUrl": "https://unlimitedcycling.cz/our-race"
+      },
+      "placeText": "KM TRADING",
+      "sourceUrl": "https://unlimitedcycling.cz/our-race",
+      "startDate": "2027-08-15",
+      "confidence": 0.5,
+      "discipline": [
+        "road_race"
+      ],
+      "externalId": "review-cz2027-km-trophy",
+      "websiteUrl": "https://unlimitedcycling.cz/our-race",
+      "countryHint": "CZ"
+    },
+    "evidence": {
+      "quote": "Závod 2026 je za námi | O ročníku 2027 vás budeme s předstihem informovat. | 15. srpna 2026",
+      "reader": "cz-2027-2026-10-29",
+      "textHash": null,
+      "documentHash": "cd0862c9a457b66f628a60516b69302670681b83809ced304e78d60de88bb48d"
+    },
+    "reason": "Provisional date or edition: Public Aug15 2027 was recycled from2026. Keep historical candidate day only in admin, set tbc/hidden until2027 date announced.",
+    "status": "waiting",
+    "decision": {
+      "action": "wait",
+      "reason": "Public Aug15 2027 was recycled from2026. Keep historical candidate day only in admin, set tbc/hidden until2027 date announced.",
+      "followUp": {
+        "outcome": "baseline",
+        "version": 1,
+        "attempts": 1,
+        "failures": 0,
+        "checkedAt": "2026-11-02T07:24:46.447Z",
+        "documents": [
+          {
+            "url": "https://unlimitedcycling.cz/our-race",
+            "outcome": "read",
+            "snapshot": "/Users/radektobolka/Documents/GitHub/letsrace/tmp/candidate-follow-ups/736d1f48fe9feb7f0efd2cbbefe4c26fae76ed75b4d39cf6299c3f948fdaa333-c399e8f9260886765253b537eff4d297340bc86cc16c58d15786d8ea4d0184f3.json",
+            "textHash": "9987f07d71755ab1086ccfaf5f59a81ccab289469de1904ce72f578926f03dc8",
+            "documentHash": "c399e8f9260886765253b537eff4d297340bc86cc16c58d15786d8ea4d0184f3"
+          }
+        ],
+        "needsReview": false,
+        "nextCheckAt": "2026-11-09T07:24:46.447Z"
+      }
+    },
+    "event_id": "b2ddfb26-1eb0-46c0-babe-7746d7cab7f4",
+    "created_at": "2026-10-29T09:42:27.908476+00:00",
+    "updated_at": "2026-11-02T07:24:46.447+00:00"
+  },
+  {
+    "id": "25b5f74f-a9f1-4051-8946-cd3333d41921",
+    "candidate_key": "427976fa5cd3bba12d1bb6327988f3ba173b5a542a129a5179fc8b0fb12c1ba6",
+    "evidence_hash": "8c2c7e36d4a023c6f62b5599390776d27b395028a2596d5b3cbddd6cd26121ce",
+    "source_url": "https://www.finishers.com/en/event/the-step-czech-republic",
+    "watched_url_id": null,
+    "country": "CZ",
+    "season": 2027,
+    "payload": {
+      "name": "The Step Czech Republic",
+      "evidence": {
+        "quote": "Next event: Mid-June 2027",
+        "method": "manual_primary_source_review",
+        "version": "cz-2027-2026-10-29",
+        "sourceUrl": "https://www.finishers.com/en/event/the-step-czech-republic"
+      },
+      "placeText": "Prague",
+      "sourceUrl": "https://www.finishers.com/en/event/the-step-czech-republic",
+      "startDate": "2027-06-01",
+      "confidence": 0.5,
+      "discipline": [
+        "road"
+      ],
+      "externalId": "review-cz2027-the-step",
+      "websiteUrl": "https://www.finishers.com/en/event/the-step-czech-republic",
+      "countryHint": "CZ"
+    },
+    "evidence": {
+      "quote": "Next event: Mid-June 2027",
+      "reader": "cz-2027-2026-10-29",
+      "textHash": null,
+      "documentHash": "a9179bb9e2520f3f4254e2bb7b2f83e9706a825da6e3c7ee648f0751644f1e65"
+    },
+    "reason": "Provisional date or edition: June1 is an invented month placeholder. Secondary alias likely L’Etape; do not merge until identity review against existingJune19 records. Keep as tbc/hidden.",
+    "status": "waiting",
+    "decision": {
+      "action": "wait",
+      "reason": "June1 is an invented month placeholder. Secondary alias likely L’Etape; do not merge until identity review against existingJune19 records. Keep as tbc/hidden.",
+      "followUp": {
+        "outcome": "baseline",
+        "version": 1,
+        "attempts": 1,
+        "failures": 0,
+        "checkedAt": "2026-11-02T07:24:46.682Z",
+        "documents": [
+          {
+            "url": "https://www.finishers.com/en/event/the-step-czech-republic",
+            "outcome": "read",
+            "snapshot": "/Users/radektobolka/Documents/GitHub/letsrace/tmp/candidate-follow-ups/94d081af53b493d79c1bda521bf235dd7734358233655a4a1111778e80880f71-1a92e7b69d42f24d73e41d0b83e24cc6d60a541bd10b07c160856ace284081c3.json",
+            "textHash": "e78f71dfb7e46a7f23b8e025bede1f8119095ba24d8b5988f419b5acca41cb2a",
+            "documentHash": "1a92e7b69d42f24d73e41d0b83e24cc6d60a541bd10b07c160856ace284081c3"
+          }
+        ],
+        "needsReview": false,
+        "nextCheckAt": "2026-11-09T07:24:46.682Z"
+      }
+    },
+    "event_id": "0deee5af-b9d8-479c-a5b2-9b202a92a5f6",
+    "created_at": "2026-10-29T09:42:28.089901+00:00",
+    "updated_at": "2026-11-02T07:24:46.683+00:00"
+  },
+  {
+    "id": "0f86b993-da47-468b-a9a6-073bbc84bcb7",
+    "candidate_key": "13933c8a82c73c6083d84b87ab3f20d32b021678e3fd45719f2e112235c107b1",
+    "evidence_hash": "a5e249fa46848f443ed249a1e0120eca3261f172c05c5bcb50ce0754f46e3bef",
+    "source_url": "https://www.borderbash.cc/",
+    "watched_url_id": null,
+    "country": "CZ",
+    "season": 2027,
+    "payload": {
+      "name": "Bohemian Border Bash Race",
+      "placeText": "Srbská Kamenice",
+      "sourceUrl": "https://www.borderbash.cc/",
+      "confidence": 0.5,
+      "discipline": [
+        "gravel"
+      ],
+      "websiteUrl": "https://www.borderbash.cc/",
+      "countryHint": "CZ",
+      "tentativeStartDate": "2027-09-11"
+    },
+    "evidence": {
+      "reason": "Official website gives 11.–18. 2027 without a month; aggregator September date remains unconfirmed. Official /bbbr26-info and manual describe old edition. Require full official 2027 start date; existing 2026 editions remain separate.",
+      "reviewedAt": "2026-10-31",
+      "sourcesChecked": [
+        "https://www.borderbash.cc/",
+        "https://www.borderbash.cc/bbbr26-info",
+        "https://ultracyclinghub.com/explore/in/czechia/"
+      ]
+    },
+    "reason": "Official website gives 11.–18. 2027 without a month; aggregator September date remains unconfirmed. Official /bbbr26-info and manual describe old edition. Require full official 2027 start date; existing 2026 editions remain separate.",
+    "status": "waiting",
+    "decision": {
+      "followUp": {
+        "outcome": "baseline",
+        "version": 1,
+        "attempts": 1,
+        "failures": 0,
+        "checkedAt": "2026-11-02T07:24:58.457Z",
+        "documents": [
+          {
+            "url": "https://www.borderbash.cc/",
+            "outcome": "read",
+            "snapshot": "/Users/radektobolka/Documents/GitHub/letsrace/tmp/candidate-follow-ups/fe4309c6c5eb194c0725c2a3a7d3f5b092d9089b3133f24731bea6f4682470cf-19ab1dc0a217f26a69950a626e422b3696dd32840a1b49a9f4e48ba339b53411.json",
+            "textHash": "8e1a775b2687600c7b9e7dc09fb02efaf82cd206f1f390febe0af293832bdd5f",
+            "documentHash": "19ab1dc0a217f26a69950a626e422b3696dd32840a1b49a9f4e48ba339b53411"
+          }
+        ],
+        "needsReview": false,
+        "nextCheckAt": "2026-11-09T07:24:58.457Z"
+      }
+    },
+    "event_id": null,
+    "created_at": "2026-10-31T07:15:15.300815+00:00",
+    "updated_at": "2026-11-02T07:24:58.457+00:00"
+  },
+  {
+    "id": "97f72e9d-8a6e-498b-a0bc-5cb23a823d13",
+    "candidate_key": "073153d1aadf302b7cd16549d984aca2452fd8c03271aeca938c8e915067f43e",
+    "evidence_hash": "7bc9ec85cec44a40c5839db9ffd744938ca02e979045fed3b2ecdb4ba7ddd425",
+    "source_url": "https://www.jesenickysurovec.cz/ultrasurovec/",
+    "watched_url_id": null,
+    "country": "CZ",
+    "season": 2027,
+    "payload": {
+      "name": "Jesenický Ultrasurovec",
+      "placeText": "Jesenice u Rakovníka",
+      "sourceUrl": "https://www.jesenickysurovec.cz/ultrasurovec/",
+      "confidence": 0.5,
+      "discipline": [
+        "mtb"
+      ],
+      "websiteUrl": "https://www.jesenickysurovec.cz/ultrasurovec/",
+      "countryHint": "CZ",
+      "tentativeStartDate": "2027-10-15"
+    },
+    "evidence": {
+      "reason": "Aggregator gives 15.10.2027 but official cycling page inaccessible. Timing-provider 2027 programme confirms running on Oct 16–17, not the MTB ultra. Need explicit 2027 cycling date/identity confirmation; do not import running competitions as cycling.",
+      "reviewedAt": "2026-10-31",
+      "sourcesChecked": [
+        "https://www.jesenickysurovec.cz/ultrasurovec/",
+        "https://jesenickysurovec.cz/ultrasurovec/",
+        "https://www.nazavody.cz/zavod/896-jesenicky-surovec-2027/",
+        "https://bezpodpory.cz/bikepacking-a-ultra-cyklisticke-zavody-v-cesku-a-na-slovensku-2027/"
+      ]
+    },
+    "reason": "Aggregator gives 15.10.2027 but official cycling page inaccessible. Timing-provider 2027 programme confirms running on Oct 16–17, not the MTB ultra. Need explicit 2027 cycling date/identity confirmation; do not import running competitions as cycling.",
+    "status": "waiting",
+    "decision": {
+      "followUp": {
+        "outcome": "unavailable",
+        "version": 1,
+        "attempts": 1,
+        "failures": 1,
+        "checkedAt": "2026-11-02T07:24:58.561Z",
+        "documents": [
+          {
+            "url": "https://www.jesenickysurovec.cz/ultrasurovec/",
+            "error": "source_read_failed",
+            "outcome": "unavailable"
+          }
+        ],
+        "needsReview": false,
+        "nextCheckAt": "2026-11-02T08:24:58.561Z"
+      }
+    },
+    "event_id": null,
+    "created_at": "2026-10-31T07:15:15.300815+00:00",
+    "updated_at": "2026-11-02T07:24:58.561+00:00"
+  }
+]

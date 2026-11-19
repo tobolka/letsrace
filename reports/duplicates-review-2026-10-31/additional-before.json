@@ -1,0 +1,1329 @@
+{
+  "events": [
+    {
+      "id": "3dadbafa-c27c-4280-b0ee-f22f50088661",
+      "slug": "zabacky-cyklokros-memorial-rudolfa-bartose-2026",
+      "name": "Žabácký cyklokros 2026 – Memoriál Rudolfa Bartoše",
+      "name_normalized": "zabacky cyklokros memorial rudolfa bartose",
+      "series_id": null,
+      "location_id": "3edf8e21-2d19-4a21-b634-5720bee26348",
+      "start_date": "2026-11-22",
+      "end_date": "2026-11-22",
+      "timezone": "Europe/Prague",
+      "disciplines": [
+        "cx"
+      ],
+      "audience": "mixed",
+      "status": "scheduled",
+      "website_url": "https://www.cus-sportujsnami.cz/events/zabacky-cyklokros-2026-memorial-rudolfa-bartose/",
+      "registration_url": null,
+      "registration_opens_at": null,
+      "registration_closes_at": null,
+      "fingerprint": "2026-11-22:u2f6e:zabacky cyklokros memorial rudolfa bartose",
+      "source_kind": "scraped",
+      "last_seen_at": "2026-10-23T21:43:42.346+00:00",
+      "created_at": "2026-10-23T21:43:42.408119+00:00",
+      "updated_at": "2026-10-31T07:34:22.608117+00:00",
+      "level": "local",
+      "class_label": "Local",
+      "description": null,
+      "age_categories": [],
+      "uci_class": null,
+      "formats": [],
+      "event_type": "race",
+      "competition_type": "community",
+      "season": "2026",
+      "visibility": "public",
+      "results_url": null,
+      "regulations_url": null,
+      "merged_into_id": null,
+      "search_text": "zabacky cyklokros 2026 memorial rudolfa bartose",
+      "age_confidence": null
+    },
+    {
+      "id": "a403090a-b5e8-4901-9ca5-c1811cb59d23",
+      "slug": "sedlcany-2026",
+      "name": "TBC — SEDLČANY",
+      "name_normalized": "tbc sedlcany",
+      "series_id": "43d4d2fa-c2bd-4ff5-a0da-0d4a8c1491eb",
+      "location_id": "cd906dea-4d26-490c-a658-f6e641410a63",
+      "start_date": "2026-11-22",
+      "end_date": "2026-11-22",
+      "timezone": "Europe/Prague",
+      "disciplines": [
+        "cx"
+      ],
+      "audience": "mixed",
+      "status": "scheduled",
+      "website_url": "https://www.da-ba.com/zavody/zabacky-cyklokros/",
+      "registration_url": "https://maraton.cz/terminovka/entry/373",
+      "registration_opens_at": null,
+      "registration_closes_at": null,
+      "fingerprint": "2026-11-22:u2f4x:tbc sedlcany",
+      "source_kind": "scraped",
+      "last_seen_at": "2026-10-30T10:33:09.421+00:00",
+      "created_at": "2026-08-26T11:06:04.487315+00:00",
+      "updated_at": "2026-10-30T10:33:09.421+00:00",
+      "level": "local",
+      "class_label": null,
+      "description": null,
+      "age_categories": [
+        "kids",
+        "u13",
+        "elite",
+        "junior",
+        "u11",
+        "amateur",
+        "u7",
+        "u15",
+        "u17",
+        "masters",
+        "youth",
+        "u9"
+      ],
+      "uci_class": null,
+      "formats": [],
+      "event_type": "series",
+      "competition_type": "other",
+      "season": "2026/27",
+      "visibility": "public",
+      "results_url": null,
+      "regulations_url": "https://tbcserie.cz/pravidla",
+      "merged_into_id": null,
+      "search_text": "tbc sedlcany tbc serie tbc serie",
+      "age_confidence": "explicit"
+    },
+    {
+      "id": "bb1399cd-3baf-4f88-84b8-740bf49afe56",
+      "slug": "dolomiten-radrundfahrt-2027",
+      "name": "Dolomiten Radrundfahrt",
+      "name_normalized": "dolomiten radrundfahrt",
+      "series_id": null,
+      "location_id": "30317de2-b8b1-4adb-82af-8a45a2c07677",
+      "start_date": "2027-06-13",
+      "end_date": "2027-06-13",
+      "timezone": "Europe/Prague",
+      "disciplines": [
+        "road",
+        "gran_fondo"
+      ],
+      "audience": "adults",
+      "status": "scheduled",
+      "website_url": "https://www.dolomitensport.at/de/events/dolomitenradrundfahrt.html",
+      "registration_url": null,
+      "registration_opens_at": null,
+      "registration_closes_at": null,
+      "fingerprint": "2027-06-13:u2346:dolomiten radrundfahrt",
+      "source_kind": "scraped",
+      "last_seen_at": "2026-10-23T21:43:48.152+00:00",
+      "created_at": "2026-10-23T21:43:48.212236+00:00",
+      "updated_at": "2026-10-31T07:32:43.484989+00:00",
+      "level": "local",
+      "class_label": "Local",
+      "description": null,
+      "age_categories": [
+        "amateur",
+        "masters"
+      ],
+      "uci_class": null,
+      "formats": [
+        "gran_fondo"
+      ],
+      "event_type": "race",
+      "competition_type": "community",
+      "season": "2027",
+      "visibility": "public",
+      "results_url": null,
+      "regulations_url": null,
+      "merged_into_id": null,
+      "search_text": "dolomiten radrundfahrt",
+      "age_confidence": "default"
+    },
+    {
+      "id": "e2258c9f-8aed-4cad-a73e-5f26275c82d9",
+      "slug": "supergirodolomiti-2027",
+      "name": "SuperGiroDolomiti",
+      "name_normalized": "supergirodolomiti",
+      "series_id": null,
+      "location_id": "554f1535-b020-4bbe-89e6-57da6e13f138",
+      "start_date": "2027-06-13",
+      "end_date": "2027-06-13",
+      "timezone": "Europe/Vienna",
+      "disciplines": [
+        "road",
+        "gran_fondo"
+      ],
+      "audience": "adults",
+      "status": "scheduled",
+      "website_url": null,
+      "registration_url": null,
+      "registration_opens_at": null,
+      "registration_closes_at": null,
+      "fingerprint": "2027-06-13:u2346:supergirodolomiti",
+      "source_kind": "scraped",
+      "last_seen_at": "2026-10-25T04:43:34.982+00:00",
+      "created_at": "2026-10-19T19:31:51.795577+00:00",
+      "updated_at": "2026-10-25T04:43:34.982+00:00",
+      "level": "local",
+      "class_label": "Local",
+      "description": null,
+      "age_categories": [
+        "amateur"
+      ],
+      "uci_class": null,
+      "formats": [
+        "gran_fondo"
+      ],
+      "event_type": "gran_fondo",
+      "competition_type": "community",
+      "season": "2027",
+      "visibility": "public",
+      "results_url": null,
+      "regulations_url": null,
+      "merged_into_id": null,
+      "search_text": "supergirodolomiti",
+      "age_confidence": "explicit"
+    }
+  ],
+  "event_sources": [
+    {
+      "id": "96ef0b20-0d5b-467a-9deb-44e364290c81",
+      "event_id": "3dadbafa-c27c-4280-b0ee-f22f50088661",
+      "watched_url_id": "433af772-24e0-49ae-94a0-0ae65f80e8e1",
+      "source_url": "https://kalendar.winspace.cz/kalendar/2026-zabacky-cyklokros-2026-memorial-rudolfa-bartose-af8f9c5f",
+      "external_id": "llm-kalendar.winspace.cz-zabacky cyklokros memorial rudolfa bartose-2026-11-22",
+      "raw_hash": null,
+      "is_canonical": true,
+      "created_at": "2026-10-23T21:43:42.580794+00:00",
+      "kind": "aggregator"
+    },
+    {
+      "id": "3b919703-03f0-4663-82f3-33b6a8b66bcb",
+      "event_id": "3dadbafa-c27c-4280-b0ee-f22f50088661",
+      "watched_url_id": null,
+      "source_url": "https://www.cus-sportujsnami.cz/events/zabacky-cyklokros-2026-memorial-rudolfa-bartose/",
+      "external_id": "winspace-review-2026-10-31-v1:31:verified-listing",
+      "raw_hash": null,
+      "is_canonical": false,
+      "created_at": "2026-10-31T07:34:22.608117+00:00",
+      "kind": "official"
+    },
+    {
+      "id": "8b08fb39-0065-4e1f-a119-d5a60f3468b5",
+      "event_id": "a403090a-b5e8-4901-9ca5-c1811cb59d23",
+      "watched_url_id": "3c570c1d-4eaf-495b-ad26-0dc33766ff0a",
+      "source_url": "https://portal.czechcyclingfederation.com/RaceDetail/Race/1812",
+      "external_id": "csc-1812",
+      "raw_hash": null,
+      "is_canonical": true,
+      "created_at": "2026-09-24T07:23:46.660571+00:00",
+      "kind": "national_federation"
+    },
+    {
+      "id": "5b540dee-f68f-4ac9-9867-fbea7f2eaab5",
+      "event_id": "a403090a-b5e8-4901-9ca5-c1811cb59d23",
+      "watched_url_id": "f4c6dff8-b49e-4c8b-910b-8bed131fa063",
+      "source_url": "https://sumator.cz/race/zabacky-cyklokros-22-11-2026",
+      "external_id": "sumator-zabacky cyklokros-2026-11-22",
+      "raw_hash": null,
+      "is_canonical": true,
+      "created_at": "2026-10-05T14:27:54.473783+00:00",
+      "kind": "series"
+    },
+    {
+      "id": "7bb489ae-578b-4849-8993-1e07e934fac5",
+      "event_id": "a403090a-b5e8-4901-9ca5-c1811cb59d23",
+      "watched_url_id": "774d60a8-bef2-41f8-a730-8948ec9e60b2",
+      "source_url": "https://tbcserie.cz/kalendar-2026/zavod-201/",
+      "external_id": "tbc-2026-11-22-sedlcany",
+      "raw_hash": null,
+      "is_canonical": true,
+      "created_at": "2026-08-22T11:37:33.008718+00:00",
+      "kind": "series"
+    },
+    {
+      "id": "aec1cca1-b07e-4a78-8a77-05c6a28107ef",
+      "event_id": "a403090a-b5e8-4901-9ca5-c1811cb59d23",
+      "watched_url_id": "dd5f7e8e-1b02-4cfb-86ef-5b8bee20b7ed",
+      "source_url": "https://hynekmusil.cz/?serialosss=tbc",
+      "external_id": "hynek-tbc cyclocross sedlcany-2026-11-22",
+      "raw_hash": null,
+      "is_canonical": true,
+      "created_at": "2026-09-18T05:56:30.712475+00:00",
+      "kind": "aggregator"
+    },
+    {
+      "id": "c0cc566b-5dc9-4afe-b553-b95c1f66b0d1",
+      "event_id": "a403090a-b5e8-4901-9ca5-c1811cb59d23",
+      "watched_url_id": "8ee0c534-448c-461e-bcd1-1f19564c0382",
+      "source_url": "https://mtbs.cz/clanek/zabacky-cyklokros-memorial-rudolfa-bartose-75928/kategorie/cyklokros",
+      "external_id": "mtbs-zabacky cyklokros memorial rudolfa bartose-2026-11-22",
+      "raw_hash": null,
+      "is_canonical": true,
+      "created_at": "2026-10-28T21:14:49.656122+00:00",
+      "kind": "aggregator"
+    },
+    {
+      "id": "b9d4cb1c-3371-4b52-8c68-cb5eff546d21",
+      "event_id": "a403090a-b5e8-4901-9ca5-c1811cb59d23",
+      "watched_url_id": "433af772-24e0-49ae-94a0-0ae65f80e8e1",
+      "source_url": "https://kalendar.winspace.cz/kalendar/2026-tbc-serie-2026-0a7f07df",
+      "external_id": "llm-kalendar.winspace.cz-tbc-2026-11-22",
+      "raw_hash": null,
+      "is_canonical": true,
+      "created_at": "2026-10-23T21:43:43.000999+00:00",
+      "kind": "aggregator"
+    },
+    {
+      "id": "17990fd4-673a-472d-b9fb-083ff9194a90",
+      "event_id": "a403090a-b5e8-4901-9ca5-c1811cb59d23",
+      "watched_url_id": "5cb6be64-f9d2-46df-b2a8-8799050303dd",
+      "source_url": "https://hynekmusil.cz/?serialosss=tbc",
+      "external_id": "hynek-tbc cyclocross sedlcany-2026-11-22",
+      "raw_hash": null,
+      "is_canonical": true,
+      "created_at": "2026-08-31T07:56:02.441541+00:00",
+      "kind": "series"
+    },
+    {
+      "id": "913f3dff-e922-4839-ae01-13432a2cb47c",
+      "event_id": "a403090a-b5e8-4901-9ca5-c1811cb59d23",
+      "watched_url_id": "dd5f7e8e-1b02-4cfb-86ef-5b8bee20b7ed",
+      "source_url": "https://hynekmusil.cz",
+      "external_id": "hynek-tbc sedlcany-2026-11-22",
+      "raw_hash": null,
+      "is_canonical": true,
+      "created_at": "2026-08-26T11:06:04.604294+00:00",
+      "kind": "aggregator"
+    },
+    {
+      "id": "680a0280-65e3-4919-8052-e30571356723",
+      "event_id": "bb1399cd-3baf-4f88-84b8-740bf49afe56",
+      "watched_url_id": "433af772-24e0-49ae-94a0-0ae65f80e8e1",
+      "source_url": "https://kalendar.winspace.cz/kalendar/2027-dolomiten-radrundfahrt-9eecc44e",
+      "external_id": "llm-kalendar.winspace.cz-dolomiten radrundfahrt-2027-06-13",
+      "raw_hash": null,
+      "is_canonical": true,
+      "created_at": "2026-10-23T21:43:48.364235+00:00",
+      "kind": "aggregator"
+    },
+    {
+      "id": "69efc5a5-08e3-4fe1-aa31-2767312b9f7e",
+      "event_id": "bb1399cd-3baf-4f88-84b8-740bf49afe56",
+      "watched_url_id": null,
+      "source_url": "https://www.dolomitensport.at/de/events/dolomitenradrundfahrt.html",
+      "external_id": "winspace-review-2026-10-31-v1:68:official",
+      "raw_hash": null,
+      "is_canonical": false,
+      "created_at": "2026-10-31T07:32:43.484989+00:00",
+      "kind": "official"
+    },
+    {
+      "id": "18b561e3-b8ee-4ec1-a3fc-7e381403d38f",
+      "event_id": "e2258c9f-8aed-4cad-a73e-5f26275c82d9",
+      "watched_url_id": "2d6c4cb2-01e6-45f2-b70e-3113b6da50dc",
+      "source_url": "https://radsport-events.de/events/26969",
+      "external_id": "radsport-26969-2027-06-13",
+      "raw_hash": null,
+      "is_canonical": true,
+      "created_at": "2026-10-19T19:31:51.948359+00:00",
+      "kind": "aggregator"
+    }
+  ],
+  "event_facts": [
+    {
+      "id": "cb92270f-0223-4a3a-967e-de6c3e68a4f7",
+      "event_id": "a403090a-b5e8-4901-9ca5-c1811cb59d23",
+      "field": "source_evidence",
+      "value": {
+        "kind": "series",
+        "event": {
+          "name": "Žabácký cyklokros",
+          "audience": "mixed",
+          "childUrls": [
+            "https://www.da-ba.com",
+            "https://sumator.cz/cup/tbc-serie-2026"
+          ],
+          "placeText": "Sedlčany",
+          "sourceUrl": "https://sumator.cz/race/zabacky-cyklokros-22-11-2026",
+          "startDate": "2026-11-22",
+          "confidence": 0.92,
+          "discipline": [
+            "cx"
+          ],
+          "externalId": "sumator-zabacky cyklokros-2026-11-22",
+          "seriesName": "TBC série",
+          "seriesSlug": "tbc-serie",
+          "websiteUrl": "https://www.da-ba.com/zavody/zabacky-cyklokros/",
+          "countryHint": "CZ",
+          "seriesWebsite": "https://www.da-ba.com"
+        },
+        "watchedUrlId": "f4c6dff8-b49e-4c8b-910b-8bed131fa063"
+      },
+      "previous": null,
+      "source_url": "https://sumator.cz/race/zabacky-cyklokros-22-11-2026",
+      "quote": null,
+      "method": "watcher_source_evidence",
+      "model": null,
+      "version": "source-evidence-v1",
+      "status": "active",
+      "created_at": "2026-10-06T19:16:27.605971+00:00"
+    },
+    {
+      "id": "25dcdb60-f149-4859-8f14-e4e0468dd957",
+      "event_id": "a403090a-b5e8-4901-9ca5-c1811cb59d23",
+      "field": "registration_url",
+      "value": "https://maraton.cz/terminovka/entry/373",
+      "previous": null,
+      "source_url": "https://www.da-ba.com/zavody/zabacky-cyklokros/",
+      "quote": "maraton.cz",
+      "method": "registration_links",
+      "model": null,
+      "version": "links-v2",
+      "status": "active",
+      "created_at": "2026-10-21T05:20:54.183744+00:00"
+    },
+    {
+      "id": "333a6f73-343e-44cd-89a2-51e28d1c7380",
+      "event_id": "a403090a-b5e8-4901-9ca5-c1811cb59d23",
+      "field": "source_evidence",
+      "value": {
+        "kind": "series",
+        "event": {
+          "name": "SEDLČANY",
+          "audience": "mixed",
+          "placeText": "Czechia",
+          "sourceUrl": "https://hynekmusil.cz/?serialosss=tbc",
+          "startDate": "2026-11-22",
+          "confidence": 0.86,
+          "discipline": [
+            "cx"
+          ],
+          "externalId": "hynek-tbc cyclocross sedlcany-2026-11-22",
+          "seriesName": "TBC série cyklokros",
+          "seriesSlug": "tbc-cyclocross",
+          "countryHint": "CZ"
+        },
+        "watchedUrlId": "5cb6be64-f9d2-46df-b2a8-8799050303dd"
+      },
+      "previous": null,
+      "source_url": "https://hynekmusil.cz/?serialosss=tbc",
+      "quote": null,
+      "method": "watcher_source_evidence",
+      "model": null,
+      "version": "source-evidence-v1",
+      "status": "active",
+      "created_at": "2026-10-06T19:20:11.644925+00:00"
+    },
+    {
+      "id": "7ffd351d-d068-4962-bb63-692c963ca1c1",
+      "event_id": "a403090a-b5e8-4901-9ca5-c1811cb59d23",
+      "field": "source_evidence",
+      "value": {
+        "kind": "aggregator",
+        "event": {
+          "name": "SEDLČANY",
+          "audience": "mixed",
+          "placeText": "Czechia",
+          "sourceUrl": "https://hynekmusil.cz/?serialosss=tbc",
+          "startDate": "2026-11-22",
+          "confidence": 0.74,
+          "discipline": [
+            "cx"
+          ],
+          "externalId": "hynek-tbc cyclocross sedlcany-2026-11-22",
+          "seriesName": "TBC série cyklokros",
+          "seriesSlug": "tbc-cyclocross",
+          "countryHint": "CZ"
+        },
+        "watchedUrlId": "dd5f7e8e-1b02-4cfb-86ef-5b8bee20b7ed"
+      },
+      "previous": null,
+      "source_url": "https://hynekmusil.cz/?serialosss=tbc",
+      "quote": null,
+      "method": "watcher_source_evidence",
+      "model": null,
+      "version": "source-evidence-v1",
+      "status": "active",
+      "created_at": "2026-10-06T19:24:41.78159+00:00"
+    },
+    {
+      "id": "20627dad-7634-4d22-ba01-3f9addd49d3d",
+      "event_id": "e2258c9f-8aed-4cad-a73e-5f26275c82d9",
+      "field": "source_evidence",
+      "value": {
+        "kind": "aggregator",
+        "event": {
+          "lat": 46.823068,
+          "lng": 12.7660012,
+          "name": "SuperGiroDolomiti",
+          "audience": "mixed",
+          "placeText": "Dolomitenhalle Lienz, Lienz",
+          "sourceUrl": "https://radsport-events.de/events/26969",
+          "startDate": "2027-06-13",
+          "categories": [
+            {
+              "name": "218 km",
+              "distanceKm": 218,
+              "elevationM": 5060
+            }
+          ],
+          "confidence": 0.9,
+          "discipline": [
+            "road",
+            "gran_fondo"
+          ],
+          "externalId": "radsport-26969-2027-06-13",
+          "websiteUrl": "www.dolomitensport.at",
+          "countryHint": "AT",
+          "ageCategories": [
+            "amateur"
+          ]
+        },
+        "watchedUrlId": "2d6c4cb2-01e6-45f2-b70e-3113b6da50dc"
+      },
+      "previous": null,
+      "source_url": "https://radsport-events.de/events/26969",
+      "quote": null,
+      "method": "watcher_source_evidence",
+      "model": null,
+      "version": "source-evidence-v1",
+      "status": "active",
+      "created_at": "2026-10-19T19:31:51.867698+00:00"
+    },
+    {
+      "id": "551547b1-fe73-4f68-a5ae-4fa46fae7e69",
+      "event_id": "a403090a-b5e8-4901-9ca5-c1811cb59d23",
+      "field": "source_evidence",
+      "value": {
+        "kind": "series",
+        "event": {
+          "name": "TBC — SEDLČANY",
+          "audience": "mixed",
+          "placeText": "SEDLČANY",
+          "sourceUrl": "https://tbcserie.cz/kalendar-2026/zavod-201/",
+          "startDate": "2026-11-22",
+          "confidence": 0.9,
+          "discipline": [
+            "cx"
+          ],
+          "externalId": "tbc-2026-11-22-sedlcany",
+          "seriesName": "TBC série cyklokros",
+          "seriesSlug": "tbc-cyclocross",
+          "websiteUrl": "https://tbcserie.cz/kalendar-2026/zavod-201/",
+          "countryHint": "CZ",
+          "seriesWebsite": "https://www.tbcserie.cz/",
+          "regulationsUrl": "https://tbcserie.cz/pravidla"
+        },
+        "watchedUrlId": "774d60a8-bef2-41f8-a730-8948ec9e60b2"
+      },
+      "previous": null,
+      "source_url": "https://tbcserie.cz/kalendar-2026/zavod-201/",
+      "quote": null,
+      "method": "watcher_source_evidence",
+      "model": null,
+      "version": "source-evidence-v1",
+      "status": "active",
+      "created_at": "2026-10-23T19:43:10.105291+00:00"
+    },
+    {
+      "id": "c92431a9-acf4-4085-8b12-cb6f076cbbf2",
+      "event_id": "a403090a-b5e8-4901-9ca5-c1811cb59d23",
+      "field": "name",
+      "value": "TBC — SEDLČANY",
+      "previous": "SEDLČANY",
+      "source_url": "https://tbcserie.cz/kalendar-2026/zavod-201/",
+      "quote": null,
+      "method": "watcher_update_v2",
+      "model": null,
+      "version": "pipeline-v2",
+      "status": "active",
+      "created_at": "2026-10-23T19:43:10.023143+00:00"
+    },
+    {
+      "id": "0dfc2e43-64c6-4eaf-a059-686a70e1aee3",
+      "event_id": "a403090a-b5e8-4901-9ca5-c1811cb59d23",
+      "field": "website_url",
+      "value": "https://tbcserie.cz/kalendar-2026/zavod-201/",
+      "previous": "https://www.da-ba.com/zavody/zabacky-cyklokros/",
+      "source_url": "https://tbcserie.cz/kalendar-2026/zavod-201/",
+      "quote": null,
+      "method": "watcher_update_v2",
+      "model": null,
+      "version": "pipeline-v2",
+      "status": "active",
+      "created_at": "2026-10-23T19:43:10.023143+00:00"
+    },
+    {
+      "id": "398b6db9-da20-451e-9c8a-e4d8a2b1c588",
+      "event_id": "a403090a-b5e8-4901-9ca5-c1811cb59d23",
+      "field": "location_id",
+      "value": "1fae7b6f-26b3-4552-a74a-d035ff5c5595",
+      "previous": "cd906dea-4d26-490c-a658-f6e641410a63",
+      "source_url": "https://tbcserie.cz/kalendar-2026/zavod-201/",
+      "quote": null,
+      "method": "watcher_update_v2",
+      "model": null,
+      "version": "pipeline-v2",
+      "status": "active",
+      "created_at": "2026-10-23T19:43:10.023143+00:00"
+    },
+    {
+      "id": "0e07364a-d55b-4ed6-898d-46e3a94e20e4",
+      "event_id": "a403090a-b5e8-4901-9ca5-c1811cb59d23",
+      "field": "source_evidence",
+      "value": {
+        "kind": "series",
+        "event": {
+          "lat": 49.660677,
+          "lng": 14.426744,
+          "name": "Žabácký cyklokros",
+          "audience": "mixed",
+          "childUrls": [
+            "https://www.da-ba.com",
+            "https://sumator.cz/cup/tbc-serie-2026"
+          ],
+          "placeText": "Sedlčany",
+          "sourceUrl": "https://sumator.cz/race/zabacky-cyklokros-22-11-2026",
+          "startDate": "2026-11-22",
+          "confidence": 0.92,
+          "discipline": [
+            "cx"
+          ],
+          "externalId": "sumator-zabacky cyklokros-2026-11-22",
+          "seriesName": "TBC série",
+          "seriesSlug": "tbc-serie",
+          "websiteUrl": "https://www.da-ba.com/zavody/zabacky-cyklokros/",
+          "countryHint": "CZ",
+          "seriesWebsite": "https://www.da-ba.com"
+        },
+        "watchedUrlId": "f4c6dff8-b49e-4c8b-910b-8bed131fa063"
+      },
+      "previous": null,
+      "source_url": "https://sumator.cz/race/zabacky-cyklokros-22-11-2026",
+      "quote": null,
+      "method": "watcher_source_evidence",
+      "model": null,
+      "version": "source-evidence-v1",
+      "status": "active",
+      "created_at": "2026-10-22T05:56:27.656044+00:00"
+    },
+    {
+      "id": "d024e32c-b288-4862-b258-1ea49aaed6bd",
+      "event_id": "a403090a-b5e8-4901-9ca5-c1811cb59d23",
+      "field": "website_url",
+      "value": "https://www.da-ba.com/zavody/zabacky-cyklokros/",
+      "previous": "https://tbcserie.cz/kalendar-2026/zavod-201/",
+      "source_url": "https://sumator.cz/race/zabacky-cyklokros-22-11-2026",
+      "quote": null,
+      "method": "watcher_update_v2",
+      "model": null,
+      "version": "pipeline-v2",
+      "status": "active",
+      "created_at": "2026-10-23T20:41:37.422997+00:00"
+    },
+    {
+      "id": "a083afd5-b0b6-4340-8f66-8a12577f15ef",
+      "event_id": "a403090a-b5e8-4901-9ca5-c1811cb59d23",
+      "field": "location_id",
+      "value": "cd906dea-4d26-490c-a658-f6e641410a63",
+      "previous": "1fae7b6f-26b3-4552-a74a-d035ff5c5595",
+      "source_url": "https://sumator.cz/race/zabacky-cyklokros-22-11-2026",
+      "quote": null,
+      "method": "watcher_update_v2",
+      "model": null,
+      "version": "pipeline-v2",
+      "status": "active",
+      "created_at": "2026-10-23T20:41:37.422997+00:00"
+    },
+    {
+      "id": "753a22a9-aa84-4523-9299-5068c7c3d4f8",
+      "event_id": "a403090a-b5e8-4901-9ca5-c1811cb59d23",
+      "field": "website_url",
+      "value": "https://tbcserie.cz/kalendar-2026/zavod-201/",
+      "previous": "https://www.da-ba.com/zavody/zabacky-cyklokros/",
+      "source_url": "https://tbcserie.cz/kalendar-2026/zavod-201/",
+      "quote": null,
+      "method": "watcher_update_v2",
+      "model": null,
+      "version": "pipeline-v2",
+      "status": "active",
+      "created_at": "2026-10-23T20:55:39.548174+00:00"
+    },
+    {
+      "id": "ab2980b5-f65c-42c0-bdf0-0521060fb582",
+      "event_id": "a403090a-b5e8-4901-9ca5-c1811cb59d23",
+      "field": "location_id",
+      "value": "1fae7b6f-26b3-4552-a74a-d035ff5c5595",
+      "previous": "cd906dea-4d26-490c-a658-f6e641410a63",
+      "source_url": "https://tbcserie.cz/kalendar-2026/zavod-201/",
+      "quote": null,
+      "method": "watcher_update_v2",
+      "model": null,
+      "version": "pipeline-v2",
+      "status": "active",
+      "created_at": "2026-10-23T20:55:39.548174+00:00"
+    },
+    {
+      "id": "62647b9f-3de0-497e-bf09-1ab69fc3a906",
+      "event_id": "a403090a-b5e8-4901-9ca5-c1811cb59d23",
+      "field": "website_url",
+      "value": "https://www.da-ba.com/zavody/zabacky-cyklokros/",
+      "previous": "https://tbcserie.cz/kalendar-2026/zavod-201/",
+      "source_url": "https://sumator.cz/race/zabacky-cyklokros-22-11-2026",
+      "quote": null,
+      "method": "watcher_update_v2",
+      "model": null,
+      "version": "pipeline-v2",
+      "status": "active",
+      "created_at": "2026-10-23T21:01:47.819523+00:00"
+    },
+    {
+      "id": "cf99cf76-33e0-4908-aa36-3a1a4e64e291",
+      "event_id": "a403090a-b5e8-4901-9ca5-c1811cb59d23",
+      "field": "location_id",
+      "value": "cd906dea-4d26-490c-a658-f6e641410a63",
+      "previous": "1fae7b6f-26b3-4552-a74a-d035ff5c5595",
+      "source_url": "https://sumator.cz/race/zabacky-cyklokros-22-11-2026",
+      "quote": null,
+      "method": "watcher_update_v2",
+      "model": null,
+      "version": "pipeline-v2",
+      "status": "active",
+      "created_at": "2026-10-23T21:01:47.819523+00:00"
+    },
+    {
+      "id": "584dfd5c-6d5a-4672-ab34-a00e400bd8a4",
+      "event_id": "a403090a-b5e8-4901-9ca5-c1811cb59d23",
+      "field": "source_evidence",
+      "value": {
+        "kind": "aggregator",
+        "event": {
+          "name": "TBC serie 2026",
+          "evidence": {
+            "model": "claude-haiku-5-5",
+            "quote": "22LisCyklokrosKrajskýCyklokrosTBC serie 2026Sedlčany · Jihočeský kraj22. 11. 2026\nTBC serie 2026Sedlčany · Jihočeský kraj22. 11. 2026",
+            "method": "llm_calendar",
+            "version": "calendar-v2",
+            "sourceUrl": "https://kalendar.winspace.cz/kalendar"
+          },
+          "placeText": "Sedlčany",
+          "sourceUrl": "https://kalendar.winspace.cz/kalendar/2026-tbc-serie-2026-0a7f07df",
+          "startDate": "2026-11-22",
+          "confidence": 0.7,
+          "discipline": [
+            "cx"
+          ],
+          "externalId": "llm-kalendar.winspace.cz-tbc-2026-11-22",
+          "countryHint": "CZ"
+        },
+        "watchedUrlId": "433af772-24e0-49ae-94a0-0ae65f80e8e1"
+      },
+      "previous": null,
+      "source_url": "https://kalendar.winspace.cz/kalendar/2026-tbc-serie-2026-0a7f07df",
+      "quote": null,
+      "method": "watcher_source_evidence",
+      "model": null,
+      "version": "source-evidence-v1",
+      "status": "active",
+      "created_at": "2026-10-23T21:43:42.919314+00:00"
+    },
+    {
+      "id": "42161af9-359e-48d3-9798-01d1e92728e7",
+      "event_id": "3dadbafa-c27c-4280-b0ee-f22f50088661",
+      "field": "source_evidence",
+      "value": {
+        "kind": "aggregator",
+        "event": {
+          "name": "Žabácký cyklokros 2026 – Memoriál Rudolfa Bartoše",
+          "evidence": {
+            "model": "claude-haiku-5-5",
+            "quote": "22LisCyklokrosAmatérskýŽabácký cyklokros 2026 – Memoriál Rudolfa BartošeSedlčany · Středočeský kraj22. 11. 2026\nŽabácký cyklokros 2026 – Memoriál Rudolfa BartošeSedlčany · Středočeský kraj22. 11. 2026",
+            "method": "llm_calendar",
+            "version": "calendar-v2",
+            "sourceUrl": "https://kalendar.winspace.cz/kalendar"
+          },
+          "placeText": "Sedlčany",
+          "sourceUrl": "https://kalendar.winspace.cz/kalendar/2026-zabacky-cyklokros-2026-memorial-rudolfa-bartose-af8f9c5f",
+          "startDate": "2026-11-22",
+          "confidence": 0.7,
+          "discipline": [
+            "cx"
+          ],
+          "externalId": "llm-kalendar.winspace.cz-zabacky cyklokros memorial rudolfa bartose-2026-11-22",
+          "countryHint": "CZ"
+        },
+        "watchedUrlId": "433af772-24e0-49ae-94a0-0ae65f80e8e1"
+      },
+      "previous": null,
+      "source_url": "https://kalendar.winspace.cz/kalendar/2026-zabacky-cyklokros-2026-memorial-rudolfa-bartose-af8f9c5f",
+      "quote": null,
+      "method": "watcher_source_evidence",
+      "model": null,
+      "version": "source-evidence-v1",
+      "status": "active",
+      "created_at": "2026-10-23T21:43:42.50068+00:00"
+    },
+    {
+      "id": "d4de7e3c-f86d-4c5c-a52f-f3d48d46e553",
+      "event_id": "bb1399cd-3baf-4f88-84b8-740bf49afe56",
+      "field": "source_evidence",
+      "value": {
+        "kind": "aggregator",
+        "event": {
+          "name": "Dolomiten Radrundfahrt",
+          "evidence": {
+            "model": "claude-haiku-5-5",
+            "quote": "13ČerSilniceAmatérskýDolomiten RadrundfahrtLienz13. 6. 2027\nDolomiten RadrundfahrtLienz13. 6. 2027",
+            "method": "llm_calendar",
+            "version": "calendar-v2",
+            "sourceUrl": "https://kalendar.winspace.cz/kalendar"
+          },
+          "placeText": "Lienz",
+          "sourceUrl": "https://kalendar.winspace.cz/kalendar/2027-dolomiten-radrundfahrt-9eecc44e",
+          "startDate": "2027-06-13",
+          "confidence": 0.7,
+          "discipline": [
+            "road"
+          ],
+          "externalId": "llm-kalendar.winspace.cz-dolomiten radrundfahrt-2027-06-13",
+          "countryHint": "CZ"
+        },
+        "watchedUrlId": "433af772-24e0-49ae-94a0-0ae65f80e8e1"
+      },
+      "previous": null,
+      "source_url": "https://kalendar.winspace.cz/kalendar/2027-dolomiten-radrundfahrt-9eecc44e",
+      "quote": null,
+      "method": "watcher_source_evidence",
+      "model": null,
+      "version": "source-evidence-v1",
+      "status": "active",
+      "created_at": "2026-10-23T21:43:48.291123+00:00"
+    },
+    {
+      "id": "5bd1c6db-9b74-4b15-9658-ced3b524a4c0",
+      "event_id": "a403090a-b5e8-4901-9ca5-c1811cb59d23",
+      "field": "website_url",
+      "value": "https://kalendar.winspace.cz/kalendar/2026-tbc-serie-2026-0a7f07df",
+      "previous": "https://www.da-ba.com/zavody/zabacky-cyklokros/",
+      "source_url": "https://kalendar.winspace.cz/kalendar",
+      "quote": "22LisCyklokrosKrajskýCyklokrosTBC serie 2026Sedlčany · Jihočeský kraj22. 11. 2026\nTBC serie 2026Sedlčany · Jihočeský kraj22. 11. 2026",
+      "method": "watcher_update_v2",
+      "model": "claude-haiku-5-5",
+      "version": "pipeline-v2",
+      "status": "active",
+      "created_at": "2026-10-23T21:43:42.841776+00:00"
+    },
+    {
+      "id": "e5f60426-031c-4cb6-998e-0240ba128446",
+      "event_id": "a403090a-b5e8-4901-9ca5-c1811cb59d23",
+      "field": "event_type",
+      "value": "race",
+      "previous": "series",
+      "source_url": "https://portal.czechcyclingfederation.com/RaceDetail/Race/1812",
+      "quote": null,
+      "method": "watcher_update_v2",
+      "model": null,
+      "version": "pipeline-v2",
+      "status": "active",
+      "created_at": "2026-10-24T15:25:56.611216+00:00"
+    },
+    {
+      "id": "3797219c-05ab-4dc5-9bbf-18da708308c1",
+      "event_id": "a403090a-b5e8-4901-9ca5-c1811cb59d23",
+      "field": "location_id",
+      "value": "3edf8e21-2d19-4a21-b634-5720bee26348",
+      "previous": "cd906dea-4d26-490c-a658-f6e641410a63",
+      "source_url": "https://portal.czechcyclingfederation.com/RaceDetail/Race/1812",
+      "quote": null,
+      "method": "watcher_update_v2",
+      "model": null,
+      "version": "pipeline-v2",
+      "status": "active",
+      "created_at": "2026-10-24T15:25:56.611216+00:00"
+    },
+    {
+      "id": "ae6ad1c9-dd70-4e4c-b1a2-fbfa616550b3",
+      "event_id": "a403090a-b5e8-4901-9ca5-c1811cb59d23",
+      "field": "source_evidence",
+      "value": {
+        "kind": "federation",
+        "event": {
+          "name": "TBC serie 2026",
+          "audience": "mixed",
+          "placeText": "Sedlčany",
+          "sourceUrl": "https://portal.czechcyclingfederation.com/RaceDetail/Race/1812",
+          "startDate": "2026-11-22",
+          "confidence": 0.9,
+          "discipline": [
+            "cx"
+          ],
+          "externalId": "csc-1812",
+          "countryHint": "CZ"
+        },
+        "watchedUrlId": "3c570c1d-4eaf-495b-ad26-0dc33766ff0a"
+      },
+      "previous": null,
+      "source_url": "https://portal.czechcyclingfederation.com/RaceDetail/Race/1812",
+      "quote": null,
+      "method": "watcher_source_evidence",
+      "model": null,
+      "version": "source-evidence-v1",
+      "status": "active",
+      "created_at": "2026-10-24T15:25:56.684343+00:00"
+    },
+    {
+      "id": "10b34bc6-c4ee-416a-aa27-20fc4383ea85",
+      "event_id": "a403090a-b5e8-4901-9ca5-c1811cb59d23",
+      "field": "event_type",
+      "value": "series",
+      "previous": "race",
+      "source_url": "https://tbcserie.cz/kalendar-2026/zavod-201/",
+      "quote": null,
+      "method": "watcher_update_v2",
+      "model": null,
+      "version": "pipeline-v2",
+      "status": "active",
+      "created_at": "2026-10-25T02:21:56.315816+00:00"
+    },
+    {
+      "id": "13c7404f-d0fe-48a2-90ec-2741f3a18680",
+      "event_id": "a403090a-b5e8-4901-9ca5-c1811cb59d23",
+      "field": "website_url",
+      "value": "https://tbcserie.cz/kalendar-2026/zavod-201/",
+      "previous": "https://kalendar.winspace.cz/kalendar/2026-tbc-serie-2026-0a7f07df",
+      "source_url": "https://tbcserie.cz/kalendar-2026/zavod-201/",
+      "quote": null,
+      "method": "watcher_update_v2",
+      "model": null,
+      "version": "pipeline-v2",
+      "status": "active",
+      "created_at": "2026-10-25T02:21:56.315816+00:00"
+    },
+    {
+      "id": "d0f6b65f-fbdd-4769-b01c-0cce5164f609",
+      "event_id": "a403090a-b5e8-4901-9ca5-c1811cb59d23",
+      "field": "location_id",
+      "value": "24d2b5f5-8279-400a-b5a7-a93e6aed9ce4",
+      "previous": "3edf8e21-2d19-4a21-b634-5720bee26348",
+      "source_url": "https://tbcserie.cz/kalendar-2026/zavod-201/",
+      "quote": null,
+      "method": "watcher_update_v2",
+      "model": null,
+      "version": "pipeline-v2",
+      "status": "active",
+      "created_at": "2026-10-25T02:21:56.315816+00:00"
+    },
+    {
+      "id": "31f8a02f-5fc7-442c-ac32-4238d9c34089",
+      "event_id": "a403090a-b5e8-4901-9ca5-c1811cb59d23",
+      "field": "website_url",
+      "value": "https://www.da-ba.com/zavody/zabacky-cyklokros/",
+      "previous": "https://tbcserie.cz/kalendar-2026/zavod-201/",
+      "source_url": "https://sumator.cz/race/zabacky-cyklokros-22-11-2026",
+      "quote": null,
+      "method": "watcher_update_v2",
+      "model": null,
+      "version": "pipeline-v2",
+      "status": "active",
+      "created_at": "2026-10-25T02:28:47.206172+00:00"
+    },
+    {
+      "id": "a28da02b-795e-453d-be0d-ebc1764401f7",
+      "event_id": "a403090a-b5e8-4901-9ca5-c1811cb59d23",
+      "field": "location_id",
+      "value": "cd906dea-4d26-490c-a658-f6e641410a63",
+      "previous": "24d2b5f5-8279-400a-b5a7-a93e6aed9ce4",
+      "source_url": "https://sumator.cz/race/zabacky-cyklokros-22-11-2026",
+      "quote": null,
+      "method": "watcher_update_v2",
+      "model": null,
+      "version": "pipeline-v2",
+      "status": "active",
+      "created_at": "2026-10-25T02:28:47.206172+00:00"
+    },
+    {
+      "id": "65ca0326-c66d-42c7-a157-b5a188c247b9",
+      "event_id": "a403090a-b5e8-4901-9ca5-c1811cb59d23",
+      "field": "competition_type",
+      "value": "other",
+      "previous": "community",
+      "source_url": "https://sumator.cz/race/zabacky-cyklokros-22-11-2026",
+      "quote": null,
+      "method": "watcher_update_v2",
+      "model": null,
+      "version": "pipeline-v2",
+      "status": "active",
+      "created_at": "2026-10-26T08:54:09.526842+00:00"
+    },
+    {
+      "id": "28187844-baa3-457c-9f46-f54b32267d7e",
+      "event_id": "a403090a-b5e8-4901-9ca5-c1811cb59d23",
+      "field": "class_label",
+      "value": null,
+      "previous": "Local",
+      "source_url": "https://sumator.cz/race/zabacky-cyklokros-22-11-2026",
+      "quote": null,
+      "method": "watcher_update_v2",
+      "model": null,
+      "version": "pipeline-v2",
+      "status": "active",
+      "created_at": "2026-10-26T08:54:09.526842+00:00"
+    },
+    {
+      "id": "1148d9cc-e1c0-4031-82fe-86ee913b7a79",
+      "event_id": "a403090a-b5e8-4901-9ca5-c1811cb59d23",
+      "field": "event_type",
+      "value": "race",
+      "previous": "series",
+      "source_url": "https://portal.czechcyclingfederation.com/RaceDetail/Race/1812",
+      "quote": null,
+      "method": "watcher_update_v2",
+      "model": null,
+      "version": "pipeline-v2",
+      "status": "active",
+      "created_at": "2026-10-26T15:14:43.127004+00:00"
+    },
+    {
+      "id": "d53e2fe8-f281-4db4-a48b-8550788d8574",
+      "event_id": "a403090a-b5e8-4901-9ca5-c1811cb59d23",
+      "field": "competition_type",
+      "value": "community",
+      "previous": "other",
+      "source_url": "https://portal.czechcyclingfederation.com/RaceDetail/Race/1812",
+      "quote": null,
+      "method": "watcher_update_v2",
+      "model": null,
+      "version": "pipeline-v2",
+      "status": "active",
+      "created_at": "2026-10-26T15:14:43.127004+00:00"
+    },
+    {
+      "id": "81eebf16-6de1-4e07-bf6e-7d9aab0e287f",
+      "event_id": "a403090a-b5e8-4901-9ca5-c1811cb59d23",
+      "field": "class_label",
+      "value": "Local",
+      "previous": null,
+      "source_url": "https://portal.czechcyclingfederation.com/RaceDetail/Race/1812",
+      "quote": null,
+      "method": "watcher_update_v2",
+      "model": null,
+      "version": "pipeline-v2",
+      "status": "active",
+      "created_at": "2026-10-26T15:14:43.127004+00:00"
+    },
+    {
+      "id": "2d07c35c-a7f0-4c04-af10-513559530665",
+      "event_id": "a403090a-b5e8-4901-9ca5-c1811cb59d23",
+      "field": "location_id",
+      "value": "3edf8e21-2d19-4a21-b634-5720bee26348",
+      "previous": "cd906dea-4d26-490c-a658-f6e641410a63",
+      "source_url": "https://portal.czechcyclingfederation.com/RaceDetail/Race/1812",
+      "quote": null,
+      "method": "watcher_update_v2",
+      "model": null,
+      "version": "pipeline-v2",
+      "status": "active",
+      "created_at": "2026-10-26T15:14:43.127004+00:00"
+    },
+    {
+      "id": "1d921926-fd82-4e88-8135-e534ac103e95",
+      "event_id": "a403090a-b5e8-4901-9ca5-c1811cb59d23",
+      "field": "event_type",
+      "value": "series",
+      "previous": "race",
+      "source_url": "https://sumator.cz/race/zabacky-cyklokros-22-11-2026",
+      "quote": null,
+      "method": "watcher_update_v2",
+      "model": null,
+      "version": "pipeline-v2",
+      "status": "active",
+      "created_at": "2026-10-28T05:56:26.174849+00:00"
+    },
+    {
+      "id": "994965dd-aac3-4005-8883-282d2b078cde",
+      "event_id": "a403090a-b5e8-4901-9ca5-c1811cb59d23",
+      "field": "competition_type",
+      "value": "other",
+      "previous": "community",
+      "source_url": "https://sumator.cz/race/zabacky-cyklokros-22-11-2026",
+      "quote": null,
+      "method": "watcher_update_v2",
+      "model": null,
+      "version": "pipeline-v2",
+      "status": "active",
+      "created_at": "2026-10-28T05:56:26.174849+00:00"
+    },
+    {
+      "id": "2e2aa682-0927-4e58-b913-20f9de13e77d",
+      "event_id": "a403090a-b5e8-4901-9ca5-c1811cb59d23",
+      "field": "class_label",
+      "value": null,
+      "previous": "Local",
+      "source_url": "https://sumator.cz/race/zabacky-cyklokros-22-11-2026",
+      "quote": null,
+      "method": "watcher_update_v2",
+      "model": null,
+      "version": "pipeline-v2",
+      "status": "active",
+      "created_at": "2026-10-28T05:56:26.174849+00:00"
+    },
+    {
+      "id": "f3c426d5-9d0d-4c52-ad0f-fd493cd816d4",
+      "event_id": "a403090a-b5e8-4901-9ca5-c1811cb59d23",
+      "field": "location_id",
+      "value": "cd906dea-4d26-490c-a658-f6e641410a63",
+      "previous": "3edf8e21-2d19-4a21-b634-5720bee26348",
+      "source_url": "https://sumator.cz/race/zabacky-cyklokros-22-11-2026",
+      "quote": null,
+      "method": "watcher_update_v2",
+      "model": null,
+      "version": "pipeline-v2",
+      "status": "active",
+      "created_at": "2026-10-28T05:56:26.174849+00:00"
+    },
+    {
+      "id": "45093dcb-3fc7-4d42-b00a-218d3021fb33",
+      "event_id": "a403090a-b5e8-4901-9ca5-c1811cb59d23",
+      "field": "source_evidence",
+      "value": {
+        "kind": "aggregator",
+        "event": {
+          "name": "Žabácký cyklokros - Memoriál Rudolfa Bartoše",
+          "audience": "mixed",
+          "childUrls": [
+            "https://mtbs.cz/clanek/zabacky-cyklokros-memorial-rudolfa-bartose-75928/kategorie/cyklokros"
+          ],
+          "placeText": "Areál RAC Sedlčany, Sedlčany – Sedlčanská Kotlina, (GPS: 49.6689169N, 14.4300139E)",
+          "sourceUrl": "https://mtbs.cz/clanek/zabacky-cyklokros-memorial-rudolfa-bartose-75928/kategorie/cyklokros",
+          "startDate": "2026-11-22",
+          "confidence": 0.88,
+          "discipline": [
+            "cx"
+          ],
+          "externalId": "mtbs-zabacky cyklokros memorial rudolfa bartose-2026-11-22",
+          "websiteUrl": "https://www.da-ba.com/zavody/zabacky-cyklokros/",
+          "countryHint": "CZ",
+          "regulationsUrl": "https://mtbs.cz/clanek/zabacky-cyklokros-memorial-rudolfa-bartose-75928/kategorie/cyklokros#propozice"
+        },
+        "watchedUrlId": "8ee0c534-448c-461e-bcd1-1f19564c0382"
+      },
+      "previous": null,
+      "source_url": "https://mtbs.cz/clanek/zabacky-cyklokros-memorial-rudolfa-bartose-75928/kategorie/cyklokros",
+      "quote": null,
+      "method": "watcher_source_evidence",
+      "model": null,
+      "version": "source-evidence-v1",
+      "status": "active",
+      "created_at": "2026-10-28T21:14:49.536883+00:00"
+    },
+    {
+      "id": "7662a8ee-ab7a-4eba-88b8-6bada9dd0a97",
+      "event_id": "a403090a-b5e8-4901-9ca5-c1811cb59d23",
+      "field": "event_type",
+      "value": "race",
+      "previous": "series",
+      "source_url": "https://portal.czechcyclingfederation.com/RaceDetail/Race/1812",
+      "quote": null,
+      "method": "watcher_update_v2",
+      "model": null,
+      "version": "pipeline-v2",
+      "status": "active",
+      "created_at": "2026-10-29T13:10:08.265883+00:00"
+    },
+    {
+      "id": "e9b2e28b-1ef6-496f-98fe-1709d7885f3b",
+      "event_id": "a403090a-b5e8-4901-9ca5-c1811cb59d23",
+      "field": "location_id",
+      "value": "3edf8e21-2d19-4a21-b634-5720bee26348",
+      "previous": "cd906dea-4d26-490c-a658-f6e641410a63",
+      "source_url": "https://portal.czechcyclingfederation.com/RaceDetail/Race/1812",
+      "quote": null,
+      "method": "watcher_update_v2",
+      "model": null,
+      "version": "pipeline-v2",
+      "status": "active",
+      "created_at": "2026-10-29T13:10:08.265883+00:00"
+    },
+    {
+      "id": "2f619509-67ee-4f45-8c72-bb45f1f493c8",
+      "event_id": "a403090a-b5e8-4901-9ca5-c1811cb59d23",
+      "field": "event_type",
+      "value": "series",
+      "previous": "race",
+      "source_url": "https://sumator.cz/race/zabacky-cyklokros-22-11-2026",
+      "quote": null,
+      "method": "watcher_update_v2",
+      "model": null,
+      "version": "pipeline-v2",
+      "status": "active",
+      "created_at": "2026-10-30T10:33:09.675746+00:00"
+    },
+    {
+      "id": "740d3def-8524-431e-8c91-ae350c5873fc",
+      "event_id": "a403090a-b5e8-4901-9ca5-c1811cb59d23",
+      "field": "location_id",
+      "value": "cd906dea-4d26-490c-a658-f6e641410a63",
+      "previous": "3edf8e21-2d19-4a21-b634-5720bee26348",
+      "source_url": "https://sumator.cz/race/zabacky-cyklokros-22-11-2026",
+      "quote": null,
+      "method": "watcher_update_v2",
+      "model": null,
+      "version": "pipeline-v2",
+      "status": "active",
+      "created_at": "2026-10-30T10:33:09.675746+00:00"
+    },
+    {
+      "id": "7a782b2d-712e-478a-b246-419fa9e19b30",
+      "event_id": "bb1399cd-3baf-4f88-84b8-740bf49afe56",
+      "field": "import_review",
+      "value": {
+        "fields": {
+          "name": "Dolomiten Radrundfahrt",
+          "season": "2027",
+          "status": "scheduled",
+          "formats": [
+            "gran_fondo"
+          ],
+          "end_date": "2027-06-13",
+          "start_date": "2027-06-13",
+          "visibility": "public",
+          "disciplines": [
+            "road",
+            "gran_fondo"
+          ],
+          "location_id": "30317de2-b8b1-4adb-82af-8a45a2c07677",
+          "website_url": "https://www.dolomitensport.at/de/events/dolomitenradrundfahrt.html"
+        },
+        "country": "AT",
+        "source_index": 68,
+        "inherited_fields": [],
+        "location_precision": "municipality; not a verified start line",
+        "previous_edition_id": null
+      },
+      "previous": {
+        "name": "Dolomiten Radrundfahrt",
+        "season": "2027",
+        "status": "scheduled",
+        "formats": [],
+        "end_date": "2027-06-13",
+        "start_date": "2027-06-13",
+        "visibility": "hidden",
+        "disciplines": [
+          "road"
+        ],
+        "location_id": "30317de2-b8b1-4adb-82af-8a45a2c07677",
+        "website_url": "https://kalendar.winspace.cz/kalendar/2027-dolomiten-radrundfahrt-9eecc44e"
+      },
+      "source_url": "https://kalendar.winspace.cz/kalendar/2027-dolomiten-radrundfahrt-9eecc44e",
+      "quote": "Manually reviewed explicit calendar date and event identity; organiser link where available.",
+      "method": "manual_source_review",
+      "model": null,
+      "version": "winspace-review-2026-10-31-v1",
+      "status": "active",
+      "created_at": "2026-10-31T07:32:43.484989+00:00"
+    },
+    {
+      "id": "0d51c5d3-47b3-456c-beb1-30ae4d966be2",
+      "event_id": "3dadbafa-c27c-4280-b0ee-f22f50088661",
+      "field": "import_review",
+      "value": {
+        "fields": {
+          "name": "Žabácký cyklokros 2026 – Memoriál Rudolfa Bartoše",
+          "season": "2026",
+          "status": "scheduled",
+          "end_date": "2026-11-22",
+          "start_date": "2026-11-22",
+          "visibility": "public",
+          "location_id": "3edf8e21-2d19-4a21-b634-5720bee26348",
+          "website_url": "https://www.cus-sportujsnami.cz/events/zabacky-cyklokros-2026-memorial-rudolfa-bartose/"
+        },
+        "country": "CZ",
+        "source_index": 31,
+        "inherited_fields": [],
+        "location_precision": "municipality; not a verified start line",
+        "previous_edition_id": null
+      },
+      "previous": {
+        "name": "Žabácký cyklokros 2026 – Memoriál Rudolfa Bartoše",
+        "season": "2026/27",
+        "status": "scheduled",
+        "end_date": "2026-11-22",
+        "start_date": "2026-11-22",
+        "visibility": "hidden",
+        "location_id": "3edf8e21-2d19-4a21-b634-5720bee26348",
+        "website_url": "https://kalendar.winspace.cz/kalendar/2026-zabacky-cyklokros-2026-memorial-rudolfa-bartose-af8f9c5f"
+      },
+      "source_url": "https://kalendar.winspace.cz/kalendar/2026-zabacky-cyklokros-2026-memorial-rudolfa-bartose-af8f9c5f",
+      "quote": "Manually reviewed explicit calendar date and event identity; organiser link where available.",
+      "method": "manual_source_review",
+      "model": null,
+      "version": "winspace-review-2026-10-31-v1",
+      "status": "active",
+      "created_at": "2026-10-31T07:32:43.484989+00:00"
+    }
+  ],
+  "event_overrides": [
+    {
+      "id": "54d2a9a7-3251-4314-9146-6f05891a3757",
+      "event_id": "bb1399cd-3baf-4f88-84b8-740bf49afe56",
+      "fields": {
+        "name": "Dolomiten Radrundfahrt",
+        "season": "2027",
+        "status": "scheduled",
+        "formats": [
+          "gran_fondo"
+        ],
+        "end_date": "2027-06-13",
+        "start_date": "2027-06-13",
+        "visibility": "public",
+        "disciplines": [
+          "road",
+          "gran_fondo"
+        ],
+        "location_id": "30317de2-b8b1-4adb-82af-8a45a2c07677",
+        "website_url": "https://www.dolomitensport.at/de/events/dolomitenradrundfahrt.html"
+      },
+      "locked_fields": [
+        "name",
+        "start_date",
+        "end_date",
+        "website_url",
+        "visibility",
+        "status",
+        "season",
+        "disciplines",
+        "formats",
+        "location_id"
+      ],
+      "updated_by": "Winspace manual source review 2026-10-31",
+      "updated_at": "2026-10-31T07:32:43.484989+00:00"
+    },
+    {
+      "id": "0735a6c7-9029-43f3-913c-568046d1828e",
+      "event_id": "3dadbafa-c27c-4280-b0ee-f22f50088661",
+      "fields": {
+        "name": "Žabácký cyklokros 2026 – Memoriál Rudolfa Bartoše",
+        "season": "2026",
+        "status": "scheduled",
+        "end_date": "2026-11-22",
+        "start_date": "2026-11-22",
+        "visibility": "public",
+        "location_id": "3edf8e21-2d19-4a21-b634-5720bee26348",
+        "website_url": "https://www.cus-sportujsnami.cz/events/zabacky-cyklokros-2026-memorial-rudolfa-bartose/"
+      },
+      "locked_fields": [
+        "name",
+        "start_date",
+        "end_date",
+        "website_url",
+        "visibility",
+        "status",
+        "season",
+        "location_id"
+      ],
+      "updated_by": "Winspace manual source review 2026-10-31",
+      "updated_at": "2026-10-31T07:32:43.484989+00:00"
+    }
+  ]
+}

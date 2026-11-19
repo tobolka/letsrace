@@ -1,0 +1,25 @@
+[
+  {
+    "path": "/admin/discovery",
+    "status": 200,
+    "candidates": true,
+    "inStock": false
+  },
+  {
+    "path": "/api/admin/work",
+    "status": 200,
+    "counts": {
+      "discovery": 33,
+      "inbox": 0,
+      "stalled": 17,
+      "unlinked": 103,
+      "checkedAt": "2026-11-01T22:19:09.795Z"
+    },
+    "inStock": false
+  },
+  {
+    "path": "/cs/zavod/l-etape-czech-republic-hilly-stage-2027",
+    "status": 200,
+    "inStock": false
+  }
+]

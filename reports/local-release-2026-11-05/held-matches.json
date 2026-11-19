@@ -1,0 +1,1944 @@
+[
+  {
+    "held": {
+      "id": "9c5c4d5e-fffc-43a8-826e-980f5c374c02",
+      "name": "LA GIMKANA D'AUTUNNO",
+      "date": "2026-11-15",
+      "end": "2026-11-15",
+      "disciplines": [
+        "other"
+      ],
+      "website": null,
+      "location": {
+        "town": "RAGALNA",
+        "country": "IT",
+        "lat": null,
+        "lng": null
+      }
+    },
+    "matches": [
+      {
+        "other": {
+          "id": "77fb6c92-0744-45b7-b15d-c389ad9f16a9",
+          "name": "1° TROFEO INVERNALE 2026 - VETRERIA ARTIGIANA MARSCIANESE S.R.L.",
+          "date": "2026-11-15",
+          "end": "2026-11-15",
+          "disciplines": [
+            "other"
+          ],
+          "website": null,
+          "location": {
+            "town": "Marsciano",
+            "country": "IT",
+            "lat": 42.9105115,
+            "lng": 12.3377232
+          }
+        },
+        "assessment": {
+          "score": 18,
+          "reasons": [
+            "same_day",
+            "needs_place_or_url"
+          ],
+          "decision": "review"
+        }
+      },
+      {
+        "other": {
+          "id": "12516d0d-d13d-4087-b664-3d4511324bc6",
+          "name": "35° TROFEO CITTA' DI BOLZANO - KIDS PROMOZIONALE",
+          "date": "2026-11-15",
+          "end": "2026-11-15",
+          "disciplines": [
+            "other"
+          ],
+          "website": null,
+          "location": {
+            "town": "NALLES/NALS",
+            "country": "IT",
+            "lat": 46.498,
+            "lng": 11.354
+          }
+        },
+        "assessment": {
+          "score": 18,
+          "reasons": [
+            "same_day",
+            "needs_place_or_url"
+          ],
+          "decision": "review"
+        }
+      },
+      {
+        "other": {
+          "id": "55182745-9c31-4f28-a9cb-710c4506f08c",
+          "name": "PICCOLO TROFEO VALBISENZIO",
+          "date": "2026-11-14",
+          "end": "2026-11-14",
+          "disciplines": [
+            "other"
+          ],
+          "website": null,
+          "location": {
+            "town": "VAIANO",
+            "country": "IT",
+            "lat": 43.0598269,
+            "lng": 12.0000155
+          }
+        },
+        "assessment": {
+          "score": 12,
+          "reasons": [
+            "weekend",
+            "needs_place_or_url"
+          ],
+          "decision": "review"
+        }
+      },
+      {
+        "other": {
+          "id": "64389318-e637-407c-9ec4-0000e3b16ea4",
+          "name": "I° BICI D'AUTUNNO",
+          "date": "2026-11-14",
+          "end": "2026-11-14",
+          "disciplines": [
+            "other"
+          ],
+          "website": null,
+          "location": {
+            "town": "Latronico",
+            "country": "IT",
+            "lat": 40.089807,
+            "lng": 16.011778
+          }
+        },
+        "assessment": {
+          "score": 18,
+          "reasons": [
+            "weekend",
+            "name_sim_low",
+            "needs_place_or_url"
+          ],
+          "decision": "review"
+        }
+      }
+    ]
+  },
+  {
+    "held": {
+      "id": "6bade4b8-ca56-48f8-9324-80f4b3509286",
+      "name": "BABBOBIKE 13° EDIZIONE - MEMORIAL MAURO DELONI",
+      "date": "2026-12-13",
+      "end": "2026-12-13",
+      "disciplines": [
+        "road"
+      ],
+      "website": null,
+      "location": {
+        "town": "REGGELLO",
+        "country": "IT",
+        "lat": 43.6830877,
+        "lng": 11.5368965
+      }
+    },
+    "matches": [
+      {
+        "other": {
+          "id": "2c5a386a-438a-40a8-85fe-90d6e46670a0",
+          "name": "PEDALATA DI NATALE ALE' - DMT",
+          "date": "2026-12-13",
+          "end": "2026-12-13",
+          "disciplines": [
+            "road"
+          ],
+          "website": "https://rideandrest.net/manifestazione/pedalata-di-natale-ale-dmt/",
+          "location": {
+            "town": "BONFERRARO",
+            "country": "IT",
+            "lat": null,
+            "lng": null
+          }
+        },
+        "assessment": {
+          "score": 18,
+          "reasons": [
+            "same_day",
+            "needs_place_or_url"
+          ],
+          "decision": "review"
+        }
+      }
+    ]
+  },
+  {
+    "held": {
+      "id": "100f653a-96a4-4fc3-997b-7cc81331bac6",
+      "name": "Gigante de Palatinado",
+      "date": "2027-07-31",
+      "end": "2027-07-31",
+      "disciplines": [
+        "xco",
+        "gravel"
+      ],
+      "website": null,
+      "location": {
+        "town": "Haus der Deutschen Weinstrasse, Bockenheim / Weinstrasse",
+        "country": "DE",
+        "lat": 49.6092903,
+        "lng": 8.1814258
+      }
+    },
+    "matches": [
+      {
+        "other": {
+          "id": "18dd352e-0e51-4ae4-8bc2-780f1eb0dc47",
+          "name": "Rooted Secrets",
+          "date": "2027-07-31",
+          "end": "2027-08-05",
+          "disciplines": [
+            "gravel"
+          ],
+          "website": "https://www.rootedsecrets.cc/rooted-secrets",
+          "location": {
+            "town": "Magdeburg",
+            "country": "DE",
+            "lat": 52.0625743,
+            "lng": 11.6526026
+          }
+        },
+        "assessment": {
+          "score": 18,
+          "reasons": [
+            "same_day",
+            "needs_place_or_url"
+          ],
+          "decision": "review"
+        }
+      }
+    ]
+  },
+  {
+    "held": {
+      "id": "91be764f-3a96-4701-9fba-80ce38243310",
+      "name": "DZIECIĘCE WYŚCIGI ROWEROWE „NIEPODLEGŁA” POD HONOROWYM PATRONATEM BURMISTRZA PRÓSZKOWA",
+      "date": "2026-11-11",
+      "end": "2026-11-11",
+      "disciplines": [
+        "mtb"
+      ],
+      "website": "https://dostartu.pl/permalink-v17550",
+      "location": {
+        "town": "Prószków",
+        "country": "PL",
+        "lat": 50.5786696,
+        "lng": 17.8699852
+      }
+    },
+    "matches": [
+      {
+        "other": {
+          "id": "849d8728-775e-4a0b-a513-2dc70f5b2c3d",
+          "name": "#JedenastyListopada - Wyścig Rowerowy",
+          "date": "2026-11-11",
+          "end": "2026-11-11",
+          "disciplines": [
+            "mtb"
+          ],
+          "website": "https://odjazd.pl/wydarzenie/519db5fd-176d-4637-87bd-16c43c722eb2",
+          "location": {
+            "town": "Konstantynów Łódzki",
+            "country": "PL",
+            "lat": 51.7475546,
+            "lng": 19.3255118
+          }
+        },
+        "assessment": {
+          "score": 18,
+          "reasons": [
+            "same_day",
+            "needs_place_or_url"
+          ],
+          "decision": "review"
+        }
+      }
+    ]
+  },
+  {
+    "held": {
+      "id": "d3d5a3ea-1322-433f-a07e-d919ac08237c",
+      "name": "CAMPIONATO ITALIANO CICLOCROSS 2027 - GIOVANILE",
+      "date": "2027-01-06",
+      "end": "2027-01-06",
+      "disciplines": [
+        "cx"
+      ],
+      "website": null,
+      "location": {
+        "town": "CATTOLICA e MISANO ADRIATICO RN",
+        "country": "IT",
+        "lat": null,
+        "lng": null
+      }
+    },
+    "matches": [
+      {
+        "other": {
+          "id": "34148c56-64dd-4bd9-9915-feea63ffcd70",
+          "name": "CAMPIONATO ITALIANO TEAM RELAY CICLOCROSS 2027 - GIOVANILE",
+          "date": "2027-01-05",
+          "end": "2027-01-05",
+          "disciplines": [
+            "cx"
+          ],
+          "website": null,
+          "location": {
+            "town": "CATTOLICA e MISANO ADRIATICO",
+            "country": "IT",
+            "lat": null,
+            "lng": null
+          }
+        },
+        "assessment": {
+          "score": 48,
+          "reasons": [
+            "weekend",
+            "same_place",
+            "name_sim_mid"
+          ],
+          "decision": "review"
+        }
+      }
+    ]
+  },
+  {
+    "held": {
+      "id": "99023911-df17-40fe-a7ef-92074015b91a",
+      "name": "CAMPIONATO REGIONALE CICLOCROSS \"CITTA DI RAGUSA\"",
+      "date": "2027-01-17",
+      "end": "2027-01-17",
+      "disciplines": [
+        "cx"
+      ],
+      "website": null,
+      "location": {
+        "town": "COMISO",
+        "country": "IT",
+        "lat": 36.9507336,
+        "lng": 14.6074553
+      }
+    },
+    "matches": [
+      {
+        "other": {
+          "id": "ac61bb39-320d-47c4-8fd1-a801758b99ee",
+          "name": "TROFEO TRIVENETO CICLOCROSS",
+          "date": "2027-01-17",
+          "end": "2027-01-17",
+          "disciplines": [
+            "cx"
+          ],
+          "website": null,
+          "location": {
+            "town": "Cordignano",
+            "country": "IT",
+            "lat": null,
+            "lng": null
+          }
+        },
+        "assessment": {
+          "score": 18,
+          "reasons": [
+            "same_day",
+            "needs_place_or_url"
+          ],
+          "decision": "review"
+        }
+      }
+    ]
+  },
+  {
+    "held": {
+      "id": "fd6dcf0f-2956-45c5-a201-eb7823845115",
+      "name": "Škoda Swiss Bike Cup — Huttwil",
+      "date": "2027-08-14",
+      "end": "2027-08-15",
+      "disciplines": [
+        "xco"
+      ],
+      "website": "https://www.swissbikecup.ch/etappe/huttwil",
+      "location": {
+        "town": "Huttwil",
+        "country": "CH",
+        "lat": 47.115,
+        "lng": 7.845
+      }
+    },
+    "matches": [
+      {
+        "other": {
+          "id": "eed25067-5f70-4574-99d6-60a2c2f24294",
+          "name": "SenseBike",
+          "date": "2027-08-15",
+          "end": "2027-08-15",
+          "disciplines": [
+            "xco"
+          ],
+          "website": "https://www.sensebike.ch/",
+          "location": {
+            "town": "Renngelände, Alterswil",
+            "country": "CH",
+            "lat": 46.9151543,
+            "lng": 7.6644717
+          }
+        },
+        "assessment": {
+          "score": 12,
+          "reasons": [
+            "weekend",
+            "needs_place_or_url"
+          ],
+          "decision": "review"
+        }
+      },
+      {
+        "other": {
+          "id": "05d39432-1ebd-403d-a0fe-4927f22aa26f",
+          "name": "Schwellbrunner Mountainbike-Event",
+          "date": "2027-08-14",
+          "end": "2027-08-14",
+          "disciplines": [
+            "mtb"
+          ],
+          "website": null,
+          "location": {
+            "town": "Schwellbrunn",
+            "country": "CH",
+            "lat": 47.3519686,
+            "lng": 9.2439521
+          }
+        },
+        "assessment": {
+          "score": 18,
+          "reasons": [
+            "same_day",
+            "needs_place_or_url"
+          ],
+          "decision": "review"
+        }
+      }
+    ]
+  },
+  {
+    "held": {
+      "id": "7f382d4e-65d4-4ed1-b7bf-cd17b9985678",
+      "name": "40° GP DI CICLOCROSS CITTA' DI VITTORIO VENETO",
+      "date": "2027-01-03",
+      "end": "2027-01-03",
+      "disciplines": [
+        "cx"
+      ],
+      "website": null,
+      "location": {
+        "town": "Vittorio Veneto TV",
+        "country": "IT",
+        "lat": null,
+        "lng": null
+      }
+    },
+    "matches": [
+      {
+        "other": {
+          "id": "5bf7ebf1-4182-4385-a300-8b0421ff01d3",
+          "name": "7^PROVA COPPA PIEMONTE CICLOCROSS",
+          "date": "2027-01-02",
+          "end": "2027-01-02",
+          "disciplines": [
+            "cx"
+          ],
+          "website": "https://rideandrest.net/manifestazione/7prova-coppa-piemonte-ciclocross/",
+          "location": {
+            "town": "CIGLIANO VC",
+            "country": "IT",
+            "lat": 45.3094496,
+            "lng": 8.0209788
+          }
+        },
+        "assessment": {
+          "score": 18,
+          "reasons": [
+            "weekend",
+            "name_sim_low",
+            "needs_place_or_url"
+          ],
+          "decision": "review"
+        }
+      }
+    ]
+  },
+  {
+    "held": {
+      "id": "ac61bb39-320d-47c4-8fd1-a801758b99ee",
+      "name": "TROFEO TRIVENETO CICLOCROSS",
+      "date": "2027-01-17",
+      "end": "2027-01-17",
+      "disciplines": [
+        "cx"
+      ],
+      "website": null,
+      "location": {
+        "town": "Cordignano",
+        "country": "IT",
+        "lat": null,
+        "lng": null
+      }
+    },
+    "matches": [
+      {
+        "other": {
+          "id": "99023911-df17-40fe-a7ef-92074015b91a",
+          "name": "CAMPIONATO REGIONALE CICLOCROSS \"CITTA DI RAGUSA\"",
+          "date": "2027-01-17",
+          "end": "2027-01-17",
+          "disciplines": [
+            "cx"
+          ],
+          "website": null,
+          "location": {
+            "town": "COMISO",
+            "country": "IT",
+            "lat": 36.9507336,
+            "lng": 14.6074553
+          }
+        },
+        "assessment": {
+          "score": 18,
+          "reasons": [
+            "same_day",
+            "needs_place_or_url"
+          ],
+          "decision": "review"
+        }
+      }
+    ]
+  },
+  {
+    "held": {
+      "id": "8e63f8cf-b7bc-4746-aa06-614950248cbe",
+      "name": "INIZIAMO DAI RAGAZZI",
+      "date": "2026-11-08",
+      "end": "2026-11-08",
+      "disciplines": [
+        "other"
+      ],
+      "website": null,
+      "location": {
+        "town": "CASAMASSIMA",
+        "country": "IT",
+        "lat": null,
+        "lng": null
+      }
+    },
+    "matches": [
+      {
+        "other": {
+          "id": "34b03324-b702-454a-8c9b-178466570a12",
+          "name": "1° TROFEO DIFESA GRANDE KIDS",
+          "date": "2026-11-08",
+          "end": "2026-11-08",
+          "disciplines": [
+            "other"
+          ],
+          "website": null,
+          "location": {
+            "town": "GRAVINA IN PUGLIA",
+            "country": "IT",
+            "lat": 40.819725,
+            "lng": 16.422779
+          }
+        },
+        "assessment": {
+          "score": 18,
+          "reasons": [
+            "same_day",
+            "needs_place_or_url"
+          ],
+          "decision": "review"
+        }
+      },
+      {
+        "other": {
+          "id": "9434aad1-0163-40c6-870b-4118a9e18da3",
+          "name": "QUARTU S.ELENA BIKE FESTIVAL - SPECIAL EDITION - 3^ EDIZIONE",
+          "date": "2026-11-07",
+          "end": "2026-11-07",
+          "disciplines": [
+            "other"
+          ],
+          "website": null,
+          "location": {
+            "town": "QUARTU S.ELENA",
+            "country": "IT",
+            "lat": 39.2306247,
+            "lng": 9.2228919
+          }
+        },
+        "assessment": {
+          "score": 12,
+          "reasons": [
+            "weekend",
+            "needs_place_or_url"
+          ],
+          "decision": "review"
+        }
+      }
+    ]
+  },
+  {
+    "held": {
+      "id": "cefb7224-3e6a-426c-90ff-554ed1ca1374",
+      "name": "TROFEO IACCOBIKE",
+      "date": "2026-12-06",
+      "end": "2026-12-06",
+      "disciplines": [
+        "cx"
+      ],
+      "website": null,
+      "location": {
+        "town": "INGR. COPPI",
+        "country": "IT",
+        "lat": null,
+        "lng": null
+      }
+    },
+    "matches": [
+      {
+        "other": {
+          "id": "1261d7d4-2573-48db-853f-e3165b26a10a",
+          "name": "1^TROFEO CX DEL BORGO DI ORIOLO",
+          "date": "2026-12-06",
+          "end": "2026-12-06",
+          "disciplines": [
+            "cx"
+          ],
+          "website": "https://rideandrest.net/manifestazione/1-prova-circuito-cx-del-sud/",
+          "location": {
+            "town": "Oriolo",
+            "country": "IT",
+            "lat": null,
+            "lng": null
+          }
+        },
+        "assessment": {
+          "score": 18,
+          "reasons": [
+            "same_day",
+            "needs_place_or_url"
+          ],
+          "decision": "review"
+        }
+      },
+      {
+        "other": {
+          "id": "8a48c512-909e-48af-aaae-1864d5a951c9",
+          "name": "1° TROFEO PARCO GOLENE FOCE SECCHIA CAMPIONATO PROVINCIALE",
+          "date": "2026-12-06",
+          "end": "2026-12-06",
+          "disciplines": [
+            "cx"
+          ],
+          "website": "https://rideandrest.net/manifestazione/1-trofeo-parco-golene-foce-secchia-campionato-provinciale/",
+          "location": {
+            "town": "SAN BENEDETTO PO",
+            "country": "IT",
+            "lat": 45.0419489,
+            "lng": 10.9273024
+          }
+        },
+        "assessment": {
+          "score": 18,
+          "reasons": [
+            "same_day",
+            "needs_place_or_url"
+          ],
+          "decision": "review"
+        }
+      },
+      {
+        "other": {
+          "id": "2b1305a3-fa4d-4f0c-ac02-22f7d724fb1c",
+          "name": "6^ PROVA COPPA PIEMONTE CICLOCROSS - TOP CLASS",
+          "date": "2026-12-05",
+          "end": "2026-12-06",
+          "disciplines": [
+            "cx"
+          ],
+          "website": "https://rideandrest.net/manifestazione/6-prova-coppa-piemonte-ciclocross-top-class/",
+          "location": {
+            "town": "CIGLIANO VC",
+            "country": "IT",
+            "lat": 45.3094496,
+            "lng": 8.0209788
+          }
+        },
+        "assessment": {
+          "score": 12,
+          "reasons": [
+            "weekend",
+            "needs_place_or_url"
+          ],
+          "decision": "review"
+        }
+      },
+      {
+        "other": {
+          "id": "5acb01da-1b9b-4ff2-8f8c-d5cc0e877bc1",
+          "name": "GARA NAZIONALE CICLOCROSS - SAN VENDEMIANO TV",
+          "date": "2026-12-05",
+          "end": "2026-12-05",
+          "disciplines": [
+            "cx"
+          ],
+          "website": "https://rideandrest.net/manifestazione/gara-nazionale-ciclocross-san-vendemiano-tv/",
+          "location": {
+            "town": "SAN VENDEMIANO TV",
+            "country": "IT",
+            "lat": 45.8907463,
+            "lng": 12.3338437
+          }
+        },
+        "assessment": {
+          "score": 12,
+          "reasons": [
+            "weekend",
+            "needs_place_or_url"
+          ],
+          "decision": "review"
+        }
+      },
+      {
+        "other": {
+          "id": "9b8a1a55-0257-45b8-81f1-93973732135a",
+          "name": "CICLOCROSS DEI PINI - 5#CAMPIONATO ITALIANO DI SOCIETA'",
+          "date": "2026-12-06",
+          "end": "2026-12-06",
+          "disciplines": [
+            "cx"
+          ],
+          "website": "https://rideandrest.net/manifestazione/ciclocross-dei-pini-5campionato-italiano-di-societa/",
+          "location": {
+            "town": "NARNI SCALO TR",
+            "country": "IT",
+            "lat": 42.5358011,
+            "lng": 12.5196282
+          }
+        },
+        "assessment": {
+          "score": 18,
+          "reasons": [
+            "same_day",
+            "needs_place_or_url"
+          ],
+          "decision": "review"
+        }
+      },
+      {
+        "other": {
+          "id": "03fbd18b-8b40-41dc-80ca-044e8c52626b",
+          "name": "4° TROFEO FABIO ARU ACADEMY - TOP CLASS",
+          "date": "2026-12-06",
+          "end": "2026-12-06",
+          "disciplines": [
+            "cx"
+          ],
+          "website": "https://rideandrest.net/manifestazione/4-trofeo-fabio-aru-academy-top-class/",
+          "location": {
+            "town": "VILLACIDRO",
+            "country": "IT",
+            "lat": 39.4569925,
+            "lng": 8.7367219
+          }
+        },
+        "assessment": {
+          "score": 18,
+          "reasons": [
+            "same_day",
+            "needs_place_or_url"
+          ],
+          "decision": "review"
+        }
+      }
+    ]
+  },
+  {
+    "held": {
+      "id": "34148c56-64dd-4bd9-9915-feea63ffcd70",
+      "name": "CAMPIONATO ITALIANO TEAM RELAY CICLOCROSS 2027 - GIOVANILE",
+      "date": "2027-01-05",
+      "end": "2027-01-05",
+      "disciplines": [
+        "cx"
+      ],
+      "website": null,
+      "location": {
+        "town": "CATTOLICA e MISANO ADRIATICO",
+        "country": "IT",
+        "lat": null,
+        "lng": null
+      }
+    },
+    "matches": [
+      {
+        "other": {
+          "id": "d3d5a3ea-1322-433f-a07e-d919ac08237c",
+          "name": "CAMPIONATO ITALIANO CICLOCROSS 2027 - GIOVANILE",
+          "date": "2027-01-06",
+          "end": "2027-01-06",
+          "disciplines": [
+            "cx"
+          ],
+          "website": null,
+          "location": {
+            "town": "CATTOLICA e MISANO ADRIATICO RN",
+            "country": "IT",
+            "lat": null,
+            "lng": null
+          }
+        },
+        "assessment": {
+          "score": 48,
+          "reasons": [
+            "weekend",
+            "same_place",
+            "name_sim_mid"
+          ],
+          "decision": "review"
+        }
+      }
+    ]
+  },
+  {
+    "held": {
+      "id": "39ac1a1c-3e1b-458f-bfaf-aac3f9be97b9",
+      "name": "Rebound Germany 2027",
+      "date": "2027-06-05",
+      "end": "2027-06-06",
+      "disciplines": [
+        "xco",
+        "gravel"
+      ],
+      "website": null,
+      "location": {
+        "town": "Haus der Deutschen Weinstrasse, Bockenheim / Weinstrasse",
+        "country": "DE",
+        "lat": 49.6092903,
+        "lng": 8.1814258
+      }
+    },
+    "matches": [
+      {
+        "other": {
+          "id": "bbd994e4-1233-4e4f-ad6d-191337892990",
+          "name": "RunBikeRock Illertissen",
+          "date": "2027-06-06",
+          "end": "2027-06-06",
+          "disciplines": [
+            "gravel"
+          ],
+          "website": "https://runbikerock.com",
+          "location": {
+            "town": "Hauptstraße und Marktplatz, Illertissen",
+            "country": "DE",
+            "lat": 48.2167002,
+            "lng": 10.0943429
+          }
+        },
+        "assessment": {
+          "score": 12,
+          "reasons": [
+            "weekend",
+            "needs_place_or_url"
+          ],
+          "decision": "review"
+        }
+      },
+      {
+        "other": {
+          "id": "3ff74433-3530-4feb-b5c3-a82275b6a4be",
+          "name": "Heubacher Mountainbikefestival \"Bike the Rock\"",
+          "date": "2027-06-05",
+          "end": "2027-06-05",
+          "disciplines": [
+            "xco",
+            "xcm",
+            "enduro",
+            "gravel",
+            "bmx"
+          ],
+          "website": "https://www.heubach.de/22585814.htm",
+          "location": {
+            "town": "73540 Heubach",
+            "country": "DE",
+            "lat": 48.786907,
+            "lng": 9.9397488
+          }
+        },
+        "assessment": {
+          "score": 18,
+          "reasons": [
+            "same_day",
+            "needs_place_or_url"
+          ],
+          "decision": "review"
+        }
+      },
+      {
+        "other": {
+          "id": "7a7843f8-4676-4d89-b614-70029ff5ce4a",
+          "name": "Shores & Switchbacks",
+          "date": "2027-06-03",
+          "end": "2027-06-06",
+          "disciplines": [
+            "gravel"
+          ],
+          "website": "https://shoresandswitchbacks.com",
+          "location": {
+            "town": "Ruderclub Lindau, Lindau",
+            "country": "DE",
+            "lat": 47.5518857,
+            "lng": 9.6840569
+          }
+        },
+        "assessment": {
+          "score": 12,
+          "reasons": [
+            "weekend",
+            "needs_place_or_url"
+          ],
+          "decision": "review"
+        }
+      },
+      {
+        "other": {
+          "id": "47af1896-041d-4b39-b54a-82ffc187a576",
+          "name": "Monaco di Baviera Lite",
+          "date": "2027-06-05",
+          "end": "2027-06-05",
+          "disciplines": [
+            "gravel"
+          ],
+          "website": "https://ultracyclingchallenges.com",
+          "location": {
+            "town": "München",
+            "country": "DE",
+            "lat": 48.0995839,
+            "lng": 11.637546
+          }
+        },
+        "assessment": {
+          "score": 18,
+          "reasons": [
+            "same_day",
+            "needs_place_or_url"
+          ],
+          "decision": "review"
+        }
+      },
+      {
+        "other": {
+          "id": "d5c275f9-8259-4527-bece-d060774f5221",
+          "name": "Canyon Rhein Hunsrück Gravel Marathon",
+          "date": "2027-06-05",
+          "end": "2027-06-06",
+          "disciplines": [
+            "xcm"
+          ],
+          "website": "https://www.mtb-rhens.de/",
+          "location": {
+            "town": "Markt- und Rathausplatz, Rhens",
+            "country": "DE",
+            "lat": 50.2822592,
+            "lng": 7.6184557
+          }
+        },
+        "assessment": {
+          "score": 18,
+          "reasons": [
+            "same_day",
+            "needs_place_or_url"
+          ],
+          "decision": "review"
+        }
+      },
+      {
+        "other": {
+          "id": "07cadd69-6c26-4bf4-8695-de54cb891e07",
+          "name": "The Grain Düsseldorf - Dijon",
+          "date": "2027-05-30",
+          "end": "2027-06-04",
+          "disciplines": [
+            "gravel"
+          ],
+          "website": "https://www.thegrain.cc/de",
+          "location": {
+            "town": "Schicke Mütze, Düsseldorf",
+            "country": "DE",
+            "lat": 51.2219275,
+            "lng": 6.7850672
+          }
+        },
+        "assessment": {
+          "score": 12,
+          "reasons": [
+            "weekend",
+            "needs_place_or_url"
+          ],
+          "decision": "review"
+        }
+      },
+      {
+        "other": {
+          "id": "524e49c3-cc90-4c95-bbda-e48ea3977695",
+          "name": "Nordic Chase - Berlin to Copenhagen",
+          "date": "2027-06-03",
+          "end": "2027-06-08",
+          "disciplines": [
+            "gravel",
+            "road"
+          ],
+          "website": "https://nordicchase.com/ber-cph",
+          "location": {
+            "town": "Berlin",
+            "country": "DE",
+            "lat": 52.503379,
+            "lng": 13.3386522
+          }
+        },
+        "assessment": {
+          "score": 12,
+          "reasons": [
+            "weekend",
+            "needs_place_or_url"
+          ],
+          "decision": "review"
+        }
+      }
+    ]
+  },
+  {
+    "held": {
+      "id": "a11f99da-b93c-44e0-b157-effc36ed7dec",
+      "name": "Allgäu & Spätzle",
+      "date": "2027-06-18",
+      "end": "2027-06-20",
+      "disciplines": [
+        "gravel",
+        "road"
+      ],
+      "website": "https://www.allgaeu-spaetzle.de",
+      "location": {
+        "town": "Sportpalast Bad Waldsee, Bad Waldsee",
+        "country": "DE",
+        "lat": 47.9179844,
+        "lng": 9.7494576
+      }
+    },
+    "matches": [
+      {
+        "other": {
+          "id": "a641d5fd-f4d8-4c3e-84d0-d6a1fc51d48b",
+          "name": "Bayrisch-Böhmisches Biere und Bäder Brevet",
+          "date": "2027-06-19",
+          "end": "2027-06-19",
+          "disciplines": [
+            "road"
+          ],
+          "website": "https://aramuc.de/brevets/1000-km-bayerisch-boehmisches-biere-und-baeder-brevet-2027",
+          "location": {
+            "town": "München",
+            "country": "DE",
+            "lat": 48.1351,
+            "lng": 11.582
+          }
+        },
+        "assessment": {
+          "score": 12,
+          "reasons": [
+            "weekend",
+            "needs_place_or_url"
+          ],
+          "decision": "review"
+        }
+      },
+      {
+        "other": {
+          "id": "c5b3151a-86cb-47f1-afdb-57746f33d1f2",
+          "name": "Chainreaction - Bikeconvoy for Ukraine",
+          "date": "2027-06-19",
+          "end": "2027-06-19",
+          "disciplines": [
+            "road"
+          ],
+          "website": "https://aramuc.de/brevets/1200-km-chainreaction-bikeconvoy-ukraine-brevet-mit-zeitlimit-2027",
+          "location": {
+            "town": "München",
+            "country": "DE",
+            "lat": 48.1351,
+            "lng": 11.582
+          }
+        },
+        "assessment": {
+          "score": 12,
+          "reasons": [
+            "weekend",
+            "needs_place_or_url"
+          ],
+          "decision": "review"
+        }
+      },
+      {
+        "other": {
+          "id": "16e92f07-b4c8-40ae-ade1-9953ed6a68a9",
+          "name": "Termine 2027 — Nievenheimer Ortsschildsprint",
+          "date": "2027-06-20",
+          "end": "2027-06-20",
+          "disciplines": [
+            "road"
+          ],
+          "website": "https://www.dsergebnis.de/nievenheimer-ortsschildsprint-2026/",
+          "location": {
+            "town": "Nievenheim",
+            "country": "DE",
+            "lat": 51.115346,
+            "lng": 6.7683598
+          }
+        },
+        "assessment": {
+          "score": 12,
+          "reasons": [
+            "weekend",
+            "needs_place_or_url"
+          ],
+          "decision": "review"
+        }
+      },
+      {
+        "other": {
+          "id": "78f3bc62-824b-4b93-bb7c-eccb38121d4f",
+          "name": "Castle Classics",
+          "date": "2027-06-19",
+          "end": "2027-06-19",
+          "disciplines": [
+            "road",
+            "gran_fondo"
+          ],
+          "website": "https://www.castle-classics.de/",
+          "location": {
+            "town": "Shedhalle Pößneck, Pößneck",
+            "country": "DE",
+            "lat": 50.698381,
+            "lng": 11.6000424
+          }
+        },
+        "assessment": {
+          "score": 12,
+          "reasons": [
+            "weekend",
+            "needs_place_or_url"
+          ],
+          "decision": "review"
+        }
+      },
+      {
+        "other": {
+          "id": "3befba6a-ff77-4a47-af69-872243c9234b",
+          "name": "Jura-Radmarathon",
+          "date": "2027-06-20",
+          "end": "2027-06-20",
+          "disciplines": [
+            "road",
+            "gran_fondo"
+          ],
+          "website": "http://www.jura-radmarathon.de/",
+          "location": {
+            "town": "Sportheim, Lupburg",
+            "country": "DE",
+            "lat": 49.1555658,
+            "lng": 11.755624
+          }
+        },
+        "assessment": {
+          "score": 12,
+          "reasons": [
+            "weekend",
+            "needs_place_or_url"
+          ],
+          "decision": "review"
+        }
+      },
+      {
+        "other": {
+          "id": "bc8e2ea1-09d7-4441-81ed-3edae56e6000",
+          "name": "24h-Radmarathon Brelinger Berg",
+          "date": "2027-06-19",
+          "end": "2027-06-20",
+          "disciplines": [
+            "road"
+          ],
+          "website": "http://www.24h-brelinger-berg.de",
+          "location": {
+            "town": "Wedemark-Brelingen",
+            "country": "DE",
+            "lat": 52.552475,
+            "lng": 9.6718613
+          }
+        },
+        "assessment": {
+          "score": 12,
+          "reasons": [
+            "weekend",
+            "needs_place_or_url"
+          ],
+          "decision": "review"
+        }
+      },
+      {
+        "other": {
+          "id": "434f1c38-62dc-4f9a-a9bd-ec273bf47a5a",
+          "name": "Bremen 555",
+          "date": "2027-06-17",
+          "end": "2027-06-20",
+          "disciplines": [
+            "gravel"
+          ],
+          "website": "http://www.bremen555.de",
+          "location": {
+            "town": "Bremen",
+            "country": "DE",
+            "lat": 53.0758196,
+            "lng": 8.8071646
+          }
+        },
+        "assessment": {
+          "score": 12,
+          "reasons": [
+            "weekend",
+            "needs_place_or_url"
+          ],
+          "decision": "review"
+        }
+      },
+      {
+        "other": {
+          "id": "3c95cd88-97ee-4d87-885d-008dff0153ad",
+          "name": "Monaco di Baviera Classic",
+          "date": "2027-06-19",
+          "end": "2027-06-19",
+          "disciplines": [
+            "gravel"
+          ],
+          "website": "https://ultracyclingchallenges.com",
+          "location": {
+            "town": "München",
+            "country": "DE",
+            "lat": 48.0995839,
+            "lng": 11.637546
+          }
+        },
+        "assessment": {
+          "score": 12,
+          "reasons": [
+            "weekend",
+            "needs_place_or_url"
+          ],
+          "decision": "review"
+        }
+      },
+      {
+        "other": {
+          "id": "ab9b9fa3-6af7-49bd-afa1-acce901d77a2",
+          "name": "Mosel-Sommer-Nacht",
+          "date": "2027-06-19",
+          "end": "2027-06-20",
+          "disciplines": [
+            "road"
+          ],
+          "website": "https://mosel-sommer-nacht.de",
+          "location": {
+            "town": "Koblenz",
+            "country": "DE",
+            "lat": 50.3635406,
+            "lng": 7.576677
+          }
+        },
+        "assessment": {
+          "score": 12,
+          "reasons": [
+            "weekend",
+            "needs_place_or_url"
+          ],
+          "decision": "review"
+        }
+      }
+    ]
+  },
+  {
+    "held": {
+      "id": "f0292f9f-dee8-47fc-85f4-a1fab0906e23",
+      "name": "Świętokrzyska Liga Szkółek Kolarskich i Amatorów — #2",
+      "date": "2026-11-29",
+      "end": "2026-11-29",
+      "disciplines": [
+        "cx"
+      ],
+      "website": "https://odjazd.pl/wydarzenie/097192f3-eb2a-4d7d-a09b-036988cc2610",
+      "location": {
+        "town": "Kielce",
+        "country": "PL",
+        "lat": 50.8719903,
+        "lng": 20.6310488
+      }
+    },
+    "matches": [
+      {
+        "other": {
+          "id": "2deb0d12-5966-4c1f-afe6-9ba8b63a9acc",
+          "name": "ogólnopolski wyścig w kolarstwie przełajowym - Puchar Polski Koźminek",
+          "date": "2026-11-28",
+          "end": "2026-11-28",
+          "disciplines": [
+            "cx"
+          ],
+          "website": "https://pzkol.pl/kalendarz/2888,ogolnopolski-wyscig-w-kolarstwie-przelajowym-puchar-polski-kozminek.html",
+          "location": {
+            "town": "Koźminek",
+            "country": "PL",
+            "lat": 51.798301,
+            "lng": 18.3383583
+          }
+        },
+        "assessment": {
+          "score": 18,
+          "reasons": [
+            "weekend",
+            "name_sim_low",
+            "needs_place_or_url"
+          ],
+          "decision": "review"
+        }
+      },
+      {
+        "other": {
+          "id": "e8f236b4-8d18-431d-afec-b1313a16b2fe",
+          "name": "VII Ogólnopolski wyścig w kolarstwie przełajowym \"Moskava Cyclocross\" o puchar burmistrza miasta środa wielkopolska",
+          "date": "2026-11-29",
+          "end": "2026-11-29",
+          "disciplines": [
+            "cx"
+          ],
+          "website": "https://pzkol.pl/kalendarz/2889,vii-ogolnopolski-wyscig-w-kolarstwie-przelajowym-moskava-cyclocross-o-puchar-burmistrza-miasta-sroda-wielkopolska.html",
+          "location": {
+            "town": "Środa Wielkopolska",
+            "country": "PL",
+            "lat": 52.2284266,
+            "lng": 17.277827
+          }
+        },
+        "assessment": {
+          "score": 18,
+          "reasons": [
+            "same_day",
+            "needs_place_or_url"
+          ],
+          "decision": "review"
+        }
+      },
+      {
+        "other": {
+          "id": "03fc8da7-c963-4df2-9dc3-3a10bc2252bb",
+          "name": "ProTour Cyclocross Cup — Wyścig 6",
+          "date": "2026-11-29",
+          "end": "2026-11-29",
+          "disciplines": [
+            "cx"
+          ],
+          "website": "https://cyclocross.com.pl/wyscigi/goleniow/",
+          "location": {
+            "town": "Goleniów",
+            "country": "PL",
+            "lat": 53.5656939,
+            "lng": 14.8299285
+          }
+        },
+        "assessment": {
+          "score": 18,
+          "reasons": [
+            "same_day",
+            "needs_place_or_url"
+          ],
+          "decision": "review"
+        }
+      }
+    ]
+  },
+  {
+    "held": {
+      "id": "ca9350c9-ede7-4425-9180-e4cb40fa9fce",
+      "name": "Charytatywny Maraton MTB",
+      "date": "2027-03-07",
+      "end": "2027-03-07",
+      "disciplines": [
+        "mtb",
+        "xcm"
+      ],
+      "website": "https://odjazd.pl/wydarzenie/890cb215-4def-4469-9520-aad25812697f",
+      "location": {
+        "town": "Bledzew",
+        "country": "PL",
+        "lat": null,
+        "lng": null
+      }
+    },
+    "matches": [
+      {
+        "other": {
+          "id": "ae8357e5-1307-4f1e-9f22-991a9a7e5e9b",
+          "name": "Zimowe Grand Prix z 3mk INTERKOL na TIP-TOP — Edycja 5 - Zimowe Ostatki",
+          "date": "2027-03-07",
+          "end": "2027-03-07",
+          "disciplines": [
+            "mtb"
+          ],
+          "website": "https://odjazd.pl/wydarzenie/07fdfeae-934c-487b-86f0-6e8d9db29bbf",
+          "location": {
+            "town": "Czarnylas",
+            "country": "PL",
+            "lat": 51.5071774,
+            "lng": 17.7630966
+          }
+        },
+        "assessment": {
+          "score": 18,
+          "reasons": [
+            "same_day",
+            "needs_place_or_url"
+          ],
+          "decision": "review"
+        }
+      }
+    ]
+  },
+  {
+    "held": {
+      "id": "cc1e7ee2-59a8-4a00-8079-7072db7ba78f",
+      "name": "Brevetowe Zakończenie Sezonu z ENEA 200",
+      "date": "2027-09-25",
+      "end": "2027-09-25",
+      "disciplines": [
+        "road"
+      ],
+      "website": "https://odjazd.pl/wydarzenie/8903f407-bed4-4a66-a603-9c6676b0a078",
+      "location": {
+        "town": "Kozienice",
+        "country": "PL",
+        "lat": 51.5849678,
+        "lng": 21.549883
+      }
+    },
+    "matches": [
+      {
+        "other": {
+          "id": "6d5bde6c-c74b-4c8f-895f-6c6fe367d1aa",
+          "name": "Brevetowe Zakończenie Sezonu z ENEA 150",
+          "date": "2027-09-25",
+          "end": "2027-09-25",
+          "disciplines": [
+            "road"
+          ],
+          "website": "https://odjazd.pl/wydarzenie/5347caa0-74c9-432b-9685-87c195837790",
+          "location": {
+            "town": "Kozienice",
+            "country": "PL",
+            "lat": 51.5849678,
+            "lng": 21.549883
+          }
+        },
+        "assessment": {
+          "score": 66,
+          "reasons": [
+            "same_day",
+            "same_place",
+            "name_sim_high",
+            "same_discipline"
+          ],
+          "decision": "match"
+        }
+      }
+    ]
+  },
+  {
+    "held": {
+      "id": "6d5bde6c-c74b-4c8f-895f-6c6fe367d1aa",
+      "name": "Brevetowe Zakończenie Sezonu z ENEA 150",
+      "date": "2027-09-25",
+      "end": "2027-09-25",
+      "disciplines": [
+        "road"
+      ],
+      "website": "https://odjazd.pl/wydarzenie/5347caa0-74c9-432b-9685-87c195837790",
+      "location": {
+        "town": "Kozienice",
+        "country": "PL",
+        "lat": 51.5849678,
+        "lng": 21.549883
+      }
+    },
+    "matches": [
+      {
+        "other": {
+          "id": "cc1e7ee2-59a8-4a00-8079-7072db7ba78f",
+          "name": "Brevetowe Zakończenie Sezonu z ENEA 200",
+          "date": "2027-09-25",
+          "end": "2027-09-25",
+          "disciplines": [
+            "road"
+          ],
+          "website": "https://odjazd.pl/wydarzenie/8903f407-bed4-4a66-a603-9c6676b0a078",
+          "location": {
+            "town": "Kozienice",
+            "country": "PL",
+            "lat": 51.5849678,
+            "lng": 21.549883
+          }
+        },
+        "assessment": {
+          "score": 66,
+          "reasons": [
+            "same_day",
+            "same_place",
+            "name_sim_high",
+            "same_discipline"
+          ],
+          "decision": "match"
+        }
+      }
+    ]
+  },
+  {
+    "held": {
+      "id": "c2af5c3b-9cad-4f3e-b553-445d455beb44",
+      "name": "Brevetowe Zakończenie Sezonu z ENEA 75",
+      "date": "2027-09-11",
+      "end": "2027-09-11",
+      "disciplines": [
+        "road"
+      ],
+      "website": "https://odjazd.pl/wydarzenie/ae4181ce-db07-4950-980c-15026fd0d841",
+      "location": {
+        "town": "Kozienice",
+        "country": "PL",
+        "lat": 51.5849678,
+        "lng": 21.549883
+      }
+    },
+    "matches": [
+      {
+        "other": {
+          "id": "50520a85-3126-4dd2-a227-32d170416679",
+          "name": "Rallye Sudety",
+          "date": "2027-09-11",
+          "end": "2027-09-11",
+          "disciplines": [],
+          "website": "https://redpointteam.cz",
+          "location": {
+            "town": null,
+            "country": null,
+            "lat": null,
+            "lng": null
+          }
+        },
+        "assessment": {
+          "score": 18,
+          "reasons": [
+            "same_day",
+            "needs_place_or_url"
+          ],
+          "decision": "review"
+        }
+      },
+      {
+        "other": {
+          "id": "aa660159-3b5a-437b-8253-bf0c3b5fe54c",
+          "name": "Super Prestige / ŻTC Bike Race — Wyścig 9 - Finał",
+          "date": "2027-09-12",
+          "end": "2027-09-12",
+          "disciplines": [
+            "road"
+          ],
+          "website": "https://odjazd.pl/wydarzenie/652f5acd-ff39-45a3-a168-a00f5639fa0b",
+          "location": {
+            "town": "Żyrardów",
+            "country": "PL",
+            "lat": 52.0543308,
+            "lng": 20.4435009
+          }
+        },
+        "assessment": {
+          "score": 12,
+          "reasons": [
+            "weekend",
+            "needs_place_or_url"
+          ],
+          "decision": "review"
+        }
+      },
+      {
+        "other": {
+          "id": "ededa3bc-e11e-46fa-b632-2a6d4cc3b0ae",
+          "name": "Chrośna Cycling Challenge – Jazda Na Czas",
+          "date": "2027-09-11",
+          "end": "2027-09-11",
+          "disciplines": [
+            "road",
+            "tt"
+          ],
+          "website": "https://odjazd.pl/wydarzenie/bc2079b1-cb6b-4f59-a211-5111951d710f",
+          "location": {
+            "town": "Nowa Wieś Wielka",
+            "country": "PL",
+            "lat": 54.180841,
+            "lng": 20.5072054
+          }
+        },
+        "assessment": {
+          "score": 18,
+          "reasons": [
+            "same_day",
+            "needs_place_or_url"
+          ],
+          "decision": "review"
+        }
+      }
+    ]
+  },
+  {
+    "held": {
+      "id": "6583f81f-546f-44c4-8b16-42e08221c980",
+      "name": "Głupie Pomysły - Brevet 600",
+      "date": "2027-07-10",
+      "end": "2027-07-10",
+      "disciplines": [
+        "road"
+      ],
+      "website": "https://odjazd.pl/wydarzenie/84614cb1-51a6-4dc2-b5b3-2239e41e3b92",
+      "location": {
+        "town": "Tarnów",
+        "country": "PL",
+        "lat": 50.0121,
+        "lng": 20.9868
+      }
+    },
+    "matches": [
+      {
+        "other": {
+          "id": "068441dc-dfe2-454c-8375-c266803d51ff",
+          "name": "Tour De Silesia",
+          "date": "2027-07-10",
+          "end": "2027-07-11",
+          "disciplines": [
+            "road"
+          ],
+          "website": "https://odjazd.pl/wydarzenie/2e80749c-f348-4ed8-b570-61863754d9c7",
+          "location": {
+            "town": "Godów",
+            "country": "PL",
+            "lat": 50.9666726,
+            "lng": 21.187721
+          }
+        },
+        "assessment": {
+          "score": 18,
+          "reasons": [
+            "same_day",
+            "needs_place_or_url"
+          ],
+          "decision": "review"
+        }
+      },
+      {
+        "other": {
+          "id": "3a8d6b4e-e22b-470e-86b6-4d2d920ea58d",
+          "name": "Deu-Lux Ultra One more Loop! Premierenausgabe 2027",
+          "date": "2027-07-09",
+          "end": "2027-07-09",
+          "disciplines": [
+            "road"
+          ],
+          "website": "https://my.raceresult.com/425594/",
+          "location": {
+            "town": null,
+            "country": null,
+            "lat": null,
+            "lng": null
+          }
+        },
+        "assessment": {
+          "score": 12,
+          "reasons": [
+            "weekend",
+            "needs_place_or_url"
+          ],
+          "decision": "review"
+        }
+      },
+      {
+        "other": {
+          "id": "7a62f3b2-b51a-4fe6-b3d1-fd613f6bcbda",
+          "name": "Polish Bike Tour — Etap 3 - PBT Wschód 1200",
+          "date": "2027-07-03",
+          "end": "2027-07-10",
+          "disciplines": [
+            "road"
+          ],
+          "website": "https://www.polishbiketour.pl/",
+          "location": {
+            "town": "Sanok",
+            "country": "PL",
+            "lat": 49.558443,
+            "lng": 22.174379
+          }
+        },
+        "assessment": {
+          "score": 12,
+          "reasons": [
+            "weekend",
+            "needs_place_or_url"
+          ],
+          "decision": "review"
+        }
+      }
+    ]
+  },
+  {
+    "held": {
+      "id": "3205e00f-5bc9-4c09-97b4-1848f1aaa7ad",
+      "name": "Świętokrzyska Liga Szkółek Kolarskich i Amatorów — #1",
+      "date": "2026-11-28",
+      "end": "2026-11-28",
+      "disciplines": [
+        "cx"
+      ],
+      "website": "https://odjazd.pl/wydarzenie/c744693f-3888-4512-88d5-23bfbfbde51f",
+      "location": {
+        "town": "Kielce",
+        "country": "PL",
+        "lat": 50.8719903,
+        "lng": 20.6310488
+      }
+    },
+    "matches": [
+      {
+        "other": {
+          "id": "2deb0d12-5966-4c1f-afe6-9ba8b63a9acc",
+          "name": "ogólnopolski wyścig w kolarstwie przełajowym - Puchar Polski Koźminek",
+          "date": "2026-11-28",
+          "end": "2026-11-28",
+          "disciplines": [
+            "cx"
+          ],
+          "website": "https://pzkol.pl/kalendarz/2888,ogolnopolski-wyscig-w-kolarstwie-przelajowym-puchar-polski-kozminek.html",
+          "location": {
+            "town": "Koźminek",
+            "country": "PL",
+            "lat": 51.798301,
+            "lng": 18.3383583
+          }
+        },
+        "assessment": {
+          "score": 24,
+          "reasons": [
+            "same_day",
+            "name_sim_low",
+            "needs_place_or_url"
+          ],
+          "decision": "review"
+        }
+      },
+      {
+        "other": {
+          "id": "e8f236b4-8d18-431d-afec-b1313a16b2fe",
+          "name": "VII Ogólnopolski wyścig w kolarstwie przełajowym \"Moskava Cyclocross\" o puchar burmistrza miasta środa wielkopolska",
+          "date": "2026-11-29",
+          "end": "2026-11-29",
+          "disciplines": [
+            "cx"
+          ],
+          "website": "https://pzkol.pl/kalendarz/2889,vii-ogolnopolski-wyscig-w-kolarstwie-przelajowym-moskava-cyclocross-o-puchar-burmistrza-miasta-sroda-wielkopolska.html",
+          "location": {
+            "town": "Środa Wielkopolska",
+            "country": "PL",
+            "lat": 52.2284266,
+            "lng": 17.277827
+          }
+        },
+        "assessment": {
+          "score": 12,
+          "reasons": [
+            "weekend",
+            "needs_place_or_url"
+          ],
+          "decision": "review"
+        }
+      },
+      {
+        "other": {
+          "id": "03fc8da7-c963-4df2-9dc3-3a10bc2252bb",
+          "name": "ProTour Cyclocross Cup — Wyścig 6",
+          "date": "2026-11-29",
+          "end": "2026-11-29",
+          "disciplines": [
+            "cx"
+          ],
+          "website": "https://cyclocross.com.pl/wyscigi/goleniow/",
+          "location": {
+            "town": "Goleniów",
+            "country": "PL",
+            "lat": 53.5656939,
+            "lng": 14.8299285
+          }
+        },
+        "assessment": {
+          "score": 12,
+          "reasons": [
+            "weekend",
+            "needs_place_or_url"
+          ],
+          "decision": "review"
+        }
+      }
+    ]
+  },
+  {
+    "held": {
+      "id": "3e8e6af5-1dfc-45ed-b9f8-2e4ce842cb9d",
+      "name": "DWH Cross Wels Nationales Rennen mit Jedermannfrau Gravel MTB Rennen und BOA Mini Grand Prix",
+      "date": "2026-11-08",
+      "end": "2026-11-08",
+      "disciplines": [
+        "mtb",
+        "road",
+        "gravel"
+      ],
+      "website": "https://rc-ovilava-wels.at/",
+      "location": {
+        "town": "4600 Wels",
+        "country": "AT",
+        "lat": 48.163591,
+        "lng": 14.0235498
+      }
+    },
+    "matches": [
+      {
+        "other": {
+          "id": "6bd09643-ee76-4f20-9c60-0afd6a505eba",
+          "name": "3Lions — 6. RCV Gravel Cross Race",
+          "date": "2026-11-07",
+          "end": null,
+          "disciplines": [
+            "gravel",
+            "mtb"
+          ],
+          "website": "https://wrsv.de/fileadmin/wrsv/downloads/Downloads_MTB/3Lions_2026_Flyer_1_final1.pdf",
+          "location": {
+            "town": null,
+            "country": null,
+            "lat": null,
+            "lng": null
+          }
+        },
+        "assessment": {
+          "score": 12,
+          "reasons": [
+            "weekend",
+            "needs_place_or_url"
+          ],
+          "decision": "review"
+        }
+      }
+    ]
+  },
+  {
+    "held": {
+      "id": "3e0a3d6f-883c-43fb-abc4-04ce1dacc60a",
+      "name": "Škoda Swiss Bike Cup — Moléson-sur-Gruyères",
+      "date": "2027-05-01",
+      "end": "2027-05-02",
+      "disciplines": [
+        "xcc",
+        "xco"
+      ],
+      "website": "https://www.swissbikecup.ch/etappe/moleson-sur-gruyere",
+      "location": {
+        "town": "Moléson-sur-Gruyères",
+        "country": "CH",
+        "lat": 46.548,
+        "lng": 7.016
+      }
+    },
+    "matches": [
+      {
+        "other": {
+          "id": "96af705b-997c-4a27-aa20-d08e2d92f51d",
+          "name": "Roc du Littoral",
+          "date": "2027-05-02",
+          "end": "2027-05-02",
+          "disciplines": [
+            "xco"
+          ],
+          "website": null,
+          "location": {
+            "town": "Hauterive",
+            "country": "CH",
+            "lat": 47.0133299,
+            "lng": 6.972712
+          }
+        },
+        "assessment": {
+          "score": 12,
+          "reasons": [
+            "weekend",
+            "needs_place_or_url"
+          ],
+          "decision": "review"
+        }
+      },
+      {
+        "other": {
+          "id": "d7b7f7d6-cb81-4a38-b91a-bcb7429f3c15",
+          "name": "slowUp Werdenberg-Liechtenstein",
+          "date": "2027-05-02",
+          "end": "2027-05-02",
+          "disciplines": [
+            "xco",
+            "gravel",
+            "road"
+          ],
+          "website": "https://www.slowup.ch/wfl/de",
+          "location": {
+            "town": "Buchs",
+            "country": "CH",
+            "lat": 47.1618111,
+            "lng": 9.4744357
+          }
+        },
+        "assessment": {
+          "score": 12,
+          "reasons": [
+            "weekend",
+            "needs_place_or_url"
+          ],
+          "decision": "review"
+        }
+      }
+    ]
+  }
+]

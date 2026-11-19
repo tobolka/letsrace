@@ -1,0 +1,263 @@
+{
+  "3": {
+    "page": 1,
+    "source": "visually read rendered PDF before reading Docling output",
+    "schedule": [
+      [
+        "Masters A, B, C",
+        "09:15"
+      ],
+      [
+        "Mladší žiaci",
+        "10:00"
+      ],
+      [
+        "Žiačky",
+        "10:02"
+      ],
+      [
+        "Starší žiaci",
+        "10:30"
+      ],
+      [
+        "Kadetky",
+        "10:32"
+      ],
+      [
+        "Kadeti",
+        "12:00"
+      ],
+      [
+        "Juniorky",
+        "12:02"
+      ],
+      [
+        "Juniori",
+        "13:00"
+      ],
+      [
+        "Ženy Elite",
+        "13:50"
+      ],
+      [
+        "Muži Elite",
+        "15:00"
+      ],
+      [
+        "Nábor",
+        "16:15"
+      ]
+    ],
+    "dates": [
+      "24.10",
+      "25.10"
+    ],
+    "note": "No printed year on the poster; do not infer a year from calendar metadata."
+  },
+  "112": {
+    "page": 7,
+    "source": "visually read rendered PDF before reading Docling output",
+    "columns": [
+      "Park Elite Muži",
+      "Park Elite Ženy",
+      "Flatland",
+      "Park Junior"
+    ],
+    "cells": [
+      [
+        "Volný trénink",
+        "Park Elite Muži",
+        "10:00-12:00"
+      ],
+      [
+        "Volný trénink",
+        "Park Elite Ženy",
+        "10:00-12:00"
+      ],
+      [
+        "Volný trénink",
+        "Flatland",
+        "8:00-14:00"
+      ],
+      [
+        "Volný trénink",
+        "Park Junior",
+        "8:00-10:00"
+      ],
+      [
+        "Potvrzení registrace",
+        "Park Elite Muži",
+        "10:00-12:00"
+      ],
+      [
+        "Potvrzení registrace",
+        "Park Elite Ženy",
+        "10:00-12:00"
+      ],
+      [
+        "Potvrzení registrace",
+        "Flatland",
+        "10:00-12:00"
+      ],
+      [
+        "Potvrzení registrace",
+        "Park Junior",
+        "10:00-11:00"
+      ],
+      [
+        "Warmup 1",
+        "Park Elite Muži",
+        "13:15-13:30"
+      ],
+      [
+        "Warmup 1",
+        "Park Elite Ženy",
+        "-"
+      ],
+      [
+        "Warmup 1",
+        "Flatland",
+        "14:00-15:00"
+      ],
+      [
+        "Warmup 1",
+        "Park Junior",
+        "12:00-12:15"
+      ],
+      [
+        "Kvalifikace",
+        "Park Elite Muži",
+        "13:30-15:00"
+      ],
+      [
+        "Kvalifikace",
+        "Park Elite Ženy",
+        "-"
+      ],
+      [
+        "Kvalifikace",
+        "Flatland",
+        "15:00-16:00"
+      ],
+      [
+        "Kvalifikace",
+        "Park Junior",
+        "12:15-13:15"
+      ],
+      [
+        "Warmup 2",
+        "Park Elite Muži",
+        "17:45-18:15"
+      ],
+      [
+        "Warmup 2",
+        "Park Elite Ženy",
+        "17:00-17:30"
+      ],
+      [
+        "Warmup 2",
+        "Flatland",
+        "16:00-17:00"
+      ],
+      [
+        "Warmup 2",
+        "Park Junior",
+        "16:00-16:20"
+      ],
+      [
+        "Finále",
+        "Park Elite Muži",
+        "18:15-19:00"
+      ],
+      [
+        "Finále",
+        "Park Elite Ženy",
+        "17:30-17:45"
+      ],
+      [
+        "Finále",
+        "Flatland",
+        "17:00-17:30"
+      ],
+      [
+        "Finále",
+        "Park Junior",
+        "16:20-17:00"
+      ]
+    ],
+    "merged_rows": [
+      [
+        "Otevření areálu",
+        "8:00"
+      ],
+      [
+        "Vyhlášení",
+        "19:30"
+      ]
+    ]
+  },
+  "15": {
+    "page": 3,
+    "source": "visually read rendered PDF before reading Docling Puchar output",
+    "timed_rows": [
+      [
+        "Odprawa techniczna",
+        "09:00"
+      ],
+      [
+        "Wyścig punktowy",
+        "09:30"
+      ],
+      [
+        "Sprint finał – 1 bieg",
+        "16:00"
+      ],
+      [
+        "Sprint drużynowy finał",
+        "09:00"
+      ]
+    ],
+    "untimed_rows": [
+      "200 metrów - eliminacje sprintu",
+      "Omnium I - Scratch Grupa A",
+      "Keirin I runda"
+    ],
+    "note": "Most races have blank time cells. Never propagate a preceding time into them."
+  },
+  "28": {
+    "page": 1,
+    "source": "visual follow-up after the default RapidOCR omission; before Vision-full output",
+    "title": "Škoda Slovenský raj",
+    "date": "6.6.2026",
+    "routes": [
+      [
+        "Dlhá",
+        "68 km"
+      ],
+      [
+        "Stredná E-Bike partner",
+        "54 km"
+      ],
+      [
+        "Stredná E-Bike",
+        "54 km"
+      ],
+      [
+        "Stredná Gravel",
+        "54 km"
+      ],
+      [
+        "Stredná trať",
+        "54 km"
+      ],
+      [
+        "Krátka",
+        "23 km"
+      ],
+      [
+        "Family 7+",
+        "9 km"
+      ]
+    ]
+  }
+}

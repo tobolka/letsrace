@@ -1,0 +1,159 @@
+[
+  {
+    "place_id": 176903077,
+    "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+    "osm_type": "node",
+    "osm_id": 3009678295,
+    "lat": "52.5961874",
+    "lon": "19.2977920",
+    "class": "place",
+    "type": "isolated_dwelling",
+    "place_rank": 22,
+    "importance": 0.31074813956852465,
+    "addresstype": "isolated_dwelling",
+    "name": "Ruda",
+    "display_name": "Ruda, Jazy, gmina Włocławek, powiat włocławski, województwo kujawsko-pomorskie, 87-815, Polska",
+    "address": {
+      "isolated_dwelling": "Ruda",
+      "village": "Jazy",
+      "municipality": "gmina Włocławek",
+      "county": "powiat włocławski",
+      "state": "województwo kujawsko-pomorskie",
+      "ISO3166-2-lvl4": "PL-04",
+      "postcode": "87-815",
+      "country": "Polska",
+      "country_code": "pl"
+    },
+    "boundingbox": [
+      "52.5961374",
+      "52.5962374",
+      "19.2977420",
+      "19.2978420"
+    ]
+  },
+  {
+    "place_id": 175212489,
+    "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+    "osm_type": "node",
+    "osm_id": 1860759375,
+    "lat": "53.0011092",
+    "lon": "19.3281109",
+    "class": "place",
+    "type": "village",
+    "place_rank": 19,
+    "importance": 0.30723887866744215,
+    "addresstype": "village",
+    "name": "Ruda",
+    "display_name": "Ruda, gmina Rogowo, powiat rypiński, województwo kujawsko-pomorskie, 87-515, Polska",
+    "address": {
+      "village": "Ruda",
+      "municipality": "gmina Rogowo",
+      "county": "powiat rypiński",
+      "state": "województwo kujawsko-pomorskie",
+      "ISO3166-2-lvl4": "PL-04",
+      "postcode": "87-515",
+      "country": "Polska",
+      "country_code": "pl"
+    },
+    "boundingbox": [
+      "52.9811092",
+      "53.0211092",
+      "19.3081109",
+      "19.3481109"
+    ]
+  },
+  {
+    "place_id": 175070188,
+    "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+    "osm_type": "node",
+    "osm_id": 1867758228,
+    "lat": "53.3975034",
+    "lon": "18.6989905",
+    "class": "place",
+    "type": "village",
+    "place_rank": 19,
+    "importance": 0.3015950553092256,
+    "addresstype": "village",
+    "name": "Ruda",
+    "display_name": "Ruda, gmina Grudziądz, powiat grudziądzki, województwo kujawsko-pomorskie, 86-302, Polska",
+    "address": {
+      "village": "Ruda",
+      "municipality": "gmina Grudziądz",
+      "county": "powiat grudziądzki",
+      "state": "województwo kujawsko-pomorskie",
+      "ISO3166-2-lvl4": "PL-04",
+      "postcode": "86-302",
+      "country": "Polska",
+      "country_code": "pl"
+    },
+    "boundingbox": [
+      "53.3775034",
+      "53.4175034",
+      "18.6789905",
+      "18.7189905"
+    ]
+  },
+  {
+    "place_id": 175138084,
+    "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+    "osm_type": "node",
+    "osm_id": 1865263405,
+    "lat": "53.0056761",
+    "lon": "19.5906915",
+    "class": "place",
+    "type": "village",
+    "place_rank": 19,
+    "importance": 0.2901765588551152,
+    "addresstype": "village",
+    "name": "Ruda",
+    "display_name": "Ruda, gmina Skrwilno, powiat rypiński, województwo kujawsko-pomorskie, 87-510, Polska",
+    "address": {
+      "village": "Ruda",
+      "municipality": "gmina Skrwilno",
+      "county": "powiat rypiński",
+      "state": "województwo kujawsko-pomorskie",
+      "ISO3166-2-lvl4": "PL-04",
+      "postcode": "87-510",
+      "country": "Polska",
+      "country_code": "pl"
+    },
+    "boundingbox": [
+      "52.9856761",
+      "53.0256761",
+      "19.5706915",
+      "19.6106915"
+    ]
+  },
+  {
+    "place_id": 175191050,
+    "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+    "osm_type": "relation",
+    "osm_id": 6891874,
+    "lat": "53.2253987",
+    "lon": "19.6560676",
+    "class": "boundary",
+    "type": "administrative",
+    "place_rank": 20,
+    "importance": 0.22489365626900393,
+    "addresstype": "suburb",
+    "name": "Ruda",
+    "display_name": "Ruda, gmina Górzno, powiat brodnicki, województwo kujawsko-pomorskie, 87-320, Polska",
+    "address": {
+      "suburb": "Ruda",
+      "village": "Ruda",
+      "municipality": "gmina Górzno",
+      "county": "powiat brodnicki",
+      "state": "województwo kujawsko-pomorskie",
+      "ISO3166-2-lvl4": "PL-04",
+      "postcode": "87-320",
+      "country": "Polska",
+      "country_code": "pl"
+    },
+    "boundingbox": [
+      "53.2249760",
+      "53.2259332",
+      "19.6550964",
+      "19.6569152"
+    ]
+  }
+]

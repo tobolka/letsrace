@@ -1,0 +1,912 @@
+[
+  {
+    "index": 0,
+    "id": "b6830e12-4acb-44e3-9b3c-b3572d3ef9ab",
+    "name": "Slovenský pohár na dráhe 2026/2027",
+    "country": "CZ",
+    "eventType": "cup",
+    "visibility": "public",
+    "expected": true,
+    "inFeed": true
+  },
+  {
+    "index": 1,
+    "id": "625483ad-8a3d-4023-9a54-b9d366da15f6",
+    "name": "10. kolo SP BMX Freestyle: INDOOR JAM (PARK)",
+    "country": "SK",
+    "eventType": "cup",
+    "visibility": "public",
+    "expected": true,
+    "inFeed": true
+  },
+  {
+    "index": 2,
+    "id": "99a62a69-0605-4a05-8495-652490fda9ff",
+    "name": "Janev Cup 2026 - Hlinsko C2",
+    "country": "CZ",
+    "eventType": "cup",
+    "visibility": "public",
+    "expected": true,
+    "inFeed": true
+  },
+  {
+    "index": 3,
+    "id": "b6c8def4-a9e8-46eb-9fd9-c0319f33a3de",
+    "name": "Gran Fondo Greece",
+    "country": "GR",
+    "eventType": "gran_fondo",
+    "visibility": "hidden",
+    "expected": false,
+    "inFeed": false
+  },
+  {
+    "index": 4,
+    "id": "4bbcdb31-0dbf-4abe-8159-cd5c56370dde",
+    "name": "Mistrovství Olomouckého kraje v cyklokrosu",
+    "country": "CZ",
+    "eventType": "championship",
+    "visibility": "public",
+    "expected": true,
+    "inFeed": true
+  },
+  {
+    "index": 5,
+    "id": "2dd74877-a4c4-4caa-bf66-b2d7793296a4",
+    "name": "Granfondo Antalya",
+    "country": "TR",
+    "eventType": "gran_fondo",
+    "visibility": "hidden",
+    "expected": false,
+    "inFeed": false
+  },
+  {
+    "index": 6,
+    "id": "8e19c0a3-0155-4d83-8ad3-70350e0443c9",
+    "name": "Brněnský cyklokrosový pohár",
+    "country": "CZ",
+    "eventType": "cup",
+    "visibility": "public",
+    "expected": true,
+    "inFeed": true
+  },
+  {
+    "index": 8,
+    "id": "d36322c4-dab4-4bc7-b8af-28af0e57762f",
+    "name": "Granfondo La Nucia",
+    "country": "ES",
+    "eventType": "gran_fondo",
+    "visibility": "hidden",
+    "expected": false,
+    "inFeed": false
+  },
+  {
+    "index": 9,
+    "id": "3f4f8c4a-1891-44b8-9b0a-59726117ebe3",
+    "name": "TBC serie 2026",
+    "country": "CZ",
+    "eventType": "race",
+    "visibility": "public",
+    "expected": true,
+    "inFeed": true
+  },
+  {
+    "index": 10,
+    "id": "f5f3262a-138b-4e31-b338-9dbb12bbfdee",
+    "name": "CYKLOKROS OKOLO KANÁLU",
+    "country": "CZ",
+    "eventType": "race",
+    "visibility": "public",
+    "expected": true,
+    "inFeed": true
+  },
+  {
+    "index": 11,
+    "id": "96c5327a-0fb6-40e8-a435-89d46e8fa2ee",
+    "name": "Mistrovství Ústeckého kraje v cyklokrosu pro rok 2026",
+    "country": "CZ",
+    "eventType": "race",
+    "visibility": "public",
+    "expected": true,
+    "inFeed": true
+  },
+  {
+    "index": 12,
+    "id": "daaa376f-dfc7-47ab-90e0-38cf885cf000",
+    "name": "Granfondo Brazil",
+    "country": "BR",
+    "eventType": "gran_fondo",
+    "visibility": "hidden",
+    "expected": false,
+    "inFeed": false
+  },
+  {
+    "index": 13,
+    "id": "8bcdc4f3-6ac9-4223-b94f-254edc165664",
+    "name": "6. kolo: Grand Prix Sereď",
+    "country": "SK",
+    "eventType": "cup",
+    "visibility": "public",
+    "expected": true,
+    "inFeed": true
+  },
+  {
+    "index": 14,
+    "id": "a6fb78ad-9229-4930-8399-899595123b94",
+    "name": "STŘEDEČNÍ DRÁHOVÝ POHÁR",
+    "country": "CZ",
+    "eventType": "cup",
+    "visibility": "public",
+    "expected": true,
+    "inFeed": true
+  },
+  {
+    "index": 15,
+    "id": "926647e8-124b-4469-b074-12e111d6d7a4",
+    "name": "Granfondo Ecuador",
+    "country": "EC",
+    "eventType": "gran_fondo",
+    "visibility": "hidden",
+    "expected": false,
+    "inFeed": false
+  },
+  {
+    "index": 16,
+    "id": "b6a598f6-2b2d-46d6-90b1-34bee18bf0e5",
+    "name": "ČP Motol",
+    "country": "CZ",
+    "eventType": "race",
+    "visibility": "public",
+    "expected": true,
+    "inFeed": true
+  },
+  {
+    "index": 17,
+    "id": "acfd9ef7-6c71-47d8-97f6-9f8fdddf1350",
+    "name": "Janev Cup 2026 - Jičín C2",
+    "country": "CZ",
+    "eventType": "cup",
+    "visibility": "public",
+    "expected": true,
+    "inFeed": true
+  },
+  {
+    "index": 18,
+    "id": "470d25fa-a905-48c0-a5d5-59941ffbf011",
+    "name": "Kolová - I.Liga elite - 3.kolo",
+    "country": "CZ",
+    "eventType": "race",
+    "visibility": "public",
+    "expected": true,
+    "inFeed": true
+  },
+  {
+    "index": 19,
+    "id": "3a10adcc-1cb1-4abf-b0a4-7b58a0c9cf2d",
+    "name": "TBC serie 2026",
+    "country": "CZ",
+    "eventType": "series",
+    "visibility": "public",
+    "expected": true,
+    "inFeed": true
+  },
+  {
+    "index": 20,
+    "id": "59f236ed-1db5-40f9-a592-5591c6cb9bfb",
+    "name": "Janev Cup 2026 - Prachatice národní závod",
+    "country": "CZ",
+    "eventType": "cup",
+    "visibility": "public",
+    "expected": true,
+    "inFeed": true
+  },
+  {
+    "index": 21,
+    "id": "f9a8bbe8-1e68-4805-9080-203cedde7c75",
+    "name": "ZH Cross #7",
+    "country": "CZ",
+    "eventType": "race",
+    "visibility": "public",
+    "expected": true,
+    "inFeed": true
+  },
+  {
+    "index": 22,
+    "id": "935e390a-2d03-4d55-b390-7ed2ebd6262b",
+    "name": "STŘEDEČNÍ DRÁHOVÝ POHÁR",
+    "country": "CZ",
+    "eventType": "cup",
+    "visibility": "public",
+    "expected": true,
+    "inFeed": true
+  },
+  {
+    "index": 23,
+    "id": "2c8bdf27-1d54-4ac3-9a54-a3bcbaa3b0b4",
+    "name": "Mem. Cyrila Schejbala",
+    "country": "CZ",
+    "eventType": "race",
+    "visibility": "public",
+    "expected": true,
+    "inFeed": true
+  },
+  {
+    "index": 24,
+    "id": "0a6fd206-1327-48aa-af4d-ae29d46121ff",
+    "name": "ZH Cross #8",
+    "country": "CZ",
+    "eventType": "race",
+    "visibility": "public",
+    "expected": true,
+    "inFeed": true
+  },
+  {
+    "index": 25,
+    "id": "ea1df945-b650-4a95-a5a4-44b52f747006",
+    "name": "Gran Fondo 7 Lagos",
+    "country": "AR",
+    "eventType": "gran_fondo",
+    "visibility": "hidden",
+    "expected": false,
+    "inFeed": false
+  },
+  {
+    "index": 26,
+    "id": "ecbdc2bb-7804-474e-b095-5731a26d4e2a",
+    "name": "Kolová - II.Liga elite - 3.kolo",
+    "country": "CZ",
+    "eventType": "race",
+    "visibility": "public",
+    "expected": true,
+    "inFeed": true
+  },
+  {
+    "index": 27,
+    "id": "df4a6b29-fdf5-4bde-8b21-8768d4ed79b3",
+    "name": "Babinského bloudění 2026",
+    "country": "CZ",
+    "eventType": "race",
+    "visibility": "public",
+    "expected": true,
+    "inFeed": true
+  },
+  {
+    "index": 28,
+    "id": "47bec5f3-1f99-458f-acd1-0a80d4c5308e",
+    "name": "7. kolo: NoLimited cup v CX (UCI C1)",
+    "country": "SK",
+    "eventType": "cup",
+    "visibility": "public",
+    "expected": true,
+    "inFeed": true
+  },
+  {
+    "index": 29,
+    "id": "f76a9371-008e-4725-b7cc-221bf0c1ba27",
+    "name": "ČP Motol",
+    "country": "CZ",
+    "eventType": "race",
+    "visibility": "public",
+    "expected": true,
+    "inFeed": true
+  },
+  {
+    "index": 30,
+    "id": "1291c6ed-66bd-44b6-b202-81eba2dc1067",
+    "name": "Janev Cup 2026 - Kolín C2",
+    "country": "CZ",
+    "eventType": "cup",
+    "visibility": "public",
+    "expected": true,
+    "inFeed": true
+  },
+  {
+    "index": 31,
+    "id": "3dadbafa-c27c-4280-b0ee-f22f50088661",
+    "name": "Žabácký cyklokros 2026 – Memoriál Rudolfa Bartoše",
+    "country": "CZ",
+    "eventType": "race",
+    "visibility": "public",
+    "expected": true,
+    "inFeed": true
+  },
+  {
+    "index": 32,
+    "id": "0d13d973-06a1-4dc1-95eb-4dd9132bb96a",
+    "name": "8. kolo: Grand Prix Šamorín (UCI C2)",
+    "country": "SK",
+    "eventType": "cup",
+    "visibility": "public",
+    "expected": true,
+    "inFeed": true
+  },
+  {
+    "index": 33,
+    "id": "a403090a-b5e8-4901-9ca5-c1811cb59d23",
+    "name": "TBC serie 2026",
+    "country": "CZ",
+    "eventType": "series",
+    "visibility": "public",
+    "expected": true,
+    "inFeed": true
+  },
+  {
+    "index": 34,
+    "id": "74b2961f-125f-4b95-ae08-c6b032d8cca3",
+    "name": "STŘEDEČNÍ DRÁHOVÝ POHÁR",
+    "country": "CZ",
+    "eventType": "cup",
+    "visibility": "public",
+    "expected": true,
+    "inFeed": true
+  },
+  {
+    "index": 35,
+    "id": "534f2a66-5796-4d96-a208-7f5259e46cc5",
+    "name": "Kolová - Kvalifikace o II.Ligu 2027",
+    "country": "CZ",
+    "eventType": "race",
+    "visibility": "public",
+    "expected": true,
+    "inFeed": true
+  },
+  {
+    "index": 36,
+    "id": "8726ee9e-6d1a-430a-9939-2ca3b77d1f0d",
+    "name": "Granfondo Colombia",
+    "country": "CO",
+    "eventType": "gran_fondo",
+    "visibility": "hidden",
+    "expected": false,
+    "inFeed": false
+  },
+  {
+    "index": 37,
+    "id": "c9d62999-7414-4637-addc-93b7ae6414be",
+    "name": "STŘEDEČNÍ DRÁHOVÝ POHÁR",
+    "country": "CZ",
+    "eventType": "cup",
+    "visibility": "public",
+    "expected": true,
+    "inFeed": true
+  },
+  {
+    "index": 38,
+    "id": "26b275b4-4d2e-47fe-b417-ba772132db26",
+    "name": "ČP Motol",
+    "country": "CZ",
+    "eventType": "race",
+    "visibility": "public",
+    "expected": true,
+    "inFeed": true
+  },
+  {
+    "index": 39,
+    "id": "d3e0bac7-179a-49d1-adb2-bb3232a90e9c",
+    "name": "Mikulášský cyklokros - Břeccross 2025 (Cx pohár JMK VI.)",
+    "country": "CZ",
+    "eventType": "cup",
+    "visibility": "public",
+    "expected": true,
+    "inFeed": true
+  },
+  {
+    "index": 40,
+    "id": "ca4496d4-5663-45a5-a9a4-e20a8af989d2",
+    "name": "MSR v cyklokrose (9. kolo)",
+    "country": "SK",
+    "eventType": "championship",
+    "visibility": "public",
+    "expected": true,
+    "inFeed": true
+  },
+  {
+    "index": 41,
+    "id": "43d0f6a8-c942-462f-99f1-5728be6fbc32",
+    "name": "10. kolo: NoLimited cup v CX (UCI C2)",
+    "country": "SK",
+    "eventType": "cup",
+    "visibility": "public",
+    "expected": true,
+    "inFeed": true
+  },
+  {
+    "index": 42,
+    "id": "8bc06674-c61e-4c03-994a-f9cca966af27",
+    "name": "Granfondo La Guadeloupe",
+    "country": "GP",
+    "eventType": "gran_fondo",
+    "visibility": "hidden",
+    "expected": false,
+    "inFeed": false
+  },
+  {
+    "index": 43,
+    "id": "f2164309-a63d-4a2a-85d9-44bc25de7a20",
+    "name": "TBC serie 2026",
+    "country": "CZ",
+    "eventType": "series",
+    "visibility": "public",
+    "expected": true,
+    "inFeed": true
+  },
+  {
+    "index": 44,
+    "id": "a5234242-b0d1-4022-9b99-d63f9cbf385a",
+    "name": "STŘEDEČNÍ DRÁHOVÝ POHÁR",
+    "country": "CZ",
+    "eventType": "cup",
+    "visibility": "public",
+    "expected": true,
+    "inFeed": true
+  },
+  {
+    "index": 45,
+    "id": "da8a343e-872c-4027-8c87-bca41aa642d0",
+    "name": "Gran Fondo Hainan",
+    "country": "CN",
+    "eventType": "gran_fondo",
+    "visibility": "hidden",
+    "expected": false,
+    "inFeed": false
+  },
+  {
+    "index": 46,
+    "id": "70a7735b-ce47-494d-b9ac-cbc4da6a33d3",
+    "name": "Mistrovství Planety",
+    "country": "CZ",
+    "eventType": "championship",
+    "visibility": "public",
+    "expected": true,
+    "inFeed": true
+  },
+  {
+    "index": 47,
+    "id": "a1b88f9e-da8f-4c24-bc8b-cfc83f8cf244",
+    "name": "Janev Cup 2026 - Veselí nad Lužnicí C1",
+    "country": "CZ",
+    "eventType": "cup",
+    "visibility": "public",
+    "expected": true,
+    "inFeed": true
+  },
+  {
+    "index": 48,
+    "id": "e7f382e3-eaec-4ee7-8942-1c03d89e6042",
+    "name": "Janev Cup 2026 - MČR mládež Veselí nad Lužnicí",
+    "country": "CZ",
+    "eventType": "championship",
+    "visibility": "public",
+    "expected": true,
+    "inFeed": true
+  },
+  {
+    "index": 49,
+    "id": "8e2e11bf-9324-4651-9990-2c1583561c6a",
+    "name": "AD Ports Group Gran Fondo Abu Dhabi",
+    "country": "AE",
+    "eventType": "gran_fondo",
+    "visibility": "hidden",
+    "expected": false,
+    "inFeed": false
+  },
+  {
+    "index": 51,
+    "id": "ddd68f13-5f76-46b7-9c32-9c15925bd889",
+    "name": "Istria Granfondo",
+    "country": "HR",
+    "eventType": "gran_fondo",
+    "visibility": "hidden",
+    "expected": false,
+    "inFeed": false
+  },
+  {
+    "index": 52,
+    "id": "0dbf5d00-55d7-4806-81d2-9fd36268592b",
+    "name": "Neusiedler See Radmarathon",
+    "country": "AT",
+    "eventType": "gran_fondo",
+    "visibility": "public",
+    "expected": true,
+    "inFeed": true
+  },
+  {
+    "index": 53,
+    "id": "258bb5a5-8cc3-4cfb-8726-4211db0fc7a5",
+    "name": "Časovka/timetrial - DEKOM SYSTEM SUDETY TOUR 2027",
+    "country": "CZ",
+    "eventType": "tour",
+    "visibility": "public",
+    "expected": true,
+    "inFeed": true
+  },
+  {
+    "index": 54,
+    "id": "258bb5a5-8cc3-4cfb-8726-4211db0fc7a5",
+    "name": "Granfondo - DEKOM SYSTEM SUDETY TOUR 2027",
+    "country": "CZ",
+    "eventType": "tour",
+    "visibility": "public",
+    "expected": true,
+    "inFeed": true
+  },
+  {
+    "index": 55,
+    "id": "258bb5a5-8cc3-4cfb-8726-4211db0fc7a5",
+    "name": "Mediofondo - DEKOM SYSTEM SUDETY TOUR 2027",
+    "country": "CZ",
+    "eventType": "tour",
+    "visibility": "public",
+    "expected": true,
+    "inFeed": true
+  },
+  {
+    "index": 56,
+    "id": "4371180a-c781-4558-ace1-f86665e97762",
+    "name": "GranFondo Pag",
+    "country": "HR",
+    "eventType": "gran_fondo",
+    "visibility": "hidden",
+    "expected": false,
+    "inFeed": false
+  },
+  {
+    "index": 57,
+    "id": "5cd0e5d0-8bb7-4100-a84d-9a3a52fae4e6",
+    "name": "Mamut Tour",
+    "country": "CZ",
+    "eventType": "gran_fondo",
+    "visibility": "public",
+    "expected": true,
+    "inFeed": true
+  },
+  {
+    "index": 58,
+    "id": "c4ba0a71-6c75-47cb-a329-4a5762ae8147",
+    "name": "Imster Radmarathon",
+    "country": "AT",
+    "eventType": "race",
+    "visibility": "public",
+    "expected": true,
+    "inFeed": true
+  },
+  {
+    "index": 59,
+    "id": "1790a5d0-bb9c-4cbb-bf6c-da66ba021ca0",
+    "name": "Carinthia200",
+    "country": "AT",
+    "eventType": "gran_fondo",
+    "visibility": "public",
+    "expected": true,
+    "inFeed": true
+  },
+  {
+    "index": 60,
+    "id": "14c7388b-03a4-4f0b-b6b5-13b825603a73",
+    "name": "Předvýběr.CZ Bike Maraton Vysočina",
+    "country": "CZ",
+    "eventType": "race",
+    "visibility": "public",
+    "expected": true,
+    "inFeed": true
+  },
+  {
+    "index": 61,
+    "id": "6cabe584-3b4e-4964-a754-a6e29dcdcd04",
+    "name": "Bystrický anjel",
+    "country": "SK",
+    "eventType": "race",
+    "visibility": "public",
+    "expected": true,
+    "inFeed": true
+  },
+  {
+    "index": 62,
+    "id": "26c164f6-fd6a-4be5-83ca-fa7ed9f4ce3b",
+    "name": "Road Stage Orlické hory",
+    "country": "CZ",
+    "eventType": "race",
+    "visibility": "public",
+    "expected": true,
+    "inFeed": true
+  },
+  {
+    "index": 63,
+    "id": "7977de31-976a-4e5c-983e-556265197b75",
+    "name": "Grand Prix Czech Republic UCI 1.2",
+    "country": "CZ",
+    "eventType": "series",
+    "visibility": "public",
+    "expected": true,
+    "inFeed": true
+  },
+  {
+    "index": 64,
+    "id": "23b63e35-476a-4418-b635-1351534decff",
+    "name": "Kärnten Radmarathon",
+    "country": "AT",
+    "eventType": "race",
+    "visibility": "public",
+    "expected": true,
+    "inFeed": true
+  },
+  {
+    "index": 65,
+    "id": "434d523c-bda0-4bfd-ab51-6ac93c8c9edb",
+    "name": "Glocknerkönig",
+    "country": "AT",
+    "eventType": "gran_fondo",
+    "visibility": "public",
+    "expected": true,
+    "inFeed": true
+  },
+  {
+    "index": 66,
+    "id": "532e5fd5-a1eb-4dc8-a4a4-2a4c66908641",
+    "name": "DoKola!",
+    "country": "CZ",
+    "eventType": "race",
+    "visibility": "public",
+    "expected": true,
+    "inFeed": true
+  },
+  {
+    "index": 67,
+    "id": "58a25cf9-06dd-47a1-91f8-a29b91c6ffed",
+    "name": "Krakonošův cyklomaraton",
+    "country": "CZ",
+    "eventType": "race",
+    "visibility": "public",
+    "expected": true,
+    "inFeed": true
+  },
+  {
+    "index": 68,
+    "id": "bb1399cd-3baf-4f88-84b8-740bf49afe56",
+    "name": "Dolomiten Radrundfahrt",
+    "country": "AT",
+    "eventType": "race",
+    "visibility": "public",
+    "expected": true,
+    "inFeed": true
+  },
+  {
+    "index": 69,
+    "id": "70a6e419-9cbe-4ff5-8ab8-02e29dc90d62",
+    "name": "Maraton Franja",
+    "country": "SI",
+    "eventType": "race",
+    "visibility": "hidden",
+    "expected": false,
+    "inFeed": false
+  },
+  {
+    "index": 70,
+    "id": "e2258c9f-8aed-4cad-a73e-5f26275c82d9",
+    "name": "SuperGiroDolomiti",
+    "country": "AT",
+    "eventType": "gran_fondo",
+    "visibility": "public",
+    "expected": true,
+    "inFeed": true
+  },
+  {
+    "index": 71,
+    "id": "13f142d9-8d4e-4f17-9a89-0be143032766",
+    "name": "Säntis Classic",
+    "country": "CH",
+    "eventType": "gran_fondo",
+    "visibility": "public",
+    "expected": true,
+    "inFeed": true
+  },
+  {
+    "index": 72,
+    "id": "53e27216-78fc-42bd-a01e-b74cdb65eee2",
+    "name": "Dolnolhotský BAJK",
+    "country": "CZ",
+    "eventType": "race",
+    "visibility": "public",
+    "expected": true,
+    "inFeed": true
+  },
+  {
+    "index": 73,
+    "id": "df085776-0dd2-4957-b98a-3ae14306177d",
+    "name": "L’Etape Czech Republic by Tour de France",
+    "country": "CZ",
+    "eventType": "tour",
+    "visibility": "public",
+    "expected": true,
+    "inFeed": true
+  },
+  {
+    "index": 74,
+    "id": "abbc373b-3a35-4d82-9902-e29ac39832cf",
+    "name": "Mondsee 5 Seen Radmarathon",
+    "country": "AT",
+    "eventType": "gran_fondo",
+    "visibility": "public",
+    "expected": true,
+    "inFeed": true
+  },
+  {
+    "index": 75,
+    "id": "56967778-ec83-45c2-989b-226c8c13dac3",
+    "name": "Vinařská 50",
+    "country": "CZ",
+    "eventType": "race",
+    "visibility": "public",
+    "expected": true,
+    "inFeed": true
+  },
+  {
+    "index": 76,
+    "id": "089b1a89-c93f-440f-b59d-d9db1b7c6e28",
+    "name": "Klasyk Beskidzki",
+    "country": "PL",
+    "eventType": "race",
+    "visibility": "public",
+    "expected": true,
+    "inFeed": true
+  },
+  {
+    "index": 77,
+    "id": "d31e19e9-580a-42cc-988e-8cdd00364adf",
+    "name": "Dreiländergiro",
+    "country": "AT",
+    "eventType": "gran_fondo",
+    "visibility": "public",
+    "expected": true,
+    "inFeed": true
+  },
+  {
+    "index": 78,
+    "id": "7ccd648a-d658-4b85-b9de-8320fb9092eb",
+    "name": "Rad-Marathon",
+    "country": "AT",
+    "eventType": "gran_fondo",
+    "visibility": "public",
+    "expected": true,
+    "inFeed": true
+  },
+  {
+    "index": 79,
+    "id": "d1c250c9-03c2-493c-a754-600906990ee0",
+    "name": "Trnava - Rysy (49. ročník)",
+    "country": "SK",
+    "eventType": "ride",
+    "visibility": "public",
+    "expected": false,
+    "inFeed": false
+  },
+  {
+    "index": 80,
+    "id": "820bf4d0-ef76-4744-8cfc-8c7aeb3a4c81",
+    "name": "Ratajská 40",
+    "country": "CZ",
+    "eventType": "race",
+    "visibility": "public",
+    "expected": true,
+    "inFeed": true
+  },
+  {
+    "index": 81,
+    "id": "30b66cc3-d28f-4233-8898-b616275a1249",
+    "name": "Wachau Radmarathon",
+    "country": "AT",
+    "eventType": "gran_fondo",
+    "visibility": "public",
+    "expected": true,
+    "inFeed": true
+  },
+  {
+    "index": 83,
+    "id": "969915e0-4793-4da1-b523-cfd70f01420f",
+    "name": "Arlberg Giro",
+    "country": "AT",
+    "eventType": "gran_fondo",
+    "visibility": "public",
+    "expected": true,
+    "inFeed": true
+  },
+  {
+    "index": 84,
+    "id": "f3d57c60-54ab-4bf5-b0a8-e2f2096eaca7",
+    "name": "19. ročník časovky do vrchu Jantex Banské - Mláčky",
+    "country": "SK",
+    "eventType": "race",
+    "visibility": "public",
+    "expected": true,
+    "inFeed": true
+  },
+  {
+    "index": 85,
+    "id": "8a2604ad-3555-492c-bf77-465e916cf2fd",
+    "name": "Kufsteinerland Radmarathon",
+    "country": "AT",
+    "eventType": "gran_fondo",
+    "visibility": "public",
+    "expected": true,
+    "inFeed": true
+  },
+  {
+    "index": 87,
+    "id": "b5b6db22-50ca-4ccf-9656-22b04dc22548",
+    "name": "Ötztaler Radmarathon",
+    "country": "AT",
+    "eventType": "gran_fondo",
+    "visibility": "public",
+    "expected": true,
+    "inFeed": true
+  },
+  {
+    "index": 88,
+    "id": "e5eac873-fbaf-478c-a47a-c18cc1c7a5de",
+    "name": "Tour de Zeleňák",
+    "country": "CZ",
+    "eventType": "tour",
+    "visibility": "public",
+    "expected": true,
+    "inFeed": true
+  },
+  {
+    "index": 89,
+    "id": "a400ecce-5c6e-49ea-bfe2-09a2b0f476c6",
+    "name": "Tatra Road Race",
+    "country": "PL",
+    "eventType": "race",
+    "visibility": "public",
+    "expected": true,
+    "inFeed": true
+  },
+  {
+    "index": 90,
+    "id": "28f0310a-7316-4b1d-bd6f-153225beda34",
+    "name": "Kitzbüheler Radmarathon",
+    "country": "AT",
+    "eventType": "gran_fondo",
+    "visibility": "public",
+    "expected": true,
+    "inFeed": true
+  },
+  {
+    "index": 91,
+    "id": "0b75dcc5-cda0-4467-bce5-c1c524b7eb34",
+    "name": "L’Etape Slovenia by Tour de France",
+    "country": "SI",
+    "eventType": "tour",
+    "visibility": "hidden",
+    "expected": false,
+    "inFeed": false
+  },
+  {
+    "index": 92,
+    "id": "f1b77dbb-3187-4bcc-9dcb-4f707dea4cdb",
+    "name": "Road Stage",
+    "country": "CZ",
+    "eventType": "race",
+    "visibility": "public",
+    "expected": true,
+    "inFeed": true
+  },
+  {
+    "index": 93,
+    "id": "bc2944db-87b2-47d9-b839-ad38add4c1b7",
+    "name": "Teatro Okolo Malohontu",
+    "country": "SK",
+    "eventType": "race",
+    "visibility": "public",
+    "expected": true,
+    "inFeed": true
+  },
+  {
+    "index": 94,
+    "id": "5b35f14b-f1af-4958-b3e2-b3412e141d17",
+    "name": "Istria 300",
+    "country": "HR",
+    "eventType": "gran_fondo",
+    "visibility": "hidden",
+    "expected": false,
+    "inFeed": false
+  }
+]

@@ -1,0 +1,52 @@
+{
+  "capturedAt": "2026-11-01T22:33:13.139Z",
+  "at": "2026-11-01T22:33:03.492Z",
+  "status": "waiting",
+  "activeTask": null,
+  "ai": {
+    "lastRunAt": 1793324462824,
+    "month": "2026-11",
+    "spentUsd": 0,
+    "monthCapUsd": 5,
+    "dayCapUsd": 0.5,
+    "schedule": "Mac · úterý a pátek"
+  },
+  "browser": {
+    "status": "ok",
+    "read": 424,
+    "updated": 1,
+    "at": "2026-11-01T22:12:56.893Z"
+  },
+  "recent": {
+    "reads": 1188,
+    "created": 89,
+    "updated": 1321,
+    "failed": 68,
+    "unreadable": 420
+  },
+  "server": {
+    "at": "2026-11-01T22:31:03.913Z",
+    "health": {
+      "due": 0,
+      "ok24h": 716,
+      "sources": 1439,
+      "reads24h": 1213,
+      "failed24h": 497,
+      "lastSuccessAt": "2026-11-01T22:12:56.839+00:00"
+    },
+    "brokenSources": 2,
+    "unreadableSources": 393,
+    "reviewCandidates": 19
+  },
+  "runtimeMatches": {
+    "scripts/local-runner.cjs": true,
+    "scripts/refresh-data.sh": true,
+    "scripts/pipeline-mode.sh": true,
+    "src/lib/watcher/run.ts": true
+  },
+  "notificationConfigured": {
+    "INGEST_ALERT_WEBHOOK_URL": false,
+    "SLACK_WEBHOOK_URL": false,
+    "ALERT_WEBHOOK_URL": false
+  }
+}

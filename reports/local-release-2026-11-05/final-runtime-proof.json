@@ -1,0 +1,10 @@
+{
+  "at": "2026-11-05T14:42:30.447443+00:00",
+  "paused": false,
+  "status": "waiting",
+  "childPid": null,
+  "nextRunAt": "2026-11-06T02:29:03.808000+00:00",
+  "copiesMatch": true,
+  "sourceFailuresAreSeparate": true,
+  "legacyCountsExcluded": true
+}

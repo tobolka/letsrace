@@ -1,0 +1,32 @@
+[
+  {
+    "id": "f0fe4b5e-6188-44f0-83bf-6a075c574944",
+    "evidenceHash": "a453f9e95715ebd9af39bba7499fb753318daefc897f3294f9ae8a6e52d7a56a",
+    "action": "publish",
+    "reason": "Official UCI dates, country, class and categories checked; existing identity reviewed; Fullgaz venue separately confirmed on the organiser’s race-track page.",
+    "expectedEventId": "0a594422-6e84-4090-90bc-6535831c28cd",
+    "authority": "official",
+    "checked": {
+      "identity": true,
+      "date": true,
+      "place": true,
+      "discipline": true,
+      "authority": true
+    }
+  },
+  {
+    "id": "2095bc4e-8870-4dd9-9a01-2ef7ad58fd78",
+    "evidenceHash": "865443378fcf279c3f204ae33e4ac1bd9c9aa68fa86a95718b7e3d28fe329a31",
+    "action": "publish",
+    "reason": "Official UCI dates, country, class and categories checked; existing identity reviewed; Fullgaz venue separately confirmed on the organiser’s race-track page.",
+    "expectedEventId": "66cedec4-25e7-4a64-b387-fa0ad88e62b0",
+    "authority": "official",
+    "checked": {
+      "identity": true,
+      "date": true,
+      "place": true,
+      "discipline": true,
+      "authority": true
+    }
+  }
+]

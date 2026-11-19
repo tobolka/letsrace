@@ -1,0 +1,41 @@
+{
+  "at": "2026-10-24T16:51:07.977Z",
+  "reviewedUrls": [
+    "https://www.graciaorlova.cz/o-zavodu/",
+    "https://lesak-cup.cz/",
+    "https://prazska50.cz/tiskova-zprava/"
+  ],
+  "candidateIds": [
+    "ce4eaaf8dc778ce49e91c7bb5f7b6d7cff8eff253550266b5e3bf45f3bb8b923",
+    "c1eba0aa7621aadb5c5e9e48c0402dc45476c91b93b29bf45aa2da3457b89d7b",
+    "15454a019497f47861463281dbb63157d560dd098841f44854f511e6a54920f8"
+  ],
+  "submittedUrls": [
+    "https://graciaorlova.cz/o-zavodu",
+    "https://lesak-cup.cz",
+    "https://prazska50.cz/tiskova-zprava"
+  ],
+  "eventWrites": 0,
+  "note": "Submitted for source review; existing paused/rejected sources preserved. Not a count of newly created rows.",
+  "verifiedAt": "2026-10-24T16:51:23.459Z",
+  "verifiedRows": [
+    {
+      "id": "b6216409-1282-4bec-a06f-c235bda77f5d",
+      "url": "https://graciaorlova.cz/o-zavodu",
+      "status": "pending",
+      "hint_kind": "independent_season_discovery"
+    },
+    {
+      "id": "14387a55-6ea0-4453-b8d3-3176756cd77f",
+      "url": "https://lesak-cup.cz",
+      "status": "pending",
+      "hint_kind": "independent_season_discovery"
+    },
+    {
+      "id": "9d65f635-1c4c-4a27-a4d2-671357ad2027",
+      "url": "https://prazska50.cz/tiskova-zprava",
+      "status": "pending",
+      "hint_kind": "independent_season_discovery"
+    }
+  ]
+}

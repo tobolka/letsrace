@@ -1,0 +1,41 @@
+{
+ "dryRun": true,
+ "seconds": 0.5,
+ "transactions": 1,
+ "totals": {
+  "applied": 6,
+  "unchanged": 0,
+  "conflict": 0,
+  "group_held": 0,
+  "failed": 0,
+  "pending": 0,
+  "skippedLockedColumns": 0
+ },
+ "byTable": {
+  "public.locations": {
+   "applied": 1,
+   "unchanged": 0,
+   "conflict": 0,
+   "failed": 0
+  },
+  "public.events": {
+   "applied": 1,
+   "unchanged": 0,
+   "conflict": 0,
+   "failed": 0
+  },
+  "public.event_sources": {
+   "applied": 1,
+   "unchanged": 0,
+   "conflict": 0,
+   "failed": 0
+  },
+  "public.event_facts": {
+   "applied": 3,
+   "unchanged": 0,
+   "conflict": 0,
+   "failed": 0
+  }
+ },
+ "problemSample": []
+}

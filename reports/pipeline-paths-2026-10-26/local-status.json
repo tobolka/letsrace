@@ -1,0 +1,61 @@
+{
+  "at": "2026-10-26T09:51:46.227Z",
+  "workspace": "/Users/radektobolka/Documents/GitHub/letsrace",
+  "loop": {
+    "running": true,
+    "instances": 1,
+    "processes": [
+      "61064 02-13:03:56 /bin/bash scripts/keep-fresh.sh 2"
+    ],
+    "intervalHours": 2
+  },
+  "countries": [
+    "CZ",
+    "SK",
+    "AT",
+    "DE",
+    "PL",
+    "CH",
+    "IT"
+  ],
+  "chrome": {
+    "executable": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+    "schedule": "pondělí od 09:00 při nejbližším místním cyklu",
+    "separateLegacyAgentLoaded": false,
+    "lastResult": {
+      "at": "2026-10-26T09:41:11Z",
+      "status": "needs_review",
+      "read": 419,
+      "written": 249,
+      "log": "tmp/csc-local-verification-2026-10-26.log",
+      "issue": "csc-1695: source end 2025-04-26 precedes start 2026-04-26; queued, no guessed write"
+    }
+  },
+  "ai": {
+    "schedule": "úterý a pátek; jeden pokus v každém dni",
+    "dayCapUsd": 0.5,
+    "monthCapUsd": 5,
+    "recordedMonthUsd": 7.683967400000007
+  },
+  "lastRefresh": {
+    "file": "tmp/refresh-2026-10-26-1047-check.log",
+    "finished": true,
+    "failures": "0",
+    "deferred": "0"
+  },
+  "automatic": [
+    "místní HTML/API/PDF + fallback Chrome každé 2 h podle splatnosti",
+    "RaceTime bez AI každý cyklus",
+    "bezplatné hledání nových zdrojů jednou denně",
+    "ČSC přes Chrome jednou týdně",
+    "AI dvakrát týdně do společného limitu"
+  ],
+  "manual": [
+    "rozšířené dokumenty s --deep --render",
+    "nezávislé discovery a rozhodování o kandidátech"
+  ],
+  "server": {
+    "config": "vercel.json",
+    "note": "Samostatné serverové plány; živý stav produkce tento lokální příkaz neověřuje."
+  }
+}

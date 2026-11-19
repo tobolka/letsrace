@@ -1,0 +1,111 @@
+{
+  "pages": [
+    {
+      "locale": "cs",
+      "view": "map",
+      "h1": 1,
+      "race_links": 90,
+      "canonical": "https://letsrace.cz/cs"
+    },
+    {
+      "locale": "cs",
+      "view": "list",
+      "h1": 1,
+      "race_links": 50,
+      "canonical": "https://letsrace.cz/cs/seznam"
+    },
+    {
+      "locale": "cs",
+      "view": "schedule",
+      "h1": 1,
+      "race_links": 50,
+      "canonical": "https://letsrace.cz/cs/kalendar"
+    },
+    {
+      "locale": "en",
+      "view": "map",
+      "h1": 1,
+      "race_links": 90,
+      "canonical": "https://letsrace.cz/en"
+    },
+    {
+      "locale": "en",
+      "view": "list",
+      "h1": 1,
+      "race_links": 50,
+      "canonical": "https://letsrace.cz/en/list"
+    },
+    {
+      "locale": "en",
+      "view": "schedule",
+      "h1": 1,
+      "race_links": 50,
+      "canonical": "https://letsrace.cz/en/calendar"
+    },
+    {
+      "locale": "pl",
+      "view": "map",
+      "h1": 1,
+      "race_links": 90,
+      "canonical": "https://letsrace.cz/pl"
+    },
+    {
+      "locale": "pl",
+      "view": "list",
+      "h1": 1,
+      "race_links": 50,
+      "canonical": "https://letsrace.cz/pl/lista"
+    },
+    {
+      "locale": "pl",
+      "view": "schedule",
+      "h1": 1,
+      "race_links": 50,
+      "canonical": "https://letsrace.cz/pl/kalendarz"
+    },
+    {
+      "locale": "sk",
+      "view": "map",
+      "h1": 1,
+      "race_links": 90,
+      "canonical": "https://letsrace.cz/sk"
+    },
+    {
+      "locale": "sk",
+      "view": "list",
+      "h1": 1,
+      "race_links": 50,
+      "canonical": "https://letsrace.cz/sk/zoznam"
+    },
+    {
+      "locale": "sk",
+      "view": "schedule",
+      "h1": 1,
+      "race_links": 50,
+      "canonical": "https://letsrace.cz/sk/kalendar"
+    },
+    {
+      "locale": "de",
+      "view": "map",
+      "h1": 1,
+      "race_links": 90,
+      "canonical": "https://letsrace.cz/de"
+    },
+    {
+      "locale": "de",
+      "view": "list",
+      "h1": 1,
+      "race_links": 50,
+      "canonical": "https://letsrace.cz/de/liste"
+    },
+    {
+      "locale": "de",
+      "view": "schedule",
+      "h1": 1,
+      "race_links": 50,
+      "canonical": "https://letsrace.cz/de/kalender"
+    }
+  ],
+  "sitemap_urls": 9145,
+  "empty_series_excluded": true
+}

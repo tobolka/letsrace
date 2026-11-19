@@ -1,0 +1,244 @@
+{
+  "discovery_counts": [
+    {
+      "status": "accepted",
+      "count": 104
+    },
+    {
+      "status": "ignored",
+      "count": 819
+    },
+    {
+      "status": "pending",
+      "count": 1
+    },
+    {
+      "status": "rejected",
+      "count": 35
+    }
+  ],
+  "new_watches": 55,
+  "pending_sources": [
+    {
+      "id": "eb2775f4-0e92-4bcd-aa7b-c0ab3d506161",
+      "url": "https://4bikes-festival.de"
+    }
+  ],
+  "merges": [
+    {
+      "id": "e61a32f2-b4c4-499c-b6ad-fd5978afcc3b",
+      "created_at": "2026-10-31T07:38:01.443538+00:00",
+      "keep_id": "983b2309-de7d-43f7-96a2-dd1cff9fcebb",
+      "drop_id": "61089325-6107-46af-b96a-43006c420464"
+    },
+    {
+      "id": "9c2a64e7-bfc2-41d4-a390-004a6784c24f",
+      "created_at": "2026-10-31T07:38:01.443538+00:00",
+      "keep_id": "09e14a6c-8fac-442b-a4db-4d1c57608922",
+      "drop_id": "d44ac77d-9c09-4606-8eae-15f3a1b74e18"
+    },
+    {
+      "id": "79b5a0c6-72cb-467a-893e-4858cbe08b1b",
+      "created_at": "2026-10-31T07:38:01.443538+00:00",
+      "keep_id": "af445dda-c4b0-436a-b382-402c17498b39",
+      "drop_id": "f88dce95-ef66-4992-bedd-3e7a0dcd8d12"
+    },
+    {
+      "id": "4f161b3c-b5a3-4fa3-9e2e-2cd9f687a606",
+      "created_at": "2026-10-31T07:38:01.443538+00:00",
+      "keep_id": "d0a91d4f-022c-4836-8296-f381d66ca44a",
+      "drop_id": "e7bbd201-69b1-4bd0-9df2-a3c609e4b2f6"
+    },
+    {
+      "id": "4bc90066-f67f-4072-aeab-302c6fce9652",
+      "created_at": "2026-10-31T07:38:01.443538+00:00",
+      "keep_id": "eea36490-37d8-4f3f-aa50-9f62d0d1a3cd",
+      "drop_id": "d3a64374-8a91-472d-b91e-a39da78aec87"
+    },
+    {
+      "id": "49939ddb-4835-40d8-bcc9-dcf0a3cd6bc4",
+      "created_at": "2026-10-31T07:38:01.443538+00:00",
+      "keep_id": "539dcd7c-a7a9-4d78-8a06-fd8149b2c57f",
+      "drop_id": "d9b7abd5-ad01-4e30-9574-75bf407c51b0"
+    },
+    {
+      "id": "54a1e335-6300-422c-9e8e-c5de4026b315",
+      "created_at": "2026-10-31T07:38:01.443538+00:00",
+      "keep_id": "9292d95c-a282-478d-aab8-5c77107512b4",
+      "drop_id": "a2e2a48d-52ed-417a-b915-ed654cdbb24e"
+    },
+    {
+      "id": "c1e49a6e-23ee-4c90-b2b7-7c6eec95baa1",
+      "created_at": "2026-10-31T07:40:22.503042+00:00",
+      "keep_id": "3dadbafa-c27c-4280-b0ee-f22f50088661",
+      "drop_id": "a403090a-b5e8-4901-9ca5-c1811cb59d23"
+    }
+  ],
+  "reviewed_corrections": [
+    {
+      "id": "983b2309-de7d-43f7-96a2-dd1cff9fcebb",
+      "slug": "cx-bundesliga-10-vaihingen-2026-11-07",
+      "name": "Vaihinger Radcross — CX Bundesliga 10",
+      "start_date": "2026-11-07",
+      "end_date": "2026-11-07",
+      "disciplines": [
+        "cx"
+      ],
+      "visibility": "public",
+      "merged_into_id": null,
+      "place": "Stuttgart/Vaihingen",
+      "lat": 48.723933,
+      "lng": 9.1002627
+    },
+    {
+      "id": "af445dda-c4b0-436a-b382-402c17498b39",
+      "slug": "bl-cyclo-cross-stahnsdorf-2026",
+      "name": "CX Bundesliga 12 — Stahnsdorf / Tag 1",
+      "start_date": "2026-11-14",
+      "end_date": "2026-11-14",
+      "disciplines": [
+        "cx"
+      ],
+      "visibility": "public",
+      "merged_into_id": null,
+      "place": "Stahnsdorf",
+      "lat": 52.392,
+      "lng": 13.217
+    },
+    {
+      "id": "d0a91d4f-022c-4836-8296-f381d66ca44a",
+      "slug": "uci-cyclo-cross-world-cup-antwerpen-2026",
+      "name": "UCI Cyclo-cross World Cup — Antwerpen",
+      "start_date": "2026-12-19",
+      "end_date": "2026-12-19",
+      "disciplines": [
+        "cx"
+      ],
+      "visibility": "public",
+      "merged_into_id": null,
+      "place": "Antwerpen",
+      "lat": 51.2194,
+      "lng": 4.4025
+    },
+    {
+      "id": "bc995997-ac54-442d-af22-f4d5c7fb31af",
+      "slug": "glpk-gravel-2027",
+      "name": "GLPK Gravel",
+      "start_date": "2027-04-17",
+      "end_date": "2027-04-17",
+      "disciplines": [
+        "gravel"
+      ],
+      "visibility": "public",
+      "merged_into_id": null,
+      "place": "Ruda, gmina Górzno",
+      "lat": 53.2253987,
+      "lng": 19.6560676
+    },
+    {
+      "id": "ed39fbc6-ae25-466c-ac9a-d68e837be8d3",
+      "slug": "2much4you-12h-24h-mtb-rennen-im-zittauer-gebirge-2026",
+      "name": "2Much4You | 12h & 24h MTB-Rennen im Zittauer Gebirge",
+      "start_date": "2026-07-11",
+      "end_date": "2026-07-12",
+      "disciplines": [
+        "mtb"
+      ],
+      "visibility": "public",
+      "merged_into_id": null,
+      "place": "Oybin",
+      "lat": 50.8321,
+      "lng": 14.7201
+    },
+    {
+      "id": "9d94b81f-5fe8-4bf3-b992-112e560f99fa",
+      "slug": "ischgl-ironbike-2027",
+      "name": "Ischgl Ironbike Short-Track",
+      "start_date": "2027-08-06",
+      "end_date": "2027-08-06",
+      "disciplines": [
+        "xcc"
+      ],
+      "visibility": "public",
+      "merged_into_id": null,
+      "place": "Ischgl",
+      "lat": 47.0120228,
+      "lng": 10.2913166
+    },
+    {
+      "id": "e6ceea5c-9518-4bc6-918c-bd761d73e23e",
+      "slug": "cyclo-cross-bundesliga-stahnsdorf-tag-2-2026",
+      "name": "CX Bundesliga 13 — Stahnsdorf / Tag 2",
+      "start_date": "2026-11-15",
+      "end_date": "2026-11-15",
+      "disciplines": [
+        "cx"
+      ],
+      "visibility": "public",
+      "merged_into_id": null,
+      "place": "Stahnsdorf",
+      "lat": 52.392,
+      "lng": 13.217
+    },
+    {
+      "id": "3dadbafa-c27c-4280-b0ee-f22f50088661",
+      "slug": "zabacky-cyklokros-memorial-rudolfa-bartose-2026",
+      "name": "Žabácký cyklokros 2026 – Memoriál Rudolfa Bartoše",
+      "start_date": "2026-11-22",
+      "end_date": "2026-11-22",
+      "disciplines": [
+        "cx"
+      ],
+      "visibility": "public",
+      "merged_into_id": null,
+      "place": "Sedlčany",
+      "lat": 49.66179,
+      "lng": 14.554793
+    },
+    {
+      "id": "26c164f6-fd6a-4be5-83ca-fa7ed9f4ce3b",
+      "slug": "road-stage-orlicke-hory-2027",
+      "name": "RoadStage — Deštné v Orlických horách",
+      "start_date": "2027-06-05",
+      "end_date": "2027-06-05",
+      "disciplines": [
+        "road"
+      ],
+      "visibility": "public",
+      "merged_into_id": null,
+      "place": "Deštné v Orlických horách",
+      "lat": 50.304743,
+      "lng": 16.350751
+    },
+    {
+      "id": "9292d95c-a282-478d-aab8-5c77107512b4",
+      "slug": "2much4you-12h-24h-mtb-rennen-im-zittauer-gebirge-2027",
+      "name": "2Much4You | 12h & 24h MTB-Rennen im Zittauer Gebirge",
+      "start_date": "2027-07-10",
+      "end_date": "2027-07-11",
+      "disciplines": [
+        "mtb"
+      ],
+      "visibility": "public",
+      "merged_into_id": null,
+      "place": "Oybin",
+      "lat": 50.8321,
+      "lng": 14.7201
+    },
+    {
+      "id": "150df4d3-d2b9-4de2-9ecb-1fe872e312aa",
+      "slug": "magstadter-radcross-2026",
+      "name": "Magstadter Radcross",
+      "start_date": "2026-11-08",
+      "end_date": "2026-11-08",
+      "disciplines": [
+        "cx"
+      ],
+      "visibility": "public",
+      "merged_into_id": null,
+      "place": "Magstadt",
+      "lat": 48.742,
+      "lng": 8.965
+    }
+  ]
+}

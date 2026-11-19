@@ -1,0 +1,20 @@
+{
+  "id": "3226e52e-8105-4f49-be0d-0d4afdc2af30",
+  "input": {
+    "name": "Okolo jižních Čech / Tour of South Bohemia",
+    "startDate": "2027-09-09",
+    "endDate": "2027-09-12",
+    "placeName": "Jižní Čechy — místa etap zatím nezveřejněna",
+    "countryCode": "CZ",
+    "disciplines": [
+      "road_race"
+    ],
+    "audience": "adults",
+    "websiteUrl": "https://www.okolojiznichcech.cz/",
+    "status": "scheduled",
+    "visibility": "public",
+    "lockFields": true
+  },
+  "source": "https://www.uci.org/competition-details/2027/ROA/81153",
+  "quote": "Okolo jižních Čech / Tour of South Bohemia | 09 Sep - 12 Sep 2027 | 2.2 - Stages - Class 2 | INDIVIDUAL ROAD RACE MEN ELITE"
+}

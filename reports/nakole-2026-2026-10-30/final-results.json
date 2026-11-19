@@ -1,0 +1,110 @@
+[
+  {
+    "external_id": "nakole-3246",
+    "event": {
+      "id": "e66348e5-1859-4bd3-85e0-21722d048042",
+      "name": "KOLEM KOLEM LÍBEZNIC",
+      "slug": "kolem-kolem-libeznic-2026",
+      "end_date": "2026-05-24",
+      "start_date": "2026-05-24",
+      "visibility": "public",
+      "merged_into_id": null
+    }
+  },
+  {
+    "external_id": "nakole-3253",
+    "event": {
+      "id": "40d38ce6-c33c-40c7-9c06-481a8ce4a4a8",
+      "name": "JARNÍ MAUDICUP - typ Road Adventure",
+      "slug": "jarni-maudicup-typ-road-adventure-2026",
+      "end_date": "2026-04-11",
+      "start_date": "2026-04-11",
+      "visibility": "public",
+      "merged_into_id": null
+    }
+  },
+  {
+    "external_id": "nakole-3274",
+    "event": {
+      "id": "9a83c2a0-5b13-49b3-af20-3fc72f74321f",
+      "name": "XC Troubelice 2026",
+      "slug": "xc-troubelice-2026",
+      "end_date": "2026-05-30",
+      "start_date": "2026-05-30",
+      "visibility": "public",
+      "merged_into_id": null
+    }
+  },
+  {
+    "external_id": "nakole-3279",
+    "event": {
+      "id": "4708a8b4-e579-4427-8570-11f20bd89218",
+      "name": "BSK GIRO Pičín 2026",
+      "slug": "bsk-giro-picin-2026",
+      "end_date": "2026-06-07",
+      "start_date": "2026-06-07",
+      "visibility": "public",
+      "merged_into_id": null
+    }
+  },
+  {
+    "external_id": "nakole-3281",
+    "event": {
+      "id": "f2db4bce-a186-4d11-aeed-13ddf0577bfc",
+      "name": "Pražská padesátka 2026 - Memoriál Jana Hrubeše",
+      "slug": "prazska-padesatka-memorial-jana-hrubese-2026",
+      "end_date": "2026-09-19",
+      "start_date": "2026-09-19",
+      "visibility": "public",
+      "merged_into_id": null
+    }
+  },
+  {
+    "external_id": "nakole-3282",
+    "event": {
+      "id": "8dd58079-4310-4990-aa9a-36d3ab6a72a1",
+      "name": "Bike Therapy Fest vol. III",
+      "slug": "bike-therapy-fest-vol-iii-2026",
+      "end_date": "2026-06-13",
+      "start_date": "2026-06-12",
+      "visibility": "public",
+      "merged_into_id": null
+    }
+  },
+  {
+    "external_id": "nakole-3283",
+    "event": {
+      "id": "dd73b350-a5c5-4abe-b661-2420a01ce222",
+      "name": "Kolem Melechova 2026",
+      "slug": "kolem-melechova-2026",
+      "end_date": "2026-07-11",
+      "start_date": "2026-07-11",
+      "visibility": "public",
+      "merged_into_id": null
+    }
+  },
+  {
+    "external_id": "nakole-3293",
+    "event": {
+      "id": "d98c67c2-3bd2-48d9-a58b-4901f0c702f7",
+      "name": "Miletínský Scorelauf 2026",
+      "slug": "miletinsky-scorelauf-2026",
+      "end_date": "2026-09-05",
+      "start_date": "2026-09-05",
+      "visibility": "public",
+      "merged_into_id": null
+    }
+  },
+  {
+    "external_id": "nakole-3294",
+    "event": {
+      "id": "1ca4865c-0931-476d-afd7-115f2b7e7f5f",
+      "name": "Brněnský cyklokrosový pohár",
+      "slug": "brnensky-cyklokrosovy-pohar-pisarky-2026",
+      "end_date": "2026-10-07",
+      "start_date": "2026-10-07",
+      "visibility": "public",
+      "merged_into_id": null
+    }
+  }
+]

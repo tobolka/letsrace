@@ -1,0 +1,44 @@
+[
+  {
+    "version": "before",
+    "path": "/cs",
+    "compressed_bytes": 31939,
+    "median_ttfb_ms": 189,
+    "median_total_ms": 195
+  },
+  {
+    "version": "after",
+    "path": "/cs",
+    "compressed_bytes": 43266,
+    "median_ttfb_ms": 94,
+    "median_total_ms": 107
+  },
+  {
+    "version": "before",
+    "path": "/cs/seznam",
+    "compressed_bytes": 13632,
+    "median_ttfb_ms": 164,
+    "median_total_ms": 164
+  },
+  {
+    "version": "after",
+    "path": "/cs/seznam",
+    "compressed_bytes": 20656,
+    "median_ttfb_ms": 171,
+    "median_total_ms": 174
+  },
+  {
+    "version": "before",
+    "path": "/cs/kalendar",
+    "compressed_bytes": 13186,
+    "median_ttfb_ms": 95,
+    "median_total_ms": 98
+  },
+  {
+    "version": "after",
+    "path": "/cs/kalendar",
+    "compressed_bytes": 20622,
+    "median_ttfb_ms": 89,
+    "median_total_ms": 93
+  }
+]

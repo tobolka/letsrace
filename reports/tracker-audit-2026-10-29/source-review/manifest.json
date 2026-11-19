@@ -1,0 +1,44 @@
+[
+  {
+    "key": "csc1695",
+    "url": "https://portal.czechcyclingfederation.com/RaceDetail/Race/1695",
+    "finalUrl": "https://portal.czechcyclingfederation.com/RaceDetail/Race/1695",
+    "status": 200,
+    "bytes": 9366,
+    "sha256": "125b545d7e9efc97d678c5ae0d92a989f8f4998a285880c5a37ede4e9fc6297f"
+  },
+  {
+    "key": "soll",
+    "url": "https://www.cyclingaustria.at/index.php?option=com_events&view=event&id=F872352324254E258A8DA248C0487432",
+    "finalUrl": "https://www.cyclingaustria.at/index.php?option=com_events&view=event&id=F872352324254E258A8DA248C0487432",
+    "status": 200,
+    "bytes": 70192,
+    "sha256": "a8af2b75290845804a29502e126e9ef4767a66a341e9029c0a2802e9c0ba5c19"
+  },
+  {
+    "key": "4land",
+    "url": "https://bikeboard.at/termine/4-laendermeisterschaft-u23-strasse-termin16279",
+    "error": "HTTP Error 403: Forbidden"
+  },
+  {
+    "key": "cxmas",
+    "url": "https://bikeboard.at/termine/cx-mas-cross-vol4-termin16251",
+    "error": "HTTP Error 403: Forbidden"
+  },
+  {
+    "key": "lost",
+    "url": "https://lost-ride.cz/",
+    "finalUrl": "https://lost-ride.cz/",
+    "status": 200,
+    "bytes": 46154,
+    "sha256": "447cd9bd2267c0f9dba3299e31e388fdef70ecd3ac29c7cdc8dc2a29e7abcc1e"
+  },
+  {
+    "key": "cyprus",
+    "url": "https://eventivsport.com/events/uci-cyprus-gran-fondo",
+    "finalUrl": "https://eventivsport.com/events/uci-cyprus-gran-fondo",
+    "status": 200,
+    "bytes": 105233,
+    "sha256": "ba25bbd0ac52cfa8de9273c6c74dd1192cf72e5c35a78bbab9a6f154ec4c14de"
+  }
+]

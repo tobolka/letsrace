@@ -1,0 +1,31 @@
+{
+  "production_deployment": "dpl_6FsTSTTjAJML5kdNG3t3g5QZSqAJ",
+  "production_url": "https://letsrace.cz",
+  "source_head": "074f73bb65841d4526a0c533dbfa02aae4f861c7",
+  "source_state": "main synchronized to origin/main; existing local pipeline changes and About copy preserved",
+  "tests": {
+    "suite": "1205 passed across 177 files",
+    "typecheck": "passed",
+    "source_lint": "passed",
+    "all_repository_lint": "fails only in existing local report .mts scripts; deployed source lint passed"
+  },
+  "verification": {
+    "about_live": true,
+    "new_events_received": true,
+    "received_event_names": [
+      "pageview",
+      "section_view",
+      "results_view",
+      "race_view"
+    ],
+    "first_new_event_utc": "2026-10-29T20:29:10Z",
+    "public_series_links": [
+      "cesky-pohar-mtb",
+      "cesky-pohar-mtbo",
+      "mtb-kral-hostynek",
+      "ultrabikers-cup"
+    ]
+  },
+  "preserved_backup": "/Users/radektobolka/.codex/backups/letsrace-analytics-repair-2026-10-29",
+  "note": "Historical gap after 2026-10-27 07:54 UTC cannot be recovered as Umami events from Vercel aggregates. No historical metrics imported. Test visits are included in today totals."
+}

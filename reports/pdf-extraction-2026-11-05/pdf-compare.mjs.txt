@@ -1,0 +1,22 @@
+import fs from "node:fs"; import path from "node:path"; import cp from "node:child_process"; import crypto from "node:crypto";
+const SP = process.argv[2]; const rows = JSON.parse(fs.readFileSync(`${SP}/pdf-sample.json`, "utf8")).filter(Boolean);
+for (let i = rows.length - 1; i > 0; i--) { const j = crypto.randomInt(i + 1); [rows[i], rows[j]] = [rows[j], rows[i]]; }
+const { extractText, getDocumentProxy } = await import("unpdf");
+const fold = s => s.normalize("NFD").replace(/\p{M}/gu, "").toLowerCase();
+const out = []; const started = Date.now();
+for (const row of rows.slice(0, 150)) {
+  if (Date.now() - started > 480000) break;
+  const file = path.join(SP, "pdfs", crypto.createHash("sha1").update(row.url).digest("hex") + ".pdf");
+  const r = { url: row.url, name: row.name, start: row.start_date, cc: row.country_code };
+  try {
+    if (!fs.existsSync(file)) { const res = await fetch(row.url, { signal: AbortSignal.timeout(25000), headers: { "user-agent": "LetsRaceBot/1.0" } }); r.http = res.status; if (!res.ok) { out.push(r); continue; } const buf = Buffer.from(await res.arrayBuffer()); if (buf.length > 30e6) { r.http = "toobig"; out.push(r); continue; } fs.writeFileSync(file, buf); await new Promise(x => setTimeout(x, 200)); }
+    const bytes = new Uint8Array(fs.readFileSync(file)); r.size = bytes.length; r.isPdf = Buffer.from(bytes.slice(0, 5)).toString() === "%PDF-";
+    if (!r.isPdf) { out.push(r); continue; }
+    try { const pdf = await getDocumentProxy(bytes.slice(), { verbosity: 0 }); const { text, totalPages } = await extractText(pdf, { mergePages: false }); r.pages = totalPages; r.unpdf = text.join("\n"); } catch (e) { r.unpdfErr = String(e).slice(0, 80); r.unpdf = ""; }
+    try { r.poppler = cp.execFileSync("/opt/homebrew/bin/pdftotext", ["-layout", "-enc", "UTF-8", file, "-"], { encoding: "utf8", maxBuffer: 2 ** 26, timeout: 30000, stdio: ["ignore", "pipe", "ignore"] }); } catch (e) { r.poppler = ""; r.popplerErr = 1; }
+    r.file = file;
+  } catch (e) { r.err = String(e).slice(0, 80); }
+  out.push(r);
+}
+fs.writeFileSync(`${SP}/pdf-compare.json`, JSON.stringify(out));
+console.log("done", out.length);

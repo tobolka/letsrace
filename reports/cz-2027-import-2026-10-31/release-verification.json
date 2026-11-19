@@ -1,0 +1,12 @@
+{
+  "commit": "d398a611b863974364de4a9fb1358dea90351a14",
+  "deploymentId": "dpl_2NYYBXMb2TYFAsgz2G4tLFzyhbQP",
+  "deploymentUrl": "https://letsrace-d78cpcr5b-tobolkas-projects.vercel.app",
+  "production": "https://letsrace.cz",
+  "state": "READY",
+  "notesHttpStatus": 200,
+  "mtboEvents": 7,
+  "mtboInXco": 0,
+  "sharedFeedMtbo": 7,
+  "calendarUi": "May 2027, MTBO filter visibly selected; European Championships on May 5–8, Nejdek on May 22–23."
+}

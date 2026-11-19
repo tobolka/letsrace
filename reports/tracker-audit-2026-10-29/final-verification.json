@@ -1,0 +1,92 @@
+[
+  {
+    "final_verification": {
+      "at": "2026-10-29T15:01:41.265538+00:00",
+      "health": {
+        "due": 0,
+        "ok24h": 78,
+        "sources": 1560,
+        "reads24h": 206,
+        "failed24h": 128,
+        "lastSuccessAt": "2026-10-29T13:09:36.736+00:00"
+      },
+      "latest_scans": [
+        {
+          "ok": true,
+          "url": "https://odjazd.pl/",
+          "error": null,
+          "metrics": {
+            "usage": null,
+            "failed": 0,
+            "created": 0,
+            "updated": 181,
+            "complete": true,
+            "deferred": false,
+            "rejected": 0,
+            "upserted": 195,
+            "attempted": 195,
+            "extracted": 195,
+            "extraction": null,
+            "watchedUrlId": "b9d56b35-0aa1-4eeb-9459-57cbe49f749c",
+            "deferredWrites": 0
+          },
+          "started_at": "2026-10-29T09:38:39.237959+00:00",
+          "finished_at": "2026-10-29T09:40:26.631+00:00"
+        },
+        {
+          "ok": false,
+          "url": "https://portal.czechcyclingfederation.com/Races/Race/Pub",
+          "error": "write_failed:csc-1695:pipeline_data_review_required:end_before_start",
+          "metrics": {
+            "usage": null,
+            "failed": 1,
+            "created": 0,
+            "updated": 196,
+            "complete": false,
+            "deferred": false,
+            "rejected": 0,
+            "upserted": 249,
+            "attempted": 250,
+            "extracted": 424,
+            "extraction": null,
+            "watchedUrlId": "3c570c1d-4eaf-495b-ad26-0dc33766ff0a",
+            "deferredWrites": 0
+          },
+          "started_at": "2026-10-29T13:09:29.78398+00:00",
+          "finished_at": "2026-10-29T13:10:21.342+00:00"
+        },
+        {
+          "ok": true,
+          "url": "https://pzkol.pl/kalendarz",
+          "error": null,
+          "metrics": {
+            "usage": null,
+            "failed": 0,
+            "created": 0,
+            "updated": 4,
+            "complete": true,
+            "deferred": false,
+            "rejected": 1,
+            "upserted": 197,
+            "attempted": 198,
+            "extracted": 198,
+            "extraction": null,
+            "watchedUrlId": "b8961f80-a49d-43fc-bd19-9e02f4e08008",
+            "deferredWrites": 0
+          },
+          "started_at": "2026-10-29T09:38:18.042645+00:00",
+          "finished_at": "2026-10-29T09:38:41.947+00:00"
+        }
+      ],
+      "review_trigger": 1,
+      "pending_reviews": 112,
+      "explicit_repairs": {
+        "facts": 30,
+        "events": 27
+      },
+      "public_bad_dates": 0,
+      "public_future_completed": 0,
+      "pending_duplicate_assertions": 0
+    }
+  }
+]

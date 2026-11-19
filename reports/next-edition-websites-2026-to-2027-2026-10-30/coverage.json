@@ -1,0 +1,28 @@
+{
+  "at": "2026-10-30T08:59:03.903Z",
+  "startedAt": "2026-10-30T08:59:01.558Z",
+  "year": 2026,
+  "target": 2027,
+  "mode": "read-only; literal signals are leads, not confirmed event dates",
+  "totalRaces": 4685,
+  "racesWithWebsite": 3616,
+  "racesWithValidWebsite": 3615,
+  "originalWebsites": 2928,
+  "originalWebsitesAttempted": 2916,
+  "queuedPages": 3627,
+  "processedPages": 3639,
+  "attemptedPages": 3627,
+  "deferredPages": 12,
+  "successfulPages": 2953,
+  "candidatePages": 437,
+  "unresolvedPages": 686,
+  "complete": true,
+  "allRequestsAttempted": false,
+  "limitations": [
+    "Only public, unmerged 2026 catalogue races with website_url are in scope.",
+    "HTML/PDF text and JSON-LD are checked; image-only and browser-only dates need manual review.",
+    "At most three explicit next-year links per original URL plus a year-neutral homepage are followed; this is not an exhaustive site crawl.",
+    "No full date detected does not prove that no announcement exists.",
+    "No AI calls or catalogue writes."
+  ]
+}

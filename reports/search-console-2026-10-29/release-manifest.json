@@ -1,0 +1,21 @@
+{
+  "baselineDeployment": "dpl_6FsTSTTjAJML5kdNG3t3g5QZSqAJ",
+  "releaseDirectory": "/tmp/letsrace-seo-release-20261029",
+  "changedFiles": [
+    "src/components/explore/explore-page.tsx",
+    "src/components/seo/catalogue-preview.tsx",
+    "src/components/seo/event-json-ld.tsx",
+    "src/lib/catalogue-preview.ts",
+    "src/lib/catalogue-view-seo.ts",
+    "src/lib/race-place.ts",
+    "src/lib/seo-race-copy.ts",
+    "src/lib/__tests__/race-place.test.ts",
+    "src/app/[locale]/(shell)/(map)/page.tsx",
+    "src/app/[locale]/(shell)/list/page.tsx",
+    "src/app/[locale]/(shell)/schedule/page.tsx",
+    "src/app/[locale]/(shell)/e/[slug]/page.tsx",
+    "src/app/sitemap.ts",
+    "src/lib/events.ts",
+    "src/proxy.ts"
+  ]
+}

@@ -1,0 +1,34 @@
+// Free: no AI. Compares which documents the old and the new way of following links reach.
+import fs from "node:fs"; import cp from "node:child_process"; import crypto from "node:crypto";
+import { readDocument } from "@/lib/catalog/regulation-ages"; import { pageAsText } from "@/lib/watcher/extractors/llm-calendar";
+import { practicalSeedUrls, practicalChildLinks, isPracticalDocumentUrl } from "@/lib/catalog/practical-enrichment"; import { documentDetails, documentKind, posterImages } from "@/lib/catalog/practical-sources";
+const S = "reports/pdf-extraction-2026-11-05/find-documents";
+const memo = new Map<string, Promise<{text: string; links: string[]; html: string | null} | null>>();
+const read = (u: string) => { const url = u.replace(/#.*$/, ""); if (!memo.has(url)) memo.set(url, readDocument(url, { maxBytes: 4 * 1024 * 1024 }).then(d => { if (!d?.text.trim()) return null; const src = d.html ? pageAsText(d.html, url) : { text: d.text, links: new Set<string>() }; return { text: src.text, links: [...src.links], html: d.html }; }).catch(() => null)); return memo.get(url)!; };
+const oldChildren = (url: string, links: string[], row: {registration_url?: string|null}) => practicalChildLinks(url, links, { registration_url: row.registration_url });
+async function walk(row: any, mode: "old" | "new") {
+  const queue = practicalSeedUrls(row), seen = new Set<string>(), docs: {url: string; text: string}[] = []; const limit = mode === "old" ? 5 : 8;
+  const ctx = { name: row.name, startDate: row.start_date };
+  while (queue.length && seen.size < limit) {
+    const url = queue.shift()!; if (seen.has(url) || !isPracticalDocumentUrl(url)) continue; seen.add(url);
+    const d = await read(url); if (!d) continue; docs.push({ url, text: d.text });
+    if (mode === "old") queue.push(...oldChildren(url, d.links, row).filter(l => !seen.has(l)));
+    else {
+      const k = documentKind({ url, text: d.text }, ctx), det = documentDetails({ text: d.text }); if (k === "regulations" && det.fees && det.times >= 2) break;
+      const children = practicalChildLinks(url, d.links, row, d.text).filter(l => !seen.has(l));
+      queue.push(...(d.html ? posterImages(d.html, url) : []), ...children); queue.sort((a, b) => (children.indexOf(a) < 0 ? 99 : children.indexOf(a)) - (children.indexOf(b) < 0 ? 99 : children.indexOf(b)));
+    }
+  }
+  const kinds = docs.map(d => ({ url: d.url, kind: documentKind(d, ctx), ...documentDetails(d) })), good = kinds.filter(k => k.kind === "regulations");
+  return { reads: seen.size, docs: docs.length, kinds, anyRegs: good.length > 0, fees: good.some(g => g.fees), times: good.some(g => g.times >= 2), distance: good.some(g => g.distance) };
+}
+async function main() {
+  const rows = JSON.parse(cp.execFileSync("/opt/homebrew/opt/postgresql@17/bin/psql", ["-h","127.0.0.1","-p","54329","-U","postgres","-d","letsrace","-qAt","-c",`select json_agg(t) from (select e.id,e.name,e.start_date,e.website_url,e.regulations_url,e.registration_url,l.country_code cc from events e left join locations l on l.id=e.location_id where e.merged_into_id is null and e.visibility='public' and e.start_date>=current_date and coalesce(e.event_type,'')<>'ride') t`], { encoding: "utf8", maxBuffer: 2**28, env: { ...process.env, NODE_OPTIONS: "" } }));
+  const sample = rows.filter((r: any) => practicalSeedUrls(r).length).sort((a: any, b: any) => crypto.createHash("sha1").update("find-1"+a.id).digest("hex").localeCompare(crypto.createHash("sha1").update("find-1"+b.id).digest("hex"))).slice(0, 150);
+  const out: any[] = []; let next = 0; const end = Date.now() + 540000;
+  await Promise.all(Array.from({ length: 6 }, async () => { while (next < sample.length && Date.now() < end) { const r = sample[next++]; const [o, n] = [await walk(r, "old"), await walk(r, "new")]; out.push({ id: r.id, name: r.name, start: r.start_date, cc: r.cc, website: r.website_url, reg: r.regulations_url, old: o, new: n }); } }));
+  fs.writeFileSync(`${S}/measure.json`, JSON.stringify(out));
+  const pct = (f: (x: any) => boolean) => Math.round(out.filter(f).length / out.length * 100);
+  console.log(JSON.stringify({ races: out.length, all: rows.length, old: { regs: pct(x => x.old.anyRegs), fees: pct(x => x.old.fees), times: pct(x => x.old.times), dist: pct(x => x.old.distance), reads: out.reduce((a, x) => a + x.old.reads, 0) }, new: { regs: pct(x => x.new.anyRegs), fees: pct(x => x.new.fees), times: pct(x => x.new.times), dist: pct(x => x.new.distance), reads: out.reduce((a, x) => a + x.new.reads, 0) } }));
+}
+main();

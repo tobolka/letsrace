@@ -1,0 +1,442 @@
+{
+  "at": "2026-10-24T16:43:02.676Z",
+  "sameAssignment": true,
+  "maxWebCalls": 6,
+  "openai": {
+    "model": "gpt-6.1-sol",
+    "webCalls": 6,
+    "groundedRaceHints": 47,
+    "uniqueSourceUrls": 82,
+    "costUsd": 0.21396199999999999,
+    "csvRowsWithExactSourceUrl": 17
+  },
+  "sonnet": {
+    "model": "claude-sonnet-5-5",
+    "webCalls": 6,
+    "groundedRaceHints": 13,
+    "uniqueSourceUrls": 47,
+    "costUsd": 0.19977999999999999,
+    "csvRowsWithExactSourceUrl": 4
+  },
+  "overlap": {
+    "openaiAndSonnet": 3,
+    "openaiUrlsAbsentFromSonnetAndBrave": 76
+  },
+  "openaiHints": [
+    {
+      "url": "https://www.eventivsport.com/events/czech-national-championships-1",
+      "name": "Mistrovství ČR v cyklokrosu",
+      "dateText": "Sunday, 10 January 2027",
+      "place": "Mladá Boleslav",
+      "discipline": "cyklokros"
+    },
+    {
+      "url": "https://prahamtb.cz/?p=7288",
+      "name": "ŠKODA Pražský MTB pohár I.",
+      "dateText": "pátek 26.3.",
+      "place": "Praha, Traily Motol",
+      "discipline": "MTB XCC TT a XCC; Mistrovství Prahy XCC"
+    },
+    {
+      "url": "https://prahamtb.cz/?p=7288",
+      "name": "ŠKODA Pražský MTB pohár II.",
+      "dateText": "sobota 27.3.",
+      "place": "Praha, Traily Motol",
+      "discipline": "MTB XCO"
+    },
+    {
+      "url": "https://bezpodpory.cz/bikepacking-a-ultra-cyklisticke-zavody-v-cesku-a-na-slovensku-2027/",
+      "name": "Nonvabank",
+      "dateText": "23. dubna 2027",
+      "place": "Kovanec, okres Mladá Boleslav",
+      "discipline": "MTB ultra bez podpory"
+    },
+    {
+      "url": "https://bezpodpory.cz/bikepacking-a-ultra-cyklisticke-zavody-v-cesku-a-na-slovensku-2027/",
+      "name": "3-2-1 Vabank",
+      "dateText": "24. dubna 2027",
+      "place": "Kovanec, okres Mladá Boleslav",
+      "discipline": "MTB ultra bez podpory"
+    },
+    {
+      "url": "https://www.eventivsport.com/events/country/Czechia/cycling",
+      "name": "Český pohár MTB – Město Touškov",
+      "dateText": "24 Apr 2027",
+      "place": "Město Touškov",
+      "discipline": "MTB"
+    },
+    {
+      "url": "https://www.graciaorlova.cz/o-zavodu/",
+      "name": "GRACIA ORLOVÁ",
+      "dateText": "29.4. – 2.5. 2027",
+      "place": "Moravskoslezský a Zlínský kraj",
+      "discipline": "silnice, etapový závod žen"
+    },
+    {
+      "url": "https://bike-paradise.cz/",
+      "name": "MAY DIVIDE",
+      "dateText": "1.5.2027",
+      "place": "Buškovský mlýn",
+      "discipline": "MTB ultra bez podpory"
+    },
+    {
+      "url": "https://my.raceresult.com/408156/participants",
+      "name": "Rohálovská 50ka 2027",
+      "dateText": "2027-05-01",
+      "place": "Prusinovice",
+      "discipline": "MTB maraton"
+    },
+    {
+      "url": "https://www.eventivsport.com/events/country/Czechia/cycling",
+      "name": "Grand Prix West Bohemia",
+      "dateText": "1 May 2027",
+      "place": "Kyšice",
+      "discipline": "silnice"
+    },
+    {
+      "url": "https://www.eventivsport.com/events/country/Czechia/cycling",
+      "name": "Tessuti Sport Bike Race",
+      "dateText": "15 May 2027",
+      "place": "Dlouhoňovice",
+      "discipline": "MTB"
+    },
+    {
+      "url": "https://www.eventivsport.com/events/country/Czechia/cycling",
+      "name": "Tour de Feminin",
+      "dateText": "20 May 2027",
+      "place": "Krásná Lípa",
+      "discipline": "silnice"
+    },
+    {
+      "url": "https://bezpodpory.cz/bikepacking-a-ultra-cyklisticke-zavody-v-cesku-a-na-slovensku-2027/",
+      "name": "Oremon",
+      "dateText": "21. května 2027",
+      "place": "Český Jiřetín",
+      "discipline": "gravel ultra bez podpory"
+    },
+    {
+      "url": "https://bezpodpory.cz/bikepacking-a-ultra-cyklisticke-zavody-v-cesku-a-na-slovensku-2027/",
+      "name": "200 Hard",
+      "dateText": "21. května 2027",
+      "place": "Mostek, okres Trutnov",
+      "discipline": "MTB ultra bez podpory"
+    },
+    {
+      "url": "https://bezpodpory.cz/bikepacking-a-ultra-cyklisticke-zavody-v-cesku-a-na-slovensku-2027/",
+      "name": "400 Ultra",
+      "dateText": "21. května 2027",
+      "place": "Mostek, okres Trutnov",
+      "discipline": "MTB ultra bez podpory"
+    },
+    {
+      "url": "https://www.gravel-epic.cz/",
+      "name": "Gravel Epic Šternberk",
+      "dateText": "22. 5. 2027",
+      "place": "Apartmány Dalov, Dalov 72, Šternberk",
+      "discipline": "gravel a MTB, jednotlivci a dvojice"
+    },
+    {
+      "url": "https://zavodnicasomira.cz/zavody",
+      "name": "Okolo Stejskala",
+      "dateText": "sobota 22. května 2027",
+      "place": "Rouchovany",
+      "discipline": "MTB"
+    },
+    {
+      "url": "https://www.zavodynakole.cz/zavody/mtb/",
+      "name": "Grizzlyman – Bike 2027",
+      "dateText": "22.5.2027",
+      "place": "Olešná",
+      "discipline": "MTB XCM"
+    },
+    {
+      "url": "https://bezpodpory.cz/bikepacking-a-ultra-cyklisticke-zavody-v-cesku-a-na-slovensku-2027/",
+      "name": "Moravia Divide",
+      "dateText": "29. května 2027",
+      "place": "Račí údolí u Javorníku – Břeclav",
+      "discipline": "MTB ultra bez podpory"
+    },
+    {
+      "url": "https://www.roadstage.cz/",
+      "name": "Road Stage Orlické hory",
+      "dateText": "5. 6. 2027",
+      "place": "Orlické hory",
+      "discipline": "silnice"
+    },
+    {
+      "url": "https://www.eventivsport.com/events/country/Czechia/cycling",
+      "name": "Český pohár MTB – Bedřichov",
+      "dateText": "5 Jun 2027",
+      "place": "Bedřichov",
+      "discipline": "MTB"
+    },
+    {
+      "url": "https://www.mtbpodralsko.cz/",
+      "name": "OZP 50 PODRALSKO",
+      "dateText": "6. června 2027",
+      "place": "Podralsko",
+      "discipline": "MTB, gravel, dětský maraton a dětské závody"
+    },
+    {
+      "url": "https://bezpodpory.cz/bikepacking-a-ultra-cyklisticke-zavody-v-cesku-a-na-slovensku-2027/",
+      "name": "DoKola!",
+      "dateText": "11. června 2027",
+      "place": "Sedlejov u Telče",
+      "discipline": "MTB ultra bez podpory"
+    },
+    {
+      "url": "https://mtbs.cz/",
+      "name": "28. International MTB marathon Malevil Cup 2027",
+      "dateText": "12.06.",
+      "place": "Jablonné v Podještědí / Resort Malevil - Heřmanice",
+      "discipline": "MTB XCM"
+    },
+    {
+      "url": "https://wolf-man.cz/cyklisticke-zavody-2/",
+      "name": "WOLFman",
+      "dateText": "18.6.2027 v 7:00 - start",
+      "place": "Orlicko a Jesenicko",
+      "discipline": "MTB a gravel ultra bez podpory"
+    },
+    {
+      "url": "https://www.eventivsport.com/events/country/Czechia/cycling",
+      "name": "L'Etape Czech Republic – Hilly Stage 2027",
+      "dateText": "19 Jun 2027",
+      "place": "Praha",
+      "discipline": "silnice"
+    },
+    {
+      "url": "https://bezpodpory.cz/bikepacking-a-ultra-cyklisticke-zavody-v-cesku-a-na-slovensku-2027/",
+      "name": "Fanatik 350",
+      "dateText": "19. června 2027",
+      "place": "Plzeň",
+      "discipline": "silniční ultra"
+    },
+    {
+      "url": "https://bezpodpory.cz/bikepacking-a-ultra-cyklisticke-zavody-v-cesku-a-na-slovensku-2027/",
+      "name": "Extreme Bike 444",
+      "dateText": "začátek června",
+      "place": "Starý Bydžov",
+      "discipline": "MTB ultra bez podpory"
+    },
+    {
+      "url": "https://bike-paradise.cz/",
+      "name": "TROJMEZÍ",
+      "dateText": "7.7.2027",
+      "place": "Sportovní areál Dolní Bousov",
+      "discipline": "MTB ultra bez podpory"
+    },
+    {
+      "url": "https://kalendar.winspace.cz/kalendar",
+      "name": "Ratajská 40",
+      "dateText": "10. 7. 2027",
+      "place": "Rataje nad Sázavou, Zámecká 1",
+      "discipline": "MTB"
+    },
+    {
+      "url": "https://bezpodpory.cz/bikepacking-a-ultra-cyklisticke-zavody-v-cesku-a-na-slovensku-2027/",
+      "name": "Race Across Czechia",
+      "dateText": "15. července 2027",
+      "place": "Chodová Planá – Javorový vrch",
+      "discipline": "gravel ultra bez podpory"
+    },
+    {
+      "url": "https://prahamtb.cz/?p=7288",
+      "name": "Mistrovství České republiky XCC a XCO",
+      "dateText": "16. – 18. červenec 2027",
+      "place": "Praha, Traily Motol",
+      "discipline": "MTB XCC a XCO"
+    },
+    {
+      "url": "https://bike-paradise.cz/",
+      "name": "V4",
+      "dateText": "1.8.2027",
+      "place": "Náměstí T.G.M. Dolní Bousov",
+      "discipline": "gravel ultra bez podpory"
+    },
+    {
+      "url": "https://bike-paradise.cz/",
+      "name": "BIKE PARADISE",
+      "dateText": "21.8.2027",
+      "place": "Máchalův mlýn",
+      "discipline": "MTB ultra bez podpory"
+    },
+    {
+      "url": "https://zavodnicasomira.cz/zavody",
+      "name": "Tour de Kosová",
+      "dateText": "sobota 21. srpna 2027",
+      "place": "Moravské Budějovice",
+      "discipline": "MTB"
+    },
+    {
+      "url": "https://lesak-cup.cz/",
+      "name": "Strunk Connect Lesák CUP",
+      "dateText": "28. srpna 2027",
+      "place": "Červený Kostelec",
+      "discipline": "MTB XCM, dětské závody"
+    },
+    {
+      "url": "https://tourdejedlova.cz/",
+      "name": "Tour de Jedlová",
+      "dateText": "SRPEN 2027",
+      "place": "Varnsdorf – Jedlová, Lužické hory",
+      "discipline": "MTB"
+    },
+    {
+      "url": "https://www.zelenak.cz/",
+      "name": "Tour de Zeleňák",
+      "dateText": "v sobotu 4. září 2027",
+      "place": "Rumburk",
+      "discipline": "silnice"
+    },
+    {
+      "url": "https://www.roadstage.cz/",
+      "name": "Road Stage Hradec Králové",
+      "dateText": "11. 9. 2027",
+      "place": "Hradec Králové",
+      "discipline": "silnice"
+    },
+    {
+      "url": "https://www.roadstage.cz/grande-finale",
+      "name": "Road Stage Grande Finale",
+      "dateText": "12. 9. 2027",
+      "place": "Masarykovo náměstí, Hradec Králové",
+      "discipline": "silnice, městský okruh"
+    },
+    {
+      "url": "https://www.roadstage.cz/grande-finale",
+      "name": "Jezdi a pomáhej – Grande Finale",
+      "dateText": "12. 9. 2027",
+      "place": "Masarykovo náměstí, Hradec Králové",
+      "discipline": "dětská cyklistika, 2–12 let"
+    },
+    {
+      "url": "https://prazska50.cz/tiskova-zprava/",
+      "name": "Pražská 50",
+      "dateText": "v sobotu 18. září 2027",
+      "place": "Praha-Dejvice",
+      "discipline": "MTB maraton"
+    },
+    {
+      "url": "https://prahamtb.cz/?p=7288",
+      "name": "ŠKODA Pražský MTB pohár III.",
+      "dateText": "sobota 25.9.",
+      "place": "Praha, Pahorek v Lesoparku Letňany/Kbely",
+      "discipline": "MTB XCO"
+    },
+    {
+      "url": "https://prahamtb.cz/?p=7288",
+      "name": "ŠKODA Pražský MTB pohár IV.",
+      "dateText": "neděle 26.9.",
+      "place": "Praha, Pahorek v Lesoparku Letňany/Kbely",
+      "discipline": "MTB XCO; Mistrovství Prahy XCO"
+    },
+    {
+      "url": "https://bezpodpory.cz/bikepacking-a-ultra-cyklisticke-zavody-v-cesku-a-na-slovensku-2027/",
+      "name": "Bohemian Border Bash Race",
+      "dateText": "začátek září",
+      "place": "Srbská Kamenice",
+      "discipline": "gravel ultra bez podpory"
+    },
+    {
+      "url": "https://bezpodpory.cz/bikepacking-a-ultra-cyklisticke-zavody-v-cesku-a-na-slovensku-2027/",
+      "name": "Bohemia Divide",
+      "dateText": "konec září",
+      "place": "Vyšší Brod – Varnsdorf",
+      "discipline": "MTB ultra bez podpory"
+    },
+    {
+      "url": "https://www.cyklobrani.cz/o-zavodu/propozice-zavodu",
+      "name": "Author Valtické Cyklobraní",
+      "dateText": "v září 2027",
+      "place": "Valtice",
+      "discipline": "MTB, dětské závody"
+    }
+  ],
+  "newSourceUrls": [
+    "https://7a2cb55119.clvaw-cdnwnd.com/6153eefec012055a819eec02dbe82b01/200001198-4e9cd4e9ce/TERM%C3%8DNOVKA%202026%20III.pdf?ph=7a2cb55119",
+    "https://admin-storage.munipolis.com/lhenice/bulletin/files/6afe3bd3-44b3-4767-8715-430572186abc.pdf",
+    "https://bezpodpory.cz/bikepacking-a-ultra-cyklisticke-zavody-v-cesku-a-na-slovensku-2027/",
+    "https://bike-paradise.cz/",
+    "https://cdn.skoda-storyboard.com/2024/02/240201_Skoda-Auto-prodluzuje-partnerstvi-s-Ceskym-svazem-cyklistiky_98a39930.pdf",
+    "https://de.wikipedia.org/wiki/Radsport-Weltmeisterschaften_2027",
+    "https://de.wikipedia.org/wiki/UCI-Cyclocross-Saison_2026/27",
+    "https://en.wikipedia.org/wiki/2026%E2%80%9327_UCI_Cyclo-cross_season",
+    "https://en.wikipedia.org/wiki/2026_UCI_Gravel_World_Championships",
+    "https://en.wikipedia.org/wiki/2027_MotoGP_World_Championship",
+    "https://en.wikipedia.org/wiki/2027_UCI_Asia_Tour",
+    "https://en.wikipedia.org/wiki/2027_UCI_World_Tour",
+    "https://en.wikipedia.org/wiki/2027_World_Rally_Championship",
+    "https://fr.wikipedia.org/wiki/Coupe_du_monde_de_cyclo-cross_2026-2027",
+    "https://hornimarsov.cz/uc/clanky/1451/pro-horni-marsov-2022-2027-final_aktualizace-k-cervnu-2023.pdf",
+    "https://hradeckytriatlon.cz/",
+    "https://lesak-cup.cz/",
+    "https://miko-cycles.cz/detsky-mamut/propozice-dz/",
+    "https://mtbs.cz/",
+    "https://my.raceresult.com/408156/participants",
+    "https://old.sportsoft.cz/OfficialResults/2024/20240601_malevil_kat.pdf?202406.03.11.25=",
+    "https://portal.cenia.cz/eiasea/download/RUlBX1BBSzEwMDVfcG9zdWRla0RPQ18xNjMxNzUyMjg0NTA1NzYyMzcxLnBkZg/PAK1005_posudek.pdf",
+    "https://prahamtb.cz/?p=7288",
+    "https://prazska50.cz/tiskova-zprava/",
+    "https://pvpraha.mo.gov.cz/sites/pvpraha/files/dokumenty/zakladni-stranka/seznam_knih_0.pdf",
+    "https://rubena-tyres.com/blogs/news/filip-adel-won-malevil-cup-2026-in-challenging-conditions-he-confirmed-the-quality-and-reliability-of-rubena-tyres",
+    "https://runilo.cz/zavody/ultra",
+    "https://tourdejedlova.cz/",
+    "https://vrchy.maratonstav.cz/api/propositions/cesky_pohar_2026.pdf",
+    "https://wolf-man.cz/cyklisticke-zavody-2/",
+    "https://www.321vabank.cz/",
+    "https://www.bezeckykalendar.com/stranky-zavodu/raab_force_rohalovska_50ka/",
+    "https://www.bike-forum.cz/forum/cyklokrosova-sezona-2026-27",
+    "https://www.chocen.cz/files/zpravodaj_2026/chz-04-2026-web.pdf?t=1775539575",
+    "https://www.cjf.cz/aktuality/kalendar-pro-zadavani-zavodu-na-sezonu-2027-terminy-zzvj-2027",
+    "https://www.cyclingnews.com/pro-cycling/racing/hello-traka-300-goodbye-traka-560-only-one-endurance-race-for-pro-categories-to-build-a-more-selective-competitive-and-safe-field-in-2027/",
+    "https://www.cyclingnews.com/pro-cycling/the-rad-dirt-fest-returns-to-life-time-grand-prix-in-2027-for-seven-event-series-with-adjusted-selection-rules/",
+    "https://www.cyklobrani.cz/o-zavodu/propozice-zavodu",
+    "https://www.cyklomaratontour.cz/index.php",
+    "https://www.czechcyclingfederation.com/en/malevil-cup-startuje-temer-tisic-bikeru-miri-do-luzickych-hor/",
+    "https://www.czechcyclingfederation.com/wp-content/uploads/2023/01/ROZPIS-CP-GRVL-26_2026_02_10_V3.1.pdf",
+    "https://www.czechcyclingfederation.com/wp-content/uploads/2025/12/Informace-o-zmenach-pravidel-gravel-k-01.01.2026.pdf",
+    "https://www.czechgravelcycling.cz/files/pravidla-cyklistiky-csc-gravel-01102024-1-1.pdf",
+    "https://www.czechgravelcycling.cz/files/rozpis-gravel-cup-2025-schvaleny-v1.pdf",
+    "https://www.eventivsport.com/events/country/Czechia/cycling",
+    "https://www.eventivsport.com/events/czech-national-championships-1",
+    "https://www.finishers.com/cs/a/silnicni-cyklistika/cyklosportovni-akce-v-cervnu",
+    "https://www.finishers.com/cs/e/l-etape-cesko",
+    "https://www.golfmalevil.cz/malevil-tour/",
+    "https://www.graciaorlova.cz/o-zavodu/",
+    "https://www.gravel-epic.cz/",
+    "https://www.intervalcoach.app/cs/events/cycling",
+    "https://www.jihoceskysvazcyklistiky.cz/docs/kalendar-zavodu-2025.pdf",
+    "https://www.kostelecuholesova.cz/wcd/docs/kostka/2025/kostka-1-2025.pdf",
+    "https://www.kraj-lbc.cz/getFile/case%3Ashow/id%3A588832/2026-04-01%2011%3A42%3A41.000000",
+    "https://www.kraj-lbc.cz/getFile/case%3Ashow/id%3A588833/2026-04-01%2011%3A43%3A54.000000",
+    "https://www.kralovice.cz/modules/file_storage/download.php?file=1cea8387%7C2790&inline=1",
+    "https://www.kros-stirin.cz/",
+    "https://www.mtbpodralsko.cz/",
+    "https://www.muhb.cz/docs/texty/5/5358/schv_len_dotace_pro_rok_2024.pdf",
+    "https://www.olympijskytym.cz/files/docs/Projekty/odm/2026/temp_propozice/propozice-cyklistika3.pdf",
+    "https://www.ratajska40.com/",
+    "https://www.reddit.com/r/cyclocross/comments/1qrf2ah/20262027_uci_cyclocross_world_cup_calendar/",
+    "https://www.roadstage.cz/grande-finale",
+    "https://www.roadstage.cz/orlicke-hory",
+    "https://www.rohalovska10.cz/",
+    "https://www.rubena.eu/cz/o-nas/novinky/filip-adel-ovladl-malevil-cup-2026-v-narocnych-podminkach-po/",
+    "https://www.shooting.cz/file/16318/Rozhodnut%C3%AD%20P%C5%99edstavenstva%20%C4%8CSS%20%282_2025%29%20-%20Krit%C3%A9ria%20pro%20za%C5%99azen%C3%AD%20do%20reprezentace%20pro%20rok%202027%20%28KULE%29.pdf",
+    "https://www.sport.cz/clanek/cyklistika-cyklisticky-zavod-l-etape-zavita-na-jih-cech-jezdit-se-ma-nejmene-do-roku-2027-5017005",
+    "https://www.uec.ch/resources/2026%20Events/UEC_calendar_events_2026_2032_v12.03.2026.pdf",
+    "https://www.vesani.cz/propozice-bezecky-samozavod/",
+    "https://www.vysocinatourism.cz/images/stories/26000042_KRAJ_VYSOCINA_brozura_Cyklodovolena_kor10_WEB.pdf",
+    "https://www.welovecycling.com/cs/2026/10/19/pogacar-se-vrati-k-zavodum-uz-v-listopadu-jake-ma-plany-na-rok-2027/",
+    "https://www.zavodynakole.cz/zavody/mtb/",
+    "https://wyniki.datasport.pl/results3021/wyniki/04_5km_kobiety.pdf",
+    "https://zavodnicasomira.cz/zavody"
+  ],
+  "publicationVerifiedRaces": null,
+  "winner": null,
+  "limitations": [
+    "One run per AI provider; not statistically conclusive.",
+    "URLs and source-grounded hints are leads, not verified race identity/date evidence.",
+    "CSV source matching is exact after tracking removal; different pages may describe the same race.",
+    "No events written; OpenAI source-reading tasks remain pending."
+  ]
+}

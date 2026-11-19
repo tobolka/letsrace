@@ -1,0 +1,6 @@
+import fs from 'node:fs/promises';
+const cases=[['moravia','country=CZ&season=2027&q=Moravia%20Divide'],['mtbo','country=CZ&season=2027&disciplines=mtb&q=MTBO'],['v4','country=CZ&season=2027&q=V4'],['krakonos','country=CZ&season=2027&q=Krakono%C5%A1'],['lost','country=CZ&season=2027&q=Lost%20Ride'],['rides','country=CZ&season=2027&eventType=ride&q=Oremon'],['south','country=CZ&season=2027&q=South%20Bohemia'],['fichtl','country=CZ&season=2027&q=Fichtl']];
+const results=await Promise.all(cases.map(async([name,q])=>{const r=await fetch('https://letsrace.cz/api/events?'+q+'&dateFrom=2027-01-01&dateTo=2027-12-31');const data=await r.json();return {name,status:r.status,events:Array.isArray(data)?data:[],error:Array.isArray(data)?null:data};}));
+await fs.writeFile('reports/cz-2027-verification-2026-10-29/live-api.json',JSON.stringify({checkedAt:new Date().toISOString(),results},null,2));
+for(const r of results) console.log(r.name,r.status,r.events.map(x=>({id:x.id,name:x.name,start:x.startDate,end:x.endDate,ds:x.disciplines,type:x.eventType,place:x.location?.name})));
+if(results.some(x=>x.status!==200)||results.find(x=>x.name==='mtbo').events.length!==7||results.find(x=>x.name==='v4').events.length!==1||results.find(x=>x.name==='lost').events.length||results.find(x=>x.name==='fichtl').events.length)process.exitCode=1;

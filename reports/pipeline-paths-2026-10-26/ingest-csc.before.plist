@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key><string>cz.letsrace.ingest-csc</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>/bin/zsh</string>
+    <string>/Users/radektobolka/letsrace/scripts/ingest-csc.sh</string>
+  </array>
+  <key>WorkingDirectory</key><string>/Users/radektobolka/letsrace</string>
+  <!-- Monday 09:00. launchd runs a missed slot at the next wake. -->
+  <key>StartCalendarInterval</key>
+  <dict>
+    <key>Weekday</key><integer>1</integer>
+    <key>Hour</key><integer>9</integer>
+    <key>Minute</key><integer>0</integer>
+  </dict>
+  <key>StandardOutPath</key><string>/Users/radektobolka/Library/Logs/letsrace-csc.log</string>
+  <key>StandardErrorPath</key><string>/Users/radektobolka/Library/Logs/letsrace-csc.log</string>
+  <key>ProcessType</key><string>Background</string>
+</dict>
+</plist>

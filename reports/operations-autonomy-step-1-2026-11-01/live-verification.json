@@ -1,0 +1,488 @@
+{
+  "at": "2026-11-01T22:52:59.542Z",
+  "result": {
+    "ok": true,
+    "status": "limited",
+    "count": 60,
+    "reads": 60,
+    "created": 8,
+    "updated": 24,
+    "failed": 0,
+    "deferred": 0,
+    "unreadable": 39,
+    "deferredWrites": 0,
+    "unchanged": 18,
+    "okUrls": [
+      "https://www.cyklokros.cz/kalendar",
+      "https://bikeboard.at/termine",
+      "https://www.lrv-noe.at/media/doc/0b5aa7f1bc4080c97aaaadd4b29ad2a3/arboe-bmx-nachwuchscup-2025.pdf",
+      "https://www.mtb-isarcup.de/images/Downloads/Listen/Isar_Kids_Cup_Gesamt_2025_Siegerehrung.pdf",
+      "http://www.rsv-bad-hersfeld.de/images/content/2026/Startzeiten2026.pdf",
+      "https://www.kolokolemkomina.cz/wp-content/uploads/2026/09/1-Mytinka_propozice_2026-003.pdf",
+      "https://www.kolokolemkomina.cz/wp-content/uploads/2025/09/Nove_WH_2025_trasa_hlavniho_zavodu_final.zip",
+      "https://www.mazurymtb.pl/aktualnosci/wielki-final-laciate-mazury-mtb-w-gizycku-bitwa-o-twierdze-boyen-wystartuje-z-nowego-miejsca",
+      "https://cfc-kladno.cz/texty/Kolem_Pos%C3%A1zav%C3%AD_2026.gpx",
+      "https://spac-os.cz/wp-content/uploads/2025/08/casovka_spac_propozice_25.pdf",
+      "https://www.amaterskaliga.cz/vysledky/6",
+      "https://www.amaterskaliga.cz/storage/document/?id=48",
+      "https://www.mtb-isarcup.de/images/Downloads/Listen/Isar_Kids_Cup_Gesamt_2026_Gesamt_20261018xlsm__-__Gruppe.pdf",
+      "https://www.german-pumptrack-series.de/termine/saal",
+      "https://www.amaterskaliga.cz/vysledky/34",
+      "https://www.amaterskaliga.cz/vysledky/80",
+      "https://www.amaterskaliga.cz/vysledky/118",
+      "https://www.gravelseries.cz/novinky/drasal-gravel-challenge-2026",
+      "http://www.mtbkreiscup.lima-city.de/Ausschreibung/2026/Ausschreibung_MTB-Kreiscup_Niederstaufen_2026.pdf",
+      "http://cfc-kladno.cz/rfc_vysledky.php?%20event_id=263",
+      "https://www.roadstage.cz/stage-security#uzavirky"
+    ],
+    "problems": [
+      {
+        "url": "https://www.dsergebnis.de/archiv/32-grosser-preis-von-buchholz/",
+        "state": "unreadable",
+        "error": "unsupported_or_empty_source"
+      },
+      {
+        "url": "https://www.dsergebnis.de/archiv/gr-preis-der-suedlichen-weinstrasse-2025/",
+        "state": "unreadable",
+        "error": "unsupported_or_empty_source"
+      },
+      {
+        "url": "https://www.vychodroadliga.sk/vychod-road-liga-cestna-cyklistika",
+        "state": "unreadable",
+        "error": "unsupported_or_empty_source"
+      },
+      {
+        "url": "https://www.edieteam.cz/mtb-mladeze/propozice-2026",
+        "state": "unreadable",
+        "error": "unsupported_or_empty_source"
+      },
+      {
+        "url": "https://www.lrv-noe.at/nachwuchs",
+        "state": "unreadable",
+        "error": "unsupported_or_empty_source"
+      },
+      {
+        "url": "https://dzkol.pl/kalendarz/kategoria/liga-mtb-aglomeracji-walbrzyskiej/lista/",
+        "state": "unreadable",
+        "error": "unsupported_or_empty_source"
+      },
+      {
+        "url": "https://pucharmazowsza.pl/",
+        "state": "unreadable",
+        "error": "unsupported_or_empty_source"
+      },
+      {
+        "url": "https://dzkol.pl/download/mtb-challenge-dzkol-31-07-2025/",
+        "state": "unreadable",
+        "error": "unsupported_or_empty_source"
+      },
+      {
+        "url": "https://dzkol.pl/download/2026-kalendarz-imprez-dzkol-excel/",
+        "state": "unreadable",
+        "error": "unsupported_or_empty_source"
+      },
+      {
+        "url": "https://cfc-kladno.cz/kolem_posazavi.php?celkem=41&od=41#aktuality",
+        "state": "unreadable",
+        "error": "unsupported_or_empty_source"
+      },
+      {
+        "url": "https://www.vychodroadliga.sk/preteky",
+        "state": "unreadable",
+        "error": "unsupported_or_empty_source"
+      },
+      {
+        "url": "https://www.kolokolemkomina.cz/zavody/",
+        "state": "unreadable",
+        "error": "unsupported_or_empty_source"
+      },
+      {
+        "url": "https://dzkol.pl/challenge/",
+        "state": "unreadable",
+        "error": "unsupported_or_empty_source"
+      },
+      {
+        "url": "https://www.kolokolemkomina.cz/zavody/cejkovicka-pohodovka/",
+        "state": "unreadable",
+        "error": "unsupported_or_empty_source"
+      },
+      {
+        "url": "https://cfc-kladno.cz/kolem_posazavi.php?nazev_stranky=mapa+trati#menu",
+        "state": "unreadable",
+        "error": "unsupported_or_empty_source"
+      },
+      {
+        "url": "https://www.edieteam.cz/mtb-mladeze/registrace-2026",
+        "state": "unreadable",
+        "error": "unsupported_or_empty_source"
+      },
+      {
+        "url": "https://www.radclub-moedling.at/thermenregion-cup-2026",
+        "state": "unreadable",
+        "error": "unsupported_or_empty_source"
+      },
+      {
+        "url": "https://www.amaterskaliga.cz/zavody/2025",
+        "state": "unreadable",
+        "error": "unsupported_or_empty_source"
+      },
+      {
+        "url": "https://www.kolokolemkomina.cz/zavody/kotvinske-pedaly/",
+        "state": "unreadable",
+        "error": "unsupported_or_empty_source"
+      },
+      {
+        "url": "https://www.cykloman.cz/rozpis-jizda-do-vrchu-cyklomanek",
+        "state": "unreadable",
+        "error": "unsupported_or_empty_source"
+      },
+      {
+        "url": "https://www.cykloman.cz/zavody-a-akce",
+        "state": "unreadable",
+        "error": "unsupported_or_empty_source"
+      },
+      {
+        "url": "https://www.dsergebnis.de/nievenheimer-ortsschildsprint-2026/",
+        "state": "unreadable",
+        "error": "unsupported_or_empty_source"
+      },
+      {
+        "url": "https://cykloman.cz",
+        "state": "unreadable",
+        "error": "unsupported_or_empty_source"
+      },
+      {
+        "url": "https://www.edieteam.cz/mtb-mladeze/propozice-2027",
+        "state": "unreadable",
+        "error": "unsupported_or_empty_source"
+      },
+      {
+        "url": "https://lausitzcup.de/index.php/lausitzcup/einzelwertung/einzelergebnisse-2026",
+        "state": "unreadable",
+        "error": "unsupported_or_empty_source"
+      },
+      {
+        "url": "https://lausitzcup.de/index.php/lausitzcup/gesamtwertung/gesamtwertung-2026",
+        "state": "unreadable",
+        "error": "unsupported_or_empty_source"
+      },
+      {
+        "url": "https://lausitzcup.de/index.php/wittichenau/ausschreibung-wittichenau",
+        "state": "unreadable",
+        "error": "unsupported_or_empty_source"
+      },
+      {
+        "url": "https://www.dsergebnis.de/archiv/grosser-preis-der-gemeinde-rheinzabern-2025/",
+        "state": "unreadable",
+        "error": "unsupported_or_empty_source"
+      },
+      {
+        "url": "https://cykloman.cz/zavodnici",
+        "state": "unreadable",
+        "error": "unsupported_or_empty_source"
+      },
+      {
+        "url": "https://lausitzcup.de/index.php/goerlitz",
+        "state": "unreadable",
+        "error": "unsupported_or_empty_source"
+      },
+      {
+        "url": "http://bikeri.cz/serial/detsky-kv-triatlon",
+        "state": "unreadable",
+        "error": "unsupported_or_empty_source"
+      },
+      {
+        "url": "https://www.edieteam.cz/mtb-mladeze",
+        "state": "unreadable",
+        "error": "unsupported_or_empty_source"
+      },
+      {
+        "url": "https://www.cfc-kladno.cz/kolem_posazavi.php?nazev_stranky=mapa+trati#menu",
+        "state": "unreadable",
+        "error": "unsupported_or_empty_source"
+      },
+      {
+        "url": "https://www.amaterskaliga.cz/zavody/2025/13-casovka-jednotlivcu-mistrovstvi-sal-2025-horni-halze",
+        "state": "unreadable",
+        "error": "unsupported_or_empty_source"
+      },
+      {
+        "url": "https://www.dsergebnis.de/archiv/ergebnisse-2023/",
+        "state": "unreadable",
+        "error": "unsupported_or_empty_source"
+      },
+      {
+        "url": "https://cfc-kladno.cz/klikace25_2.php",
+        "state": "unreadable",
+        "error": "unsupported_or_empty_source"
+      },
+      {
+        "url": "https://www.dsergebnis.de/archiv/international-cyclo-cross-bad-salzdetfurth/",
+        "state": "unreadable",
+        "error": "unsupported_or_empty_source"
+      },
+      {
+        "url": "https://cfc-kladno.cz/posazavi21_3.php?#navigace_p21_3",
+        "state": "unreadable",
+        "error": "unsupported_or_empty_source"
+      },
+      {
+        "url": "http://cfc-kladno.cz/klikace16.php",
+        "state": "unreadable",
+        "error": "unsupported_or_empty_source"
+      }
+    ],
+    "geocode": {
+      "attempted": 829,
+      "updated": 1,
+      "failed": 0,
+      "skipped": 7
+    }
+  },
+  "stored": {
+    "key": "server-free",
+    "run_id": "30fc916e-f1ae-48ef-9d54-2614764dbe00",
+    "started_at": "2026-11-01T22:52:04.300777+00:00",
+    "finished_at": "2026-11-01T22:52:59.243+00:00",
+    "status": "limited",
+    "summary": {
+      "ok": true,
+      "count": 60,
+      "reads": 60,
+      "failed": 0,
+      "okUrls": [
+        "https://www.cyklokros.cz/kalendar",
+        "https://bikeboard.at/termine",
+        "https://www.lrv-noe.at/media/doc/0b5aa7f1bc4080c97aaaadd4b29ad2a3/arboe-bmx-nachwuchscup-2025.pdf",
+        "https://www.mtb-isarcup.de/images/Downloads/Listen/Isar_Kids_Cup_Gesamt_2025_Siegerehrung.pdf",
+        "http://www.rsv-bad-hersfeld.de/images/content/2026/Startzeiten2026.pdf",
+        "https://www.kolokolemkomina.cz/wp-content/uploads/2026/09/1-Mytinka_propozice_2026-003.pdf",
+        "https://www.kolokolemkomina.cz/wp-content/uploads/2025/09/Nove_WH_2025_trasa_hlavniho_zavodu_final.zip",
+        "https://www.mazurymtb.pl/aktualnosci/wielki-final-laciate-mazury-mtb-w-gizycku-bitwa-o-twierdze-boyen-wystartuje-z-nowego-miejsca",
+        "https://cfc-kladno.cz/texty/Kolem_Pos%C3%A1zav%C3%AD_2026.gpx",
+        "https://spac-os.cz/wp-content/uploads/2025/08/casovka_spac_propozice_25.pdf",
+        "https://www.amaterskaliga.cz/vysledky/6",
+        "https://www.amaterskaliga.cz/storage/document/?id=48",
+        "https://www.mtb-isarcup.de/images/Downloads/Listen/Isar_Kids_Cup_Gesamt_2026_Gesamt_20261018xlsm__-__Gruppe.pdf",
+        "https://www.german-pumptrack-series.de/termine/saal",
+        "https://www.amaterskaliga.cz/vysledky/34",
+        "https://www.amaterskaliga.cz/vysledky/80",
+        "https://www.amaterskaliga.cz/vysledky/118",
+        "https://www.gravelseries.cz/novinky/drasal-gravel-challenge-2026",
+        "http://www.mtbkreiscup.lima-city.de/Ausschreibung/2026/Ausschreibung_MTB-Kreiscup_Niederstaufen_2026.pdf",
+        "http://cfc-kladno.cz/rfc_vysledky.php?%20event_id=263",
+        "https://www.roadstage.cz/stage-security#uzavirky"
+      ],
+      "status": "limited",
+      "created": 8,
+      "geocode": {
+        "failed": 0,
+        "skipped": 7,
+        "updated": 1,
+        "attempted": 829
+      },
+      "updated": 24,
+      "deferred": 0,
+      "problems": [
+        {
+          "url": "https://www.dsergebnis.de/archiv/32-grosser-preis-von-buchholz/",
+          "error": "unsupported_or_empty_source",
+          "state": "unreadable"
+        },
+        {
+          "url": "https://www.dsergebnis.de/archiv/gr-preis-der-suedlichen-weinstrasse-2025/",
+          "error": "unsupported_or_empty_source",
+          "state": "unreadable"
+        },
+        {
+          "url": "https://www.vychodroadliga.sk/vychod-road-liga-cestna-cyklistika",
+          "error": "unsupported_or_empty_source",
+          "state": "unreadable"
+        },
+        {
+          "url": "https://www.edieteam.cz/mtb-mladeze/propozice-2026",
+          "error": "unsupported_or_empty_source",
+          "state": "unreadable"
+        },
+        {
+          "url": "https://www.lrv-noe.at/nachwuchs",
+          "error": "unsupported_or_empty_source",
+          "state": "unreadable"
+        },
+        {
+          "url": "https://dzkol.pl/kalendarz/kategoria/liga-mtb-aglomeracji-walbrzyskiej/lista/",
+          "error": "unsupported_or_empty_source",
+          "state": "unreadable"
+        },
+        {
+          "url": "https://pucharmazowsza.pl/",
+          "error": "unsupported_or_empty_source",
+          "state": "unreadable"
+        },
+        {
+          "url": "https://dzkol.pl/download/mtb-challenge-dzkol-31-07-2025/",
+          "error": "unsupported_or_empty_source",
+          "state": "unreadable"
+        },
+        {
+          "url": "https://dzkol.pl/download/2026-kalendarz-imprez-dzkol-excel/",
+          "error": "unsupported_or_empty_source",
+          "state": "unreadable"
+        },
+        {
+          "url": "https://cfc-kladno.cz/kolem_posazavi.php?celkem=41&od=41#aktuality",
+          "error": "unsupported_or_empty_source",
+          "state": "unreadable"
+        },
+        {
+          "url": "https://www.vychodroadliga.sk/preteky",
+          "error": "unsupported_or_empty_source",
+          "state": "unreadable"
+        },
+        {
+          "url": "https://www.kolokolemkomina.cz/zavody/",
+          "error": "unsupported_or_empty_source",
+          "state": "unreadable"
+        },
+        {
+          "url": "https://dzkol.pl/challenge/",
+          "error": "unsupported_or_empty_source",
+          "state": "unreadable"
+        },
+        {
+          "url": "https://www.kolokolemkomina.cz/zavody/cejkovicka-pohodovka/",
+          "error": "unsupported_or_empty_source",
+          "state": "unreadable"
+        },
+        {
+          "url": "https://cfc-kladno.cz/kolem_posazavi.php?nazev_stranky=mapa+trati#menu",
+          "error": "unsupported_or_empty_source",
+          "state": "unreadable"
+        },
+        {
+          "url": "https://www.edieteam.cz/mtb-mladeze/registrace-2026",
+          "error": "unsupported_or_empty_source",
+          "state": "unreadable"
+        },
+        {
+          "url": "https://www.radclub-moedling.at/thermenregion-cup-2026",
+          "error": "unsupported_or_empty_source",
+          "state": "unreadable"
+        },
+        {
+          "url": "https://www.amaterskaliga.cz/zavody/2025",
+          "error": "unsupported_or_empty_source",
+          "state": "unreadable"
+        },
+        {
+          "url": "https://www.kolokolemkomina.cz/zavody/kotvinske-pedaly/",
+          "error": "unsupported_or_empty_source",
+          "state": "unreadable"
+        },
+        {
+          "url": "https://www.cykloman.cz/rozpis-jizda-do-vrchu-cyklomanek",
+          "error": "unsupported_or_empty_source",
+          "state": "unreadable"
+        },
+        {
+          "url": "https://www.cykloman.cz/zavody-a-akce",
+          "error": "unsupported_or_empty_source",
+          "state": "unreadable"
+        },
+        {
+          "url": "https://www.dsergebnis.de/nievenheimer-ortsschildsprint-2026/",
+          "error": "unsupported_or_empty_source",
+          "state": "unreadable"
+        },
+        {
+          "url": "https://cykloman.cz",
+          "error": "unsupported_or_empty_source",
+          "state": "unreadable"
+        },
+        {
+          "url": "https://www.edieteam.cz/mtb-mladeze/propozice-2027",
+          "error": "unsupported_or_empty_source",
+          "state": "unreadable"
+        },
+        {
+          "url": "https://lausitzcup.de/index.php/lausitzcup/einzelwertung/einzelergebnisse-2026",
+          "error": "unsupported_or_empty_source",
+          "state": "unreadable"
+        },
+        {
+          "url": "https://lausitzcup.de/index.php/lausitzcup/gesamtwertung/gesamtwertung-2026",
+          "error": "unsupported_or_empty_source",
+          "state": "unreadable"
+        },
+        {
+          "url": "https://lausitzcup.de/index.php/wittichenau/ausschreibung-wittichenau",
+          "error": "unsupported_or_empty_source",
+          "state": "unreadable"
+        },
+        {
+          "url": "https://www.dsergebnis.de/archiv/grosser-preis-der-gemeinde-rheinzabern-2025/",
+          "error": "unsupported_or_empty_source",
+          "state": "unreadable"
+        },
+        {
+          "url": "https://cykloman.cz/zavodnici",
+          "error": "unsupported_or_empty_source",
+          "state": "unreadable"
+        },
+        {
+          "url": "https://lausitzcup.de/index.php/goerlitz",
+          "error": "unsupported_or_empty_source",
+          "state": "unreadable"
+        },
+        {
+          "url": "http://bikeri.cz/serial/detsky-kv-triatlon",
+          "error": "unsupported_or_empty_source",
+          "state": "unreadable"
+        },
+        {
+          "url": "https://www.edieteam.cz/mtb-mladeze",
+          "error": "unsupported_or_empty_source",
+          "state": "unreadable"
+        },
+        {
+          "url": "https://www.cfc-kladno.cz/kolem_posazavi.php?nazev_stranky=mapa+trati#menu",
+          "error": "unsupported_or_empty_source",
+          "state": "unreadable"
+        },
+        {
+          "url": "https://www.amaterskaliga.cz/zavody/2025/13-casovka-jednotlivcu-mistrovstvi-sal-2025-horni-halze",
+          "error": "unsupported_or_empty_source",
+          "state": "unreadable"
+        },
+        {
+          "url": "https://www.dsergebnis.de/archiv/ergebnisse-2023/",
+          "error": "unsupported_or_empty_source",
+          "state": "unreadable"
+        },
+        {
+          "url": "https://cfc-kladno.cz/klikace25_2.php",
+          "error": "unsupported_or_empty_source",
+          "state": "unreadable"
+        },
+        {
+          "url": "https://www.dsergebnis.de/archiv/international-cyclo-cross-bad-salzdetfurth/",
+          "error": "unsupported_or_empty_source",
+          "state": "unreadable"
+        },
+        {
+          "url": "https://cfc-kladno.cz/posazavi21_3.php?#navigace_p21_3",
+          "error": "unsupported_or_empty_source",
+          "state": "unreadable"
+        },
+        {
+          "url": "http://cfc-kladno.cz/klikace16.php",
+          "error": "unsupported_or_empty_source",
+          "state": "unreadable"
+        }
+      ],
+      "unchanged": 18,
+      "unreadable": 39,
+      "deferredWrites": 0
+    }
+  }
+}

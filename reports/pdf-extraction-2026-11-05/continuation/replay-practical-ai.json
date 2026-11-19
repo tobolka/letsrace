@@ -1,0 +1,916 @@
+[
+  {
+    "context": {
+      "id": "3636b10b-dd7c-4503-8798-eae1e18b9738",
+      "name": "Niepodległościowy Maraton MTB",
+      "startDate": "2026-11-07",
+      "endDate": "2026-11-07",
+      "venue": null,
+      "municipality": "Wieruszów",
+      "ownUrls": [
+        "https://www.tugazeta.pl/1,xiii-niepodleglosciowy-maraton-mtb-wieruszow-2026,66055.html",
+        "https://wkkwieruszow.pl/wp-content/uploads/2026/09/regulamin-N-M-MTB-W-2026.pdf"
+      ]
+    },
+    "details": {
+      "venue": {
+        "sourceUrl": "https://wkkwieruszow.pl/wp-content/uploads/2026/09/regulamin-N-M-MTB-W-2026.pdf",
+        "quote": "1. Niepodległościowy maraton MTB odbędzie się w dniu 07 - Listopad - 2026 rok\n2. Start zawodów odbędzie się z \"Agroturystyka - NA Grobli - Mieleszynek\"",
+        "checkedAt": "2026-11-05T20:57:39.329Z",
+        "editionYear": 2026,
+        "status": "current",
+        "value": {
+          "name": "Agroturystyka - NA Grobli - Mieleszynek",
+          "locality": "Wieruszów",
+          "countryCode": "PL",
+          "precision": "start"
+        }
+      },
+      "organizer": {
+        "sourceUrl": "https://wkkwieruszow.pl/wp-content/uploads/2026/09/regulamin-N-M-MTB-W-2026.pdf",
+        "quote": "a) Stowarzyszenie Wieruszowski klub kolarski ul. Waryńskiego 14 , 98-400 Wieruszów",
+        "checkedAt": "2026-11-05T20:57:39.332Z",
+        "editionYear": 2026,
+        "status": "year_neutral",
+        "value": {
+          "name": "Stowarzyszenie Wieruszowski klub kolarski"
+        }
+      },
+      "schedule": {
+        "sourceUrl": "https://wkkwieruszow.pl/wp-content/uploads/2026/09/regulamin-N-M-MTB-W-2026.pdf",
+        "quote": "Data 7-11-2026\nGodzina startu 11:00 Niepodległościowego maratonu MTB i o godzinie 11:30 start\nNiepodległościowego maratonu MTB KIDS\n* Około godziny 14:30 dekoracja zwycięzców\nJest to program o charakterze orientacyjny i możliwe są jego modyfikacje !",
+        "checkedAt": "2026-11-05T20:57:39.340Z",
+        "editionYear": 2026,
+        "status": "current",
+        "value": [
+          {
+            "sourceQuote": "Data 7-11-2026\nGodzina startu 11:00 Niepodległościowego maratonu MTB i o godzinie 11:30 start",
+            "sourceUrl": "https://wkkwieruszow.pl/wp-content/uploads/2026/09/regulamin-N-M-MTB-W-2026.pdf",
+            "checkedAt": "2026-11-05T20:57:39.338Z",
+            "approximate": false,
+            "label": "Niepodległościowy maratonu MTB",
+            "date": "2026-11-07",
+            "time": "11:00"
+          },
+          {
+            "sourceQuote": "Godzina startu 11:00 Niepodległościowego maratonu MTB i o godzinie 11:30 start\nNiepodległościowego maratonu MTB KIDS",
+            "sourceUrl": "https://wkkwieruszow.pl/wp-content/uploads/2026/09/regulamin-N-M-MTB-W-2026.pdf",
+            "checkedAt": "2026-11-05T20:57:39.339Z",
+            "approximate": false,
+            "label": "Niepodległościowego maratonu MTB KIDS",
+            "date": "2026-11-07",
+            "time": "11:30"
+          },
+          {
+            "sourceQuote": "* Około godziny 14:30 dekoracja zwycięzców",
+            "sourceUrl": "https://wkkwieruszow.pl/wp-content/uploads/2026/09/regulamin-N-M-MTB-W-2026.pdf",
+            "checkedAt": "2026-11-05T20:57:39.340Z",
+            "approximate": true,
+            "label": "dekoracja zwycięzców",
+            "date": "2026-11-07",
+            "time": "14:30"
+          }
+        ]
+      },
+      "fees": {
+        "sourceUrl": "https://wkkwieruszow.pl/wp-content/uploads/2026/09/regulamin-N-M-MTB-W-2026.pdf",
+        "quote": "3. Wysokość wpisowego w Niepodległościowym maratonie MTB : dystans MINI i MEGA\nwynosi 120 zł .\n4. Wysokość wpisowego w Niepodległościowym maratonie MTB KIDS jest Bezpłatny !!",
+        "checkedAt": "2026-11-05T20:57:39.345Z",
+        "editionYear": 2026,
+        "status": "current",
+        "value": [
+          {
+            "sourceQuote": "3. Wysokość wpisowego w Niepodległościowym maratonie MTB : dystans MINI i MEGA\nwynosi 120 zł .",
+            "sourceUrl": "https://wkkwieruszow.pl/wp-content/uploads/2026/09/regulamin-N-M-MTB-W-2026.pdf",
+            "checkedAt": "2026-11-05T20:57:39.345Z",
+            "label": "Niepodległościowy maraton MTB dystans MINI i MEGA",
+            "amount": 120,
+            "currency": "PLN"
+          }
+        ]
+      }
+    },
+    "reasons": {
+      "routes": "no_quote"
+    }
+  },
+  {
+    "context": {
+      "id": "3f4f8c4a-1891-44b8-9b0a-59726117ebe3",
+      "name": "TBC — HŮRKA",
+      "startDate": "2026-11-07",
+      "endDate": "2026-11-07",
+      "venue": null,
+      "municipality": "Hůrka u Jistebnice",
+      "ownUrls": [
+        "https://spsvd.cz/hurecky-krpal-2026",
+        "http://maraton.cz/terms/20261117_velesin.pdf"
+      ]
+    },
+    "details": {},
+    "reasons": {
+      "organizer": "values_not_supported"
+    }
+  },
+  {
+    "context": {
+      "id": "4d220c62-c3ea-4257-a6df-a662a0f58cab",
+      "name": "Afeno Quer und Bike Cup #5",
+      "startDate": "2026-11-07",
+      "endDate": "2026-11-07",
+      "venue": null,
+      "municipality": "Möhlin",
+      "ownUrls": [
+        "https://qubcup.jimdofree.com/",
+        "https://qubcup.jimdofree.com/app/download/7595430759/Ausschreibung+Afeno+2026.pdf?t=1784092100"
+      ]
+    },
+    "details": {
+      "schedule": {
+        "sourceUrl": "https://qubcup.jimdofree.com/app/download/7595430759/Ausschreibung+Afeno+2026.pdf?t=1784092100",
+        "quote": "4313 Möhlin AG 07.11.2026\n\nGruppe A: 12.00 Uhr / ca. 25 Min. Renndauer",
+        "checkedAt": "2026-11-05T20:57:39.354Z",
+        "editionYear": 2026,
+        "status": "current",
+        "value": [
+          {
+            "sourceQuote": "Gruppe A: 12.00 Uhr / ca. 25 Min. Renndauer",
+            "sourceUrl": "https://qubcup.jimdofree.com/app/download/7595430759/Ausschreibung+Afeno+2026.pdf?t=1784092100",
+            "checkedAt": "2026-11-05T20:57:39.354Z",
+            "approximate": false,
+            "label": "Gruppe A",
+            "date": "2026-11-07",
+            "time": "12:00"
+          }
+        ]
+      }
+    },
+    "reasons": {
+      "organizer": "values_not_supported"
+    }
+  },
+  {
+    "context": {
+      "id": "983b2309-de7d-43f7-96a2-dd1cff9fcebb",
+      "name": "Vaihinger Radcross — CX Bundesliga 10",
+      "startDate": "2026-11-07",
+      "endDate": "2026-11-07",
+      "venue": null,
+      "municipality": "Stuttgart/Vaihingen",
+      "ownUrls": [
+        "https://rsv-vaihingen.de/rennsport/radcross/",
+        "https://static.rad-net.de/html/bdr/generalausschreibungen/2026/ga-bl-cyclo-cross_26-27.pdf"
+      ]
+    },
+    "details": {
+      "venue": {
+        "sourceUrl": "https://rsv-vaihingen.de/rennsport/radcross/",
+        "quote": "2,6 km langer Rundkurs über die Festwiese bei der Krehlstraße (Krehlstr. 60, 70565 Stuttgart)",
+        "checkedAt": "2026-11-05T20:57:39.357Z",
+        "editionYear": 2026,
+        "status": "current",
+        "value": {
+          "name": "Krehlstraße, Festwiese",
+          "streetAddress": "Krehlstr. 60",
+          "postalCode": "70565",
+          "locality": "Stuttgart",
+          "countryCode": "DE",
+          "precision": "venue"
+        }
+      },
+      "organizer": {
+        "sourceUrl": "https://rsv-vaihingen.de/rennsport/radcross/",
+        "quote": "Bundesliga Cyclo-Cross 2026/27 - Vaihinger Radcross am 7.11.2026\nin Stuttgart - Vaihingen:\n2,6 km langer Rundkurs über die Festwiese bei der Krehlstraße (Krehlstr. 60, 70565 Stuttgart)\n[Viele Helfer werden benötigt - hier geht es zur Helfermeldung ►](https://rsv-vaihingen.de/rennsport/radcross/anmeldung-helfer)",
+        "checkedAt": "2026-11-05T20:57:39.358Z",
+        "editionYear": 2026,
+        "status": "current",
+        "value": {
+          "name": "RSV Vaihingen",
+          "url": "https://rsv-vaihingen.de/rennsport/radcross/"
+        }
+      },
+      "schedule": {
+        "sourceUrl": "https://rsv-vaihingen.de/rennsport/radcross/",
+        "quote": "Startzeit | Kategorie | Dauer\n08:00 | Training | 45 min.\n09:00 | Hobby m/w ab 16 Jahre | 30 min.\n09:45 | Kinder ohne Lizenz für Jahrgang 2012 und jünger | 15 min.\n10:30 | Schülerinnen/Schüler U15 | 20 min.\n11:10 | Jugend m U17Schülerinnen/Schüler U15 | 30 min.\n12:00 | Masters 3/4 | 40 min.\n13:00 | Masters 2 | 40 min.\n14:00 | Frauen, Juniorinnen U19 , Jugend w U17, Masters w | 40 min.\n15:00 | Junioren U19, Männer Elite | 60 min.",
+        "checkedAt": "2026-11-05T20:57:39.360Z",
+        "editionYear": 2026,
+        "status": "current",
+        "value": [
+          {
+            "sourceQuote": "08:00 | Training | 45 min.",
+            "sourceUrl": "https://rsv-vaihingen.de/rennsport/radcross/",
+            "checkedAt": "2026-11-05T20:57:39.359Z",
+            "approximate": false,
+            "label": "Training",
+            "date": "2026-11-07",
+            "time": "08:00"
+          },
+          {
+            "sourceQuote": "09:00 | Hobby m/w ab 16 Jahre | 30 min.",
+            "sourceUrl": "https://rsv-vaihingen.de/rennsport/radcross/",
+            "checkedAt": "2026-11-05T20:57:39.359Z",
+            "approximate": false,
+            "label": "Hobby m/w ab 16 Jahre",
+            "date": "2026-11-07",
+            "time": "09:00"
+          },
+          {
+            "sourceQuote": "10:30 | Schülerinnen/Schüler U15 | 20 min.",
+            "sourceUrl": "https://rsv-vaihingen.de/rennsport/radcross/",
+            "checkedAt": "2026-11-05T20:57:39.359Z",
+            "approximate": false,
+            "label": "Schülerinnen/Schüler U15",
+            "date": "2026-11-07",
+            "time": "10:30"
+          },
+          {
+            "sourceQuote": "11:10 | Jugend m U17Schülerinnen/Schüler U15 | 30 min.",
+            "sourceUrl": "https://rsv-vaihingen.de/rennsport/radcross/",
+            "checkedAt": "2026-11-05T20:57:39.359Z",
+            "approximate": false,
+            "label": "Jugend m U17",
+            "date": "2026-11-07",
+            "time": "11:10"
+          },
+          {
+            "sourceQuote": "12:00 | Masters 3/4 | 40 min.",
+            "sourceUrl": "https://rsv-vaihingen.de/rennsport/radcross/",
+            "checkedAt": "2026-11-05T20:57:39.360Z",
+            "approximate": false,
+            "label": "Masters 3/4",
+            "date": "2026-11-07",
+            "time": "12:00"
+          },
+          {
+            "sourceQuote": "13:00 | Masters 2 | 40 min.",
+            "sourceUrl": "https://rsv-vaihingen.de/rennsport/radcross/",
+            "checkedAt": "2026-11-05T20:57:39.360Z",
+            "approximate": false,
+            "label": "Masters 2",
+            "date": "2026-11-07",
+            "time": "13:00"
+          },
+          {
+            "sourceQuote": "14:00 | Frauen, Juniorinnen U19 , Jugend w U17, Masters w | 40 min.",
+            "sourceUrl": "https://rsv-vaihingen.de/rennsport/radcross/",
+            "checkedAt": "2026-11-05T20:57:39.360Z",
+            "approximate": false,
+            "label": "Frauen, Juniorinnen U19 , Jugend w U17, Masters w",
+            "date": "2026-11-07",
+            "time": "14:00"
+          },
+          {
+            "sourceQuote": "15:00 | Junioren U19, Männer Elite | 60 min.",
+            "sourceUrl": "https://rsv-vaihingen.de/rennsport/radcross/",
+            "checkedAt": "2026-11-05T20:57:39.360Z",
+            "approximate": false,
+            "label": "Junioren U19, Männer Elite",
+            "date": "2026-11-07",
+            "time": "15:00"
+          }
+        ]
+      },
+      "routes": {
+        "sourceUrl": "https://rsv-vaihingen.de/rennsport/radcross/",
+        "quote": "2,6 km langer Rundkurs über die Festwiese bei der Krehlstraße (Krehlstr. 60, 70565 Stuttgart)",
+        "checkedAt": "2026-11-05T20:57:39.361Z",
+        "editionYear": 2026,
+        "status": "current",
+        "value": [
+          {
+            "sourceQuote": "2,6 km langer Rundkurs über die Festwiese bei der Krehlstraße (Krehlstr. 60, 70565 Stuttgart)",
+            "sourceUrl": "https://rsv-vaihingen.de/rennsport/radcross/",
+            "checkedAt": "2026-11-05T20:57:39.361Z",
+            "name": "Rundkurs über die Festwiese bei der Krehlstraße",
+            "distanceKm": 2.6
+          }
+        ]
+      }
+    },
+    "reasons": {
+      "fees": "not_about_this_race"
+    }
+  },
+  {
+    "context": {
+      "id": "db104a11-51b7-4c75-aa0e-fe49004f970c",
+      "name": "UPCYCLE TRAIL WEEKEND 2026",
+      "startDate": "2026-11-07",
+      "endDate": "2026-11-08",
+      "venue": null,
+      "municipality": "Milano",
+      "ownUrls": [
+        "https://upcyclecafe.it/upcycle-trail-weekend-2026/",
+        null
+      ]
+    },
+    "details": {
+      "venue": {
+        "sourceUrl": "https://upcyclecafe.it/upcycle-trail-weekend-2026/",
+        "quote": "Partenza e ritorno: Upcycle Milano Bike Café, via Ampère 59, Milano.",
+        "checkedAt": "2026-11-05T20:57:39.369Z",
+        "editionYear": 2026,
+        "status": "current",
+        "value": {
+          "name": "Upcycle Milano Bike Café",
+          "streetAddress": "via Ampère 59",
+          "locality": "Milano",
+          "precision": "start"
+        }
+      },
+      "organizer": {
+        "sourceUrl": "https://upcyclecafe.it/wp-content/uploads/2026/09/regolamento-upcycle-trail-2026.pdf",
+        "quote": "Art. 1 ORGANIZZAZIONE\nUpcycle s.r.l. organizza per il giorno 8 novembre 2026 la manifestazione ciclistica UPCYCLE TRAIL in\nvirtù della sua attività di organizzatore di eventi e di promozione dell’uso della bicicletta.",
+        "checkedAt": "2026-11-05T20:57:39.370Z",
+        "editionYear": 2026,
+        "status": "current",
+        "value": {
+          "name": "Upcycle s.r.l."
+        }
+      },
+      "schedule": {
+        "sourceUrl": "https://upcyclecafe.it/upcycle-trail-weekend-2026/",
+        "quote": "DOMENICA 8 NOVEMBRE 2026\n\nLa classica Gravel Ride di Upcycle con 3 percorsi: 60, 100 e 150 km circa, per tutte le gambe (in pianura, comunque). Sono ammesse tutte le biciclette adatte a terreni sterrati.\nApertura porte alle 7:15 con ritiro ride pack\nPartenza alla francese dalle 7:30 alle 9:00.",
+        "checkedAt": "2026-11-05T20:57:39.375Z",
+        "editionYear": 2026,
+        "status": "current",
+        "value": [
+          {
+            "sourceQuote": "Apertura porte alle 7:15 con ritiro ride pack",
+            "sourceUrl": "https://upcyclecafe.it/upcycle-trail-weekend-2026/",
+            "checkedAt": "2026-11-05T20:57:39.373Z",
+            "approximate": false,
+            "label": "Apertura porte con ritiro ride pack",
+            "date": "2026-11-08",
+            "time": "07:15"
+          },
+          {
+            "sourceQuote": "Partenza alla francese dalle 7:30 alle 9:00.",
+            "sourceUrl": "https://upcyclecafe.it/upcycle-trail-weekend-2026/",
+            "checkedAt": "2026-11-05T20:57:39.374Z",
+            "approximate": false,
+            "label": "Partenza alla francese",
+            "date": "2026-11-08",
+            "time": "07:30"
+          }
+        ]
+      },
+      "fees": {
+        "sourceUrl": "https://upcyclecafe.it/wp-content/uploads/2026/09/regolamento-upcycle-trail-2026.pdf",
+        "quote": "disponibili (500 posti). Quota d’iscrizione:\n20 euro fino al 11 ottobre 2026: on line su Endu.\n24 euro fino al 4 novembre 2026: on line su Endu.\n\n30 euro nei giorni 7 e 8 novembre 2026 presso Upcycle Milano Bike Café.",
+        "checkedAt": "2026-11-05T20:57:39.377Z",
+        "editionYear": 2026,
+        "status": "current",
+        "value": [
+          {
+            "sourceQuote": "30 euro nei giorni 7 e 8 novembre 2026 presso Upcycle Milano Bike Café.",
+            "sourceUrl": "https://upcyclecafe.it/wp-content/uploads/2026/09/regolamento-upcycle-trail-2026.pdf",
+            "checkedAt": "2026-11-05T20:57:39.377Z",
+            "label": "Iscrizione 30 euro nei giorni 7 e 8 novembre 2026 presso Upcycle Milano Bike Café",
+            "amount": 30,
+            "currency": "EUR"
+          }
+        ]
+      }
+    },
+    "reasons": {
+      "routes": "values_not_supported"
+    }
+  },
+  {
+    "context": {
+      "id": "09e14a6c-8fac-442b-a4db-4d1c57608922",
+      "name": "DWH - dachwelten Cross powered by RCO BOA Wels",
+      "startDate": "2026-11-08",
+      "endDate": "2026-11-08",
+      "venue": null,
+      "municipality": "Wels",
+      "ownUrls": [
+        "https://www.rc-ovilava-wels.at/",
+        "https://www.cyclingaustria.at/images/Cup/26%20Cup%20Ausschreibungen/Cycling%20Austria%20Cyclocross%20Cup%2026-27_2.pdf"
+      ]
+    },
+    "details": {
+      "venue": {
+        "sourceUrl": "https://www.rc-ovilava-wels.at/DWH_Cross_2026_Teilnehmerinfo.pdf",
+        "quote": "S TA R T / Z I E L\nFreizeitanlage Wels-Wimpassing\nRömerstraße 200k, 4600 Wels",
+        "checkedAt": "2026-11-05T20:57:39.384Z",
+        "editionYear": 2026,
+        "status": "current",
+        "value": {
+          "name": "Freizeitanlage Wels-Wimpassing",
+          "streetAddress": "Römerstraße 200k",
+          "postalCode": "4600",
+          "locality": "Wels",
+          "countryCode": "AT",
+          "precision": "venue"
+        }
+      },
+      "organizer": {
+        "sourceUrl": "https://www.rc-ovilava-wels.at/DWH_Cross_2026_Teilnehmerinfo.pdf",
+        "quote": "V E R A N S TA LT E R\nRC Ovilava Wels",
+        "checkedAt": "2026-11-05T20:57:39.385Z",
+        "editionYear": 2026,
+        "status": "current",
+        "value": {
+          "name": "RC Ovilava Wels"
+        }
+      },
+      "schedule": {
+        "sourceUrl": "https://www.rc-ovilava-wels.at/DWH%20Cross%20Plakat.pdf",
+        "quote": "ZEITPLAN\n09:00 Jedermann:Frau · Gravel & MTB\n10:00 Nachwuchs U13 – U17\n11:00 BOA Mini Grand Prix U10 / Ü10\n11:45 Frauen · Junioren · Masters II–VI\n12:50 Elite · U23 · Amateure · Masters I",
+        "checkedAt": "2026-11-05T20:57:39.387Z",
+        "editionYear": 2026,
+        "status": "current",
+        "value": [
+          {
+            "sourceQuote": "09:00 Jedermann:Frau · Gravel & MTB",
+            "sourceUrl": "https://www.rc-ovilava-wels.at/DWH%20Cross%20Plakat.pdf",
+            "checkedAt": "2026-11-05T20:57:39.386Z",
+            "approximate": false,
+            "label": "Jedermann:Frau · Gravel & MTB",
+            "date": "2026-11-08",
+            "time": "09:00"
+          },
+          {
+            "sourceQuote": "10:00 Nachwuchs U13 – U17",
+            "sourceUrl": "https://www.rc-ovilava-wels.at/DWH%20Cross%20Plakat.pdf",
+            "checkedAt": "2026-11-05T20:57:39.386Z",
+            "approximate": false,
+            "label": "Nachwuchs U13 – U17",
+            "date": "2026-11-08",
+            "time": "10:00"
+          },
+          {
+            "sourceQuote": "11:00 BOA Mini Grand Prix U10 / Ü10",
+            "sourceUrl": "https://www.rc-ovilava-wels.at/DWH%20Cross%20Plakat.pdf",
+            "checkedAt": "2026-11-05T20:57:39.386Z",
+            "approximate": false,
+            "label": "BOA Mini Grand Prix U10 / Ü10",
+            "date": "2026-11-08",
+            "time": "11:00"
+          },
+          {
+            "sourceQuote": "11:45 Frauen · Junioren · Masters II–VI",
+            "sourceUrl": "https://www.rc-ovilava-wels.at/DWH%20Cross%20Plakat.pdf",
+            "checkedAt": "2026-11-05T20:57:39.387Z",
+            "approximate": false,
+            "label": "Frauen · Junioren · Masters II–VI",
+            "date": "2026-11-08",
+            "time": "11:45"
+          },
+          {
+            "sourceQuote": "12:50 Elite · U23 · Amateure · Masters I",
+            "sourceUrl": "https://www.rc-ovilava-wels.at/DWH%20Cross%20Plakat.pdf",
+            "checkedAt": "2026-11-05T20:57:39.387Z",
+            "approximate": false,
+            "label": "Elite · U23 · Amateure · Masters I",
+            "date": "2026-11-08",
+            "time": "12:50"
+          }
+        ]
+      },
+      "fees": {
+        "sourceUrl": "https://www.rc-ovilava-wels.at/DWH_Cross_2026_Teilnehmerinfo.pdf",
+        "quote": "Nenngeld Jedermann Rennen 1 28 €\nNenngeld Lizenzklassen: lt. Gebührenübersicht\n2026 von Cycling Austria\nBOA Mini Grand Prix: keine Nenngebühr",
+        "checkedAt": "2026-11-05T20:57:39.387Z",
+        "editionYear": 2026,
+        "status": "current",
+        "value": [
+          {
+            "sourceQuote": "Nenngeld Jedermann Rennen 1 28 €",
+            "sourceUrl": "https://www.rc-ovilava-wels.at/DWH_Cross_2026_Teilnehmerinfo.pdf",
+            "checkedAt": "2026-11-05T20:57:39.387Z",
+            "label": "Nenngeld Jedermann Rennen 1",
+            "amount": 28,
+            "currency": "EUR"
+          }
+        ]
+      },
+      "routes": {
+        "sourceUrl": "https://www.rc-ovilava-wels.at/DWH_Cross_2026_Teilnehmerinfo.pdf",
+        "quote": "1 09:00 Jedermann:Frau · Gravel & MTB UNLIZENZIERT\nJedermann männlich / weiblich · verkürzte Runde\n30 min\nca. 10 km\n–\n2 10:00 Member Card männl. Jugend, U17 männlich\nverkürzte Strecke\n30 min 3 Sachpreise\n3 10:10 Member Card m/w Jugend, U15 männlich, U17\nweiblich LM OÖ\nStart 10 min nach Rennen 2 · verkürzte Strecke\n20 min 3 Sachpreise\n4 10:15 Member Card m/w Jugend, U13 m/w, U15\nweiblich LM OÖ\nStart 15 min nach Rennen 2 · verkürzte Strecke\n15 min 3 Sachpreise\n5 11:00 BOA Mini Grand Prix UNLIZENZIERT\nWertungen Ü10 und U10 · U10 startet 1 min nach Ü10 ·\nsehr verkürzte Runde\nca. 0,5 km –\n6 11:45\n11:48\n1145 Women Elite, Women U23, Women Juniors,\nWomen Masters, Amateure Frauen, Member Card\nweiblich LM OÖ\n1148 Men Juniors, Men Masters IIVI, Member\nCard männlich\n40 min\nStrecke 3,2 km\nBarpreise\n130/90/70/50/40 €\n7 12:50 Men Elite, Men U23, Men Masters I, Amateure\nHerren LM OÖ\n60 min\nStrecke 3,2 km",
+        "checkedAt": "2026-11-05T20:57:39.388Z",
+        "editionYear": 2026,
+        "status": "current",
+        "value": [
+          {
+            "sourceQuote": "1 09:00 Jedermann:Frau · Gravel & MTB UNLIZENZIERT\nJedermann männlich / weiblich · verkürzte Runde\n30 min\nca. 10 km",
+            "sourceUrl": "https://www.rc-ovilava-wels.at/DWH_Cross_2026_Teilnehmerinfo.pdf",
+            "checkedAt": "2026-11-05T20:57:39.388Z",
+            "name": "Jedermann:Frau · Gravel & MTB",
+            "distanceKm": 10
+          },
+          {
+            "sourceQuote": "7 12:50 Men Elite, Men U23, Men Masters I, Amateure\nHerren LM OÖ\n60 min\nStrecke 3,2 km",
+            "sourceUrl": "https://www.rc-ovilava-wels.at/DWH_Cross_2026_Teilnehmerinfo.pdf",
+            "checkedAt": "2026-11-05T20:57:39.388Z",
+            "name": "Men Elite, Men U23, Men Masters I, Amateure Herren LM OÖ",
+            "distanceKm": 3.2
+          }
+        ]
+      }
+    },
+    "reasons": {}
+  },
+  {
+    "context": {
+      "id": "8bcdc4f3-6ac9-4223-b94f-254edc165664",
+      "name": "6. kolo: Grand Prix Sereď",
+      "startDate": "2026-11-08",
+      "endDate": "2026-11-08",
+      "venue": null,
+      "municipality": "Sereď",
+      "ownUrls": [
+        "https://www.cyklistikaszc.sk/sk/cyklokros/kalendar",
+        "https://www.cyklistikaszc.sk/kalendar/propozicie/8f86b305ab26f14587e2ba40e8.pdf"
+      ]
+    },
+    "details": {
+      "venue": {
+        "sourceUrl": "https://www.cyklistikaszc.sk/kalendar/propozicie/8f86b305ab26f14587e2ba40e8.pdf",
+        "quote": "Dátum a miesto 8.11.2026 Priemyselná ulica 5. Sereď",
+        "checkedAt": "2026-11-05T20:57:39.391Z",
+        "editionYear": 2026,
+        "status": "current",
+        "value": {
+          "name": "Priemyselná 5, 926 01 Sereď",
+          "streetAddress": "Priemyselná 5",
+          "postalCode": "926 01",
+          "locality": "Sereď",
+          "countryCode": "SK",
+          "precision": "venue"
+        }
+      },
+      "organizer": {
+        "sourceUrl": "https://www.cyklistikaszc.sk/kalendar/propozicie/8f86b305ab26f14587e2ba40e8.pdf",
+        "quote": "Organizátor CK AB Sereď BRUVO Slovakia s.r.o.",
+        "checkedAt": "2026-11-05T20:57:39.391Z",
+        "editionYear": 2026,
+        "status": "current",
+        "value": {
+          "name": "CK AB Sereď BRUVO Slovakia s.r.o."
+        }
+      },
+      "schedule": {
+        "sourceUrl": "https://www.cyklistikaszc.sk/kalendar/propozicie/8f86b305ab26f14587e2ba40e8.pdf",
+        "quote": "pre kategórie UCI je termín zaslania prihlášok štvrtok 5.11.2026 do 15,00hod\nŠtartovné podľa pravidiel cyklokrosu SZC\nCeny\nPoradie MUŽI a ŽENY ELITE Juniori a Juniorky\n1. 100 € 30 €\n2. 70 € 20 €\n3. 50 € 15 €\n4. 30 € 10 €\n5. 20 € 10 €\n6. 10 € -\n7. 10 € -\n8. 10 € -\nostatné kategórie vecné ceny (podľa pravidiel cyklokrosu SZC)\nKancelária pretekov v deň štartu od 8:00 do 9:00 pre všetky kategórie\na od 11:00 do 13:30 iba pre kategórie Muži elite + U23, juniori, ženy a juniorky.\nPre každú kategóriu končí kancelária pretekov 1hodinu pred štartom príslušnej\nkategórie.\nMiesto: Priemyselná 5, 926 01 Sereď\nPodmienka účasti Platná licencia svojej národnej federácie na rok 2026\nTrať 48.279906, 17.718419\n\nTréning na trati 8:30 – 9:10\n12:10 – 12:50\nProgram 9:15 Masters A, B, C + ženy Masters\n10:00 Mladší žiaci + 10:02 Žiačky\n10:30 Starší žiaci + 10:32 Kadetky\n11:15 Kadeti\n13:00 Ženy Elite (U23) + 13:02 Juniorky\n14:00 Muži Elite (U23) + 14:02 Juniori",
+        "checkedAt": "2026-11-05T20:57:39.393Z",
+        "editionYear": 2026,
+        "status": "current",
+        "value": [
+          {
+            "sourceQuote": "Kancelária pretekov v deň štartu od 8:00 do 9:00 pre všetky kategórie",
+            "sourceUrl": "https://www.cyklistikaszc.sk/kalendar/propozicie/8f86b305ab26f14587e2ba40e8.pdf",
+            "checkedAt": "2026-11-05T20:57:39.392Z",
+            "approximate": false,
+            "label": "Kancelária pretekov",
+            "date": "2026-11-08",
+            "time": "08:00"
+          },
+          {
+            "sourceQuote": "10:00 Mladší žiaci + 10:02 Žiačky",
+            "sourceUrl": "https://www.cyklistikaszc.sk/kalendar/propozicie/8f86b305ab26f14587e2ba40e8.pdf",
+            "checkedAt": "2026-11-05T20:57:39.393Z",
+            "approximate": false,
+            "label": "Mladší žiaci",
+            "date": "2026-11-08",
+            "time": "10:00"
+          },
+          {
+            "sourceQuote": "10:30 Starší žiaci + 10:32 Kadetky",
+            "sourceUrl": "https://www.cyklistikaszc.sk/kalendar/propozicie/8f86b305ab26f14587e2ba40e8.pdf",
+            "checkedAt": "2026-11-05T20:57:39.393Z",
+            "approximate": false,
+            "label": "Starší žiaci",
+            "date": "2026-11-08",
+            "time": "10:30"
+          },
+          {
+            "sourceQuote": "11:15 Kadeti",
+            "sourceUrl": "https://www.cyklistikaszc.sk/kalendar/propozicie/8f86b305ab26f14587e2ba40e8.pdf",
+            "checkedAt": "2026-11-05T20:57:39.393Z",
+            "approximate": false,
+            "label": "Kadeti",
+            "date": "2026-11-08",
+            "time": "11:15"
+          },
+          {
+            "sourceQuote": "13:00 Ženy Elite (U23) + 13:02 Juniorky",
+            "sourceUrl": "https://www.cyklistikaszc.sk/kalendar/propozicie/8f86b305ab26f14587e2ba40e8.pdf",
+            "checkedAt": "2026-11-05T20:57:39.393Z",
+            "approximate": false,
+            "label": "Ženy Elite (U23)",
+            "date": "2026-11-08",
+            "time": "13:00"
+          },
+          {
+            "sourceQuote": "14:00 Muži Elite (U23) + 14:02 Juniori",
+            "sourceUrl": "https://www.cyklistikaszc.sk/kalendar/propozicie/8f86b305ab26f14587e2ba40e8.pdf",
+            "checkedAt": "2026-11-05T20:57:39.393Z",
+            "approximate": false,
+            "label": "Muži Elite (U23)",
+            "date": "2026-11-08",
+            "time": "14:00"
+          }
+        ]
+      }
+    },
+    "reasons": {
+      "fees": "values_not_supported",
+      "routes": "values_not_supported"
+    }
+  },
+  {
+    "context": {
+      "id": "96c5327a-0fb6-40e8-a435-89d46e8fa2ee",
+      "name": "Mistrovství Ústeckého kraje v cyklokrosu pro rok 2026 — Nové Město v Krušných horách",
+      "startDate": "2026-11-07",
+      "endDate": "2026-11-07",
+      "venue": null,
+      "municipality": "Nové Město v Krušných horách",
+      "ownUrls": [
+        "https://www.cyklokros.cz/kalendar",
+        "https://www.cyklokros.cz/files/cx-vcpr-2026-propozice.pdf"
+      ]
+    },
+    "details": {
+      "venue": {
+        "sourceUrl": "https://www.cyklokros.cz/files/cx-vcpr-2026-propozice.pdf",
+        "quote": "Místo Běžecký stadion Nové Město v Krušných horách",
+        "checkedAt": "2026-11-05T20:57:39.400Z",
+        "editionYear": 2026,
+        "status": "current",
+        "value": {
+          "name": "Běžecký stadion Nové Město v Krušných horách",
+          "precision": "venue"
+        }
+      },
+      "organizer": {
+        "sourceUrl": "https://www.cyklokros.cz/files/cx-vcpr-2026-propozice.pdf",
+        "quote": "Pořadatel Bicykl team Ústí nad Labem z.s. z pověření Ústeckého svazu cyklistiky",
+        "checkedAt": "2026-11-05T20:57:39.400Z",
+        "editionYear": 2026,
+        "status": "current",
+        "value": {
+          "name": "Bicykl team Ústí nad Labem z.s."
+        }
+      },
+      "schedule": {
+        "sourceUrl": "https://www.cyklokros.cz/files/cx-vcpr-2026-propozice.pdf",
+        "quote": "Pořadí startu : 10:00 hod. ………………….. žáci, žákyně\n10:30 hod. ………………….. kadeti, kadetky\n11:45 hod. …………………... junioři, muži\n11:46 hod. …………………... ženy+juniorky",
+        "checkedAt": "2026-11-05T20:57:39.402Z",
+        "editionYear": 2026,
+        "status": "current",
+        "value": [
+          {
+            "sourceQuote": "Pořadí startu : 10:00 hod. ………………….. žáci, žákyně",
+            "sourceUrl": "https://www.cyklokros.cz/files/cx-vcpr-2026-propozice.pdf",
+            "checkedAt": "2026-11-05T20:57:39.401Z",
+            "approximate": false,
+            "label": "žáci, žákyně",
+            "date": "2026-11-07",
+            "time": "10:00"
+          },
+          {
+            "sourceQuote": "10:30 hod. ………………….. kadeti, kadetky",
+            "sourceUrl": "https://www.cyklokros.cz/files/cx-vcpr-2026-propozice.pdf",
+            "checkedAt": "2026-11-05T20:57:39.401Z",
+            "approximate": false,
+            "label": "kadeti, kadetky",
+            "date": "2026-11-07",
+            "time": "10:30"
+          },
+          {
+            "sourceQuote": "11:45 hod. …………………... junioři, muži",
+            "sourceUrl": "https://www.cyklokros.cz/files/cx-vcpr-2026-propozice.pdf",
+            "checkedAt": "2026-11-05T20:57:39.401Z",
+            "approximate": false,
+            "label": "junioři, muži",
+            "date": "2026-11-07",
+            "time": "11:45"
+          },
+          {
+            "sourceQuote": "11:46 hod. …………………... ženy+juniorky",
+            "sourceUrl": "https://www.cyklokros.cz/files/cx-vcpr-2026-propozice.pdf",
+            "checkedAt": "2026-11-05T20:57:39.402Z",
+            "approximate": false,
+            "label": "ženy+juniorky",
+            "date": "2026-11-07",
+            "time": "11:46"
+          }
+        ]
+      },
+      "fees": {
+        "sourceUrl": "https://www.cyklokros.cz/files/cx-vcpr-2026-propozice.pdf",
+        "quote": "Startovné : Předem přihlášení 200Kč, registrace na místě 300Kč,",
+        "checkedAt": "2026-11-05T20:57:39.402Z",
+        "editionYear": 2026,
+        "status": "current",
+        "value": [
+          {
+            "sourceQuote": "Startovné : Předem přihlášení 200Kč, registrace na místě 300Kč,",
+            "sourceUrl": "https://www.cyklokros.cz/files/cx-vcpr-2026-propozice.pdf",
+            "checkedAt": "2026-11-05T20:57:39.402Z",
+            "label": "Předem přihlášení",
+            "amount": 200,
+            "currency": "CZK"
+          },
+          {
+            "sourceQuote": "Startovné : Předem přihlášení 200Kč, registrace na místě 300Kč,",
+            "sourceUrl": "https://www.cyklokros.cz/files/cx-vcpr-2026-propozice.pdf",
+            "checkedAt": "2026-11-05T20:57:39.402Z",
+            "label": "registrace na místě",
+            "amount": 300,
+            "currency": "CZK"
+          }
+        ]
+      }
+    },
+    "reasons": {}
+  },
+  {
+    "context": {
+      "id": "083acc15-7304-41e4-9771-13a11bbf1c85",
+      "name": "ORC 4 - Cyclocross de Rennaz",
+      "startDate": "2026-11-08",
+      "endDate": "2026-11-08",
+      "venue": null,
+      "municipality": "Rennaz",
+      "ownUrls": [
+        "https://www.omniumromand.com/orc4-cyclocross-de-rennaz-vd.html",
+        "https://www.omniumromand.com/uploads/1/2/5/1/125115772/re%CC%80glement_orc_2026-27.pdf"
+      ]
+    },
+    "details": {
+      "venue": {
+        "sourceUrl": "https://www.omniumromand.com/uploads/1/2/5/1/125115772/rennaz_cx_08.11.26.pdf",
+        "quote": "Remise des prix\nLieu de la course:\nEcole de Rennaz et Salle de l’Arennaz",
+        "checkedAt": "2026-11-05T20:57:39.405Z",
+        "editionYear": 2026,
+        "status": "current",
+        "value": {
+          "name": "Ecole de Rennaz et Salle de l’Arennaz",
+          "countryCode": "CH",
+          "precision": "venue"
+        }
+      },
+      "organizer": {
+        "sourceUrl": "https://www.omniumromand.com/uploads/1/2/5/1/125115772/rennaz_cx_08.11.26.pdf",
+        "quote": "Organisation\nMontreux Rennaz Cyclisme en\ncollaboration avec l'Omnium Romand",
+        "checkedAt": "2026-11-05T20:57:39.405Z",
+        "editionYear": 2026,
+        "status": "current",
+        "value": {
+          "name": "Montreux Rennaz Cyclisme"
+        }
+      },
+      "schedule": {
+        "sourceUrl": "https://www.omniumromand.com/uploads/1/2/5/1/125115772/rennaz_cx_08.11.26.pdf",
+        "quote": "8h30 Retrait des dossards et ouverture de la buvette\n9h45 U11 (2017 - 2018), + 10 sec. U9 (2019-2020), 15 min\nRemise des prix\n10h15 U15 (2013- 2014) + 10 sec. U13 (2015 - 2016), 20 min\n11h15 U17 (garçons) (2011-2012), 35 min\nRemise des prix\n11h17 U17 filles & U19 filles (2010-2009) & Dames , 35 min\nRemise des prix\n12h30 Petits et Petites Cracks (2021 et plus jeunes)\nRemise des prix\n12h -13h Reconnaissance / Entraînement\n13h Masters 2, 3 et 4, 45 min\nRemise des prix\n14h15 Juniors, Hommes, Masters 1, 50 min",
+        "checkedAt": "2026-11-05T20:57:39.406Z",
+        "editionYear": 2026,
+        "status": "current",
+        "value": [
+          {
+            "sourceQuote": "9h45 U11 (2017 - 2018), + 10 sec. U9 (2019-2020), 15 min",
+            "sourceUrl": "https://www.omniumromand.com/uploads/1/2/5/1/125115772/rennaz_cx_08.11.26.pdf",
+            "checkedAt": "2026-11-05T20:57:39.406Z",
+            "approximate": false,
+            "label": "U11 (2017 - 2018)",
+            "date": "2026-11-08",
+            "time": "09:45"
+          },
+          {
+            "sourceQuote": "10h15 U15 (2013- 2014) + 10 sec. U13 (2015 - 2016), 20 min",
+            "sourceUrl": "https://www.omniumromand.com/uploads/1/2/5/1/125115772/rennaz_cx_08.11.26.pdf",
+            "checkedAt": "2026-11-05T20:57:39.406Z",
+            "approximate": false,
+            "label": "U15 (2013- 2014)",
+            "date": "2026-11-08",
+            "time": "10:15"
+          },
+          {
+            "sourceQuote": "11h15 U17 (garçons) (2011-2012), 35 min",
+            "sourceUrl": "https://www.omniumromand.com/uploads/1/2/5/1/125115772/rennaz_cx_08.11.26.pdf",
+            "checkedAt": "2026-11-05T20:57:39.406Z",
+            "approximate": false,
+            "label": "U17 (garçons) (2011-2012)",
+            "date": "2026-11-08",
+            "time": "11:15"
+          },
+          {
+            "sourceQuote": "11h17 U17 filles & U19 filles (2010-2009) & Dames , 35 min",
+            "sourceUrl": "https://www.omniumromand.com/uploads/1/2/5/1/125115772/rennaz_cx_08.11.26.pdf",
+            "checkedAt": "2026-11-05T20:57:39.406Z",
+            "approximate": false,
+            "label": "U17 filles & U19 filles (2010-2009) & Dames",
+            "date": "2026-11-08",
+            "time": "11:17"
+          },
+          {
+            "sourceQuote": "12h30 Petits et Petites Cracks (2021 et plus jeunes)",
+            "sourceUrl": "https://www.omniumromand.com/uploads/1/2/5/1/125115772/rennaz_cx_08.11.26.pdf",
+            "checkedAt": "2026-11-05T20:57:39.406Z",
+            "approximate": false,
+            "label": "Petits et Petites Cracks (2021 et plus jeunes)",
+            "date": "2026-11-08",
+            "time": "12:30"
+          },
+          {
+            "sourceQuote": "14h15 Juniors, Hommes, Masters 1, 50 min",
+            "sourceUrl": "https://www.omniumromand.com/uploads/1/2/5/1/125115772/rennaz_cx_08.11.26.pdf",
+            "checkedAt": "2026-11-05T20:57:39.406Z",
+            "approximate": false,
+            "label": "Juniors, Hommes, Masters 1",
+            "date": "2026-11-08",
+            "time": "14:15"
+          }
+        ]
+      }
+    },
+    "reasons": {
+      "fees": "not_this_edition",
+      "routes": "bad_value"
+    }
+  },
+  {
+    "context": {
+      "id": "a55944aa-c6ac-4428-bfcd-eba0a897582d",
+      "name": "NRW Cross Cup Die Mauer von Kendenich — Kendenich",
+      "startDate": "2026-11-07",
+      "endDate": "2026-11-07",
+      "venue": null,
+      "municipality": "Mauer von Kendenich, Hürth",
+      "ownUrls": [
+        "https://race-hub.io/events/3135789b-5589-48d1-b87f-bfc6c00506ec/info",
+        "https://www.dsergebnis.de/ausschreibungen-rad-net/"
+      ]
+    },
+    "details": {},
+    "reasons": {
+      "organizer": "not_about_this_race"
+    }
+  },
+  {
+    "context": {
+      "id": "0ae99ef2-8f4e-4f01-9bcf-d87895e9d641",
+      "name": "Tage des Querfeldeinsports GP Ternitz um die Preise des ARBÖ Querfeldein",
+      "startDate": "2026-11-14",
+      "endDate": "2026-11-15",
+      "venue": null,
+      "municipality": "Ternitz",
+      "ownUrls": [
+        "https://www.rcnk.at/",
+        "https://www.cyclingaustria.at/images/Cup/26%20Cup%20Ausschreibungen/Cycling%20Austria%20Cyclocross%20Cup%2026-27_2.pdf"
+      ]
+    },
+    "details": {},
+    "reasons": {
+      "schedule": "values_not_supported"
+    }
+  },
+  {
+    "context": {
+      "id": "ca4496d4-5663-45a5-a9a4-e20a8af989d2",
+      "name": "MSR v cyklokrose (9. kolo)",
+      "startDate": "2026-12-05",
+      "endDate": "2026-12-05",
+      "venue": null,
+      "municipality": "Selce",
+      "ownUrls": [
+        "https://www.cyklistikaszc.sk/sk/submenu/kalendar-vysledky",
+        "https://www.cyklistikaszc.sk/kalendar/propozicie/51e9120f9321462cce5d28fea4.pdf"
+      ]
+    },
+    "details": {
+      "venue": {
+        "sourceUrl": "https://www.cyklistikaszc.sk/kalendar/propozicie/51e9120f9321462cce5d28fea4.pdf",
+        "quote": "Dátum a miesto 6.12.2026 Futbalové ihrisko ,Športová 2,Selce",
+        "checkedAt": "2026-11-05T20:57:39.425Z",
+        "editionYear": 2026,
+        "status": "current",
+        "value": {
+          "name": "Futbalové ihrisko Selce",
+          "streetAddress": "Športová 2",
+          "locality": "Selce",
+          "precision": "venue"
+        }
+      },
+      "organizer": {
+        "sourceUrl": "https://www.cyklistikaszc.sk/kalendar/propozicie/51e9120f9321462cce5d28fea4.pdf",
+        "quote": "Organizátor Cyklistický klub CykloGlajza Selce OZ",
+        "checkedAt": "2026-11-05T20:57:39.427Z",
+        "editionYear": 2026,
+        "status": "current",
+        "value": {
+          "name": "Cyklistický klub CykloGlajza Selce OZ"
+        }
+      }
+    },
+    "reasons": {
+      "schedule": "values_not_supported",
+      "routes": "values_not_supported"
+    }
+  }
+]

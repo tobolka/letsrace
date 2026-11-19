@@ -1,0 +1,154 @@
+{
+  "at": "2026-10-26T15:29:45.694Z",
+  "runnerPid": 87081,
+  "local": {
+    "at": 1793026077000,
+    "reads": 15,
+    "created": 0,
+    "updated": 0,
+    "failed": 15,
+    "problems": [
+      {
+        "error": "fetch failed",
+        "url": "https://www.tjsokolchotebuz.cz/index.php?Itemid=36&id=17&option=com_content&view=article"
+      },
+      {
+        "error": "unsupported_or_empty_source",
+        "url": "https://zavodnicasomira.cz/zavody"
+      },
+      {
+        "error": "unsupported_or_empty_source",
+        "url": "https://www.roadstage.cz/hradec-kralove/kancelar-zavodu"
+      },
+      {
+        "error": "unsupported_or_empty_source",
+        "url": "https://www.roadstage.cz/grande-finale/kancelar-zavodu#kalkulacka"
+      },
+      {
+        "error": "unsupported_or_empty_source",
+        "url": "https://cyclocrosscup.de/2026/08/der-cyclocross-cup-steht-fuer-2026-in-den-startloechern/"
+      },
+      {
+        "error": "fetch failed",
+        "url": "https://bikeri.cz/clanek/chebsky-pohar-skoncil"
+      },
+      {
+        "error": "fetch failed",
+        "url": "https://bikeri.cz/zavod/casovka-na-andelskou-horu"
+      },
+      {
+        "error": "source_document_too_large",
+        "url": "https://www.edieteam.cz/component/phocadownload/category/3-propozice?download=13:propozice-valassky-pohar-mtb-2026"
+      },
+      {
+        "error": "fetch failed",
+        "url": "https://bikeri.cz/zavod/kraslicka-casovka"
+      },
+      {
+        "error": "source_document_too_large",
+        "url": "https://www.edieteam.cz/images/aktuality/pdf/propozice-2026.pdf"
+      },
+      {
+        "error": "source_document_too_large",
+        "url": "https://rsv-bad-hersfeld.de/images/content/gpx_data/RSV_Bad_Hersfeld_Permanente_2019_Streckenplaene.pdf"
+      },
+      {
+        "error": "HTTP 500",
+        "url": "https://www.mazurymtb.pl/aktualnosci/laciate-mazury-mtb-sorkwity-2027-poznaj-trase-wyscigu-przez-jary-lampasza"
+      },
+      {
+        "error": "fetch failed",
+        "url": "https://bikeri.cz/zavod/kraslicky-sip"
+      },
+      {
+        "error": "fetch failed",
+        "url": "https://bikeri.cz/zavod/kolem-sindelove"
+      },
+      {
+        "error": "HTTP 500",
+        "url": "https://www.mazurymtb.pl/aktualnosci/bitwa-o-twierdze-boyen-zakonczyla-sezon-laciate-mazury-mtb-2027"
+      }
+    ]
+  },
+  "browser": {
+    "status": "needs_review",
+    "read": 419,
+    "written": 248,
+    "created": 0,
+    "updated": 7,
+    "issue": "write_failed:csc-1695:pipeline_data_review_required:end_before_start; write_failed:csc-1619:identity_review_required: conflicting fingerprint owned by 4f3e8781-58b2-42aa-bac6-47cdc9ff15c6",
+    "at": "2026-10-26T15:26:12.040Z",
+    "log": "/Users/radektobolka/Library/Application Support/LetsRace/data/refresh-2026-10-26T15-24-44-694Z.log"
+  },
+  "server": {
+    "at": "2026-10-26T15:28:55.964Z",
+    "jobs": [
+      {
+        "key": "server-free",
+        "run_id": "b2cd3782-ca24-4469-806f-4c7a1a24948f",
+        "started_at": "2026-10-26T15:25:35.628488+00:00",
+        "finished_at": "2026-10-26T15:25:38.843+00:00",
+        "status": "ok",
+        "summary": {
+          "ok": true,
+          "count": 0,
+          "failed": 0,
+          "created": 0,
+          "geocode": {
+            "failed": 0,
+            "skipped": 7,
+            "updated": 0,
+            "attempted": 813
+          },
+          "updated": 0,
+          "problems": [],
+          "unchanged": 0
+        }
+      }
+    ],
+    "due": 0,
+    "health": {
+      "due": 0,
+      "ok24h": 698,
+      "sources": 1564,
+      "reads24h": 1028,
+      "failed24h": 330,
+      "lastSuccessAt": "2026-10-26T12:44:44.036+00:00"
+    },
+    "schedules": {
+      "free": "denně",
+      "ai": "na Macu"
+    },
+    "countries": [
+      "CZ",
+      "SK",
+      "DE",
+      "AT",
+      "CH",
+      "IT",
+      "PL"
+    ],
+    "checkedAt": "2026-10-26T15:28:56.011Z",
+    "error": null
+  },
+  "ai": {
+    "lastRunAt": null,
+    "month": "2026-10",
+    "spentUsd": 7.683967400000007,
+    "monthCapUsd": 5,
+    "dayCapUsd": 0.5,
+    "schedule": "Mac · úterý a pátek"
+  },
+  "totals": [
+    {
+      "season": "2026",
+      "total": 322,
+      "essentials": 314
+    },
+    {
+      "season": "2027",
+      "total": 870,
+      "essentials": 803
+    }
+  ]
+}

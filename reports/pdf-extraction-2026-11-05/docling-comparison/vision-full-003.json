@@ -1,0 +1,35 @@
+{
+  "index": 3,
+  "name": "okros Topoľčianky 5. kolo: NoLimited cup v CX (UCI C2) Cyklokros Topoľčianky November 2026 Dátum Náz",
+  "url": "https://www.cyklistikaszc.sk/kalendar/plagat/plaga3b38c5824dbbf14042b76f400.pdf",
+  "mode": "vision-full",
+  "docling": "2.148.0",
+  "page_range": [
+    1,
+    1
+  ],
+  "ocr_options": {
+    "mode": "full_page",
+    "lang": [
+      "cs-CZ",
+      "pl-PL",
+      "de-DE",
+      "it-IT",
+      "fr-FR",
+      "en-US"
+    ],
+    "scale": 3.0,
+    "replace_broken_text_layer": false,
+    "recognition": "accurate",
+    "framework": "vision",
+    "force_full_page_ocr": true
+  },
+  "device": "cpu",
+  "threads": 4,
+  "status": "ConversionStatus.SUCCESS",
+  "errors": [],
+  "characters": 366,
+  "tables": 0,
+  "pages": 1,
+  "seconds": 74.827
+}

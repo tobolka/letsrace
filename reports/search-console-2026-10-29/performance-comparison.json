@@ -1,0 +1,146 @@
+[
+  {
+    "version": "before",
+    "path": "/cs",
+    "samples": [
+      {
+        "status": 200,
+        "compressed_bytes": 31939,
+        "ttfb_seconds": 0.403989,
+        "total_seconds": 0.408812
+      },
+      {
+        "status": 200,
+        "compressed_bytes": 31939,
+        "ttfb_seconds": 0.188632,
+        "total_seconds": 0.194568
+      },
+      {
+        "status": 200,
+        "compressed_bytes": 31939,
+        "ttfb_seconds": 0.155165,
+        "total_seconds": 0.157235
+      }
+    ]
+  },
+  {
+    "version": "after",
+    "path": "/cs",
+    "samples": [
+      {
+        "status": 200,
+        "compressed_bytes": 43266,
+        "ttfb_seconds": 0.107235,
+        "total_seconds": 0.120451
+      },
+      {
+        "status": 200,
+        "compressed_bytes": 43266,
+        "ttfb_seconds": 0.093677,
+        "total_seconds": 0.106967
+      },
+      {
+        "status": 200,
+        "compressed_bytes": 43266,
+        "ttfb_seconds": 0.087366,
+        "total_seconds": 0.099239
+      }
+    ]
+  },
+  {
+    "version": "before",
+    "path": "/cs/seznam",
+    "samples": [
+      {
+        "status": 200,
+        "compressed_bytes": 13632,
+        "ttfb_seconds": 0.30238,
+        "total_seconds": 0.305124
+      },
+      {
+        "status": 200,
+        "compressed_bytes": 13632,
+        "ttfb_seconds": 0.163715,
+        "total_seconds": 0.164045
+      },
+      {
+        "status": 200,
+        "compressed_bytes": 13632,
+        "ttfb_seconds": 0.085692,
+        "total_seconds": 0.088876
+      }
+    ]
+  },
+  {
+    "version": "after",
+    "path": "/cs/seznam",
+    "samples": [
+      {
+        "status": 200,
+        "compressed_bytes": 20656,
+        "ttfb_seconds": 0.18444,
+        "total_seconds": 0.18796
+      },
+      {
+        "status": 200,
+        "compressed_bytes": 20656,
+        "ttfb_seconds": 0.083936,
+        "total_seconds": 0.088273
+      },
+      {
+        "status": 200,
+        "compressed_bytes": 20656,
+        "ttfb_seconds": 0.170557,
+        "total_seconds": 0.174209
+      }
+    ]
+  },
+  {
+    "version": "before",
+    "path": "/cs/kalendar",
+    "samples": [
+      {
+        "status": 200,
+        "compressed_bytes": 13186,
+        "ttfb_seconds": 0.280603,
+        "total_seconds": 0.280916
+      },
+      {
+        "status": 200,
+        "compressed_bytes": 13186,
+        "ttfb_seconds": 0.094847,
+        "total_seconds": 0.097685
+      },
+      {
+        "status": 200,
+        "compressed_bytes": 13186,
+        "ttfb_seconds": 0.091221,
+        "total_seconds": 0.093548
+      }
+    ]
+  },
+  {
+    "version": "after",
+    "path": "/cs/kalendar",
+    "samples": [
+      {
+        "status": 200,
+        "compressed_bytes": 20622,
+        "ttfb_seconds": 0.275217,
+        "total_seconds": 0.280282
+      },
+      {
+        "status": 200,
+        "compressed_bytes": 20622,
+        "ttfb_seconds": 0.088888,
+        "total_seconds": 0.092766
+      },
+      {
+        "status": 200,
+        "compressed_bytes": 20622,
+        "ttfb_seconds": 0.082465,
+        "total_seconds": 0.086415
+      }
+    ]
+  }
+]

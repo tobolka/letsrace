@@ -1,0 +1,1022 @@
+[
+  {
+    "key": "feminin",
+    "name": "Tour de Feminin",
+    "start": "2027-05-20",
+    "end": "2027-05-23",
+    "city": "Krásná Lípa",
+    "region": "Ústecký kraj",
+    "country": "CZ",
+    "disc": [
+      "road_race"
+    ],
+    "source": "https://www.tourdefeminin.com/cz/",
+    "quote": "20. - 23. května 2027",
+    "action": "create",
+    "snapshot": "6",
+    "notes": "Confirmed organizer dates and UCI calendar. One complete stage race, no speculative stage records. 2027 stage routes, regulations and entry procedure not published; 2026 regulations and stages are not reused. Live UCI81001 confirms Women Elite / UCI2.2 stage race; stored verified classification.",
+    "registrationStatus": "not_published",
+    "categories": []
+  },
+  {
+    "key": "moravia",
+    "name": "Moravia Divide",
+    "start": "2027-05-28",
+    "end": "2027-06-03",
+    "city": "Javorník",
+    "region": "Olomoucký kraj",
+    "country": "CZ",
+    "disc": [
+      "mtb"
+    ],
+    "source": "https://moraviadivide.eu/md27/",
+    "quote": "MORAVIA DIVIDE 2027 | START: Friday 28.5.2026 at 8.15, from Javorník | Thursday, May 27. | Thursday 3.6., until 14.15 (150 hours).",
+    "action": "create",
+    "snapshot": "0",
+    "categories": [
+      {
+        "name": "Short route — přibližně 620 km",
+        "distanceKm": 620
+      },
+      {
+        "name": "Main route — přibližně 850 km",
+        "distanceKm": 850
+      }
+    ],
+    "opens": "2026-11-29T20:00:00+01:00",
+    "registrationStatus": "announced_not_open_old_2026_form",
+    "registration": "",
+    "notes": "Date is a documented correction inferred from the full 2027 schedule: Friday 28 May, Thursday 27 May presentation, Thursday 3 June finish welcome, exactly 150 hours. 2026 in START is a typo. 620 km ends at ATC Olšovec/Jedovnice; main ends Cyklosféra Břeclav. Official Czech mirror ultrabikers.eu/md27 still says 650 km; primary English page has 620 km in introduction AND RP3. Main elevation approx 13–14k m. Finish welcome deadline is not exclusion of later finishers. Stale registration form is deliberately not used as 2027 entry link.",
+    "conflict": "Official year typo; BezPodpory May29; 620 vs 650 also differs between official language sites.",
+    "otherSources": [
+      "https://ultrabikers.eu/md27/",
+      "https://moraviadivide.eu/registration/",
+      "https://bezpodpory.cz/bikepacking-a-ultra-cyklisticke-zavody-v-cesku-a-na-slovensku-2027/mtb/"
+    ]
+  },
+  {
+    "key": "kozovazy",
+    "name": "Tour de Kozovazy",
+    "start": "2027-06-05",
+    "end": "2027-06-05",
+    "city": "Kozovazy",
+    "region": "Středočeský kraj",
+    "country": "CZ",
+    "disc": [
+      "hill_climb",
+      "tt",
+      "road_race"
+    ],
+    "source": "https://www.tourdekozovazy.cz/",
+    "quote": "XXVI. ročník (5. červen 2027)",
+    "action": "create",
+    "snapshot": "4",
+    "registration": "https://www.tourdekozovazy.cz/#prihlaska",
+    "registrationStatus": "open_2027",
+    "categories": [
+      {
+        "name": "0. kategorie — 2018 a mladší, zkrácená trať",
+        "audience": "kids"
+      },
+      {
+        "name": "1. kategorie — 2012–2017",
+        "distanceKm": 0.91,
+        "audience": "youth"
+      },
+      {
+        "name": "2. kategorie — 1977–2011",
+        "distanceKm": 0.91,
+        "audience": "mixed"
+      },
+      {
+        "name": "3. kategorie — 1976 a starší",
+        "distanceKm": 0.91,
+        "audience": "adults"
+      }
+    ],
+    "notes": "One event with categories, no duplicate child event. Main course 910 m / 43 m; historical 960 m / 80 m is explicitly superseded by new measurement. Youngest shortened distance not published, left null. ITT cat2/3 14:15; mass starts cat0 15:10, cat1 15:20, cat2 15:35, cat3 15:50. Birth years preserved without converting to precise ages. Registration until June4 or on-site June5 12:30–14:00."
+  },
+  {
+    "key": "meandr",
+    "name": "Brdský Meandr",
+    "start": "2027-06-05",
+    "end": "2027-06-06",
+    "city": "Řevnice",
+    "region": "Středočeský kraj",
+    "country": "CZ",
+    "disc": [
+      "mtb"
+    ],
+    "source": "https://www.bike-meandr.cz/brdsky-meandr/",
+    "quote": "5. - 6. června 2027, Sklad_13 Dřevák Řevnice",
+    "action": "create",
+    "snapshot": "5",
+    "eventType": "ride",
+    "opens": "2027-01-01",
+    "registrationStatus": "announced_public_2027_01_01",
+    "notes": "Organizer describes an ultrabiking challenge / relaxed two-day bikepacking event. No verified timed competitive ranking. Stored using existing event_type=ride. 195 km is only secondary-source evidence, omitted from distance. Alumni reservations Nov11 2026, public Jan1 2027; time unspecified, capacity85. Registration form not yet published.",
+    "categories": []
+  },
+  {
+    "key": "racz",
+    "name": "Race Across Czechia",
+    "start": "2027-07-15",
+    "end": "2027-07-20",
+    "city": "Chodová Planá",
+    "region": "Plzeňský kraj",
+    "country": "CZ",
+    "disc": [
+      "gravel"
+    ],
+    "source": "https://raceacross.cz/racz27-info/",
+    "quote": "START: Thursday, July 15, 2027, at 8:00 a.m. from Chodovar brewery in Chodová Planá",
+    "action": "create",
+    "snapshot": "2",
+    "registration": "https://raceacross.cz/registration/",
+    "opens": "2026-11-29T20:15:00+01:00",
+    "closes": "2027-06-25",
+    "registrationStatus": "announced_not_open_conflicting_registration_header",
+    "categories": [
+      {
+        "name": "Short route — přibližně 800 km",
+        "distanceKm": 800
+      },
+      {
+        "name": "Full route — přibližně 1100 km",
+        "distanceKm": 1100
+      }
+    ],
+    "notes": "One event, two route categories. Full finish Javorový vrch near Třinec. Short endpoint unresolved: header says Jeseník, RP3/FIN says Penzion Rejvíz at820km; do not assert one exact endpoint. 130h personal welcome ends July20 18:00 (arithmetic confirms organizer am/pm typo). Registration announcement Sunday Nov29 20:15 interpreted as 2026, consistent weekday and same organizer UB30 explicit year; entry header Nov30 appears recycled from Sunday Nov30 2025. Pre-start Wednesday July15 is inconsistent with explicit Thursday July15 start; probable July14 remains unconfirmed, not published as date.",
+    "conflict": "Registration Nov29 vs Nov30; prestart Wednesday July15; short finish Jeseník/Rejvíz and 800/820km.",
+    "otherSources": [
+      "https://raceacross.cz/registration/",
+      "https://bezpodpory.cz/bikepacking-a-ultra-cyklisticke-zavody-v-cesku-a-na-slovensku-2027/gravel/"
+    ]
+  },
+  {
+    "key": "v4",
+    "name": "V4 2027",
+    "start": "2027-08-01",
+    "end": "2027-08-01",
+    "city": "Dolní Bousov",
+    "region": "Středočeský kraj",
+    "country": "CZ",
+    "disc": [
+      "gravel"
+    ],
+    "source": "https://bike-paradise.cz/",
+    "quote": "INFORMAČNÍ PANEL PRO ZÁVODY 2027 | 1.8.2027 V4 | Náměstí T.G.M. Dolní Bousov",
+    "action": "update",
+    "expectedId": "a73eb9a5-46de-4bbe-b9d7-1e141a026314",
+    "manual": true,
+    "registration": "https://bike-paradise.cz/registrace/",
+    "registrationStatus": "open_2027_form_link",
+    "categories": [
+      {
+        "name": "V4 — přibližně 1684 km",
+        "distanceKm": 1684,
+        "elevationM": 17400
+      }
+    ],
+    "notes": "Live browser and official web fetch verified. Existing hidden row reused and published, MTB corrected to gravel. Country is start country CZ; route traverses CZ/SK/HU/PL. End date unknown; existing one-day end value is start-day placeholder, not a finish claim. General mandatory equipment and unsupported rules confirmed. 2026 deadline paragraphs not reused. Display name expanded V4→V4 2027 because existing public-view junk-name guard hides two-character names; stableID/slug retained."
+  },
+  {
+    "key": "seven",
+    "name": "UB30 / UB20: Seven Wineyards Challenge",
+    "start": "2027-08-19",
+    "end": "2027-08-23",
+    "city": "Břeclav",
+    "region": "Jihomoravský kraj",
+    "country": "CZ",
+    "disc": [
+      "gravel"
+    ],
+    "source": "https://raceacross.cz/ub30-seven-wineyards/",
+    "quote": "DATE OF START: Thursday, August 19, 2027, at 8:30 AM",
+    "action": "create",
+    "snapshot": "seven",
+    "opens": "2026-11-29T20:30:00+01:00",
+    "registrationStatus": "announced_not_open_old_2026_form",
+    "categories": [
+      {
+        "name": "UB30 — přibližně 1200 km",
+        "distanceKm": 1200,
+        "elevationM": 9000
+      },
+      {
+        "name": "UB20 — přibližně 900 km",
+        "distanceKm": 900,
+        "elevationM": 7000
+      }
+    ],
+    "notes": "One event, route variants UB30 and UB20 preserved. Start/finish Cyklosféra Břeclav. Personal finish welcome until Aug23 22:00. Free-route optimum lengths approximate. Explicit opening Nov29 2026 20:30. /ub30-registration is still Twenty Lakes 2026, not linked as a current 2027 form. Event page remains authoritative entry-information link.",
+    "conflict": "BezPodpory UB20 800km/8000m and UB30 1200km/11000m conflict with official900/7000 and1200/9000. Registration URL still2026.",
+    "otherSources": [
+      "https://raceacross.cz/ub30-registration/",
+      "https://bezpodpory.cz/bikepacking-a-ultra-cyklisticke-zavody-v-cesku-a-na-slovensku-2027/gravel/"
+    ]
+  },
+  {
+    "key": "mtbo-tri-dvory",
+    "name": "Český pohár MTBO — Tři Dvory",
+    "start": "2027-04-17",
+    "end": "2027-04-18",
+    "city": "Tři Dvory",
+    "region": "Středočeský kraj",
+    "country": "CZ",
+    "disc": [
+      "mtb",
+      "mtbo"
+    ],
+    "source": "https://mtbo.ceskyorientak.cz/vyberove-rizeni-na-poradatele-cp-mtbo-2027-je-u-konce/",
+    "quote": "Kalendář ČP MTBO 2027 | 17.–18. 4. Tři Dvory",
+    "action": "create",
+    "snapshot": "mtbo-announcement",
+    "authority": "national_federation",
+    "registrationStatus": "not_published",
+    "categories": [
+      {
+        "name": "MČR sprint"
+      },
+      {
+        "name": "middle"
+      },
+      {
+        "name": "long"
+      }
+    ],
+    "notes": "Confirmed complete meeting; precise per-day schedule and entry/regulations not yet available, no guessed daily records. Organizer: Sporticus team (SPC). MTBO stored in disciplines alongside supported MTB family; current UI has no standalone MTBO filter. Tři Dvory bulletin preliminary Sprint+Middle Apr17, Long Apr18 is marked preliminary and not treated as final."
+  },
+  {
+    "key": "mtbo-nejdek",
+    "name": "Český pohár MTBO — Nejdek",
+    "start": "2027-05-22",
+    "end": "2027-05-23",
+    "city": "Nejdek",
+    "region": "Karlovarský kraj",
+    "country": "CZ",
+    "disc": [
+      "mtb",
+      "mtbo"
+    ],
+    "source": "https://mtbo.ceskyorientak.cz/vyberove-rizeni-na-poradatele-cp-mtbo-2027-je-u-konce/",
+    "quote": "Kalendář ČP MTBO 2027 | 22.–23. 5. Nejdek",
+    "action": "create",
+    "snapshot": "mtbo-announcement",
+    "authority": "national_federation",
+    "registrationStatus": "not_published",
+    "categories": [
+      {
+        "name": "long"
+      },
+      {
+        "name": "middle"
+      }
+    ],
+    "notes": "Confirmed complete meeting; precise per-day schedule and entry/regulations not yet available, no guessed daily records. Organizer: NEK (federation table code; later article uses NEJ). MTBO stored alongside MTB family; current UI has no standalone MTBO filter."
+  },
+  {
+    "key": "mtbo-mar-lazne",
+    "name": "Český pohár MTBO — Mariánské Lázně",
+    "start": "2027-06-19",
+    "end": "2027-06-20",
+    "city": "Mariánské Lázně",
+    "region": "Karlovarský kraj",
+    "country": "CZ",
+    "disc": [
+      "mtb",
+      "mtbo"
+    ],
+    "source": "https://mtbo.ceskyorientak.cz/vyberove-rizeni-na-poradatele-cp-mtbo-2027-je-u-konce/",
+    "quote": "Kalendář ČP MTBO 2027 | 19.–20. 6. Mariánské Lázně",
+    "action": "create",
+    "snapshot": "mtbo-announcement",
+    "authority": "national_federation",
+    "registrationStatus": "not_published",
+    "categories": [
+      {
+        "name": "sprint"
+      },
+      {
+        "name": "MČR štafety"
+      },
+      {
+        "name": "middle"
+      }
+    ],
+    "notes": "Confirmed complete meeting; precise per-day schedule and entry/regulations not yet available, no guessed daily records. Organizer: MLA + SMS Team Kladno (SKL). MTBO stored alongside MTB family; current UI has no standalone MTBO filter."
+  },
+  {
+    "key": "mtbo-plzen",
+    "name": "Český pohár MTBO — Plzeň",
+    "start": "2027-07-02",
+    "end": "2027-07-06",
+    "city": "Plzeň",
+    "region": "Plzeňský kraj",
+    "country": "CZ",
+    "disc": [
+      "mtb",
+      "mtbo"
+    ],
+    "source": "https://mtbo.ceskyorientak.cz/vyberove-rizeni-na-poradatele-cp-mtbo-2027-je-u-konce/",
+    "quote": "Kalendář ČP MTBO 2027 | 2.–6. 7. Plzeň",
+    "action": "create",
+    "snapshot": "mtbo-announcement",
+    "authority": "national_federation",
+    "registrationStatus": "not_published",
+    "categories": [
+      {
+        "name": "sprint"
+      },
+      {
+        "name": "middle"
+      },
+      {
+        "name": "long"
+      }
+    ],
+    "notes": "Confirmed complete meeting; precise per-day schedule and entry/regulations not yet available, no guessed daily records. Organizer: KOS Slavia Plzeň (VPM). MTBO stored alongside MTB family; current UI has no standalone MTBO filter."
+  },
+  {
+    "key": "mtbo-jedovnice",
+    "name": "Český pohár MTBO — Jedovnice",
+    "start": "2027-09-11",
+    "end": "2027-09-12",
+    "city": "Jedovnice",
+    "region": "Jihomoravský kraj",
+    "country": "CZ",
+    "disc": [
+      "mtb",
+      "mtbo"
+    ],
+    "source": "https://mtbo.ceskyorientak.cz/vyberove-rizeni-na-poradatele-cp-mtbo-2027-je-u-konce/",
+    "quote": "Kalendář ČP MTBO 2027 | 11.–12. 9. Jedovnice",
+    "action": "create",
+    "snapshot": "mtbo-announcement",
+    "authority": "national_federation",
+    "registrationStatus": "not_published",
+    "categories": [
+      {
+        "name": "MČR middle"
+      },
+      {
+        "name": "MČR long"
+      }
+    ],
+    "notes": "Confirmed complete meeting; precise per-day schedule and entry/regulations not yet available, no guessed daily records. Organizer: Tesla Brno (TBM). MTBO stored alongside MTB family; current UI has no standalone MTBO filter."
+  },
+  {
+    "key": "mtbo-vrchlabi",
+    "name": "Český pohár MTBO — Vrchlabí",
+    "start": "2027-10-02",
+    "end": "2027-10-03",
+    "city": "Vrchlabí",
+    "region": "Královéhradecký kraj",
+    "country": "CZ",
+    "disc": [
+      "mtb",
+      "mtbo"
+    ],
+    "source": "https://mtbo.ceskyorientak.cz/vyberove-rizeni-na-poradatele-cp-mtbo-2027-je-u-konce/",
+    "quote": "Kalendář ČP MTBO 2027 | 2.–3. 10. Vrchlabí",
+    "action": "create",
+    "snapshot": "mtbo-announcement",
+    "authority": "national_federation",
+    "registrationStatus": "not_published",
+    "categories": [
+      {
+        "name": "sprint"
+      },
+      {
+        "name": "middle"
+      },
+      {
+        "name": "MČR družstva"
+      }
+    ],
+    "notes": "Confirmed complete meeting; precise per-day schedule and entry/regulations not yet available, no guessed daily records. Organizer: Orienteering Adventure (OAV). MTBO stored alongside MTB family; current UI has no standalone MTBO filter."
+  },
+  {
+    "key": "emtbo",
+    "name": "Mistrovství Evropy MTBO — Hradec Králové",
+    "start": "2027-05-05",
+    "end": "2027-05-08",
+    "city": "Hradec Králové",
+    "region": "Královéhradecký kraj",
+    "country": "CZ",
+    "disc": [
+      "mtb",
+      "mtbo"
+    ],
+    "source": "https://emtboc2027.cz/en/programme/",
+    "quote": "Hradec Králové 5–8 May 2027",
+    "action": "create",
+    "snapshot": "emtbo-programme",
+    "registration": "https://eventor.orienteering.sport/Events/Show/8961",
+    "registrationStatus": "federation_entries_via_eventor",
+    "regulations": "https://eventor-iof-storage.orientering.se/eventdocuments/8961/b377e385-af7b-4d10-abe9-f21884bd9087/Bulletin%202.Pdf",
+    "categories": [
+      {
+        "name": "Sprint — 5.5.2027"
+      },
+      {
+        "name": "Middle — 6.5.2027"
+      },
+      {
+        "name": "Mixed relay / junior & youth relay — 7.5.2027"
+      },
+      {
+        "name": "Long — 8.5.2027"
+      }
+    ],
+    "notes": "One championship with elite/junior/youth categories, also World Cup round1. Organizer ČSOS with local organising committee led by Lukáš Chmelař. Centre Kemp Stříbrný rybník GPS50.20346,15.89233 in Bulletin2 Oct9 2026. Programme and Bulletin2 agree relay May7, long May8; supersedes older reversed coverage. Elite Eventor8961 and junior/youth8962. Team size deadline Mar7, names Apr25, final May4 noon. No model/training/arrival/departure imported as races.",
+    "conflict": "Older federation discipline order superseded by organizer programme and Bulletin2.",
+    "otherSources": [
+      "https://emtboc2027.cz/en/teams/",
+      "https://eventor.orienteering.sport/Events/Show/8962"
+    ]
+  },
+  {
+    "key": "krakonos",
+    "name": "CASIA Krakonošův cyklomaraton",
+    "start": "2027-06-12",
+    "end": "2027-06-12",
+    "city": "Trutnov",
+    "region": "Královéhradecký kraj",
+    "country": "CZ",
+    "disc": [
+      "road"
+    ],
+    "source": "https://krakonosuvcyklomaraton.cz/propozice/",
+    "quote": "Datum konání: sobota, 12. června 2027",
+    "action": "update",
+    "snapshot": "krak-regs",
+    "expectedId": "58a25cf9-06dd-47a1-91f8-a29b91c6ffed",
+    "mergeId": "134db97e-dd3d-4d2f-8f83-46d2227bf684",
+    "registration": "https://krakonosuvcyklomaraton.cz/registrace/",
+    "registrationStatus": "open_2027_sportsoft_3625",
+    "regulations": "https://krakonosuvcyklomaraton.cz/propozice/",
+    "categories": [
+      {
+        "name": "B — krátká trať, přibližně 86 km",
+        "distanceKm": 86
+      },
+      {
+        "name": "A — dlouhá trať, přibližně 135 km",
+        "distanceKm": 135
+      },
+      {
+        "name": "Dětské závody — 10:30–11:45",
+        "audience": "kids"
+      }
+    ],
+    "notes": "Correct June13→June12 on stable original ID. Audited merge of erroneous duplicate RR100.5km listing into original, source/redirect relationships preserved. Long10:00, short10:05; venue UFFO Náměstí Republiky999. 86/135km explicitly provisional pending police approval, category names say approximate; no precise children distance published.",
+    "conflict": "Existing June13 record and duplicate June12 RR100.5km; organizer confirms June12 and approximate86/135."
+  },
+  {
+    "key": "hradec",
+    "name": "Decathlon Cyklomaraton Hradec Králové",
+    "start": "2027-05-30",
+    "end": "2027-05-30",
+    "city": "Hradec Králové",
+    "region": "Královéhradecký kraj",
+    "country": "CZ",
+    "disc": [
+      "xcm"
+    ],
+    "source": "https://www.cyklomaratontour.cz/clanky/25-rocnik-decathlon-cyklomaratonu-opet-v-hradci-kralove-734.html",
+    "quote": "V neděli 30. května 2027",
+    "action": "unchanged",
+    "snapshot": "hradec",
+    "expectedId": "f1d40430-b0ae-4dcf-9b94-0288fd48e3b4",
+    "registrationStatus": "see_organizer",
+    "notes": "Existing date correct, record untouched as requested. Organizer30/60km, kids10:00 and main12:00 at Malšovická aréna. Children already separate NN KIDS RACE00862df3-deff-45d8-816b-13a72191e6b9, no new child record. Third-party May31 rejected.",
+    "conflict": "https://www.zavodynakole.cz/zavody/ says May31 vs organizer May30."
+  },
+  {
+    "key": "oremon",
+    "name": "Oremon Krušky Open",
+    "start": "2027-05-21",
+    "end": "2027-05-23",
+    "city": "Český Jiřetín",
+    "region": "Ústecký kraj",
+    "country": "CZ",
+    "disc": [
+      "gravel",
+      "mtb"
+    ],
+    "source": "https://oremon.cz/en/home_en/",
+    "quote": "The event starts on Friday, May 21, 2027, at 8:30 AM.",
+    "action": "create",
+    "browser": true,
+    "eventType": "ride",
+    "registration": "https://oremon.cz/en/registrace_en/",
+    "registrationStatus": "open_2027",
+    "categories": [
+      {
+        "name": "Okruh — přibližně 310 km",
+        "distanceKm": 310,
+        "elevationM": 5100
+      }
+    ],
+    "notes": "Explicitly noncompetitive bikepacking social ride, stored event_type=ride supported by existing app. Both live English home AND route pages now310km/5100m, matching Czech route page. Candidate322km/6068m is no longer present. Two official shortcuts; route approx. Registration open2027, capacity50.",
+    "otherSources": [
+      "https://oremon.cz/trasa/",
+      "https://oremon.cz/en/trasa_en/"
+    ]
+  },
+  {
+    "key": "lost",
+    "name": "Lost Ride",
+    "start": "2027-06-01",
+    "end": "",
+    "city": "",
+    "region": "",
+    "country": "CZ",
+    "disc": [
+      "gravel"
+    ],
+    "source": "https://lost-ride.cz/",
+    "quote": "the date is still under discussion and may move 1-2 days earlier or later.",
+    "action": "provisional",
+    "snapshot": "lost",
+    "expectedId": "ce93409c-87ee-4886-8ff9-5a07000b0dc0",
+    "registration": "https://lost-ride.cz/register",
+    "registrationStatus": "open_2027",
+    "notes": "Change existing scheduled/public→tbc/hidden and lock. Candidate June1 22:00 preserved only as provisional admin value; exact start/finish town unpublished. Distance800+ and12–18k elevation not exact. Start list confirms entries exist, does not confirm final date or venue."
+  },
+  {
+    "key": "dokola",
+    "name": "DoKola!",
+    "start": "2027-06-11",
+    "end": "2027-06-13",
+    "city": "Sedlejov",
+    "region": "Kraj Vysočina",
+    "country": "CZ",
+    "disc": [
+      "mtb"
+    ],
+    "source": "https://www.dokolamtb.cz/propozice/",
+    "quote": "11. 6. - 13. 6. 2027",
+    "action": "update",
+    "snapshot": "dokola-rules",
+    "expectedId": "532e5fd5-a1eb-4dc8-a4a4-2a4c66908641",
+    "registration": "https://www.dokolamtb.cz/registrace/",
+    "registrationStatus": "open_2027",
+    "regulations": "https://www.dokolamtb.cz/propozice/",
+    "categories": [
+      {
+        "name": "DoKola! — přibližně 400 km",
+        "distanceKm": 400
+      },
+      {
+        "name": "DoKolečka! — přibližně 200 km",
+        "distanceKm": 200
+      },
+      {
+        "name": "1/2 DoKolečka! — přibližně 100 km",
+        "distanceKm": 100
+      }
+    ],
+    "opens": "2026-09-01",
+    "closes": "2027-06-10T16:00:00+02:00",
+    "notes": "Existing ID reused, end June11→June13. Organizer coordinates49.2296292,15.4924747. FridayJune11 17:00 DoKola/DoKolečka; SaturdayJune12 08:00 DoKolečka/half. Existing hidden O DoKola! is generic about-page artifact, remains hidden, no automatic merge. Rules retain stale SundayJune7 in cutoff text, use explicit2027 dates and duration, do not copy June7. Running/walking/scooter categories excluded from cycling categories.",
+    "conflict": "BezPodpory390/180 vs official400/200/100. Rules stale SundayJune7 cutoff; header June11–13 authoritative."
+  },
+  {
+    "key": "roh",
+    "name": "RAAB FORCE Rohálovská 50ka 2027 - 18. ročník",
+    "start": "2027-05-01",
+    "end": "2027-05-01",
+    "city": "Prusinovice",
+    "region": "Zlínský kraj",
+    "country": "CZ",
+    "disc": [
+      "xcm"
+    ],
+    "source": "https://www.vesani.cz/propozice/",
+    "quote": "RAAB FORCE Rohálovská 50ka 2027 - 18. ročník | 1.5.2027 | Prusinovice",
+    "action": "update",
+    "snapshot": "vesani",
+    "expectedId": "72427d58-6a5b-4a97-860f-c80c77041d3b",
+    "registrationStatus": "2027_form_available_open_status_not_verified",
+    "notes": "Additional discovery already exists but lacked location. Official2027 regulations confirm May1 2027 Prusinovice and children from08:30. Existing RaceResult408156 form explicitly names2027; retained. April28 is late payment-on-site period, not opening of all entries; false opening cleared; closing Apr30 14:00 Europe/Prague."
+  },
+  {
+    "key": "may",
+    "name": "May Divide",
+    "start": "2027-05-01",
+    "end": "2027-05-01",
+    "city": "Buškovský mlýn",
+    "region": "",
+    "country": "CZ",
+    "disc": [
+      "mtb"
+    ],
+    "source": "https://bike-paradise.cz/",
+    "quote": "INFORMAČNÍ PANEL PRO ZÁVODY 2027",
+    "action": "unchanged",
+    "expectedId": "4276378e-40f6-44af-bc95-8f017f666ff1",
+    "registration": "https://bike-paradise.cz/registrace/",
+    "registrationStatus": "open_2027_form_link",
+    "notes": "Existing locked date matches official2027 panel; unchanged. Earlier2026 body distance/registration deadlines not reused. Trojmezí explicitly430km6100m and08:00; do not combine distinct dates sharing organizer URL."
+  },
+  {
+    "key": "troj",
+    "name": "TROJMEZÍ",
+    "start": "2027-07-07",
+    "end": "2027-07-07",
+    "city": "Dolní Bousov",
+    "region": "Středočeský kraj",
+    "country": "CZ",
+    "disc": [
+      "mtb"
+    ],
+    "source": "https://bike-paradise.cz/",
+    "quote": "INFORMAČNÍ PANEL PRO ZÁVODY 2027",
+    "action": "unchanged",
+    "expectedId": "9444658e-16f4-4498-ae02-3f34725a749c",
+    "registration": "https://bike-paradise.cz/registrace/",
+    "registrationStatus": "open_2027_form_link",
+    "notes": "Existing locked date matches official2027 panel; unchanged. Earlier2026 body distance/registration deadlines not reused. Trojmezí explicitly430km6100m and08:00; do not combine distinct dates sharing organizer URL."
+  },
+  {
+    "key": "bp",
+    "name": "Bike Paradise",
+    "start": "2027-08-21",
+    "end": "2027-08-21",
+    "city": "Máchalův mlýn",
+    "region": "",
+    "country": "CZ",
+    "disc": [
+      "mtb"
+    ],
+    "source": "https://bike-paradise.cz/",
+    "quote": "INFORMAČNÍ PANEL PRO ZÁVODY 2027",
+    "action": "unchanged",
+    "expectedId": "475f4e03-d0c9-4961-94f1-85a01476fead",
+    "registration": "https://bike-paradise.cz/registrace/",
+    "registrationStatus": "open_2027_form_link",
+    "notes": "Existing locked date matches official2027 panel; unchanged. Earlier2026 body distance/registration deadlines not reused. Trojmezí explicitly430km6100m and08:00; do not combine distinct dates sharing organizer URL."
+  },
+  {
+    "key": "half-bp",
+    "name": "Půl Paradise",
+    "start": "2027-08-21",
+    "end": "2027-08-21",
+    "city": "Máchalův mlýn",
+    "region": "",
+    "country": "CZ",
+    "disc": [
+      "mtb"
+    ],
+    "source": "https://bike-paradise.cz/",
+    "quote": "INFORMAČNÍ PANEL PRO ZÁVODY 2027",
+    "action": "unchanged",
+    "expectedId": "e8ded1c2-70c2-4614-ac7c-ba126971592e",
+    "registration": "https://bike-paradise.cz/registrace/",
+    "registrationStatus": "open_2027_form_link",
+    "notes": "Existing locked date matches official2027 panel; unchanged. Earlier2026 body distance/registration deadlines not reused. Trojmezí explicitly430km6100m and08:00; do not combine distinct dates sharing organizer URL."
+  },
+  {
+    "key": "p1",
+    "name": "Pražský MTB pohár — 1. kolo Motol XCC",
+    "start": "2027-03-26",
+    "end": "2027-03-26",
+    "city": "Praha",
+    "region": "Hlavní město Praha",
+    "country": "CZ",
+    "disc": [
+      "xcc"
+    ],
+    "source": "https://prahamtb.cz/?p=7288",
+    "quote": "Termíny ŠKODA Pražský MTB pohár 2027",
+    "action": "unchanged",
+    "snapshot": "prague-2027",
+    "expectedId": "a9d311b6-fe42-4568-9265-27e5cb66265c",
+    "registrationStatus": "not_published_2027",
+    "notes": "Organizer confirms existing locked date and venue, unchanged. No separate record for qualifying XCC TT or speculative July championship days. ediecyclingteam confirms same2027 dates."
+  },
+  {
+    "key": "p2",
+    "name": "Pražský MTB pohár — 2. kolo Motol XCO",
+    "start": "2027-03-27",
+    "end": "2027-03-27",
+    "city": "Praha",
+    "region": "Hlavní město Praha",
+    "country": "CZ",
+    "disc": [
+      "xco"
+    ],
+    "source": "https://prahamtb.cz/?p=7288",
+    "quote": "Termíny ŠKODA Pražský MTB pohár 2027",
+    "action": "unchanged",
+    "snapshot": "prague-2027",
+    "expectedId": "2922dfd2-b492-42a7-b16d-61520e24f5db",
+    "registrationStatus": "not_published_2027",
+    "notes": "Organizer confirms existing locked date and venue, unchanged. No separate record for qualifying XCC TT or speculative July championship days. ediecyclingteam confirms same2027 dates."
+  },
+  {
+    "key": "p3",
+    "name": "Pražský MTB pohár — 3. kolo Letňany/Kbely XCO",
+    "start": "2027-09-25",
+    "end": "2027-09-25",
+    "city": "Praha",
+    "region": "Hlavní město Praha",
+    "country": "CZ",
+    "disc": [
+      "xco"
+    ],
+    "source": "https://prahamtb.cz/?p=7288",
+    "quote": "Termíny ŠKODA Pražský MTB pohár 2027",
+    "action": "unchanged",
+    "snapshot": "prague-2027",
+    "expectedId": "6252575f-ecaf-4f4d-86f2-7244553dd135",
+    "registrationStatus": "not_published_2027",
+    "notes": "Organizer confirms existing locked date and venue, unchanged. No separate record for qualifying XCC TT or speculative July championship days. ediecyclingteam confirms same2027 dates."
+  },
+  {
+    "key": "p4",
+    "name": "Pražský MTB pohár — 4. kolo Letňany/Kbely XCO",
+    "start": "2027-09-26",
+    "end": "2027-09-26",
+    "city": "Praha",
+    "region": "Hlavní město Praha",
+    "country": "CZ",
+    "disc": [
+      "xco"
+    ],
+    "source": "https://prahamtb.cz/?p=7288",
+    "quote": "Termíny ŠKODA Pražský MTB pohár 2027",
+    "action": "unchanged",
+    "snapshot": "prague-2027",
+    "expectedId": "fc12e248-22dc-4e0c-8d7d-e6fd3fe9e0af",
+    "registrationStatus": "not_published_2027",
+    "notes": "Organizer confirms existing locked date and venue, unchanged. No separate record for qualifying XCC TT or speculative July championship days. ediecyclingteam confirms same2027 dates."
+  },
+  {
+    "key": "pmcr",
+    "name": "MČR MTB XCC/XCO — Praha — Traily Motol",
+    "start": "2027-07-16",
+    "end": "2027-07-18",
+    "city": "Praha",
+    "region": "Hlavní město Praha",
+    "country": "CZ",
+    "disc": [
+      "xcc",
+      "xco"
+    ],
+    "source": "https://prahamtb.cz/?p=7288",
+    "quote": "Termíny ŠKODA Pražský MTB pohár 2027",
+    "action": "unchanged",
+    "snapshot": "prague-2027",
+    "expectedId": "845dfe98-7911-43f2-8951-697e3644e710",
+    "registrationStatus": "not_published_2027",
+    "notes": "Organizer confirms existing locked date and venue, unchanged. No separate record for qualifying XCC TT or speculative July championship days. ediecyclingteam confirms same2027 dates."
+  },
+  {
+    "key": "cyklobrani",
+    "id": "13b431c4-84a9-4ab3-97b4-5e2d1a6d82e2",
+    "source": "https://www.cyklobrani.cz/o-zavodu/propozice-zavodu",
+    "quote": "Propozice závodu - dočasně neplatné. | Termín a místo | září 2027 | Místo startu a cíle | Bude oznámeno.",
+    "notes": "Existing locked September24 day is not a confirmed race day. Organizer says September only, temporary invalid rules; registration on Sep24/25 does not confirm race date. Preserve locked date in admin and set tbc/hidden pending official confirmation.",
+    "name": "Author Valtické Cyklobraní",
+    "start": "2027-09-24",
+    "end": "",
+    "city": "Valtice",
+    "region": "",
+    "country": "CZ",
+    "disc": [
+      "mtb",
+      "gravel"
+    ],
+    "expectedId": "13b431c4-84a9-4ab3-97b4-5e2d1a6d82e2",
+    "action": "provisional",
+    "registrationStatus": "not_verified_2027",
+    "conflict": "Existing locked September24 day is not a confirmed race day. Organizer says September only, temporary invalid rules; registration on Sep24/25 does not confirm race date. Preserve locked date in admin and set tbc/hidden pending official confirmation."
+  },
+  {
+    "key": "km-trophy",
+    "id": "b2ddfb26-1eb0-46c0-babe-7746d7cab7f4",
+    "source": "https://unlimitedcycling.cz/our-race",
+    "quote": "Závod 2026 je za námi | O ročníku 2027 vás budeme s předstihem informovat. | 15. srpna 2026",
+    "notes": "Public Aug15 2027 was recycled from2026. Keep historical candidate day only in admin, set tbc/hidden until2027 date announced.",
+    "name": "KM TRADING CZ trophy",
+    "start": "2027-08-15",
+    "end": "",
+    "city": "KM TRADING",
+    "region": "",
+    "country": "CZ",
+    "disc": [
+      "road_race"
+    ],
+    "expectedId": "b2ddfb26-1eb0-46c0-babe-7746d7cab7f4",
+    "action": "provisional",
+    "registrationStatus": "not_verified_2027",
+    "conflict": "Public Aug15 2027 was recycled from2026. Keep historical candidate day only in admin, set tbc/hidden until2027 date announced."
+  },
+  {
+    "key": "the-step",
+    "id": "0deee5af-b9d8-479c-a5b2-9b202a92a5f6",
+    "source": "https://www.finishers.com/en/event/the-step-czech-republic",
+    "quote": "Next event: Mid-June 2027",
+    "notes": "June1 is an invented month placeholder. Secondary alias likely L’Etape; do not merge until identity review against existingJune19 records. Keep as tbc/hidden.",
+    "name": "The Step Czech Republic",
+    "start": "2027-06-01",
+    "end": "",
+    "city": "Prague",
+    "region": "",
+    "country": "CZ",
+    "disc": [
+      "road"
+    ],
+    "expectedId": "0deee5af-b9d8-479c-a5b2-9b202a92a5f6",
+    "action": "provisional",
+    "registrationStatus": "not_verified_2027",
+    "conflict": "June1 is an invented month placeholder. Secondary alias likely L’Etape; do not merge until identity review against existingJune19 records. Keep as tbc/hidden."
+  },
+  {
+    "key": "fichtl",
+    "name": "Fichtl Cup Opatov2027",
+    "start": "2027-09-11",
+    "end": "2027-09-11",
+    "city": "Opatov u Třebíče",
+    "region": "Kraj Vysočina",
+    "country": "CZ",
+    "disc": [],
+    "source": "https://zavodnicasomira.cz/zavody/fichtl-cup-opatov/2027",
+    "action": "excluded",
+    "expectedId": "84d81a74-8b68-41c7-b651-c909f1a04de3",
+    "registrationStatus": "not_applicable",
+    "notes": "Official timing provider explicitly lists Motokros; not cycling."
+  },
+  {
+    "key": "roadstage-hk",
+    "name": "Road Stage Hradec Králové",
+    "start": "2027-09-11",
+    "end": "2027-09-11",
+    "city": "Hradec Králové",
+    "region": "Královéhradecký kraj",
+    "country": "CZ",
+    "disc": [
+      "road"
+    ],
+    "source": "https://www.roadstage.cz/hradec-kralove/kancelar-zavodu",
+    "expectedId": "f1b77dbb-3187-4bcc-9dcb-4f707dea4cdb",
+    "action": "update",
+    "registrationStatus": "see_official_registration",
+    "notes": "Existing oldest ID retained; three public rows consolidated via recoverable merge; canonical event name corrected."
+  },
+  {
+    "key": "south",
+    "name": "Okolo jižních Čech / Tour of South Bohemia",
+    "start": "2027-09-09",
+    "end": "2027-09-12",
+    "city": "",
+    "region": "Jihočeský kraj",
+    "country": "CZ",
+    "disc": [
+      "road_race"
+    ],
+    "source": "https://www.uci.org/competition-details/2027/ROA/81153",
+    "expectedId": "3226e52e-8105-4f49-be0d-0d4afdc2af30",
+    "action": "create",
+    "registrationStatus": "not_published_2027",
+    "notes": "Additional independently discovered missing2027 edition confirmed by live UCI. Organizer homepage still2026, no old stages, entry links or host towns copied. Exact2027 stage venues not yet published: regional location only, coordinates deliberately null, geocoding pending, no invented map pin. UCI address sídliště Pod kasárny may be organizer address and is not assumed to be a start.",
+    "quote": "Okolo jižních Čech / Tour of South Bohemia | 09 Sep - 12 Sep 2027 | 2.2 - Stages - Class 2 | INDIVIDUAL ROAD RACE MEN ELITE"
+  },
+  {
+    "key": "mulda",
+    "name": "Soběšická Mulda 2027",
+    "start": "2027-10-10",
+    "end": "2027-10-10",
+    "city": "Brno",
+    "region": "",
+    "country": "CZ",
+    "disc": [
+      "xco"
+    ],
+    "source": "https://www.czex.cz/mulda/",
+    "quote": "Příští Mulda bude v neděli 10.10.2027.",
+    "snapshot": "catalogue-4",
+    "expectedId": "0ef7b2ec-d881-42e9-b5e9-5de9184a47d4",
+    "action": "unchanged",
+    "registrationStatus": "not_reverified",
+    "notes": "Additional organizer-source check: exact2027 date matches existing public record; no data change, no duplicate. Other fields not asserted as newly verified."
+  },
+  {
+    "key": "epic",
+    "name": "Gravel Epic Šternberk",
+    "start": "2027-05-22",
+    "end": "2027-05-22",
+    "city": "Dalov",
+    "region": "",
+    "country": "CZ",
+    "disc": [
+      "gravel"
+    ],
+    "source": "https://www.gravel-epic.cz/",
+    "quote": "22. 5. 2027",
+    "snapshot": "catalogue-33",
+    "expectedId": "b1a3f407-8022-48c1-829b-331f71bf822c",
+    "action": "unchanged",
+    "registrationStatus": "not_reverified",
+    "notes": "Additional organizer-source check: exact2027 date matches existing public record; no data change, no duplicate. Other fields not asserted as newly verified."
+  },
+  {
+    "key": "truba",
+    "name": "Časovka na Truba",
+    "start": "2027-09-28",
+    "end": "2027-09-28",
+    "city": "Český Brod",
+    "region": "",
+    "country": "CZ",
+    "disc": [
+      "tt"
+    ],
+    "source": "https://casovkanatruba.cz",
+    "quote": "28. 9. 2027",
+    "snapshot": "catalogue-39",
+    "expectedId": "cb1cb3f1-35a1-47ea-a1a7-7c019cfeb456",
+    "action": "unchanged",
+    "registrationStatus": "not_reverified",
+    "notes": "Additional organizer-source check: exact2027 date matches existing public record; no data change, no duplicate. Other fields not asserted as newly verified."
+  },
+  {
+    "key": "rusava",
+    "name": "Rusavská 50",
+    "start": "2027-06-12",
+    "end": "2027-06-12",
+    "city": "Rusava",
+    "region": "",
+    "country": "CZ",
+    "disc": [
+      "xcm"
+    ],
+    "source": "https://www.rusavska50.cz/propozice",
+    "quote": "12. 6. 2027",
+    "snapshot": "catalogue-40",
+    "expectedId": "cc9dace7-377e-4b37-9f5e-d53a3efd0ae1",
+    "action": "unchanged",
+    "registrationStatus": "not_reverified",
+    "notes": "Additional organizer-source check: exact2027 date matches existing public record; no data change, no duplicate. Other fields not asserted as newly verified."
+  },
+  {
+    "key": "porubajk",
+    "name": "Porubajk 2027",
+    "start": "2027-04-24",
+    "end": "2027-04-24",
+    "city": "Ostrava-Poruba",
+    "region": "",
+    "country": "CZ",
+    "disc": [
+      "mtb",
+      "gravel"
+    ],
+    "source": "https://www.porubajk.cz/",
+    "quote": "24. dubna 2027",
+    "snapshot": "catalogue-42",
+    "expectedId": "d4e1a5a0-6a5d-4d39-aea5-076b30672774",
+    "action": "unchanged",
+    "registrationStatus": "not_reverified",
+    "notes": "Additional organizer-source check: exact2027 date matches existing public record; no data change, no duplicate. Other fields not asserted as newly verified."
+  },
+  {
+    "key": "junior",
+    "name": "Junior Cup",
+    "start": "2027-08-22",
+    "end": "2027-08-22",
+    "city": "Hradec Králové",
+    "region": "",
+    "country": "CZ",
+    "disc": [
+      "xco"
+    ],
+    "source": "https://www.juniorcup.net/",
+    "quote": "22. srpna 2027",
+    "snapshot": "catalogue-45",
+    "expectedId": "da9a3ca6-323f-4e8c-a294-d4ec567e652a",
+    "action": "unchanged",
+    "registrationStatus": "not_reverified",
+    "notes": "Additional organizer-source check: exact2027 date matches existing public record; no data change, no duplicate. Other fields not asserted as newly verified."
+  },
+  {
+    "key": "kral",
+    "name": "AUTHOR Král Šumavy",
+    "start": "2027-05-29",
+    "end": "2027-05-29",
+    "city": "Klatovy",
+    "region": "",
+    "country": "CZ",
+    "disc": [
+      "xcm"
+    ],
+    "source": "https://www.authorkralsumavy.cz/",
+    "quote": "AUTHOR KRÁL ŠUMAVY MTB29.5.2027",
+    "snapshot": "catalogue-50",
+    "expectedId": "f04ffb9f-5e81-4470-8dac-6410bfd0394f",
+    "action": "unchanged",
+    "registrationStatus": "not_reverified",
+    "notes": "Additional organizer-source check: exact2027 date matches existing public record; no data change, no duplicate. Other fields not asserted as newly verified."
+  }
+]

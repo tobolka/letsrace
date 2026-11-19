@@ -1,0 +1,16 @@
+{
+  "commit": "aa726f3cc3f84680bb19de91c920c7083e163241",
+  "deploymentId": "dpl_HLqWKJyMk866EAr2X1m2U1LnhSpb",
+  "deploymentUrl": "https://letsrace-3wts5bnwx-tobolkas-projects.vercel.app",
+  "production": "https://letsrace.cz",
+  "state": "READY",
+  "liveReleaseNotes": {
+    "winspace": true,
+    "mamut": true
+  },
+  "sourceEntriesChecked": 95,
+  "publicRaceSourceEntriesVerified": 75,
+  "outsideCurrentCountriesHidden": 15,
+  "excludedOrUnresolved": 4,
+  "publicPageChecks": 10
+}

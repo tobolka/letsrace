@@ -1,0 +1,1307 @@
+[
+  {
+    "index": 3,
+    "name": "okros Topoľčianky 5. kolo: NoLimited cup v CX (UCI C2) Cyklokros Topoľčianky November 2026 Dátum Náz",
+    "url": "https://www.cyklistikaszc.sk/kalendar/plagat/plaga3b38c5824dbbf14042b76f400.pdf",
+    "runs": {
+      "baseline": {
+        "index": 3,
+        "name": "okros Topoľčianky 5. kolo: NoLimited cup v CX (UCI C2) Cyklokros Topoľčianky November 2026 Dátum Náz",
+        "page_range": [
+          1,
+          1
+        ],
+        "ocr_pages": [
+          1
+        ],
+        "seconds": 66.744243416,
+        "characters": 449,
+        "note": "Current unpdf + Vision; existing OCR cache may apply."
+      },
+      "rapid": {
+        "index": 3,
+        "name": "okros Topoľčianky 5. kolo: NoLimited cup v CX (UCI C2) Cyklokros Topoľčianky November 2026 Dátum Náz",
+        "url": "https://www.cyklistikaszc.sk/kalendar/plagat/plaga3b38c5824dbbf14042b76f400.pdf",
+        "mode": "rapid",
+        "docling": "2.148.0",
+        "page_range": [
+          1,
+          1
+        ],
+        "ocr_options": {
+          "mode": "default",
+          "lang": [
+            "en"
+          ],
+          "scale": 3.0,
+          "replace_broken_text_layer": false,
+          "backend": "onnxruntime",
+          "model_size": "small",
+          "text_score": 0.5,
+          "use_det": null,
+          "use_cls": null,
+          "detect_orientation": false,
+          "use_rec": null,
+          "print_verbose": false,
+          "det_model_path": null,
+          "cls_model_path": null,
+          "rec_model_path": null,
+          "rec_keys_path": null,
+          "rec_font_path": null,
+          "font_path": null,
+          "rapidocr_params": {},
+          "force_full_page_ocr": false
+        },
+        "device": "cpu",
+        "threads": 4,
+        "status": "ConversionStatus.SUCCESS",
+        "errors": [],
+        "characters": 365,
+        "tables": 0,
+        "pages": 1,
+        "seconds": 83.551
+      },
+      "vision-full": {
+        "index": 3,
+        "name": "okros Topoľčianky 5. kolo: NoLimited cup v CX (UCI C2) Cyklokros Topoľčianky November 2026 Dátum Náz",
+        "url": "https://www.cyklistikaszc.sk/kalendar/plagat/plaga3b38c5824dbbf14042b76f400.pdf",
+        "mode": "vision-full",
+        "docling": "2.148.0",
+        "page_range": [
+          1,
+          1
+        ],
+        "ocr_options": {
+          "mode": "full_page",
+          "lang": [
+            "cs-CZ",
+            "pl-PL",
+            "de-DE",
+            "it-IT",
+            "fr-FR",
+            "en-US"
+          ],
+          "scale": 3.0,
+          "replace_broken_text_layer": false,
+          "recognition": "accurate",
+          "framework": "vision",
+          "force_full_page_ocr": true
+        },
+        "device": "cpu",
+        "threads": 4,
+        "status": "ConversionStatus.SUCCESS",
+        "errors": [],
+        "characters": 366,
+        "tables": 0,
+        "pages": 1,
+        "seconds": 74.827
+      }
+    }
+  },
+  {
+    "index": 15,
+    "name": "Puchar Polski w kolarstwie torowym dla zawodników kat. Junior i Elita",
+    "url": "https://pzkol.pl/pobierz/14451/s/14451_regulamin_i_program_zawodowpuchar.pdf",
+    "runs": {
+      "baseline": {
+        "index": 15,
+        "name": "Puchar Polski w kolarstwie torowym dla zawodników kat. Junior i Elita",
+        "page_range": [
+          1,
+          3
+        ],
+        "ocr_pages": [
+          1,
+          2,
+          3
+        ],
+        "seconds": 0.9433948749999982,
+        "characters": 1970,
+        "note": "Current unpdf + Vision; existing OCR cache may apply."
+      },
+      "rapid": {
+        "index": 15,
+        "name": "Puchar Polski w kolarstwie torowym dla zawodników kat. Junior i Elita",
+        "url": "https://pzkol.pl/pobierz/14451/s/14451_regulamin_i_program_zawodowpuchar.pdf",
+        "mode": "rapid",
+        "docling": "2.148.0",
+        "page_range": [
+          1,
+          3
+        ],
+        "ocr_options": {
+          "mode": "default",
+          "lang": [
+            "en"
+          ],
+          "scale": 3.0,
+          "replace_broken_text_layer": false,
+          "backend": "onnxruntime",
+          "model_size": "small",
+          "text_score": 0.5,
+          "use_det": null,
+          "use_cls": null,
+          "detect_orientation": false,
+          "use_rec": null,
+          "print_verbose": false,
+          "det_model_path": null,
+          "cls_model_path": null,
+          "rec_model_path": null,
+          "rec_keys_path": null,
+          "rec_font_path": null,
+          "font_path": null,
+          "rapidocr_params": {},
+          "force_full_page_ocr": false
+        },
+        "device": "cpu",
+        "threads": 4,
+        "status": "ConversionStatus.SUCCESS",
+        "errors": [],
+        "characters": 5867,
+        "tables": 2,
+        "pages": 3,
+        "seconds": 11.628
+      },
+      "vision-full": {
+        "index": 15,
+        "name": "Puchar Polski w kolarstwie torowym dla zawodników kat. Junior i Elita",
+        "url": "https://pzkol.pl/pobierz/14451/s/14451_regulamin_i_program_zawodowpuchar.pdf",
+        "mode": "vision-full",
+        "docling": "2.148.0",
+        "page_range": [
+          1,
+          3
+        ],
+        "ocr_options": {
+          "mode": "full_page",
+          "lang": [
+            "cs-CZ",
+            "pl-PL",
+            "de-DE",
+            "it-IT",
+            "fr-FR",
+            "en-US"
+          ],
+          "scale": 3.0,
+          "replace_broken_text_layer": false,
+          "recognition": "accurate",
+          "framework": "vision",
+          "force_full_page_ocr": true
+        },
+        "device": "cpu",
+        "threads": 4,
+        "status": "ConversionStatus.SUCCESS",
+        "errors": [],
+        "characters": 6003,
+        "tables": 2,
+        "pages": 3,
+        "seconds": 3.733
+      }
+    }
+  },
+  {
+    "index": 22,
+    "name": "Ogólnopolski Wyścig w Kolarstwie Przełajowym o Puchar Burmistrza Miasta Słubice",
+    "url": "https://pzkol.pl/pobierz/14458/s/14458_regulaminogolnopolski_wyscig_w_ko.pdf",
+    "runs": {
+      "baseline": {
+        "index": 22,
+        "name": "Ogólnopolski Wyścig w Kolarstwie Przełajowym o Puchar Burmistrza Miasta Słubice",
+        "page_range": [
+          1,
+          7
+        ],
+        "ocr_pages": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "seconds": 1.5562882910000044,
+        "characters": 4694,
+        "note": "Current unpdf + Vision; existing OCR cache may apply."
+      },
+      "rapid": {
+        "index": 22,
+        "name": "Ogólnopolski Wyścig w Kolarstwie Przełajowym o Puchar Burmistrza Miasta Słubice",
+        "url": "https://pzkol.pl/pobierz/14458/s/14458_regulaminogolnopolski_wyscig_w_ko.pdf",
+        "mode": "rapid",
+        "docling": "2.148.0",
+        "page_range": [
+          1,
+          7
+        ],
+        "ocr_options": {
+          "mode": "default",
+          "lang": [
+            "en"
+          ],
+          "scale": 3.0,
+          "replace_broken_text_layer": false,
+          "backend": "onnxruntime",
+          "model_size": "small",
+          "text_score": 0.5,
+          "use_det": null,
+          "use_cls": null,
+          "detect_orientation": false,
+          "use_rec": null,
+          "print_verbose": false,
+          "det_model_path": null,
+          "cls_model_path": null,
+          "rec_model_path": null,
+          "rec_keys_path": null,
+          "rec_font_path": null,
+          "font_path": null,
+          "rapidocr_params": {},
+          "force_full_page_ocr": false
+        },
+        "device": "cpu",
+        "threads": 4,
+        "status": "ConversionStatus.SUCCESS",
+        "errors": [],
+        "characters": 11317,
+        "tables": 3,
+        "pages": 7,
+        "seconds": 23.86
+      },
+      "vision-full": {
+        "index": 22,
+        "name": "Ogólnopolski Wyścig w Kolarstwie Przełajowym o Puchar Burmistrza Miasta Słubice",
+        "url": "https://pzkol.pl/pobierz/14458/s/14458_regulaminogolnopolski_wyscig_w_ko.pdf",
+        "mode": "vision-full",
+        "docling": "2.148.0",
+        "page_range": [
+          1,
+          7
+        ],
+        "ocr_options": {
+          "mode": "full_page",
+          "lang": [
+            "cs-CZ",
+            "pl-PL",
+            "de-DE",
+            "it-IT",
+            "fr-FR",
+            "en-US"
+          ],
+          "scale": 3.0,
+          "replace_broken_text_layer": false,
+          "recognition": "accurate",
+          "framework": "vision",
+          "force_full_page_ocr": true
+        },
+        "device": "cpu",
+        "threads": 4,
+        "status": "ConversionStatus.SUCCESS",
+        "errors": [],
+        "characters": 11757,
+        "tables": 3,
+        "pages": 7,
+        "seconds": 4.535
+      }
+    }
+  },
+  {
+    "index": 25,
+    "name": "XCO-NRW / Schüler-Cup — Haltern am See",
+    "url": "https://www.xco-nrw-cup.de/generalausschreibung2026.pdf",
+    "runs": {
+      "baseline": {
+        "index": 25,
+        "name": "XCO-NRW / Schüler-Cup — Haltern am See",
+        "page_range": [
+          4,
+          4
+        ],
+        "ocr_pages": [],
+        "seconds": 0.19478899999998975,
+        "characters": 2123,
+        "note": "Current unpdf + Vision; existing OCR cache may apply."
+      },
+      "rapid": {
+        "index": 25,
+        "name": "XCO-NRW / Schüler-Cup — Haltern am See",
+        "url": "https://www.xco-nrw-cup.de/generalausschreibung2026.pdf",
+        "mode": "rapid",
+        "docling": "2.148.0",
+        "page_range": [
+          4,
+          4
+        ],
+        "ocr_options": {
+          "mode": "default",
+          "lang": [
+            "en"
+          ],
+          "scale": 3.0,
+          "replace_broken_text_layer": false,
+          "backend": "onnxruntime",
+          "model_size": "small",
+          "text_score": 0.5,
+          "use_det": null,
+          "use_cls": null,
+          "detect_orientation": false,
+          "use_rec": null,
+          "print_verbose": false,
+          "det_model_path": null,
+          "cls_model_path": null,
+          "rec_model_path": null,
+          "rec_keys_path": null,
+          "rec_font_path": null,
+          "font_path": null,
+          "rapidocr_params": {},
+          "force_full_page_ocr": false
+        },
+        "device": "cpu",
+        "threads": 4,
+        "status": "ConversionStatus.SUCCESS",
+        "errors": [],
+        "characters": 2141,
+        "tables": 0,
+        "pages": 1,
+        "seconds": 1.33
+      },
+      "vision-full": {
+        "index": 25,
+        "name": "XCO-NRW / Schüler-Cup — Haltern am See",
+        "url": "https://www.xco-nrw-cup.de/generalausschreibung2026.pdf",
+        "mode": "vision-full",
+        "docling": "2.148.0",
+        "page_range": [
+          4,
+          4
+        ],
+        "ocr_options": {
+          "mode": "full_page",
+          "lang": [
+            "cs-CZ",
+            "pl-PL",
+            "de-DE",
+            "it-IT",
+            "fr-FR",
+            "en-US"
+          ],
+          "scale": 3.0,
+          "replace_broken_text_layer": false,
+          "recognition": "accurate",
+          "framework": "vision",
+          "force_full_page_ocr": true
+        },
+        "device": "cpu",
+        "threads": 4,
+        "status": "ConversionStatus.SUCCESS",
+        "errors": [],
+        "characters": 2133,
+        "tables": 0,
+        "pages": 1,
+        "seconds": 0.758
+      }
+    }
+  },
+  {
+    "index": 28,
+    "name": "ŠKODA maratón Slovenský raj a M SR MTB XCM",
+    "url": "https://www.cyklistikaszc.sk/kalendar/plagat/plaga6b44b6d472094b3652b70982c.pdf",
+    "runs": {
+      "baseline": {
+        "index": 28,
+        "name": "ŠKODA maratón Slovenský raj a M SR MTB XCM",
+        "page_range": [
+          1,
+          1
+        ],
+        "ocr_pages": [
+          1
+        ],
+        "seconds": 0.40127629100000195,
+        "characters": 595,
+        "note": "Current unpdf + Vision; existing OCR cache may apply."
+      },
+      "rapid": {
+        "index": 28,
+        "name": "ŠKODA maratón Slovenský raj a M SR MTB XCM",
+        "url": "https://www.cyklistikaszc.sk/kalendar/plagat/plaga6b44b6d472094b3652b70982c.pdf",
+        "mode": "rapid",
+        "docling": "2.148.0",
+        "page_range": [
+          1,
+          1
+        ],
+        "ocr_options": {
+          "mode": "default",
+          "lang": [
+            "en"
+          ],
+          "scale": 3.0,
+          "replace_broken_text_layer": false,
+          "backend": "onnxruntime",
+          "model_size": "small",
+          "text_score": 0.5,
+          "use_det": null,
+          "use_cls": null,
+          "detect_orientation": false,
+          "use_rec": null,
+          "print_verbose": false,
+          "det_model_path": null,
+          "cls_model_path": null,
+          "rec_model_path": null,
+          "rec_keys_path": null,
+          "rec_font_path": null,
+          "font_path": null,
+          "rapidocr_params": {},
+          "force_full_page_ocr": false
+        },
+        "device": "cpu",
+        "threads": 4,
+        "status": "ConversionStatus.SUCCESS",
+        "errors": [],
+        "characters": 63,
+        "tables": 0,
+        "pages": 1,
+        "seconds": 2.13
+      },
+      "vision-full": {
+        "index": 28,
+        "name": "ŠKODA maratón Slovenský raj a M SR MTB XCM",
+        "url": "https://www.cyklistikaszc.sk/kalendar/plagat/plaga6b44b6d472094b3652b70982c.pdf",
+        "mode": "vision-full",
+        "docling": "2.148.0",
+        "page_range": [
+          1,
+          1
+        ],
+        "ocr_options": {
+          "mode": "full_page",
+          "lang": [
+            "cs-CZ",
+            "pl-PL",
+            "de-DE",
+            "it-IT",
+            "fr-FR",
+            "en-US"
+          ],
+          "scale": 3.0,
+          "replace_broken_text_layer": false,
+          "recognition": "accurate",
+          "framework": "vision",
+          "force_full_page_ocr": true
+        },
+        "device": "cpu",
+        "threads": 4,
+        "status": "ConversionStatus.SUCCESS",
+        "errors": [],
+        "characters": 46,
+        "tables": 0,
+        "pages": 1,
+        "seconds": 1.687
+      }
+    }
+  },
+  {
+    "index": 29,
+    "name": "VII Ogólnopolski wyścig w kolarstwie przełajowym \"Moskava Cyclocross\" o puchar burmistrza miasta środa wielkopolska",
+    "url": "https://pzkol.pl/pobierz/14485/s/14485_regulamin_zawodowvii_ogolnopolski.pdf",
+    "runs": {
+      "baseline": {
+        "index": 29,
+        "name": "VII Ogólnopolski wyścig w kolarstwie przełajowym \"Moskava Cyclocross\" o puchar burmistrza miasta środa wielkopolska",
+        "page_range": [
+          1,
+          5
+        ],
+        "ocr_pages": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "seconds": 1.1001396660000027,
+        "characters": 2032,
+        "note": "Current unpdf + Vision; existing OCR cache may apply."
+      },
+      "rapid": {
+        "index": 29,
+        "name": "VII Ogólnopolski wyścig w kolarstwie przełajowym \"Moskava Cyclocross\" o puchar burmistrza miasta środa wielkopolska",
+        "url": "https://pzkol.pl/pobierz/14485/s/14485_regulamin_zawodowvii_ogolnopolski.pdf",
+        "mode": "rapid",
+        "docling": "2.148.0",
+        "page_range": [
+          1,
+          5
+        ],
+        "ocr_options": {
+          "mode": "default",
+          "lang": [
+            "en"
+          ],
+          "scale": 3.0,
+          "replace_broken_text_layer": false,
+          "backend": "onnxruntime",
+          "model_size": "small",
+          "text_score": 0.5,
+          "use_det": null,
+          "use_cls": null,
+          "detect_orientation": false,
+          "use_rec": null,
+          "print_verbose": false,
+          "det_model_path": null,
+          "cls_model_path": null,
+          "rec_model_path": null,
+          "rec_keys_path": null,
+          "rec_font_path": null,
+          "font_path": null,
+          "rapidocr_params": {},
+          "force_full_page_ocr": false
+        },
+        "device": "cpu",
+        "threads": 4,
+        "status": "ConversionStatus.SUCCESS",
+        "errors": [],
+        "characters": 12399,
+        "tables": 4,
+        "pages": 5,
+        "seconds": 16.767
+      },
+      "vision-full": {
+        "index": 29,
+        "name": "VII Ogólnopolski wyścig w kolarstwie przełajowym \"Moskava Cyclocross\" o puchar burmistrza miasta środa wielkopolska",
+        "url": "https://pzkol.pl/pobierz/14485/s/14485_regulamin_zawodowvii_ogolnopolski.pdf",
+        "mode": "vision-full",
+        "docling": "2.148.0",
+        "page_range": [
+          1,
+          5
+        ],
+        "ocr_options": {
+          "mode": "full_page",
+          "lang": [
+            "cs-CZ",
+            "pl-PL",
+            "de-DE",
+            "it-IT",
+            "fr-FR",
+            "en-US"
+          ],
+          "scale": 3.0,
+          "replace_broken_text_layer": false,
+          "recognition": "accurate",
+          "framework": "vision",
+          "force_full_page_ocr": true
+        },
+        "device": "cpu",
+        "threads": 4,
+        "status": "ConversionStatus.SUCCESS",
+        "errors": [],
+        "characters": 12689,
+        "tables": 4,
+        "pages": 5,
+        "seconds": 6.61
+      }
+    }
+  },
+  {
+    "index": 30,
+    "name": "8. kolo Slovenský pohár BMX Racing",
+    "url": "https://www.cyklistikaszc.sk/kalendar/propozicie/propo112b872b91dd78eb8aeeb0163.pdf",
+    "runs": {
+      "baseline": {
+        "index": 30,
+        "name": "8. kolo Slovenský pohár BMX Racing",
+        "page_range": [
+          1,
+          2
+        ],
+        "ocr_pages": [
+          1,
+          2
+        ],
+        "seconds": 0.6172669580000074,
+        "characters": 3071,
+        "note": "Current unpdf + Vision; existing OCR cache may apply."
+      },
+      "rapid": {
+        "index": 30,
+        "name": "8. kolo Slovenský pohár BMX Racing",
+        "url": "https://www.cyklistikaszc.sk/kalendar/propozicie/propo112b872b91dd78eb8aeeb0163.pdf",
+        "mode": "rapid",
+        "docling": "2.148.0",
+        "page_range": [
+          1,
+          2
+        ],
+        "ocr_options": {
+          "mode": "default",
+          "lang": [
+            "en"
+          ],
+          "scale": 3.0,
+          "replace_broken_text_layer": false,
+          "backend": "onnxruntime",
+          "model_size": "small",
+          "text_score": 0.5,
+          "use_det": null,
+          "use_cls": null,
+          "detect_orientation": false,
+          "use_rec": null,
+          "print_verbose": false,
+          "det_model_path": null,
+          "cls_model_path": null,
+          "rec_model_path": null,
+          "rec_keys_path": null,
+          "rec_font_path": null,
+          "font_path": null,
+          "rapidocr_params": {},
+          "force_full_page_ocr": false
+        },
+        "device": "cpu",
+        "threads": 4,
+        "status": "ConversionStatus.SUCCESS",
+        "errors": [],
+        "characters": 3341,
+        "tables": 0,
+        "pages": 2,
+        "seconds": 7.46
+      },
+      "vision-full": {
+        "index": 30,
+        "name": "8. kolo Slovenský pohár BMX Racing",
+        "url": "https://www.cyklistikaszc.sk/kalendar/propozicie/propo112b872b91dd78eb8aeeb0163.pdf",
+        "mode": "vision-full",
+        "docling": "2.148.0",
+        "page_range": [
+          1,
+          2
+        ],
+        "ocr_options": {
+          "mode": "full_page",
+          "lang": [
+            "cs-CZ",
+            "pl-PL",
+            "de-DE",
+            "it-IT",
+            "fr-FR",
+            "en-US"
+          ],
+          "scale": 3.0,
+          "replace_broken_text_layer": false,
+          "recognition": "accurate",
+          "framework": "vision",
+          "force_full_page_ocr": true
+        },
+        "device": "cpu",
+        "threads": 4,
+        "status": "ConversionStatus.SUCCESS",
+        "errors": [],
+        "characters": 3339,
+        "tables": 0,
+        "pages": 2,
+        "seconds": 1.817
+      }
+    }
+  },
+  {
+    "index": 41,
+    "name": "M SR Selce - XCO, XCC",
+    "url": "https://www.cyklistikaszc.sk/kalendar/plagat/majstf2bd8ce2e5007ef77e5de6bdf.pdf",
+    "runs": {
+      "baseline": {
+        "index": 41,
+        "name": "M SR Selce - XCO, XCC",
+        "page_range": [
+          1,
+          1
+        ],
+        "ocr_pages": [],
+        "seconds": 0.0335522079999937,
+        "characters": 514,
+        "note": "Current unpdf + Vision; existing OCR cache may apply."
+      },
+      "rapid": {
+        "index": 41,
+        "name": "M SR Selce - XCO, XCC",
+        "url": "https://www.cyklistikaszc.sk/kalendar/plagat/majstf2bd8ce2e5007ef77e5de6bdf.pdf",
+        "mode": "rapid",
+        "docling": "2.148.0",
+        "page_range": [
+          1,
+          1
+        ],
+        "ocr_options": {
+          "mode": "default",
+          "lang": [
+            "en"
+          ],
+          "scale": 3.0,
+          "replace_broken_text_layer": false,
+          "backend": "onnxruntime",
+          "model_size": "small",
+          "text_score": 0.5,
+          "use_det": null,
+          "use_cls": null,
+          "detect_orientation": false,
+          "use_rec": null,
+          "print_verbose": false,
+          "det_model_path": null,
+          "cls_model_path": null,
+          "rec_model_path": null,
+          "rec_keys_path": null,
+          "rec_font_path": null,
+          "font_path": null,
+          "rapidocr_params": {},
+          "force_full_page_ocr": false
+        },
+        "device": "cpu",
+        "threads": 4,
+        "status": "ConversionStatus.SUCCESS",
+        "errors": [],
+        "characters": 499,
+        "tables": 0,
+        "pages": 1,
+        "seconds": 3.655
+      },
+      "vision-full": {
+        "index": 41,
+        "name": "M SR Selce - XCO, XCC",
+        "url": "https://www.cyklistikaszc.sk/kalendar/plagat/majstf2bd8ce2e5007ef77e5de6bdf.pdf",
+        "mode": "vision-full",
+        "docling": "2.148.0",
+        "page_range": [
+          1,
+          1
+        ],
+        "ocr_options": {
+          "mode": "full_page",
+          "lang": [
+            "cs-CZ",
+            "pl-PL",
+            "de-DE",
+            "it-IT",
+            "fr-FR",
+            "en-US"
+          ],
+          "scale": 3.0,
+          "replace_broken_text_layer": false,
+          "recognition": "accurate",
+          "framework": "vision",
+          "force_full_page_ocr": true
+        },
+        "device": "cpu",
+        "threads": 4,
+        "status": "ConversionStatus.SUCCESS",
+        "errors": [],
+        "characters": 411,
+        "tables": 0,
+        "pages": 1,
+        "seconds": 1.549
+      }
+    }
+  },
+  {
+    "index": 74,
+    "name": "Młodzieżowe Mistrzostwa Polski w konkurencjach olimpijskich",
+    "url": "https://pzkol.pl/pobierz/14482/s/14482_regulamin_zawodowmlodziezowe_mist.pdf",
+    "runs": {
+      "baseline": {
+        "index": 74,
+        "name": "Młodzieżowe Mistrzostwa Polski w konkurencjach olimpijskich",
+        "page_range": [
+          1,
+          4
+        ],
+        "ocr_pages": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "seconds": 0.8841188339999935,
+        "characters": 1405,
+        "note": "Current unpdf + Vision; existing OCR cache may apply."
+      },
+      "rapid": {
+        "index": 74,
+        "name": "Młodzieżowe Mistrzostwa Polski w konkurencjach olimpijskich",
+        "url": "https://pzkol.pl/pobierz/14482/s/14482_regulamin_zawodowmlodziezowe_mist.pdf",
+        "mode": "rapid",
+        "docling": "2.148.0",
+        "page_range": [
+          1,
+          4
+        ],
+        "ocr_options": {
+          "mode": "default",
+          "lang": [
+            "en"
+          ],
+          "scale": 3.0,
+          "replace_broken_text_layer": false,
+          "backend": "onnxruntime",
+          "model_size": "small",
+          "text_score": 0.5,
+          "use_det": null,
+          "use_cls": null,
+          "detect_orientation": false,
+          "use_rec": null,
+          "print_verbose": false,
+          "det_model_path": null,
+          "cls_model_path": null,
+          "rec_model_path": null,
+          "rec_keys_path": null,
+          "rec_font_path": null,
+          "font_path": null,
+          "rapidocr_params": {},
+          "force_full_page_ocr": false
+        },
+        "device": "cpu",
+        "threads": 4,
+        "status": "ConversionStatus.SUCCESS",
+        "errors": [],
+        "characters": 8163,
+        "tables": 4,
+        "pages": 4,
+        "seconds": 12.13
+      },
+      "vision-full": {
+        "index": 74,
+        "name": "Młodzieżowe Mistrzostwa Polski w konkurencjach olimpijskich",
+        "url": "https://pzkol.pl/pobierz/14482/s/14482_regulamin_zawodowmlodziezowe_mist.pdf",
+        "mode": "vision-full",
+        "docling": "2.148.0",
+        "page_range": [
+          1,
+          4
+        ],
+        "ocr_options": {
+          "mode": "full_page",
+          "lang": [
+            "cs-CZ",
+            "pl-PL",
+            "de-DE",
+            "it-IT",
+            "fr-FR",
+            "en-US"
+          ],
+          "scale": 3.0,
+          "replace_broken_text_layer": false,
+          "recognition": "accurate",
+          "framework": "vision",
+          "force_full_page_ocr": true
+        },
+        "device": "cpu",
+        "threads": 4,
+        "status": "ConversionStatus.SUCCESS",
+        "errors": [],
+        "characters": 8276,
+        "tables": 4,
+        "pages": 4,
+        "seconds": 6.276
+      }
+    }
+  },
+  {
+    "index": 94,
+    "name": "Ogólnopolski wyścig w kolarstwie przełajowym - memoriał Mieczysława Brzezińskiego",
+    "url": "https://pzkol.pl/pobierz/14487/s/14487_regulamin_zawodowogolnopolski_wys.pdf",
+    "runs": {
+      "baseline": {
+        "index": 94,
+        "name": "Ogólnopolski wyścig w kolarstwie przełajowym - memoriał Mieczysława Brzezińskiego",
+        "page_range": [
+          1,
+          7
+        ],
+        "ocr_pages": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "seconds": 1.5336117499999964,
+        "characters": 3561,
+        "note": "Current unpdf + Vision; existing OCR cache may apply."
+      },
+      "rapid": {
+        "index": 94,
+        "name": "Ogólnopolski wyścig w kolarstwie przełajowym - memoriał Mieczysława Brzezińskiego",
+        "url": "https://pzkol.pl/pobierz/14487/s/14487_regulamin_zawodowogolnopolski_wys.pdf",
+        "mode": "rapid",
+        "docling": "2.148.0",
+        "page_range": [
+          1,
+          7
+        ],
+        "ocr_options": {
+          "mode": "default",
+          "lang": [
+            "en"
+          ],
+          "scale": 3.0,
+          "replace_broken_text_layer": false,
+          "backend": "onnxruntime",
+          "model_size": "small",
+          "text_score": 0.5,
+          "use_det": null,
+          "use_cls": null,
+          "detect_orientation": false,
+          "use_rec": null,
+          "print_verbose": false,
+          "det_model_path": null,
+          "cls_model_path": null,
+          "rec_model_path": null,
+          "rec_keys_path": null,
+          "rec_font_path": null,
+          "font_path": null,
+          "rapidocr_params": {},
+          "force_full_page_ocr": false
+        },
+        "device": "cpu",
+        "threads": 4,
+        "status": "ConversionStatus.SUCCESS",
+        "errors": [],
+        "characters": 12510,
+        "tables": 2,
+        "pages": 7,
+        "seconds": 16.878
+      },
+      "vision-full": {
+        "index": 94,
+        "name": "Ogólnopolski wyścig w kolarstwie przełajowym - memoriał Mieczysława Brzezińskiego",
+        "url": "https://pzkol.pl/pobierz/14487/s/14487_regulamin_zawodowogolnopolski_wys.pdf",
+        "mode": "vision-full",
+        "docling": "2.148.0",
+        "page_range": [
+          1,
+          7
+        ],
+        "ocr_options": {
+          "mode": "full_page",
+          "lang": [
+            "cs-CZ",
+            "pl-PL",
+            "de-DE",
+            "it-IT",
+            "fr-FR",
+            "en-US"
+          ],
+          "scale": 3.0,
+          "replace_broken_text_layer": false,
+          "recognition": "accurate",
+          "framework": "vision",
+          "force_full_page_ocr": true
+        },
+        "device": "cpu",
+        "threads": 4,
+        "status": "ConversionStatus.SUCCESS",
+        "errors": [],
+        "characters": 13651,
+        "tables": 2,
+        "pages": 7,
+        "seconds": 6.836
+      }
+    }
+  },
+  {
+    "index": 106,
+    "name": "Slovak National Championships - Park",
+    "url": "https://www.cyklistikaszc.sk/kalendar/propozicie/propoe2a4e5d50851c4189975187ed.pdf",
+    "runs": {
+      "baseline": {
+        "index": 106,
+        "name": "Slovak National Championships - Park",
+        "page_range": [
+          1,
+          2
+        ],
+        "ocr_pages": [],
+        "seconds": 0.02664808300000732,
+        "characters": 1964,
+        "note": "Current unpdf + Vision; existing OCR cache may apply."
+      },
+      "rapid": {
+        "index": 106,
+        "name": "Slovak National Championships - Park",
+        "url": "https://www.cyklistikaszc.sk/kalendar/propozicie/propoe2a4e5d50851c4189975187ed.pdf",
+        "mode": "rapid",
+        "docling": "2.148.0",
+        "page_range": [
+          1,
+          2
+        ],
+        "ocr_options": {
+          "mode": "default",
+          "lang": [
+            "en"
+          ],
+          "scale": 3.0,
+          "replace_broken_text_layer": false,
+          "backend": "onnxruntime",
+          "model_size": "small",
+          "text_score": 0.5,
+          "use_det": null,
+          "use_cls": null,
+          "detect_orientation": false,
+          "use_rec": null,
+          "print_verbose": false,
+          "det_model_path": null,
+          "cls_model_path": null,
+          "rec_model_path": null,
+          "rec_keys_path": null,
+          "rec_font_path": null,
+          "font_path": null,
+          "rapidocr_params": {},
+          "force_full_page_ocr": false
+        },
+        "device": "cpu",
+        "threads": 4,
+        "status": "ConversionStatus.SUCCESS",
+        "errors": [],
+        "characters": 1978,
+        "tables": 0,
+        "pages": 2,
+        "seconds": 0.604
+      },
+      "vision-full": {
+        "index": 106,
+        "name": "Slovak National Championships - Park",
+        "url": "https://www.cyklistikaszc.sk/kalendar/propozicie/propoe2a4e5d50851c4189975187ed.pdf",
+        "mode": "vision-full",
+        "docling": "2.148.0",
+        "page_range": [
+          1,
+          2
+        ],
+        "ocr_options": {
+          "mode": "full_page",
+          "lang": [
+            "cs-CZ",
+            "pl-PL",
+            "de-DE",
+            "it-IT",
+            "fr-FR",
+            "en-US"
+          ],
+          "scale": 3.0,
+          "replace_broken_text_layer": false,
+          "recognition": "accurate",
+          "framework": "vision",
+          "force_full_page_ocr": true
+        },
+        "device": "cpu",
+        "threads": 4,
+        "status": "ConversionStatus.SUCCESS",
+        "errors": [],
+        "characters": 1977,
+        "tables": 0,
+        "pages": 2,
+        "seconds": 1.149
+      }
+    }
+  },
+  {
+    "index": 110,
+    "name": "ogólnopolski wyścig w kolarstwie przełajowym o puchar prezydenta Kielc Pani Agaty Wojdy pod patronatem wojewody świętokrzyskiego Józefa Bryka",
+    "url": "https://pzkol.pl/pobierz/14442/s/14442_regulaminogolnopolski_wyscig_w_ko.pdf",
+    "runs": {
+      "baseline": {
+        "index": 110,
+        "name": "ogólnopolski wyścig w kolarstwie przełajowym o puchar prezydenta Kielc Pani Agaty Wojdy pod patronatem wojewody świętokrzyskiego Józefa Bryka",
+        "page_range": [
+          1,
+          5
+        ],
+        "ocr_pages": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "seconds": 1.231729083000013,
+        "characters": 3736,
+        "note": "Current unpdf + Vision; existing OCR cache may apply."
+      },
+      "rapid": {
+        "index": 110,
+        "name": "ogólnopolski wyścig w kolarstwie przełajowym o puchar prezydenta Kielc Pani Agaty Wojdy pod patronatem wojewody świętokrzyskiego Józefa Bryka",
+        "url": "https://pzkol.pl/pobierz/14442/s/14442_regulaminogolnopolski_wyscig_w_ko.pdf",
+        "mode": "rapid",
+        "docling": "2.148.0",
+        "page_range": [
+          1,
+          5
+        ],
+        "ocr_options": {
+          "mode": "default",
+          "lang": [
+            "en"
+          ],
+          "scale": 3.0,
+          "replace_broken_text_layer": false,
+          "backend": "onnxruntime",
+          "model_size": "small",
+          "text_score": 0.5,
+          "use_det": null,
+          "use_cls": null,
+          "detect_orientation": false,
+          "use_rec": null,
+          "print_verbose": false,
+          "det_model_path": null,
+          "cls_model_path": null,
+          "rec_model_path": null,
+          "rec_keys_path": null,
+          "rec_font_path": null,
+          "font_path": null,
+          "rapidocr_params": {},
+          "force_full_page_ocr": false
+        },
+        "device": "cpu",
+        "threads": 4,
+        "status": "ConversionStatus.SUCCESS",
+        "errors": [],
+        "characters": 10805,
+        "tables": 3,
+        "pages": 5,
+        "seconds": 25.619
+      },
+      "vision-full": {
+        "index": 110,
+        "name": "ogólnopolski wyścig w kolarstwie przełajowym o puchar prezydenta Kielc Pani Agaty Wojdy pod patronatem wojewody świętokrzyskiego Józefa Bryka",
+        "url": "https://pzkol.pl/pobierz/14442/s/14442_regulaminogolnopolski_wyscig_w_ko.pdf",
+        "mode": "vision-full",
+        "docling": "2.148.0",
+        "page_range": [
+          1,
+          5
+        ],
+        "ocr_options": {
+          "mode": "full_page",
+          "lang": [
+            "cs-CZ",
+            "pl-PL",
+            "de-DE",
+            "it-IT",
+            "fr-FR",
+            "en-US"
+          ],
+          "scale": 3.0,
+          "replace_broken_text_layer": false,
+          "recognition": "accurate",
+          "framework": "vision",
+          "force_full_page_ocr": true
+        },
+        "device": "cpu",
+        "threads": 4,
+        "status": "ConversionStatus.SUCCESS",
+        "errors": [],
+        "characters": 11288,
+        "tables": 3,
+        "pages": 5,
+        "seconds": 6.746
+      }
+    }
+  },
+  {
+    "index": 112,
+    "name": "Czech National Championship - Park & Flatland",
+    "url": "https://www.czechfreestylebmxassociation.cz/assets/files/mcr26_technicky_pruvodce.docx.pdf",
+    "runs": {
+      "baseline": {
+        "index": 112,
+        "name": "Czech National Championship - Park & Flatland",
+        "page_range": [
+          7,
+          7
+        ],
+        "ocr_pages": [],
+        "seconds": 0.05281787500000792,
+        "characters": 780,
+        "note": "Current unpdf + Vision; existing OCR cache may apply."
+      },
+      "rapid": {
+        "index": 112,
+        "name": "Czech National Championship - Park & Flatland",
+        "url": "https://www.czechfreestylebmxassociation.cz/assets/files/mcr26_technicky_pruvodce.docx.pdf",
+        "mode": "rapid",
+        "docling": "2.148.0",
+        "page_range": [
+          7,
+          7
+        ],
+        "ocr_options": {
+          "mode": "default",
+          "lang": [
+            "en"
+          ],
+          "scale": 3.0,
+          "replace_broken_text_layer": false,
+          "backend": "onnxruntime",
+          "model_size": "small",
+          "text_score": 0.5,
+          "use_det": null,
+          "use_cls": null,
+          "detect_orientation": false,
+          "use_rec": null,
+          "print_verbose": false,
+          "det_model_path": null,
+          "cls_model_path": null,
+          "rec_model_path": null,
+          "rec_keys_path": null,
+          "rec_font_path": null,
+          "font_path": null,
+          "rapidocr_params": {},
+          "force_full_page_ocr": false
+        },
+        "device": "cpu",
+        "threads": 4,
+        "status": "ConversionStatus.SUCCESS",
+        "errors": [],
+        "characters": 1519,
+        "tables": 1,
+        "pages": 1,
+        "seconds": 1.323
+      },
+      "vision-full": {
+        "index": 112,
+        "name": "Czech National Championship - Park & Flatland",
+        "url": "https://www.czechfreestylebmxassociation.cz/assets/files/mcr26_technicky_pruvodce.docx.pdf",
+        "mode": "vision-full",
+        "docling": "2.148.0",
+        "page_range": [
+          7,
+          7
+        ],
+        "ocr_options": {
+          "mode": "full_page",
+          "lang": [
+            "cs-CZ",
+            "pl-PL",
+            "de-DE",
+            "it-IT",
+            "fr-FR",
+            "en-US"
+          ],
+          "scale": 3.0,
+          "replace_broken_text_layer": false,
+          "recognition": "accurate",
+          "framework": "vision",
+          "force_full_page_ocr": true
+        },
+        "device": "cpu",
+        "threads": 4,
+        "status": "ConversionStatus.SUCCESS",
+        "errors": [],
+        "characters": 1519,
+        "tables": 1,
+        "pages": 1,
+        "seconds": 1.38
+      }
+    }
+  }
+]

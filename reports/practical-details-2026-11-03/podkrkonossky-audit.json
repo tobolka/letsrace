@@ -1,0 +1,395 @@
+[
+  {
+    "id": "627394f7-e4a4-412e-9ad0-b4710b729817",
+    "raw": {
+      "facts": {
+        "venue": {
+          "value": {
+            "name": "Lázně Bělohrad",
+            "locality": "Lázně Bělohrad",
+            "countryCode": "CZ",
+            "precision": "municipality"
+          },
+          "source_url": "https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2027/propozice",
+          "quote": "31.07.2027 Lázně Bělohrad",
+          "identity_quote": "FILIPA Podkrkonošský maraton 2027",
+          "edition_quote": "FILIPA Podkrkonošský maraton 2027",
+          "status": "current"
+        },
+        "organizer": {
+          "value": {
+            "name": "Sportchallenge",
+            "url": "https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2027"
+          },
+          "source_url": "https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2027/propozice",
+          "quote": "obchodní podmínky | [https://www.sportchallenge.cz/cz/obchodni-podminky-ucastnici]",
+          "identity_quote": "FILIPA Podkrkonošský maraton 2027",
+          "edition_quote": "FILIPA Podkrkonošský maraton 2027",
+          "status": "year_neutral"
+        },
+        "schedule": {
+          "value": [
+            {
+              "label": "90 km MTB",
+              "date": "2027-07-31",
+              "time": "09:02"
+            },
+            {
+              "label": "Mladší žáci",
+              "date": "2027-07-31",
+              "time": "09:16"
+            },
+            {
+              "label": "Mladší žákyně",
+              "date": "2027-07-31",
+              "time": "09:16"
+            },
+            {
+              "label": "Kluci 9-10",
+              "date": "2027-07-31",
+              "time": "09:34"
+            },
+            {
+              "label": "Holky 9-10",
+              "date": "2027-07-31",
+              "time": "09:49"
+            },
+            {
+              "label": "53 km MTB",
+              "date": "2027-07-31",
+              "time": "10:20"
+            },
+            {
+              "label": "53 km Gravel",
+              "date": "2027-07-31",
+              "time": "10:20"
+            },
+            {
+              "label": "30 km MTB",
+              "date": "2027-07-31",
+              "time": "10:20"
+            },
+            {
+              "label": "30 km MTB Family jízda",
+              "date": "2027-07-31",
+              "time": "10:20"
+            },
+            {
+              "label": "Odstrkovadla a kola kluci",
+              "date": "2027-07-31",
+              "time": "10:22"
+            },
+            {
+              "label": "Odstrkovadla a kola holky",
+              "date": "2027-07-31",
+              "time": "10:27"
+            },
+            {
+              "label": "Kluci 5-6",
+              "date": "2027-07-31",
+              "time": "10:34"
+            },
+            {
+              "label": "Holky 5-6",
+              "date": "2027-07-31",
+              "time": "10:45"
+            },
+            {
+              "label": "Kluci 7-8",
+              "date": "2027-07-31",
+              "time": "10:54"
+            },
+            {
+              "label": "Holky 7-8",
+              "date": "2027-07-31",
+              "time": "11:09"
+            }
+          ],
+          "source_url": "https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2027/propozice",
+          "quote": "starty a poplatky trať | start | startovné | ročníky narození | více 90 km MTB | ~09:02:00 | 600,- Kč, online termín cena splatnost 27.02.2027",
+          "identity_quote": "FILIPA Podkrkonošský maraton 2027",
+          "edition_quote": "31.07.2027 Lázně Bělohrad",
+          "status": "current"
+        },
+        "fees": {
+          "value": [
+            {
+              "label": "90 km MTB",
+              "amount": 600,
+              "currency": "CZK",
+              "validUntil": "2027-02-27"
+            },
+            {
+              "label": "90 km MTB",
+              "amount": 750,
+              "currency": "CZK",
+              "validUntil": "2027-06-29"
+            },
+            {
+              "label": "90 km MTB",
+              "amount": 850,
+              "currency": "CZK",
+              "validUntil": "2027-07-30"
+            },
+            {
+              "label": "90 km MTB",
+              "amount": 950,
+              "currency": "CZK",
+              "validUntil": "2027-07-31"
+            },
+            {
+              "label": "Mladší žáci",
+              "amount": 0,
+              "currency": "CZK"
+            },
+            {
+              "label": "Mladší žákyně",
+              "amount": 50,
+              "currency": "CZK",
+              "validUntil": "2027-07-31"
+            },
+            {
+              "label": "Kluci 9-10",
+              "amount": 0,
+              "currency": "CZK"
+            },
+            {
+              "label": "Holky 9-10",
+              "amount": 0,
+              "currency": "CZK"
+            },
+            {
+              "label": "53 km MTB",
+              "amount": 500,
+              "currency": "CZK",
+              "validUntil": "2027-02-27"
+            },
+            {
+              "label": "53 km MTB",
+              "amount": 650,
+              "currency": "CZK",
+              "validUntil": "2027-06-29"
+            },
+            {
+              "label": "53 km MTB",
+              "amount": 750,
+              "currency": "CZK",
+              "validUntil": "2027-07-30"
+            },
+            {
+              "label": "53 km MTB",
+              "amount": 850,
+              "currency": "CZK",
+              "validUntil": "2027-07-31"
+            },
+            {
+              "label": "53 km Gravel",
+              "amount": 500,
+              "currency": "CZK",
+              "validUntil": "2027-02-27"
+            },
+            {
+              "label": "53 km Gravel",
+              "amount": 650,
+              "currency": "CZK",
+              "validUntil": "2027-06-28"
+            },
+            {
+              "label": "53 km Gravel",
+              "amount": 750,
+              "currency": "CZK",
+              "validUntil": "2027-07-30"
+            },
+            {
+              "label": "53 km Gravel",
+              "amount": 850,
+              "currency": "CZK",
+              "validUntil": "2027-07-31"
+            },
+            {
+              "label": "30 km MTB",
+              "amount": 350,
+              "currency": "CZK",
+              "validUntil": "2027-02-27"
+            },
+            {
+              "label": "30 km MTB",
+              "amount": 500,
+              "currency": "CZK",
+              "validUntil": "2027-06-29"
+            },
+            {
+              "label": "30 km MTB",
+              "amount": 550,
+              "currency": "CZK",
+              "validUntil": "2027-07-30"
+            },
+            {
+              "label": "30 km MTB",
+              "amount": 600,
+              "currency": "CZK",
+              "validUntil": "2027-07-31"
+            },
+            {
+              "label": "30 km MTB Family jízda",
+              "amount": 700,
+              "currency": "CZK",
+              "validUntil": "2027-02-26"
+            },
+            {
+              "label": "30 km MTB Family jízda",
+              "amount": 1000,
+              "currency": "CZK",
+              "validUntil": "2027-06-29"
+            },
+            {
+              "label": "30 km MTB Family jízda",
+              "amount": 1100,
+              "currency": "CZK",
+              "validUntil": "2027-07-30"
+            },
+            {
+              "label": "30 km MTB Family jízda",
+              "amount": 1200,
+              "currency": "CZK",
+              "validUntil": "2027-07-31"
+            },
+            {
+              "label": "Odstrkovadla a kola kluci",
+              "amount": 50,
+              "currency": "CZK",
+              "validUntil": "2027-07-28"
+            },
+            {
+              "label": "Odstrkovadla a kola kluci",
+              "amount": 70,
+              "currency": "CZK",
+              "validUntil": "2027-07-31"
+            },
+            {
+              "label": "Odstrkovadla a kola holky",
+              "amount": 50,
+              "currency": "CZK",
+              "validUntil": "2027-07-31"
+            },
+            {
+              "label": "Kluci 5-6",
+              "amount": 50,
+              "currency": "CZK",
+              "validUntil": "2027-07-31"
+            },
+            {
+              "label": "Holky 5-6",
+              "amount": 50,
+              "currency": "CZK",
+              "validUntil": "2027-07-31"
+            },
+            {
+              "label": "Kluci 7-8",
+              "amount": 0,
+              "currency": "CZK"
+            },
+            {
+              "label": "Holky 7-8",
+              "amount": 0,
+              "currency": "CZK"
+            }
+          ],
+          "source_url": "https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2027/propozice",
+          "quote": "90 km MTB | ~09:02:00 | 600,- Kč, online termín cena splatnost 27.02.2027 600,- Kč online 29.06.2027 750,- Kč online 30.07.2027 850,- Kč online 31.07.2027 950,- Kč online",
+          "identity_quote": "FILIPA Podkrkonošský maraton 2027",
+          "edition_quote": "starty a poplatky",
+          "status": "current"
+        },
+        "routes": {
+          "value": [
+            {
+              "name": "90 km MTB",
+              "distanceKm": 90
+            },
+            {
+              "name": "53 km MTB",
+              "distanceKm": 53
+            },
+            {
+              "name": "53 km Gravel",
+              "distanceKm": 53
+            },
+            {
+              "name": "30 km MTB",
+              "distanceKm": 30
+            },
+            {
+              "name": "30 km MTB Family jízda",
+              "distanceKm": 30
+            }
+          ],
+          "source_url": "https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2027/propozice",
+          "quote": "90 km MTB | ~09:02:00 | 600,- Kč, online termín cena splatnost 27.02.2027",
+          "identity_quote": "FILIPA Podkrkonošský maraton 2027",
+          "edition_quote": "FILIPA Podkrkonošský maraton 2027",
+          "status": "current"
+        }
+      }
+    },
+    "documents": [
+      {
+        "url": "https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2027/propozice",
+        "text": "[FILIPA Podkrkonošský maraton 2027](https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2027)\n\n31.07.2027 Lázně Bělohrad\n\n[archiv](https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2027/archiv)\n\n[propozice](https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2027/propozice)\n\n[přihlášení](https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2027/registrace)\n\n[startovní listina](https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2027/startovka)\n\n[výsledky](https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2027/vysledky)\n\ntermín | 31.07.2027\n\nmísto | Lázně Bělohrad\n\nweb akce | [http://www.podkrkonosskymaraton.cz/](http://www.podkrkonosskymaraton.cz/)\n\nobchodní podmínky | [https://www.sportchallenge.cz/cz/obchodni-podminky-ucastnici](https://www.sportchallenge.cz/cz/obchodni-podminky-ucastnici)\n\nstarty a poplatky\n\ntrať | start | startovné | ročníky narození | více\n\n90 km MTB | ~09:02:00 | 600,- Kč, online termín cena splatnost 27.02.2027 600,- Kč online 29.06.2027 750,- Kč online 30.07.2027 850,- Kč online 31.07.2027 950,- Kč online | 2014 a starší | hromadný start\n\nMladší žáci | ~09:16:18 | 0,- Kč, zdarma termín cena splatnost 31.07.2027 0,- Kč zdarma | 2015 - 2016 | hromadný start\n\nMladší žákyně | ~09:16:48 | 50,- Kč, online termín cena splatnost 31.07.2027 50,- Kč online | 2015 - 2016 | hromadný start\n\nKluci 9-10 | ~09:34:45 | 0,- Kč, zdarma termín cena splatnost 31.07.2027 0,- Kč zdarma | 2017 - 2018 | hromadný start\n\nHolky 9-10 | ~09:49:33 | 0,- Kč, zdarma termín cena splatnost 31.07.2027 0,- Kč zdarma | 2017 - 2018 | hromadný start\n\n53 km MTB | ~10:20:00 | 500,- Kč, online termín cena splatnost 27.02.2027 500,- Kč online 29.06.2027 650,- Kč online 30.07.2027 750,- Kč online 31.07.2027 850,- Kč online | 2014 a starší | hromadný start\n\n53 km Gravel | ~10:20:00 | 500,- Kč, online termín cena splatnost 27.02.2027 500,- Kč online 28.06.2027 650,- Kč online 30.07.2027 750,- Kč online 31.07.2027 850,- Kč online | 2014 a starší | hromadný start\n\n30 km MTB | ~10:20:00 | 350,- Kč, online termín cena splatnost 27.02.2027 350,- Kč online 29.06.2027 500,- Kč online 30.07.2027 550,- Kč online 31.07.2027 600,- Kč online | 2017 a starší | hromadný start\n\n30 km MTB Family jízda | ~10:20:00 | 700,- Kč, online termín cena splatnost 26.02.2027 700,- Kč online 29.06.2027 1 000,- Kč online 30.07.2027 1 100,- Kč online 31.07.2027 1 200,- Kč online | 2014 a starší | Podkategorie 27km MTB. Započítavá se druhý čas v cíli - tzn. dvojice by měla projet závod spolu a cíl protnout společně. Jeden ze dvojice musí být rodič, druhý potomek (2007-2012). Závodníci jsou hodnoceni i ve své standartní kategorii.\n\nOdstrkovadla a kola kluci | ~10:22:55 | 50,- Kč, online termín cena splatnost 28.07.2027 50,- Kč online 31.07.2027 70,- Kč online | 2023 a mladší | hromadný start\n\nOdstrkovadla a kola holky | ~10:27:44 | 50,- Kč, online termín cena splatnost 31.07.2027 50,- Kč online 31.07.2027 50,- Kč online | 2023 a mladší | hromadný start\n\nKluci 5-6 | ~10:34:53 | 50,- Kč, online termín cena splatnost 31.07.2027 50,- Kč online | 2021 - 2022 | hromadný start\n\nHolky 5-6 | ~10:45:26 | 50,- Kč, online termín cena splatnost 31.07.2027 50,- Kč online | 2021 - 2022 | hromadný start\n\nKluci 7-8 | ~10:54:02 | 0,- Kč, zdarma termín cena splatnost 31.07.2027 0,- Kč zdarma | 2019 - 2020 | hromadný start\n\nHolky 7-8 | ~11:09:55 | 0,- Kč, zdarma termín cena splatnost 31.07.2027 0,- Kč zdarma | 2019 - 2020 | hromadný start\n\nKategorie\n\n90 km MTB\n\nnázev kategorie | pohlaví | ročníky narození\n\nMuži Hobby 19-34 | muži | 1993 - 2008\n\nMuži Masters 35 - 44 | muži | 1983 - 1992\n\nMuži Masters 45 - 54 | muži | 1973 - 1982\n\nMuži Masters 55-64 | muži | 1963 - 1972\n\nMuži Masters 65+ | muži | 1962 a starší\n\nMuži Elite | muži licence | 2008 a starší\n\nŽeny Hobby 19-34 | ženy | 1993 - 2008\n\nŽeny Masters 35 - 44 | ženy | 1983 - 1992\n\nŽeny Masters 45+ | ženy | 1982 a starší\n\nŽeny Elite | ženy licence | 2008 a starší\n\nMladší žáci\n\nnázev kategorie | pohlaví | ročníky narození\n\nkluci | muži | 2015 - 2016\n\nholky | ženy | 2015 - 2016\n\nMladší žákyně\n\nnázev kategorie | pohlaví | ročníky narození\n\nholky | ženy | 2015 - 2016\n\nKluci 9-10\n\nnázev kategorie | pohlaví | ročníky narození\n\nkluci | muži | 2017 - 2018\n\nHolky 9-10\n\nnázev kategorie | pohlaví | ročníky narození\n\nholky | ženy | 2017 - 2018\n\n53 km MTB\n\nnázev kategorie | pohlaví | ročníky narození\n\nKadeti | muži | 2011 - 2012\n\nJunioři | muži | 2009 - 2010\n\nMuži 19-34 | muži | 1993 - 2008\n\nMuži 35-44 | muži | 1983 - 1992\n\nMuži 45-54 | muži | 1973 - 1982\n\nMuži 55 - 64 | muži | 1963 - 1972\n\nMuži 65+ | muži | 1962 a starší\n\nKadetky | ženy | 2011 - 2012\n\nJuniorky | ženy | 2009 - 2010\n\nŽeny 19-34 | ženy | 1993 - 2008\n\nŽeny 35-44 | ženy | 1983 - 1992\n\nŽeny 45-54 | ženy | 1973 - 1982\n\nŽeny 55+ | ženy | 1972 a starší\n\n53 km Gravel\n\nnázev kategorie | pohlaví | ročníky narození\n\nMG | muži | 2014 a starší\n\nZG | ženy | 2014 a starší\n\n30 km MTB\n\nnázev kategorie | pohlaví | ročníky narození\n\nMladší žáci | muži | 2015 - 2017\n\nStarší žáci | muži | 2013 - 2014\n\nMuži 15+ | muži | 2012 a starší\n\nMladší žákyně | ženy | 2015 - 2017\n\nStarší žákyně | ženy | 2013 - 2014\n\nŽeny 15+ | ženy | 2012 a starší\n\n30 km MTB Family jízda\n\nnázev kategorie | pohlaví | ročníky narození\n\nmix | muži | bez omezení věku\n\nmix | ženy | bez omezení věku\n\nmix | bez rozdílu | bez omezení věku\n\nOdstrkovadla a kola kluci\n\nnázev kategorie | pohlaví | ročníky narození\n\nkluci | muži | 2023 a mladší\n\nOdstrkovadla a kola holky\n\nnázev kategorie | pohlaví | ročníky narození\n\nholky | ženy | 2023 a mladší\n\nKluci 5-6\n\nnázev kategorie | pohlaví | ročníky narození\n\nkluci | muži | 2021 - 2022\n\nHolky 5-6\n\nnázev kategorie | pohlaví | ročníky narození\n\nholky | ženy | 2021 - 2022\n\nKluci 7-8\n\nnázev kategorie | pohlaví | ročníky narození\n\nkluci | muži | 2019 - 2020\n\nHolky 7-8\n\nnázev kategorie | pohlaví | ročníky narození\n\nholky | ženy | 2019 - 2020\n\nHistorie akce\n\nnázev akce | termín | odkazy\n\nFILIPA Podkrkonošský maraton 2027 | 31.07.2027 | [výsledky](https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2027/vysledky)\n\nFILIPA Podkrkonošský maraton 2026 | 01.08.2026 | [výsledky](https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2026/vysledky)\n\nFILIPA Podkrkonošský maraton 2025 | 02.08.2025 | [výsledky](https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2025/vysledky)\n\nFILIPA Podkrkonošský maraton 2024 | 03.08.2024 | [výsledky](https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2024/vysledky)\n\nKupKolo Podkrkonošský maraton 2020 (zrušeno) | 08.08.2020 | [výsledky](https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2020/vysledky)\n\nKupKolo Podkrkonošský maraton 2019 | 10.08.2019 | [výsledky](https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2019/vysledky)\n\nKupKolo Podkrkonošský maraton 2018 | 11.08.2018 | [výsledky](https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2018/vysledky)\n\nKupKolo Podkrkonošský maraton 2017 | 12.08.2017 | [výsledky](https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2017/vysledky)\n\nKupKolo Podkrkonošský maraton 2016 | 13.08.2016 | [výsledky](https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2016/vysledky)\n\nKupKolo Podkrkonošský maraton 2015 | 01.08.2015 | [výsledky](https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2015/vysledky)\n\nKupKolo Podkrkonošský maraton 2014 | 16.08.2014 | [výsledky](https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2014/vysledky)\n\nKupKolo Podkrkonošský maraton 2013 | 10.08.2013 | [výsledky](https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2013/vysledky)\n\nKupKolo Podkrkonošský maraton 2012 | 11.08.2012 | [výsledky](https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2012/vysledky)\n\nCarla KupKolo Podkrkonošský maraton 2011 | 13.08.2011 | [výsledky](https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2011/vysledky)\n\nCarla KupKolo Podkrkonošský maraton 2010 | 14.08.2010 | [výsledky](https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2010/vysledky)\n\nPodkrkonošský maraton | 15.08.2009 | [výsledky](https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2009/vysledky)",
+        "links": [
+          "https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2027",
+          "https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2027/archiv",
+          "https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2027/propozice",
+          "https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2027/registrace",
+          "https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2027/startovka",
+          "https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2027/vysledky",
+          "http://www.podkrkonosskymaraton.cz/",
+          "https://www.sportchallenge.cz/cz/obchodni-podminky-ucastnici",
+          "https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2026/vysledky",
+          "https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2025/vysledky",
+          "https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2024/vysledky",
+          "https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2020/vysledky",
+          "https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2019/vysledky",
+          "https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2018/vysledky",
+          "https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2017/vysledky",
+          "https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2016/vysledky",
+          "https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2015/vysledky",
+          "https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2014/vysledky",
+          "https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2013/vysledky",
+          "https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2012/vysledky",
+          "https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2011/vysledky",
+          "https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2010/vysledky",
+          "https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2009/vysledky"
+        ]
+      }
+    ],
+    "checked": {
+      "details": {
+        "venue": {
+          "sourceUrl": "https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2027/propozice",
+          "quote": "31.07.2027 Lázně Bělohrad",
+          "checkedAt": "2026-11-03T08:17:51.027Z",
+          "editionYear": 2027,
+          "status": "current",
+          "value": {
+            "name": "Lázně Bělohrad",
+            "locality": "Lázně Bělohrad",
+            "countryCode": "CZ",
+            "precision": "municipality"
+          }
+        }
+      },
+      "rejected": [
+        "organizer",
+        "schedule",
+        "fees",
+        "routes"
+      ]
+    },
+    "usage": {
+      "tokensIn": 4240,
+      "tokensOut": 3134,
+      "costUsd": 0.001991
+    }
+  }
+]

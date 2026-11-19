@@ -1,0 +1,90 @@
+[
+  {
+    "index": 12,
+    "place": "Timbó",
+    "country": "BR",
+    "result": {
+      "lat": -26.8282737,
+      "lng": -49.270641,
+      "displayName": "Timbó, Santa Catarina, Região Sul, Brasil",
+      "countryCode": "BR"
+    }
+  },
+  {
+    "index": 18,
+    "place": "Nezamyslice",
+    "country": "CZ",
+    "result": {
+      "lat": 49.3254267,
+      "lng": 17.1732583,
+      "displayName": "Nezamyslice, okres Prostějov, Olomoucký kraj, 798 26, Česko",
+      "countryCode": "CZ"
+    }
+  },
+  {
+    "index": 45,
+    "place": "Lingao, Hainan",
+    "country": "CN",
+    "result": {
+      "lat": 19.801667,
+      "lng": 109.712778,
+      "displayName": "临高县, 海南省, 571800, 中国",
+      "countryCode": "CN"
+    }
+  },
+  {
+    "index": 49,
+    "place": "Al Ain",
+    "country": "AE",
+    "result": {
+      "lat": 24.2248697,
+      "lng": 55.7452211,
+      "displayName": "العين, المُعْتَرِض, العين, أبو ظبي, الإمارات العربية المتحدة",
+      "countryCode": "AE"
+    }
+  },
+  {
+    "index": 56,
+    "place": "Novalja",
+    "country": "HR",
+    "result": {
+      "lat": 44.5561174,
+      "lng": 14.884472,
+      "displayName": "Grad Novalja, Ličko-senjska županija, Hrvatska",
+      "countryCode": "HR"
+    }
+  },
+  {
+    "index": 61,
+    "place": "Banská Bystrica",
+    "country": "SK",
+    "result": {
+      "lat": 48.735429,
+      "lng": 19.1457338,
+      "displayName": "Banská Bystrica, okres Banská Bystrica, Banskobystrický kraj, Slovensko",
+      "countryCode": "SK"
+    }
+  },
+  {
+    "index": 91,
+    "place": "Kranj",
+    "country": "SI",
+    "result": {
+      "lat": 46.2432913,
+      "lng": 14.3549353,
+      "displayName": "Kranj, 4000, Slovenija",
+      "countryCode": "SI"
+    }
+  },
+  {
+    "index": 93,
+    "place": "Rimavská Sobota",
+    "country": "SK",
+    "result": {
+      "lat": 48.3833603,
+      "lng": 20.0180584,
+      "displayName": "Rimavská Sobota, okres Rimavská Sobota, Banskobystrický kraj, 979 01, Slovensko",
+      "countryCode": "SK"
+    }
+  }
+]

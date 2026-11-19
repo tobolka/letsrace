@@ -1,0 +1,1223 @@
+import type { Audience } from "@/lib/domain";
+import { resolveLevel, isGranFondoWorldSeries } from "@/lib/classify-level";
+import { fold } from "@/lib/text-match";
+
+/**
+ * Controlled vocabulary for Let's Race.
+ *
+ * `disciplines` on an event is a text[] of these ids (parents + leaves).
+ * Filters expand a parent (mtb, road) to its leaves. Do not introduce a
+ * separate formats table — leaf ids *are* the formats (xco, tt, gran_fondo).
+ */
+
+export const DISCIPLINES = [
+  "mtb",
+  "xco",
+  "xcc",
+  "xce",
+  "xcm",
+  "dh",
+  "enduro",
+  "gravel",
+  "road",
+  "road_race",
+  "tt",
+  "criterium",
+  "hill_climb",
+  "gran_fondo",
+  "cx",
+  "track",
+  "bmx",
+  "other",
+] as const;
+
+export type Discipline = (typeof DISCIPLINES)[number];
+
+export const DISCIPLINE_LABELS: Record<Discipline, string> = {
+  mtb: "MTB",
+  xco: "XCO",
+  xcc: "XCC",
+  xce: "XCE",
+  xcm: "XCM",
+  dh: "Downhill",
+  enduro: "Enduro",
+  gravel: "Gravel",
+  road: "Road",
+  road_race: "Road Race",
+  tt: "Time Trial",
+  criterium: "Criterium",
+  hill_climb: "Hill Climb",
+  gran_fondo: "Gran Fondo",
+  cx: "Cyclocross",
+  track: "Track",
+  bmx: "BMX",
+  other: "Other",
+};
+
+/**
+ * Always-visible explore chips — parent families only. Leaves stay in the full
+ * discipline menu.
+ */
+export const QUICK_DISCIPLINE_FILTERS = ["mtb", "road", "gravel", "cx"] as const;
+export type QuickDisciplineFilter = (typeof QUICK_DISCIPLINE_FILTERS)[number];
+
+/** High-level families used as filter parents. Gravel is a sibling of MTB, not a child. */
+export const DISCIPLINE_TREE: {
+  id: Discipline;
+  label: string;
+  children?: { id: Discipline; label: string }[];
+}[] = [
+  {
+    id: "mtb",
+    label: "MTB",
+    children: [
+      { id: "xco", label: "XCO" },
+      { id: "xcc", label: "XCC" },
+      { id: "xce", label: "XCE" },
+      { id: "xcm", label: "XCM" },
+      { id: "dh", label: "Downhill" },
+      { id: "enduro", label: "Enduro" },
+    ],
+  },
+  {
+    id: "road",
+    label: "Road",
+    children: [
+      { id: "road_race", label: "Road Race" },
+      { id: "tt", label: "Time Trial" },
+      { id: "criterium", label: "Criterium" },
+      { id: "hill_climb", label: "Hill Climb" },
+      { id: "gran_fondo", label: "Gran Fondo" },
+    ],
+  },
+  { id: "gravel", label: "Gravel" },
+  { id: "cx", label: "Cyclocross" },
+  { id: "track", label: "Track" },
+  { id: "bmx", label: "BMX" },
+];
+
+const MTB_LEAVES: Discipline[] = ["xco", "xcc", "xce", "xcm", "dh", "enduro", "mtb"];
+const ROAD_LEAVES: Discipline[] = [
+  "road",
+  "road_race",
+  "tt",
+  "criterium",
+  "hill_climb",
+  "gran_fondo",
+];
+
+/** Leaf ids stored also in `formats` for display / finer queries. */
+export const FORMAT_IDS = [
+  "xco",
+  "xcc",
+  "xce",
+  "xcm",
+  "dh",
+  "enduro",
+  "road_race",
+  "tt",
+  "criterium",
+  "hill_climb",
+  "gran_fondo",
+] as const;
+
+export type Format = (typeof FORMAT_IDS)[number];
+
+export function formatsFromDisciplines(ids: Discipline[]): Format[] {
+  const set = new Set<string>(FORMAT_IDS);
+  return ids.filter((d): d is Format => set.has(d));
+}
+
+export function expandDisciplineFilter(ids: string[]): string[] {
+  const out = new Set<string>();
+  for (const id of ids) {
+    if (id === "mtb") MTB_LEAVES.forEach((d) => out.add(d));
+    else if (id === "road") ROAD_LEAVES.forEach((d) => out.add(d));
+    else out.add(id);
+  }
+  return [...out];
+}
+
+const MTB_RACE = new Set<string>(["mtb", "xco", "xcc", "xce", "dh", "enduro"]);
+const FAMILY_FILTERS = new Set<string>(["mtb", "road", "gravel", "cx", "track", "bmx"]);
+
+export function disciplineFamily(id: string | null | undefined): Discipline {
+  if (!id) return "other";
+  if (MTB_LEAVES.includes(id as Discipline)) return "mtb";
+  if (ROAD_LEAVES.includes(id as Discipline)) return "road";
+  if (id === "gravel" || id === "cx" || id === "track" || id === "bmx") {
+    return id;
+  }
+  return "other";
+}
+
+/**
+ * Drop XCM that was inferred from "marathon" on a road/gravel event.
+ * Keep XCM when the event also has a real MTB format.
+ */
+export function canonicalEventDisciplines(raw: string[] | null | undefined): Discipline[] {
+  const ids = canonicalizeDisciplines(raw);
+  const hasRealMtb = ids.some((d) => MTB_RACE.has(d));
+  const hasRoad = ids.some((d) => disciplineFamily(d) === "road");
+  const hasGravel = ids.includes("gravel");
+  const stripped = ids.filter((d) => {
+    if (d === "xcm" && (hasRoad || hasGravel) && !hasRealMtb) return false;
+    return true;
+  });
+  const fam = eventDisciplineFamily(stripped);
+  return [...stripped].sort((a, b) => {
+    const af = disciplineFamily(a) === fam ? 0 : 1;
+    const bf = disciplineFamily(b) === fam ? 0 : 1;
+    return af - bf;
+  });
+}
+
+/** Dominant family for color + family filters — not "whatever is first in the array". */
+export function eventDisciplineFamily(disciplines: string[] | null | undefined): Discipline {
+  const ids = canonicalizeDisciplines(disciplines);
+  const hasRealMtb = ids.some((d) => MTB_RACE.has(d));
+  const hasRoad = ids.some((d) => disciplineFamily(d) === "road");
+  const hasGravel = ids.includes("gravel");
+  const cleaned = ids.filter((d) => {
+    if (d === "xcm" && (hasRoad || hasGravel) && !hasRealMtb) return false;
+    return true;
+  });
+  const families = cleaned.map((d) => disciplineFamily(d)).filter((f) => f !== "other");
+  if (!families.length) return "other";
+  const unique = new Set(families);
+  if (unique.size === 1) return families[0]!;
+  if (unique.has("mtb") && hasRealMtb) return "mtb";
+  if (unique.has("gravel")) return "gravel";
+  if (unique.has("cx")) return "cx";
+  return families[0]!;
+}
+
+/** Family chips match the dominant family so a road radmarathon is not an MTB pin. */
+export function matchesDisciplineFilter(
+  disciplines: string[] | null | undefined,
+  selected: string[],
+): boolean {
+  if (!selected.length) return true;
+  const ids = canonicalEventDisciplines(disciplines);
+  const fam = eventDisciplineFamily(ids);
+  return selected.some((s) => {
+    if (FAMILY_FILTERS.has(s)) return fam === s;
+    return (ids as string[]).includes(s);
+  });
+}
+
+const LEGACY_DISC: Record<string, Discipline> = {
+  xc: "xco",
+  xco: "xco",
+  xcc: "xcc",
+  xce: "xce",
+  xcm: "xcm",
+  marathon: "xcm",
+  maraton: "xcm",
+  mtb: "mtb",
+  dh: "dh",
+  downhill: "dh",
+  enduro: "enduro",
+  gravel: "gravel",
+  road: "road",
+  road_race: "road_race",
+  silnice: "road",
+  tt: "tt",
+  "time trial": "tt",
+  casovka: "tt",
+  časovka: "tt",
+  criterium: "criterium",
+  crit: "criterium",
+  hill_climb: "hill_climb",
+  "hill climb": "hill_climb",
+  gran_fondo: "gran_fondo",
+  "gran fondo": "gran_fondo",
+  sportive: "gran_fondo",
+  cx: "cx",
+  cyclocross: "cx",
+  cyklokros: "cx",
+  track: "track",
+  draha: "track",
+  bmx: "bmx",
+  // Para-cycling is not a discipline of its own here: every para race we
+  // carry is also a road race, and a tag that only ever rides along with
+  // another one bought a filter, a colour and a label for nothing.
+  para: "road",
+  "para-cycling": "road",
+  other: "other",
+  mtbo: "other",
+  biathlon: "other",
+  kids: "other",
+};
+
+export function canonicalizeDiscipline(raw: string | null | undefined): Discipline | null {
+  if (!raw) return null;
+  const key = raw.toLowerCase().trim();
+  return LEGACY_DISC[key] ?? (DISCIPLINES.includes(key as Discipline) ? (key as Discipline) : null);
+}
+
+export function canonicalizeDisciplines(raw: string[] | null | undefined): Discipline[] {
+  const out: Discipline[] = [];
+  const seen = new Set<string>();
+  for (const r of raw ?? []) {
+    const d = canonicalizeDiscipline(r);
+    if (d && d !== "other" && !seen.has(d)) {
+      seen.add(d);
+      out.push(d);
+    }
+  }
+  if (!out.length && (raw ?? []).some((r) => canonicalizeDiscipline(r) === "other")) {
+    return ["other"];
+  }
+  return out;
+}
+
+export function inferDisciplines(text: string, existing?: string[] | null): Discipline[] {
+  const fromExisting = canonicalizeDisciplines(existing);
+  const t = text.toLowerCase();
+  // Marathons are matched on a diacritic-free copy: the Slovak and Czech
+  // spelling is "maratón", and a word boundary before "maraton" also misses
+  // "minimaraton" and "půlmaraton" — between them that was most of the MTB
+  // marathons in the catalogue losing their XCM tag.
+  const tf = t.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  const found = new Set<Discipline>(fromExisting);
+
+  if (/\bxce\b|eliminat/.test(t)) found.add("xce");
+  if (/\bxcc\b/.test(t)) found.add("xcc");
+  if (/\bxcm\b/.test(tf)) found.add("xcm");
+  else if (/marath?on/.test(tf) && isMtbMarathon(tf)) found.add("xcm");
+  if (/\bxco\b/.test(t)) found.add("xco");
+  if (/\bdh\b|downhill|sjezd/.test(t)) found.add("dh");
+  if (/\benduro\b/.test(t)) found.add("enduro");
+  if (/\bgravel\b|gravelow/.test(t)) found.add("gravel");
+  if (/\bgran[\s-]?fondo\b|\bsportive\b|\bcyclosport/.test(t)) found.add("gran_fondo");
+  if (/\bhill[\s-]?climb\b|vrchař|vrchar|côte[\s-]?spéciale/.test(t)) found.add("hill_climb");
+  if (/\bcriterium\b|\bcrit\b|kriterium|kryterium/.test(t)) found.add("criterium");
+  if (
+    /\btt\b|time[\s-]?trial|časovka|casovka|contre[- ]la[- ]montre|czasówka|czasowka|jazda na czas/.test(
+      t,
+    )
+  ) {
+    found.add("tt");
+  }
+  // "Cyklo-X" is what Czech federation calendars call cyclocross, and "TBC
+  // série" is a cyclocross series that never spells the word out. Both were
+  // arriving with no discipline at all.
+  if (
+    /\bcx\b|cyclocross|cyklokros|cyclo[- ]cross|cyklo[- ]?x\b|\btbc\s*s[eé]rie|przełaj|przelaj/.test(t)
+  ) {
+    found.add("cx");
+  }
+  if (
+    // "tor kolarski" is the Polish for a velodrome, and it is how their track
+    // championships name the venue rather than the discipline.
+    /\btrack\b|dráha|draha|velodrom|\btorow|tor\s+kolarski/.test(t) &&
+    !/short\s*track/.test(t)
+  ) {
+    found.add("track");
+  }
+  // UCI races pumptrack under BMX; four-cross is MTB gravity with no leaf of its own.
+  if (/\bbmx\b|pump[\s-]?track/.test(t)) found.add("bmx");
+  if (/\broad[\s-]?race\b|silniční závod|silnicni zavod|wyścig szosowy|wyscig szosowy/.test(t))
+    found.add("road_race");
+  if (
+    /\bmtb\b|horské|horske|cross[\s-]?country|\bxc\b|\b4x\b|four[\s-]?cross|kolarstw\w* górsk|kolarstw\w* gorsk/.test(
+      t,
+    ) &&
+    ![...found].some((d) => MTB_LEAVES.includes(d))
+  ) {
+    found.add("mtb");
+  }
+  if (/\broad\b|silnic|szosow|\bszosa\b/.test(t) && ![...found].some((d) => ROAD_LEAVES.includes(d))) {
+    found.add("road");
+  }
+
+  const list = [...found].filter((d) => d !== "other");
+  if (list.length) return canonicalEventDisciplines(list);
+  if (fromExisting.includes("other")) return ["other"];
+  return fromExisting;
+}
+
+function isMtbMarathon(t: string): boolean {
+  if (/\bmtb\b|\bxco\b|\bxcc\b|\bxc\b|horské|horske|cross[\s-]?country/.test(t)) return true;
+  if (/\bgravel\b/.test(t)) return false;
+  if (
+    /radmarathon|rad[\s-]?marathon|cycling[\s-]?marathon|rennrad|gran[\s-]?fondo|sportive|jedermann/.test(
+      t,
+    )
+  ) {
+    return false;
+  }
+  if (/\broad\b|silnic/.test(t)) return false;
+  return true;
+}
+
+/** Stored on events.age_categories. U-bands are the precise kids/youth splits. */
+export const AGE_CATEGORIES = [
+  "u7",
+  "u9",
+  "u11",
+  "u13",
+  "u15",
+  "u17",
+  "kids",
+  "youth",
+  "junior",
+  "u23",
+  "elite",
+  "amateur",
+  "masters",
+] as const;
+
+export type AgeCategory = (typeof AGE_CATEGORIES)[number];
+
+export const AGE_CATEGORY_LABELS: Record<AgeCategory, string> = {
+  u7: "U7",
+  u9: "U9",
+  u11: "U11",
+  u13: "U13",
+  u15: "U15",
+  u17: "U17",
+  kids: "Kids",
+  youth: "Youth",
+  junior: "Junior",
+  u23: "U23",
+  elite: "Elite",
+  amateur: "Amateur",
+  masters: "Masters",
+};
+
+/** Filter chips — kids/youth expand to U-bands so mixed series still match. */
+export const AGE_CATEGORY_FILTERS: {
+  id: AgeCategory;
+  label: string;
+  expands: AgeCategory[];
+}[] = [
+  { id: "kids", label: "Kids", expands: ["kids", "u7", "u9", "u11"] },
+  { id: "youth", label: "Youth", expands: ["youth", "u13", "u15", "u17"] },
+  { id: "junior", label: "Junior", expands: ["junior"] },
+  { id: "u23", label: "U23", expands: ["u23"] },
+  { id: "elite", label: "Elite", expands: ["elite"] },
+  { id: "amateur", label: "Amateur", expands: ["amateur"] },
+  { id: "masters", label: "Masters", expands: ["masters"] },
+];
+
+/** The U-bands one can pick on their own, under the group they belong to. */
+export const AGE_BAND_PARENT: Partial<Record<AgeCategory, AgeCategory>> = {
+  u7: "kids",
+  u9: "kids",
+  u11: "kids",
+  u13: "youth",
+  u15: "youth",
+  u17: "youth",
+};
+
+/** The single bands shown under a group in the Category menu. */
+export function ageBandsOf(group: string): AgeCategory[] {
+  return (Object.entries(AGE_BAND_PARENT) as [AgeCategory, AgeCategory][])
+    .filter(([, parent]) => parent === group)
+    .map(([band]) => band);
+}
+
+export function expandAgeCategoryFilter(ids: string[]): string[] {
+  const out = new Set<string>();
+  for (const id of ids) {
+    const group = AGE_CATEGORY_FILTERS.find((g) => g.id === id);
+    if (group) group.expands.forEach((x) => out.add(x));
+    else out.add(id);
+    // A single band also reaches races that only say "kids" or "youth" —
+    // they may run it; the match decides whether that is a yes or a maybe.
+    const parent = AGE_BAND_PARENT[id as AgeCategory];
+    if (parent) out.add(parent);
+  }
+  return [...out];
+}
+
+/** Match Category chips to stored age_categories — never treat unknown mixed as Kids. */
+export function matchesAgeCategoryFilter(
+  event: { audience?: string | null; ageCategories?: string[] | null },
+  selected: string[],
+): boolean {
+  if (!selected.length) return true;
+  const expanded = new Set(expandAgeCategoryFilter(selected));
+  const ages = event.ageCategories ?? [];
+  if (ages.some((c) => expanded.has(c))) return true;
+  const audience = (event.audience || "").toLowerCase();
+  if (!ages.length && selected.includes("kids") && audience === "kids") return true;
+  if (!ages.length && selected.includes("youth") && audience === "youth") return true;
+  return false;
+}
+
+export type AgeMatch = "match" | "possible" | "no";
+
+/**
+ * How one selected chip meets a race's list: "hit" when the race names it
+ * (or, for a group, any band in it); "umbrella" when a single band is picked
+ * and the race says only its group ("kids") without naming any band in it —
+ * maybe; "miss" otherwise.
+ */
+function chipMeets(ages: string[], id: string): "hit" | "umbrella" | "miss" {
+  const group = AGE_CATEGORY_FILTERS.find((g) => g.id === id);
+  if (group) return group.expands.some((x) => ages.includes(x)) ? "hit" : "miss";
+  if (ages.includes(id)) return "hit";
+  const parent = AGE_BAND_PARENT[id as AgeCategory];
+  if (parent && ages.includes(parent)) {
+    const siblings = Object.entries(AGE_BAND_PARENT)
+      .filter(([, p]) => p === parent)
+      .map(([band]) => band);
+    if (!siblings.some((b) => ages.includes(b))) return "umbrella";
+  }
+  return "miss";
+}
+
+/**
+ * How a race answers a category filter, given what we actually know.
+ *
+ * - `match`: the source stated its categories and one of them is selected.
+ * - `possible`: we do not know — no categories at all, or only a guess that
+ *   happens to fit. Shown, marked as unconfirmed, because hiding it would be
+ *   us deciding something nobody told us.
+ * - `no`: the source stated categories and none is selected.
+ *   A guess or last season's list never excludes a race.
+ *
+ * A guess may make a race likely; only a stated list may make it certain.
+ */
+export function ageCategoryMatch(
+  event: { audience?: string | null; ageCategories?: string[] | null; ageConfidence?: string | null },
+  selected: string[],
+): AgeMatch {
+  if (!selected.length) return "match";
+  const ages = event.ageCategories ?? [];
+  if (!ages.length) return "possible";
+  const results = selected.map((id) => chipMeets(ages, id));
+  const hit = results.includes("hit");
+  if (event.ageConfidence === "explicit") {
+    if (hit) return "match";
+    // "Kids" stated, U11 asked: the race has children's classes, we do not
+    // know which — kept, as a maybe.
+    return results.includes("umbrella") ? "possible" : "no";
+  }
+  // A guess never rules a race out — the point of the filter is to find a
+  // race, and a gravel race we assumed was for adults may well run a kids'
+  // lap. The guess only decides how far down the list it sits.
+  return "possible";
+}
+
+/**
+ * Order within a category filter: confirmed first, then last year's list,
+ * then races whose guess fits, then the ones we know nothing about, then
+ * guesses that point elsewhere. Date stays the order inside each tier.
+ */
+export function ageMatchRank(
+  event: { ageCategories?: string[] | null; ageConfidence?: string | null },
+  selected: string[],
+): number {
+  const ages = event.ageCategories ?? [];
+  const results = selected.map((id) => chipMeets(ages, id));
+  const hit = results.includes("hit");
+  const near = hit || results.includes("umbrella");
+  if (event.ageConfidence === "explicit" && hit) return 0;
+  // Last year's stated list is nearly as good: a race's classes rarely change.
+  if (event.ageConfidence === "previous" && hit) return 1;
+  if (ages.length && near) return 2;
+  if (!ages.length) return 3;
+  return 4;
+}
+
+/** Labels aligned with Category filter chips. Empty = we don't know — don't guess. */
+export function formatEventCategoryLabel(
+  event: { audience?: string | null; ageCategories?: string[] | null },
+  audienceLabels: { kids: string; youth: string; adults: string },
+  /** Localises the chip names; without it they stay in English. */
+  categoryLabel: (id: AgeCategory) => string = (id) => AGE_CATEGORY_LABELS[id],
+): string {
+  const ages = event.ageCategories ?? [];
+  if (ages.length) {
+    const chips: string[] = [];
+    for (const f of AGE_CATEGORY_FILTERS) {
+      if (f.expands.some((x) => ages.includes(x))) chips.push(categoryLabel(f.id));
+    }
+    return chips.join(" · ");
+  }
+  const a = (event.audience || "").toLowerCase();
+  if (a === "kids") return audienceLabels.kids;
+  if (a === "youth") return audienceLabels.youth;
+  if (a === "adults") return audienceLabels.adults;
+  return "";
+}
+
+export function inferAgeCategories(
+  text: string,
+  categoryNames?: string[] | null,
+): AgeCategory[] {
+  const blob = `${text} ${(categoryNames ?? []).join(" ")}`.toLowerCase();
+  const found = new Set<AgeCategory>();
+
+  const addU = (n: AgeCategory) => {
+    found.add(n);
+    // "Kids" is what a parent of a seven-year-old means: up to ten. Pupils
+    // from eleven (U13 — mladší žáci) ride youth races.
+    if (n === "u7" || n === "u9" || n === "u11") found.add("kids");
+    if (n === "u13" || n === "u15" || n === "u17") found.add("youth");
+  };
+
+  if (/\bu\s*7\b|\bu7\b/.test(blob)) addU("u7");
+  if (/\bu\s*9\b|\bu9\b/.test(blob)) addU("u9");
+  if (/\bu\s*11\b|\bu11\b/.test(blob)) addU("u11");
+  if (/\bu\s*13\b|\bu13\b/.test(blob)) addU("u13");
+  if (/\bu\s*15\b|\bu15\b/.test(blob)) addU("u15");
+  if (/\bu\s*17\b|\bu17\b/.test(blob)) addU("u17");
+
+  if (
+    /kids|děti|deti|předžá|predza|benjam|naděj|nadej|šneček|snecek/.test(blob) ||
+    found.has("u7") ||
+    found.has("u9") ||
+    found.has("u11")
+  ) {
+    found.add("kids");
+  }
+  if (
+    /youth|mládež|mladez|kadet|(?<!před)žák|(?<!pred)zak/.test(blob) ||
+    found.has("u13") ||
+    found.has("u15") ||
+    found.has("u17")
+  ) {
+    found.add("youth");
+  }
+  if (/\bjunior|\bjunioři|\bjuniori|\bjuniors?\b/.test(blob)) found.add("junior");
+  if (/\bu\s*23\b|\bu23\b/.test(blob)) found.add("u23");
+  if (/\belite\b|\belita\b/.test(blob)) found.add("elite");
+  if (/\bamateur\b|\bhobby\b|\bopen\b|\bjedermann\b|\bgran[\s-]?fondo\b|\bsportive\b/.test(blob)) {
+    found.add("amateur");
+  }
+  if (/\bmasters?\b|\bveteran|\bveterán/.test(blob)) found.add("masters");
+
+  return AGE_CATEGORIES.filter((c) => found.has(c));
+}
+
+const FAMILY_OR_KIDS_SERIES =
+  /\bvan\s*gillern\b|\bgillern\s*cup\b|\bkon[aá]rovick[yý]\s*ko[rř]en\b|\bk-koren\b|\bjesenick[yý]\s*šnek\b|\bkolo\s*pro\s*(život|zivot)\b|\bkolopro\b|\btalent\s*cup\b|\bjunior\s*cup\b|\bprima\s*cup\b|\bkids[\s-]*cup\b|\bvpace\s*kids\b|\bcube\s*(kids\s*)?cup\b|\brookies\s*(dh\s*)?cup\b|\bfox\s*grom|\bgrom\s*enduro|\bd[eě]tsk[yý]\s*mtb\s*cup\b|\bpohár?\s*m[čc]\s*praha\s*4\b|\bvelk[yý]\s*h[áa]j\b|\bppkbike\b|\bpohár?\s*plzeňského\s*kraje\b|\balb-?gold|\brookies\s*cup\s*ostbayern\b|\bxco-?bikecup\b|\bjunior\s*bike\s*cup\b|\bon-off\s*mtb|\bdetská\s*tour|\bdetsk[eé]\s*mtb\b|\bpovažská\s*cykloliga\b|\bsaarlandliga\b|\bschwarzw(ae|ä|a)lder\b|\brhein-eifel\b|\boberschwaben\s*cup\b|\bpeklo\s*severu\b|\bústí\s*mtb\s*cup\b|\busti\s*mtb\s*cup\b|\bbayerwald\b|\bwerdenfels|\brhein-main\b|\beldorado\b|\bberg\s*&\s*bike|\bmpdv\b|\bdetská\s*vrl|\bjunior\s*challenge|\ballgäu|\bwiesbadener\s*stadtmeisterschaft|\bswiss\s*bike\s*cup\b|\bvittoria|\bkids\s*bike\s*trophy\b|\bvalais\b|\bvaliant\s*gp\b|\bbike\s*kingdom\b|\bbundicycling\b|\beiger\s*bike.*kids|\bxco-nrw\b|\bschüler[\s-]*cup|\brena\s*kids|\bsparkassen[\s-]*kids|\bstoakart|\bjarn[ií]\s*bahno|\bbike\s*revolution|\bbikeside|\bcopa\s*madrid|\bsloxcup\b|\bslovenia\s*downhill|\bmtb\s*kids\s*series|\bstreetrace|\bitalia\s*bike\s*cup\s*young|\bcoppa\s*italia\s*giovanile|\bcopa\s*catalunya|\byoungsters\s*cup\b|\bkamptal\s*trophy\b.{0,24}\b(kids|youngsters)\b|\bnachwuchsbundesliga\b|\bpko\s*(ubezpieczenia\s*)?junior\s*race\b|\bjunior\s*race\b/i;
+
+const KIDS_PRIMARY_SERIES =
+  /\btalent\s*cup\b|\bjunior\s*cup\b|\bprima\s*cup\b|\bkids[\s-]*cup\b|\bvpace\s*kids\b|\bcube\s*(kids\s*)?cup\b|\brookies\s*(dh\s*)?cup\b|\bd[eě]tsk[yý]\s*mtb\s*cup\b|\balb-?gold|\brookies\s*cup\s*ostbayern\b|\bjunior\s*bike\s*cup\b|\bdetská\s*tour|\bon-off\s*mtb|\bbayerwald\b|\bwerdenfels|\beldorado\b|\bdetská\s*vrl|\bjunior\s*challenge|\ballgäu|\brhein-main\b|\bkids\s*bike\s*trophy\b|\bkids\s*bike\s*cup\s*valais\b|\bvaliant\s*gp\b|\bbike\s*kingdom\b|\bbundicycling\b|\beiger\s*bike.*kids|\bxco-nrw\b|\brena\s*kids|\bsparkassen[\s-]*kids|\bstoakart|\bbike\s*revolution|\bbikeside|\bcopa\s*madrid|\bmtb\s*kids\s*series|\bitalia\s*bike\s*cup\s*young|\bcoppa\s*italia\s*giovanile|\bcopa\s*catalunya\s*btt|\byoungsters\s*cup\b|\bkamptal\s*trophy\b.{0,24}\b(kids|youngsters)\b|\bnachwuchsbundesliga\b|\bpko\s*(ubezpieczenia\s*)?junior\s*race\b|\bjunior\s*race\b/i;
+
+export function isFamilyOrKidsSeries(text: string | null | undefined): boolean {
+  return Boolean(text && FAMILY_OR_KIDS_SERIES.test(text));
+}
+
+export function isKidsPrimarySeries(text: string | null | undefined): boolean {
+  return Boolean(text && KIDS_PRIMARY_SERIES.test(text));
+}
+
+/** Czech/Slovak national MTB XC cups run U13 through Elite. */
+const NATIONAL_MTB_ALL_AGES =
+  /česk[ýy]\s*poh[áa]r(\s*mtb|\s*xc|\s*xco)?|cesky\s*pohar(\s*mtb|\s*xc|\s*xco)?|slovensk[ýy]\s*poh[áa]r(\s*mtb|\s*xc|\s*xco)?|poh[áa]r\s*mtb\s*xc|\bčp\s*xco\b|\bcp\s*xco\b|\bčp\s*mtb\b/i;
+
+/**
+ * UCI World Cup / World Series / Superprestige — junior–elite, not kids.
+ * Excludes the Gran Fondo World Series, which is amateur mass participation
+ * wearing the same words.
+ */
+const UCI_JUNIOR_TO_ELITE =
+  /world[\s-]?cup|superprestige|world[\s-]?tour|uci\s+(mtb|bmx|cyclo\s?cross|track)\s+world/i;
+
+/** UCI class races (C1–C3, HC, 1.x / 2.x) — typically junior–elite. */
+const UCI_CLASS_RACE =
+  /\buci\s*c[123]\b|\bc[123]\s*uci\b|\buci\s*hc\b|\bhc\s*uci\b|\b[12]\.[12uw]\b|\buci\s+(wt|proseries|pro\s*series)\b/i;
+
+const NATIONAL_CHAMPIONSHIP =
+  /\bnational\s+championship|\bnational\s+champ\b|mistrovstv[ií]\s+(republiky|čr|cr|sr|slovenska)|mistrovstv[ií]\s+česka|\bmčr\b|\bm[cč]sr\b/i;
+
+const PRO_ROAD_ELITE =
+  /\b(vuelta|giro\s+d['’]?italia|tour\s+de\s+france|il\s+lombardia|amstel\s+gold|paris[\s-]?roubaix|milano[\s-]?san[\s-]?remo|li[eè]ge|fl[eè]che\s+wallonne|strade\s+bianche|tour\s+of\s+britain|renewi\s+tour|worldtour|bretagne\s+classic|classic\s+lorient)\b/i;
+
+const MASS_PARTICIPATION =
+  /gran[\s-]?fondo|jedermann|cyklosport|sportive|radmarathon|rad[\s-]?marathon|cycling[\s-]?marathon|bike\s*marathon|kolo\s*pro\s*(život|zivot)|kolopro|race\s+around|race\s+across|ultramaraton|ultra[\s-]?(race|distance)/i;
+
+function addAgeDefaults(
+  found: Set<AgeCategory>,
+  opts: {
+    text: string;
+    familySeries: boolean;
+    kidsPrimary: boolean;
+    existingAudience?: string | null;
+    level?: string | null;
+    disciplines?: string[] | null;
+    granFondoWorldSeries?: boolean;
+  },
+) {
+  const t = opts.text;
+  const discs = opts.disciplines ?? [];
+  const hasGravel = discs.includes("gravel") || /\bgravel\b/.test(t);
+  const hasRoadFamily =
+    discs.some((d) =>
+      ["road", "road_race", "tt", "criterium", "hill_climb", "gran_fondo"].includes(d),
+    ) || /\broad\b|silnic|gran[\s-]?fondo/.test(t);
+
+  if (opts.granFondoWorldSeries) {
+    found.add("amateur");
+    found.add("masters");
+    return;
+  }
+  if (opts.kidsPrimary) {
+    found.add("kids");
+    found.add("youth");
+    return;
+  }
+  if (opts.familySeries) {
+    found.add("kids");
+    found.add("youth");
+    found.add("amateur");
+    found.add("masters");
+    return;
+  }
+  // Keep explicit age tokens from the name; only fill when still empty.
+  if (found.size) return;
+  if (
+    opts.level === "world_cup" ||
+    opts.level === "world_championship" ||
+    UCI_JUNIOR_TO_ELITE.test(t)
+  ) {
+    found.add("junior");
+    found.add("u23");
+    found.add("elite");
+    return;
+  }
+  if (opts.level === "european_championship") {
+    found.add("youth");
+    found.add("junior");
+    found.add("u23");
+    found.add("elite");
+    return;
+  }
+  if (UCI_CLASS_RACE.test(t) || PRO_ROAD_ELITE.test(t)) {
+    found.add("junior");
+    found.add("u23");
+    found.add("elite");
+    return;
+  }
+  if (NATIONAL_MTB_ALL_AGES.test(t)) {
+    found.add("kids");
+    found.add("youth");
+    found.add("junior");
+    found.add("u23");
+    found.add("elite");
+    return;
+  }
+  if (NATIONAL_CHAMPIONSHIP.test(t) && !isKidsPrimarySeries(t) && !/\bkids|děti|deti|giovanile\b/.test(t)) {
+    found.add("junior");
+    found.add("u23");
+    found.add("elite");
+    return;
+  }
+  if (MASS_PARTICIPATION.test(t)) {
+    found.add("amateur");
+    found.add("masters");
+    return;
+  }
+  // Open gravel / road mass starts — not kids races unless named as such
+  if (hasGravel && !/\buci\b/.test(t)) {
+    found.add("amateur");
+    found.add("masters");
+    return;
+  }
+  if (hasRoadFamily && /\b(marathon|fondo|jedermann|sportive|hobby|open)\b/.test(t)) {
+    found.add("amateur");
+    found.add("masters");
+    return;
+  }
+  if (opts.existingAudience === "kids") found.add("kids");
+  if (opts.existingAudience === "youth") {
+    found.add("youth");
+    found.add("junior");
+  }
+  if (opts.existingAudience === "adults") {
+    found.add("amateur");
+    found.add("masters");
+  }
+  if (found.size) return;
+  // Generic road / gravel / marathon without age tokens → adult amateur, not "unknown".
+  // Leave unnamed local MTB empty — kids vs adults is often unstated.
+  if (hasRoadFamily || hasGravel || discs.includes("xcm")) {
+    found.add("amateur");
+    found.add("masters");
+  }
+}
+
+export function audienceFromAgeCategories(cats: AgeCategory[]): Audience {
+  if (!cats.length) return "mixed";
+  const hasKids = cats.includes("kids") || cats.some((c) => c.startsWith("u") && Number(c.slice(1)) <= 13);
+  const hasYouth =
+    cats.includes("youth") ||
+    cats.includes("junior") ||
+    cats.includes("u15") ||
+    cats.includes("u17");
+  const hasAdults =
+    cats.includes("u23") ||
+    cats.includes("elite") ||
+    cats.includes("masters") ||
+    cats.includes("amateur");
+  const n = [hasKids, hasYouth, hasAdults].filter(Boolean).length;
+  if (n > 1) return "mixed";
+  if (hasKids) return "kids";
+  if (hasYouth) return "youth";
+  if (hasAdults) return "adults";
+  return "mixed";
+}
+
+export const RACE_LEVELS = [
+  "local",
+  "regional",
+  "national",
+  "continental",
+  "international",
+  "world_cup",
+  "european_championship",
+  "world_championship",
+] as const;
+
+export type RaceLevel = (typeof RACE_LEVELS)[number];
+
+export const RACE_LEVEL_LABELS: Record<RaceLevel, string> = {
+  local: "Local",
+  regional: "Regional",
+  national: "National",
+  continental: "Continental",
+  international: "International",
+  world_cup: "World Cup",
+  european_championship: "European Championship",
+  world_championship: "World Championship",
+};
+
+export const UCI_CLASSES = [
+  "worldtour",
+  "proseries",
+  "hc",
+  "c1",
+  "c2",
+  "c3",
+  "1.1",
+  "1.2",
+  "2.1",
+  "2.2",
+] as const;
+export type UciClass = (typeof UCI_CLASSES)[number];
+
+export const UCI_CLASS_LABELS: Record<UciClass, string> = {
+  worldtour: "WorldTour",
+  proseries: "ProSeries",
+  hc: "HC",
+  c1: "C1",
+  c2: "C2",
+  c3: "C3",
+  "1.1": "1.1",
+  "1.2": "1.2",
+  "2.1": "2.1",
+  "2.2": "2.2",
+};
+
+export const EVENT_TYPES = [
+  "race",
+  "cup",
+  "series",
+  "championship",
+  "festival",
+  "gran_fondo",
+  "tour",
+  "challenge",
+  "ride",
+  "training",
+  "other",
+] as const;
+export type EventType = (typeof EVENT_TYPES)[number];
+
+export const EVENT_TYPE_LABELS: Record<EventType, string> = {
+  race: "Race",
+  cup: "Cup",
+  series: "Series",
+  championship: "Championship",
+  festival: "Festival",
+  gran_fondo: "Gran Fondo",
+  tour: "Tour",
+  challenge: "Challenge",
+  ride: "Ride",
+  training: "Training",
+  other: "Other",
+};
+
+export const COMPETITION_TYPES = [
+  "uci",
+  "national_federation",
+  "regional",
+  "amateur",
+  "commercial",
+  "community",
+  "other",
+] as const;
+export type CompetitionType = (typeof COMPETITION_TYPES)[number];
+
+export const COMPETITION_TYPE_LABELS: Record<CompetitionType, string> = {
+  uci: "UCI",
+  national_federation: "National federation",
+  regional: "Regional",
+  amateur: "Amateur",
+  commercial: "Commercial",
+  community: "Community",
+  other: "Other",
+};
+
+/** Recurring cups / circuits — not individual races. Level covers national vs international. */
+export const SERIES_TYPES = [
+  "cup",
+  "league",
+  "championship",
+  "tour",
+  "kids_series",
+  "junior_series",
+  "enduro_series",
+  "marathon_series",
+  "gran_fondo_series",
+  "other",
+] as const;
+export type SeriesType = (typeof SERIES_TYPES)[number];
+
+export const SERIES_TYPE_LABELS: Record<SeriesType, string> = {
+  cup: "Cup",
+  league: "League",
+  championship: "Championship",
+  tour: "Tour",
+  kids_series: "Kids series",
+  junior_series: "Junior series",
+  enduro_series: "Enduro series",
+  marathon_series: "Marathon series",
+  gran_fondo_series: "Gran fondo series",
+  other: "Series",
+};
+
+export const SERIES_STATUSES = ["draft", "active", "completed", "cancelled", "archived"] as const;
+export type SeriesStatus = (typeof SERIES_STATUSES)[number];
+
+export function inferSeriesType(opts: {
+  name: string;
+  slug?: string | null;
+  disciplines?: string[];
+  ageCategories?: string[];
+}): SeriesType {
+  const t = `${opts.name} ${opts.slug ?? ""}`.toLowerCase();
+  // Name wins over event disciplines (CUBE Cup is a cup that also has XCM races).
+  if (
+    /d[eě]tsk|kids[\s-]*cup|vpace\s*kids|talent\s*cup|fox\s*grom|grom\s*enduro|on-off\s*mtb|bayerwald|werdenfels|eldorado|junior challenge|kids bike trophy|valiant gp|bike kingdom|bundicycling|eiger bike|xco-nrw|rena kids|stoakart|bike revolution|bikeside|copa madrid/.test(t)
+  ) {
+    return "kids_series";
+  }
+  if (/\bjunior|\brookies\b/.test(t)) return "junior_series";
+  if (/mistrovství|mistrovstvi|\bchampionship\b|\bmčr\b|\bmcr\b/.test(t)) return "championship";
+  if (/liga|league/.test(t)) return "league";
+  if (/\benduro\b/.test(t)) return "enduro_series";
+  if (/maraton|marathon|kolo\s*pro\s*(život|zivot)|kolopro/.test(t)) return "marathon_series";
+  if (/gran[\s-]?fondo|sportive/.test(t)) return "gran_fondo_series";
+  if (/\btour\b/.test(t)) return "tour";
+  if (/cup|pohár|pohar/.test(t)) return "cup";
+  if (/čp|český pohár|cesky pohar/.test(t)) return "cup";
+  return "other";
+}
+
+export const SERIES_SOURCE_KINDS = [
+  "official",
+  "uci",
+  "national_federation",
+  "aggregator",
+  "other",
+] as const;
+export type SeriesSourceKind = (typeof SERIES_SOURCE_KINDS)[number];
+
+export function inferSeriesSourceKind(opts: {
+  name: string;
+  slug?: string | null;
+  url?: string | null;
+}): SeriesSourceKind {
+  const t = `${opts.name} ${opts.slug ?? ""} ${opts.url ?? ""}`.toLowerCase();
+  if (/\buci\b|ucimtbworldseries|uci\.org/.test(t)) return "uci";
+  if (
+    /cycling\.cz|czechcycling|cyklistikaszc|poharmtb\.cz|\bszc\b|swiss-cycling/.test(t) ||
+    /\bčp\b|\bcp\b|český pohár|cesky pohar|mčr|slovenský pohár|slovensky pohar/.test(t)
+  ) {
+    return "national_federation";
+  }
+  if (/sumator|eventiv|ceskysportovnicalendar|radsport-termine/.test(t)) return "aggregator";
+  if (opts.url) return "official";
+  return "other";
+}
+
+export const EVENT_VISIBILITIES = ["public", "hidden"] as const;
+export type EventVisibility = (typeof EVENT_VISIBILITIES)[number];
+
+export const EVENT_STATUSES = [
+  "draft",
+  "scheduled",
+  "tbc",
+  "registration_open",
+  "registration_closed",
+  "cancelled",
+  "postponed",
+  "completed",
+] as const;
+export type EventStatus = (typeof EVENT_STATUSES)[number];
+
+const LEGACY_LEVEL: Record<string, RaceLevel> = {
+  local: "local",
+  district: "regional",
+  regional: "regional",
+  national: "national",
+  continental: "continental",
+  international: "international",
+  world_cup: "world_cup",
+  european_championship: "european_championship",
+  world_championship: "world_championship",
+  kids_series: "local",
+  c1: "national",
+  c2: "national",
+  c3: "national",
+  uci: "international",
+  other: "local",
+};
+
+/**
+ * Rides, tours and youth skills events — cycling, but not racing.
+ * Mostly Italian because FCI publishes them in the same calendar as the races.
+ */
+const COACHED_SESSION =
+  /fahrtechnik|fahrsicherheit|technikkurs|\bkurs\b|\bworkshop\b|szkolenie|skoleni|trainingslager|fahrtechnikkurs/;
+
+const NON_COMPETITIVE_RIDE =
+  /\bpedalata|\bciclopedalata|cicloturistic|cicloraduno|biciclettata|passeggiata\s+(in\s+)?bici|randonn|\bbrevet|escursionistic|gioco\s+ciclismo|gi?[mn]kana|non\s+competitiv|\bludico\b|\bcyclotouris|\bvolksradfahren\b|rajd\s+rowerow|\bturystyczn|wycieczka\s+rowerow|przejazd\s+rowerow|v[yý][sš]lap|vyj[ií][zž][dď]k|cyklov[yý]let|lou[cč]en[ií]\s+s\s+l[eé]tem|\brtf\b|\bctf\b|\bgtf\b|radtour|radwander|\bslowup\b|\bsportive\b|\baudax\b|\beroica\b/;
+
+export function inferEventType(opts: {
+  name: string;
+  seriesName?: string | null;
+  level?: RaceLevel;
+  disciplines?: Discipline[];
+  isNonRace?: boolean;
+}): EventType {
+  if (opts.isNonRace) return "training";
+  const t = fold(`${opts.name} ${opts.seriesName ?? ""}`);
+  // Non-competitive events, checked before every competitive pattern so a
+  // "Granfondo escursionistica" or a "Randonnée" is not filed as a race. Italy's
+  // federation calendar lists these alongside real races; they belong on the map,
+  // labelled for what they are.
+  if (NON_COMPETITIVE_RIDE.test(t)) return "ride";
+  // A skills course or a training camp is taught, not raced. Calendars list them
+  // beside real races, and "Rundkurs" must not be mistaken for one.
+  if (COACHED_SESSION.test(t)) return "training";
+  if (opts.level === "world_championship" || opts.level === "european_championship") {
+    return "championship";
+  }
+  if (/mistrovství|mistrovstvi|\bchampionship\b|\bmčr\b|\bmcr\b/.test(t)) return "championship";
+  if (/\bfestival\b/.test(t)) return "festival";
+  if (/\btour\b|\betap/.test(t) && !/detská tour|detska tour/.test(t)) return "tour";
+  if (/\bgran[\s-]?fondo\b|\bsportive\b/.test(t) || opts.disciplines?.includes("gran_fondo")) {
+    return "gran_fondo";
+  }
+  if (/\bchallenge\b/.test(t)) return "challenge";
+  if (/\bride\b|jízda|jizda/.test(t) && !/race|závod|zavod/.test(t)) return "ride";
+  if (/\bcup\b|\bpohár\b|\bpohar\b/.test(t)) return "cup";
+  if (opts.seriesName) return "series";
+  return "race";
+}
+
+export function inferCompetitionType(opts: {
+  name: string;
+  seriesName?: string | null;
+  level?: RaceLevel;
+  uciClass?: UciClass | null;
+}): CompetitionType {
+  const t = `${opts.name} ${opts.seriesName ?? ""}`.toLowerCase();
+  if (opts.uciClass || /\buci\b/.test(t)) return "uci";
+  if (/\bkolo\s*pro|cube\s*cup|prima\s*cup|nazavody/.test(t)) return "commercial";
+  if (
+    opts.level === "national" ||
+    opts.level === "world_championship" ||
+    opts.level === "european_championship" ||
+    /\bmčr\b|\bčp\b|\bcp\b|national\s*federation|cesky pohar|český pohár/.test(t)
+  ) {
+    return "national_federation";
+  }
+  if (opts.level === "regional" || /krajsk|regionál|okres/.test(t)) return "regional";
+  if (/\bamateur\b|\bhobby\b|amatér/.test(t)) return "amateur";
+  if (opts.level === "local") return "community";
+  return "other";
+}
+
+/**
+ * Calendar season label.
+ * Cyclocross: Oct–Feb belongs to the season that started in the autumn
+ * (`2026/27`). Everything else is the calendar year.
+ */
+export function seasonForEvent(startDate: string, disciplines: string[] = []): string {
+  const y = Number(startDate.slice(0, 4));
+  const m = Number(startDate.slice(5, 7));
+  if (!y || !m) return startDate.slice(0, 4);
+  const isCx = disciplines.includes("cx") || disciplines.includes("cyclocross");
+  if (isCx) {
+    if (m >= 10) return `${y}/${String(y + 1).slice(2)}`;
+    if (m <= 2) return `${y - 1}/${String(y).slice(2)}`;
+  }
+  return String(y);
+}
+
+/** Skip far-future parse errors (keep next calendar year for CX / published calendars). */
+export function isIngestibleDate(startDate: string, now = new Date()): boolean {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(startDate)) return false;
+  const y = Number(startDate.slice(0, 4));
+  const maxY = now.getFullYear() + 1;
+  const minY = now.getFullYear() - 1;
+  return y >= minY && y <= maxY;
+}
+
+export type InferredClassification = {
+  disciplines: Discipline[];
+  /**
+   * How `ageCategories` was reached. `explicit` means a token in the name,
+   * series or category list said so; `default` means the level/discipline
+   * heuristic filled it in; `none` means we genuinely do not know. Callers
+   * merging into an existing row must not let a `default` overwrite an
+   * `explicit` one, and must not accumulate defaults across sources.
+   */
+  ageConfidence: "explicit" | "default" | "none";
+  /** Which level marker fired — kept for the admin preview and audit script. */
+  levelReason: string;
+  formats: Format[];
+  ageCategories: AgeCategory[];
+  audience: Audience;
+  level: RaceLevel;
+  uciClass: UciClass | null;
+  classLabel: string;
+  eventType: EventType;
+  competitionType: CompetitionType;
+  season: string;
+};
+
+export function inferClassification(opts: {
+  name: string;
+  placeText?: string;
+  seriesName?: string | null;
+  seriesSlug?: string | null;
+  disciplines?: string[] | null;
+  categoryNames?: string[] | null;
+  existingLevel?: string | null;
+  existingClassLabel?: string | null;
+  existingAudience?: string | null;
+  startDate?: string | null;
+  countryHint?: string | null;
+  isNonRace?: boolean;
+}): InferredClassification {
+  const seriesBlob = `${opts.seriesName ?? ""} ${opts.seriesSlug ?? ""}`;
+  const text = `${opts.name} ${opts.placeText ?? ""} ${seriesBlob} ${(opts.categoryNames ?? []).join(" ")} ${opts.existingClassLabel ?? ""}`;
+  const t = text.toLowerCase();
+
+  const disciplines = inferDisciplines(text, opts.disciplines);
+  const formats = formatsFromDisciplines(disciplines);
+  const ageCategories = new Set(inferAgeCategories(text, opts.categoryNames));
+  // What the name and the category list say is evidence; an audience hint
+  // ("this calendar is a kids' cup") is ours, and must not count as stated —
+  // it made "kids" the stated list of every round of an all-ages cup.
+  const statedFromText = ageCategories.size > 0;
+  if (opts.existingAudience === "kids") ageCategories.add("kids");
+  if (opts.existingAudience === "youth") ageCategories.add("youth");
+
+  const familySeries = isFamilyOrKidsSeries(`${opts.name} ${seriesBlob}`);
+  const kidsPrimary = isKidsPrimarySeries(`${opts.name} ${seriesBlob}`);
+
+  let uciClass: UciClass | null = null;
+  if (/world[\s-]?tour/.test(t)) uciClass = "worldtour";
+  else if (/pro[\s-]?series/.test(t)) uciClass = "proseries";
+  else if (/\bhc\b|hors[\s-]?categorie|hors catégorie/.test(t)) uciClass = "hc";
+  else if (/\b1\.1\b/.test(t)) uciClass = "1.1";
+  else if (/\b1\.2\b/.test(t)) uciClass = "1.2";
+  else if (/\b2\.1\b/.test(t)) uciClass = "2.1";
+  else if (/\b2\.2\b/.test(t)) uciClass = "2.2";
+  else if (/\bc1\b|čp\s*\/\s*c1|cp\s*\/\s*c1/.test(t)) uciClass = "c1";
+  else if (/\bc2\b/.test(t)) uciClass = "c2";
+  else if (/\bc3\b/.test(t)) uciClass = "c3";
+  else if (opts.existingLevel === "c1" || opts.existingLevel === "c2" || opts.existingLevel === "c3") {
+    uciClass = opts.existingLevel;
+  } else if (opts.existingClassLabel) {
+    const cl = opts.existingClassLabel.trim().toLowerCase();
+    if ((UCI_CLASSES as readonly string[]).includes(cl)) uciClass = cl as UciClass;
+  }
+
+  const levelEvidence = resolveLevel({
+    name: opts.name,
+    seriesName: opts.seriesName,
+    seriesSlug: opts.seriesSlug,
+    placeText: opts.placeText,
+    categoryNames: opts.categoryNames,
+    uciClass,
+    countryHint: opts.countryHint,
+  });
+  let level: RaceLevel = levelEvidence.level;
+  if (level === "local" && opts.existingLevel && LEGACY_LEVEL[opts.existingLevel]) {
+    level = LEGACY_LEVEL[opts.existingLevel];
+  }
+
+  if (uciClass && level === "local") level = "national";
+
+  const explicitAges = statedFromText;
+  addAgeDefaults(ageCategories, {
+    text: t,
+    familySeries,
+    kidsPrimary,
+    existingAudience: opts.existingAudience,
+    level,
+    disciplines,
+    granFondoWorldSeries: isGranFondoWorldSeries(text),
+  });
+  const ageConfidence: InferredClassification["ageConfidence"] = explicitAges
+    ? "explicit"
+    : ageCategories.size > 0
+      ? "default"
+      : "none";
+
+  const ageList = AGE_CATEGORIES.filter((c) => ageCategories.has(c));
+  let audience = ageList.length
+    ? audienceFromAgeCategories(ageList)
+    : ((opts.existingAudience as Audience) || "mixed");
+  if (kidsPrimary) audience = "kids";
+  else if (familySeries) audience = "mixed";
+
+  const classLabel = uciClass ? UCI_CLASS_LABELS[uciClass] : RACE_LEVEL_LABELS[level];
+
+  const eventType = inferEventType({
+    name: opts.name,
+    seriesName: opts.seriesName,
+    level,
+    disciplines,
+    isNonRace: opts.isNonRace,
+  });
+  const competitionType = inferCompetitionType({
+    name: opts.name,
+    seriesName: opts.seriesName,
+    level,
+    uciClass,
+  });
+  const season = seasonForEvent(opts.startDate || "", disciplines);
+
+  return {
+    disciplines,
+    formats,
+    ageConfidence,
+    levelReason: levelEvidence.reason,
+    ageCategories: ageList,
+    audience: ageList.length
+      ? audience
+      : opts.existingAudience === "adults"
+        ? "adults"
+        : audience,
+    level,
+    uciClass,
+    classLabel,
+    eventType,
+    competitionType,
+    season,
+  };
+}

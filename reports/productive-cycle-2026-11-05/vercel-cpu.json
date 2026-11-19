@@ -1,0 +1,18 @@
+{
+  "error": {
+    "code": "payment_required",
+    "message": "Observability Plus is required for this query.",
+    "hint": "Observability Plus is available on Pro and Enterprise. Upgrade with `vercel buy pro --scope tobolkas-projects`. The add-on cannot be purchased on Hobby.",
+    "retryable": false,
+    "userActionRequired": true,
+    "scope": "tobolkas-projects",
+    "next": [
+      {
+        "command": "vercel buy pro --scope tobolkas-projects",
+        "when": "a person has approved upgrading the plan"
+      }
+    ],
+    "cliVersion": "63.1.2",
+    "invocationId": "5080acff-1641-4db5-9d6f-3f54142b051c"
+  }
+}

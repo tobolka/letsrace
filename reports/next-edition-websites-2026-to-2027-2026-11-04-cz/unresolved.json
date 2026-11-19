@@ -1,0 +1,1299 @@
+[
+  {
+    "url": "https://navasport.webnode.cz/",
+    "via": [
+      "14b40c87-50cb-4b4a-a41d-0ce73f6f0f11",
+      "https://navasport.webnode.cz/vc-losiny-2026/"
+    ],
+    "purpose": "2026 race website",
+    "at": "2026-11-04T21:23:12.417Z",
+    "status": 200,
+    "finalUrl": "https://navasport.webnode.cz/",
+    "title": "Nava sport",
+    "textLength": 146,
+    "textFile": "pages/8b7f1d7d034207310e90.txt",
+    "snippets": [],
+    "dateSignals": [],
+    "structuredEvents": [],
+    "needsBrowser": true,
+    "follow": []
+  },
+  {
+    "url": "http://jalcyklo.cz/zavody",
+    "via": [
+      "19d9953d-5200-44bf-bfe8-b2d32f7c3e7f"
+    ],
+    "purpose": "2026 race website",
+    "at": "2026-11-04T21:23:12.749Z",
+    "status": 200,
+    "finalUrl": "http://jalcyklo.cz/zavody",
+    "title": "Závody JAL",
+    "textLength": 168,
+    "textFile": "pages/a6cfca986a9dbee44c71.txt",
+    "snippets": [],
+    "dateSignals": [],
+    "structuredEvents": [],
+    "needsBrowser": true,
+    "follow": []
+  },
+  {
+    "url": "https://zapadoceskaamaterskaliga.cz/propozice/130",
+    "via": [
+      "2cc22ae6-853c-448d-8285-abfddfc83630"
+    ],
+    "purpose": "2026 race website",
+    "at": "2026-11-04T21:23:13.589Z",
+    "status": 404,
+    "finalUrl": "https://zapadoceskaamaterskaliga.cz/propozice/130",
+    "title": "",
+    "textLength": 16,
+    "textFile": "pages/4a63e229818c85182173.txt",
+    "snippets": [],
+    "dateSignals": [],
+    "structuredEvents": [],
+    "needsBrowser": true,
+    "follow": []
+  },
+  {
+    "url": "https://www.tatransatov.cz/l/cyklozavod-satovska-padesatka/",
+    "via": [
+      "2dee08c7-a1d6-4bac-9302-3be8eb248c2a"
+    ],
+    "purpose": "2026 race website",
+    "at": "2026-11-04T21:23:13.648Z",
+    "status": 404,
+    "finalUrl": "https://www.tatransatov.cz/l/cyklozavod-satovska-padesatka/",
+    "title": "404 - Stránka nebyla nalezena :: tatransatov",
+    "textLength": 969,
+    "textFile": "pages/de8904bca209fb3120b0.txt",
+    "snippets": [],
+    "dateSignals": [],
+    "structuredEvents": [],
+    "needsBrowser": false,
+    "follow": []
+  },
+  {
+    "url": "https://stredecnipohar.cz/",
+    "via": [
+      "35b577fb-b755-4f9c-9677-ba2c3dd6bfe9",
+      "d29de985-a5b0-41c5-b305-dbf61cde29b1"
+    ],
+    "purpose": "2026 race website",
+    "at": "2026-11-04T21:23:14.114Z",
+    "status": 200,
+    "finalUrl": "https://stredecnipohar.cz/",
+    "title": "Středeční pohár",
+    "textLength": 0,
+    "textFile": "pages/687899ff06fc01ef1a48.txt",
+    "snippets": [],
+    "dateSignals": [],
+    "structuredEvents": [],
+    "needsBrowser": true,
+    "follow": []
+  },
+  {
+    "url": "https://www.bikeclubroudnice.cz/po-stopach-praotce-cecha-xxl/",
+    "via": [
+      "1e98c662-3939-4153-8149-3b0e2cdffcbf"
+    ],
+    "purpose": "2026 race website",
+    "at": "2026-11-04T21:23:12.949Z",
+    "status": 200,
+    "finalUrl": "https://www.bikeclubroudnice.cz/po-stopach-praotce-cecha-xxl/",
+    "title": "Po stopách Praotce Čecha XXL – Bike Club Roudnice nad Labem",
+    "textLength": 119,
+    "textFile": "pages/6b5548984a19f3cf77fb.txt",
+    "snippets": [],
+    "dateSignals": [],
+    "structuredEvents": [],
+    "needsBrowser": true,
+    "follow": []
+  },
+  {
+    "url": "http://www.favoritbrno.cz/velka-bites-brno-velka-bites/",
+    "via": [
+      "3b9088c2-79d3-46b4-b9dc-4d52e04db978"
+    ],
+    "purpose": "2026 race website",
+    "at": "2026-11-04T21:23:14.506Z",
+    "status": 404,
+    "finalUrl": "http://www.favoritbrno.cz/velka-bites-brno-velka-bites/",
+    "title": "Stránka nebyla nalezena | TJ FAVORIT BRNO",
+    "textLength": 470,
+    "textFile": "pages/e6d2ce920b625191b944.txt",
+    "snippets": [],
+    "dateSignals": [],
+    "structuredEvents": [],
+    "needsBrowser": false,
+    "follow": []
+  },
+  {
+    "url": "https://www.casovka-jedlova.webnode.cz/",
+    "via": [
+      "3c88bc69-4350-4e53-9d44-d304030bc74c"
+    ],
+    "purpose": "2026 race website",
+    "at": "2026-11-04T21:23:14.682Z",
+    "error": "fetch failed"
+  },
+  {
+    "url": "https://www.enduroserie.cz/zavody/enduro-race-kouty/",
+    "via": [
+      "3c20f809-e2ee-4d75-a38f-bb067d6f833c",
+      "8eb07e9c-3cb6-4af7-b880-ed965f4c1d1c"
+    ],
+    "purpose": "2026 race website",
+    "at": "2026-11-04T21:23:14.515Z",
+    "status": 200,
+    "finalUrl": "https://www.enduroserie.cz/zavody/",
+    "title": "Závody | Enduro Serie",
+    "textLength": 25,
+    "textFile": "pages/562df9b5bdd3cd2b19b0.txt",
+    "snippets": [],
+    "dateSignals": [],
+    "structuredEvents": [],
+    "needsBrowser": true,
+    "follow": []
+  },
+  {
+    "url": "https://www.facebook.com/share/1NAizbCQBg/?mibextid=wwXIfr",
+    "via": [
+      "2d8e7a19-5aca-4798-9efc-3fd8beba1544"
+    ],
+    "purpose": "2026 race website",
+    "at": "2026-11-04T21:23:13.635Z",
+    "status": 200,
+    "finalUrl": "https://www.facebook.com/events/s/memorial-jana-veseleho-2026/4364102650583710/?mibextid=wwXIfr&rdid=OOYewmsgmgjCUVFk&share_url=https%3A%2F%2Fwww.facebook.com%2Fshare%2F1NAizbCQBg%2F%3Fmibextid%3DwwXIfr",
+    "title": "Memoriál Jana Veselého 2026",
+    "textLength": 0,
+    "textFile": "pages/fb2ec6faafc01e2b99a4.txt",
+    "snippets": [],
+    "dateSignals": [],
+    "structuredEvents": [],
+    "needsBrowser": true,
+    "follow": []
+  },
+  {
+    "url": "https://www.brezanskykostitras.cz/",
+    "via": [
+      "42ee03bc-54bc-4373-8def-b47cb42e8e2c"
+    ],
+    "purpose": "2026 race website",
+    "at": "2026-11-04T21:23:14.862Z",
+    "status": 200,
+    "finalUrl": "https://www.brezanskykostitras.cz/",
+    "title": "Břežanský kostitřas",
+    "textLength": 127,
+    "textFile": "pages/00d111858dae8ca6c7a8.txt",
+    "snippets": [],
+    "dateSignals": [],
+    "structuredEvents": [],
+    "needsBrowser": true,
+    "follow": []
+  },
+  {
+    "url": "https://www.sk.donocykl.cz/",
+    "via": [
+      "488d3b1f-21b6-4d28-adb6-44eca572ab1a"
+    ],
+    "purpose": "2026 race website",
+    "at": "2026-11-04T21:23:15.000Z",
+    "error": "fetch failed"
+  },
+  {
+    "url": "https://www.enduroserie.cz/zavody/enduro-race-kralicak/",
+    "via": [
+      "3e30e9ac-f726-4d92-9aa3-50417ec251e5",
+      "a466a8e5-1917-4bb6-919c-b0ea15d96253"
+    ],
+    "purpose": "2026 race website",
+    "at": "2026-11-04T21:23:15.066Z",
+    "status": 200,
+    "finalUrl": "https://www.enduroserie.cz/zavody/",
+    "title": "Závody | Enduro Serie",
+    "textLength": 25,
+    "textFile": "pages/9f631647ce8a4c0d88c9.txt",
+    "snippets": [],
+    "dateSignals": [],
+    "structuredEvents": [],
+    "needsBrowser": true,
+    "follow": []
+  },
+  {
+    "url": "https://kalendar.winspace.cz/kalendar/2026-zh-cross-8-a92e53f9",
+    "via": [
+      "0a6fd206-1327-48aa-af4d-ae29d46121ff"
+    ],
+    "purpose": "2026 race website",
+    "at": "2026-11-04T21:23:11.504Z",
+    "status": 200,
+    "finalUrl": "https://kalendar.winspace.cz/kalendar/2026-zh-cross-8-a92e53f9",
+    "title": "ZH Cross #8 | Velomania",
+    "textLength": 222,
+    "textFile": "pages/379424c4dce02f69dd30.txt",
+    "snippets": [],
+    "dateSignals": [],
+    "structuredEvents": [],
+    "needsBrowser": true,
+    "follow": []
+  },
+  {
+    "url": "https://kalendar.winspace.cz/kalendar/2026-janev-cup-2026-kolin-c2-4bb00f95",
+    "via": [
+      "1291c6ed-66bd-44b6-b202-81eba2dc1067"
+    ],
+    "purpose": "2026 race website",
+    "at": "2026-11-04T21:23:15.621Z",
+    "status": 200,
+    "finalUrl": "https://kalendar.winspace.cz/kalendar/2026-janev-cup-2026-kolin-c2-4bb00f95",
+    "title": "Janev Cup 2026 - Kolín C2 | Velomania",
+    "textLength": 214,
+    "textFile": "pages/1e2e678937cf7442adc9.txt",
+    "snippets": [],
+    "dateSignals": [],
+    "structuredEvents": [],
+    "needsBrowser": true,
+    "follow": []
+  },
+  {
+    "url": "https://www.cyklokrosostrava.cz/czechcup",
+    "via": [
+      "6708d947-40c0-4de7-a351-10baa20d7fd3"
+    ],
+    "purpose": "2026 race website",
+    "at": "2026-11-04T21:23:16.358Z",
+    "status": 403,
+    "finalUrl": "https://www.cyklokrosostrava.cz/czechcup",
+    "title": "Attention Required! | Cloudflare",
+    "textLength": 730,
+    "textFile": "pages/7f73a2577d3cb159ec3f.txt",
+    "snippets": [],
+    "dateSignals": [],
+    "structuredEvents": [],
+    "needsBrowser": false,
+    "follow": []
+  },
+  {
+    "url": "https://www.rohanskestezky.cz/",
+    "via": [
+      "4606f9b4-b675-454f-8451-79518e86bc09"
+    ],
+    "purpose": "2026 race website",
+    "at": "2026-11-04T21:23:14.984Z",
+    "status": 200,
+    "finalUrl": "https://rohanskestezky.cz/",
+    "title": "Úvod » Rohanské stezkysearchclosedownloadchevron-leftcrossangles-up",
+    "textLength": 130,
+    "textFile": "pages/ab272321838fe614a531.txt",
+    "snippets": [],
+    "dateSignals": [],
+    "structuredEvents": [],
+    "needsBrowser": true,
+    "follow": []
+  },
+  {
+    "url": "https://choustnikrace.cz/",
+    "via": [
+      "5a7cb28d-5822-4e2a-815d-d06f7d7b9b32"
+    ],
+    "purpose": "2026 race website",
+    "at": "2026-11-04T21:23:15.734Z",
+    "status": 200,
+    "finalUrl": "https://choustnikrace.cz/",
+    "title": "ChoustnikRace – Just another Astra Starter Templates site",
+    "textLength": 65,
+    "textFile": "pages/dc4bb12d4a532ff04176.txt",
+    "snippets": [],
+    "dateSignals": [],
+    "structuredEvents": [],
+    "needsBrowser": true,
+    "follow": []
+  },
+  {
+    "url": "https://kalendar.winspace.cz/kalendar/2026-cp-motol-65935417",
+    "via": [
+      "26b275b4-4d2e-47fe-b417-ba772132db26"
+    ],
+    "purpose": "2026 race website",
+    "at": "2026-11-04T21:23:16.278Z",
+    "status": 200,
+    "finalUrl": "https://kalendar.winspace.cz/kalendar/2026-cp-motol-65935417",
+    "title": "ČP Motol | Velomania",
+    "textLength": 221,
+    "textFile": "pages/faa241424597f4fd27c5.txt",
+    "snippets": [],
+    "dateSignals": [],
+    "structuredEvents": [],
+    "needsBrowser": true,
+    "follow": []
+  },
+  {
+    "url": "http://ct.tabor.info/",
+    "via": [
+      "6cdcfb51-1fdd-4880-ab14-97a7e6e071c1"
+    ],
+    "purpose": "2026 race website",
+    "at": "2026-11-04T21:23:16.749Z",
+    "status": 200,
+    "finalUrl": "http://ct.tabor.info/",
+    "title": "Údržba webu",
+    "textLength": 128,
+    "textFile": "pages/7a9e5e41470c7b6d6877.txt",
+    "snippets": [],
+    "dateSignals": [],
+    "structuredEvents": [],
+    "needsBrowser": true,
+    "follow": []
+  },
+  {
+    "url": "https://uec.ch/en/event/271/2026-uec-bmx-european-cup-rounds-5-6",
+    "via": [
+      "6dc9d0ab-c91b-48af-9633-e971f084749a"
+    ],
+    "purpose": "2026 race website",
+    "at": "2026-11-04T21:23:16.761Z",
+    "status": 200,
+    "finalUrl": "https://uec.ch/en/event/271/2026-uec-bmx-european-cup-rounds-5-6",
+    "title": "UEC- Article",
+    "textLength": 277,
+    "textFile": "pages/f228ed60af542aefcdef.txt",
+    "snippets": [],
+    "dateSignals": [],
+    "structuredEvents": [],
+    "needsBrowser": true,
+    "follow": []
+  },
+  {
+    "url": "https://kalendar.winspace.cz/kalendar/2026-mem-cyrila-schejbala-ed5b3142",
+    "via": [
+      "2c8bdf27-1d54-4ac3-9a54-a3bcbaa3b0b4"
+    ],
+    "purpose": "2026 race website",
+    "at": "2026-11-04T21:23:16.827Z",
+    "status": 200,
+    "finalUrl": "https://kalendar.winspace.cz/kalendar/2026-mem-cyrila-schejbala-ed5b3142",
+    "title": "Mem. Cyrila Schejbala | Velomania",
+    "textLength": 201,
+    "textFile": "pages/0a99642a090229f0f1c3.txt",
+    "snippets": [],
+    "dateSignals": [],
+    "structuredEvents": [],
+    "needsBrowser": true,
+    "follow": []
+  },
+  {
+    "url": "https://www.kojebike.cz/kojesjezdy.html",
+    "via": [
+      "79d67621-25e6-4dbf-8def-8777c2351919"
+    ],
+    "purpose": "2026 race website",
+    "at": "2026-11-04T21:23:17.420Z",
+    "status": 200,
+    "finalUrl": "https://www.kojebike.cz/kojesjezdy.html",
+    "title": "Kojesjezdy",
+    "textLength": 225,
+    "textFile": "pages/57488c227672b271b512.txt",
+    "snippets": [],
+    "dateSignals": [],
+    "structuredEvents": [],
+    "needsBrowser": true,
+    "follow": []
+  },
+  {
+    "url": "https://czenduro.cz/races/bikes",
+    "via": [
+      "74c34a57-44f6-468e-b8e7-cc4247c6e6ba"
+    ],
+    "purpose": "2026 race website",
+    "at": "2026-11-04T21:23:17.264Z",
+    "status": 200,
+    "finalUrl": "https://czenduro.cz/races/bikes",
+    "title": "Cyklistické enduro závody | CZEnduro",
+    "textLength": 27,
+    "textFile": "pages/79f400131937b9f22125.txt",
+    "snippets": [],
+    "dateSignals": [],
+    "structuredEvents": [],
+    "needsBrowser": true,
+    "follow": []
+  },
+  {
+    "url": "https://www.enduroserie.cz/zavody/challenge-moravka/",
+    "via": [
+      "7f169ae7-c24a-424b-b71a-d3f257c9452a"
+    ],
+    "purpose": "2026 race website",
+    "at": "2026-11-04T21:23:17.562Z",
+    "status": 200,
+    "finalUrl": "https://www.enduroserie.cz/zavody/",
+    "title": "Závody | Enduro Serie",
+    "textLength": 25,
+    "textFile": "pages/781c5c0f1f7bb83f511f.txt",
+    "snippets": [],
+    "dateSignals": [],
+    "structuredEvents": [],
+    "needsBrowser": true,
+    "follow": []
+  },
+  {
+    "url": "https://kalendar.winspace.cz/kalendar/2026-stredocesky-pohar-v-cyklokrosu-3-15fecafe",
+    "via": [
+      "40a6ab6b-9a18-4af8-b2b4-bc374cfd4545"
+    ],
+    "purpose": "2026 race website",
+    "at": "2026-11-04T21:23:17.370Z",
+    "status": 200,
+    "finalUrl": "https://kalendar.winspace.cz/kalendar/2026-stredocesky-pohar-v-cyklokrosu-3-15fecafe",
+    "title": "Středočeský pohár v cyklokrosu #3 | Velomania",
+    "textLength": 246,
+    "textFile": "pages/ed510e3d61e6fab2e4d8.txt",
+    "snippets": [],
+    "dateSignals": [],
+    "structuredEvents": [],
+    "needsBrowser": true,
+    "follow": []
+  },
+  {
+    "url": "https://kalendar.winspace.cz/kalendar/2026-kolova-iliga-elite-3kolo-c6f33763",
+    "via": [
+      "470d25fa-a905-48c0-a5d5-59941ffbf011"
+    ],
+    "purpose": "2026 race website",
+    "at": "2026-11-04T21:23:17.953Z",
+    "status": 200,
+    "finalUrl": "https://kalendar.winspace.cz/kalendar/2026-kolova-iliga-elite-3kolo-c6f33763",
+    "title": "Kolová - I.Liga elite - 3.kolo | Velomania",
+    "textLength": 249,
+    "textFile": "pages/62aee9aa68c1f4b3f634.txt",
+    "snippets": [],
+    "dateSignals": [],
+    "structuredEvents": [],
+    "needsBrowser": true,
+    "follow": []
+  },
+  {
+    "url": "https://www.trailkids.cz/Dom%C5%AF.html",
+    "via": [
+      "8aa407ed-1b25-4b3d-ac84-5484965a1fac"
+    ],
+    "purpose": "2026 race website",
+    "at": "2026-11-04T21:23:18.161Z",
+    "status": 200,
+    "finalUrl": "https://trailkids.cz/",
+    "title": "Grom Enduro: MTB enduro závody pro děti | Trailkids",
+    "textLength": 0,
+    "textFile": "pages/978eb75d838615ff0bc0.txt",
+    "snippets": [],
+    "dateSignals": [],
+    "structuredEvents": [],
+    "needsBrowser": true,
+    "follow": []
+  },
+  {
+    "url": "https://kalendar.winspace.cz/kalendar/2026-mistrovstvi-olomouckeho-kraje-v-cyklokrosu-b4a30fdf",
+    "via": [
+      "4bbcdb31-0dbf-4abe-8159-cd5c56370dde"
+    ],
+    "purpose": "2026 race website",
+    "at": "2026-11-04T21:23:18.540Z",
+    "status": 200,
+    "finalUrl": "https://kalendar.winspace.cz/kalendar/2026-mistrovstvi-olomouckeho-kraje-v-cyklokrosu-b4a30fdf",
+    "title": "Mistrovství Olomouckého kraje v cyklokrosu | Velomania",
+    "textLength": 253,
+    "textFile": "pages/6ac93e4ba925af5a4abe.txt",
+    "snippets": [],
+    "dateSignals": [],
+    "structuredEvents": [],
+    "needsBrowser": true,
+    "follow": []
+  },
+  {
+    "url": "https://odjazd.pl/wydarzenie/fb3418fe-5c73-978e-a5b5-32026ad889c0",
+    "via": [
+      "97d05029-9c4b-41c8-9bcd-962bd681a3b8"
+    ],
+    "purpose": "2026 race website",
+    "at": "2026-11-04T21:23:18.630Z",
+    "status": 410,
+    "finalUrl": "https://odjazd.pl/wydarzenie/fb3418fe-5c73-978e-a5b5-32026ad889c0",
+    "title": "Tego startu już nie ma na stronie — odjazd.pl",
+    "textLength": 173,
+    "textFile": "pages/84a9aa79d61b1501ee09.txt",
+    "snippets": [],
+    "dateSignals": [],
+    "structuredEvents": [],
+    "needsBrowser": true,
+    "follow": []
+  },
+  {
+    "url": "https://kalendar.winspace.cz/kalendar/2026-kolova-kvalifikace-o-iiligu-2027-5851b433",
+    "via": [
+      "534f2a66-5796-4d96-a208-7f5259e46cc5",
+      "https://kalendar.winspace.cz/"
+    ],
+    "purpose": "2026 race website",
+    "at": "2026-11-04T21:23:19.098Z",
+    "status": 200,
+    "finalUrl": "https://kalendar.winspace.cz/kalendar/2026-kolova-kvalifikace-o-iiligu-2027-5851b433",
+    "title": "Kolová - Kvalifikace o II.Ligu 2027 | Velomania",
+    "textLength": 254,
+    "textFile": "pages/6d76d75335c2ab05895c.txt",
+    "snippets": [
+      "Velomania Zpět na kalendářDráhaNárodníSálová cyklistikaPlánovaný Kolová - Kvalifikace o II.Ligu 2027 sobota 28. listopadu 2026 Olomouc · Olomoucký kraj TJ MILO OLOMOUC odd.sál.cykl. Zdroj: ČSC – Český svaz cyklistiky Výsledky se zobrazí po odjetí závodu."
+    ],
+    "dateSignals": [],
+    "structuredEvents": [],
+    "needsBrowser": true,
+    "follow": []
+  },
+  {
+    "url": "http://www.jalcyklo.cz/zavody",
+    "via": [
+      "ad152775-538f-41cb-a2b0-0e4c7a136ee7",
+      "edbd0291-17bf-4268-8cae-d79f1a9a1a11"
+    ],
+    "purpose": "2026 race website",
+    "at": "2026-11-04T21:23:19.893Z",
+    "status": 200,
+    "finalUrl": "http://www.jalcyklo.cz/zavody",
+    "title": "Závody JAL",
+    "textLength": 168,
+    "textFile": "pages/adebedec244320310bf9.txt",
+    "snippets": [],
+    "dateSignals": [],
+    "structuredEvents": [],
+    "needsBrowser": true,
+    "follow": []
+  },
+  {
+    "url": "https://fb.me/e/3yj4Em83r",
+    "via": [
+      "8dd58079-4310-4990-aa9a-36d3ab6a72a1"
+    ],
+    "purpose": "2026 race website",
+    "at": "2026-11-04T21:23:18.362Z",
+    "status": 200,
+    "finalUrl": "https://www.facebook.com/events/2266938447107834/?acontext=%7B%22ref%22%3A%2252%22%2C%22action_history%22%3A%22%5B%7B%5C%22surface%5C%22%3A%5C%22share_link%5C%22%2C%5C%22mechanism%5C%22%3A%5C%22share_link%5C%22%2C%5C%22extra_data%5C%22%3A%7B%5C%22invite_link_id%5C%22%3A775838678700805%7D%7D%5D%22%7D",
+    "title": "Bike Therapy Fest vol.III",
+    "textLength": 0,
+    "textFile": "pages/dc9fff4fba6010b3f19f.txt",
+    "snippets": [],
+    "dateSignals": [],
+    "structuredEvents": [],
+    "needsBrowser": true,
+    "follow": []
+  },
+  {
+    "url": "https://kalendar.winspace.cz/kalendar/2026-janev-cup-2026-prachatice-narodni-zavod-5c3936c1",
+    "via": [
+      "59f236ed-1db5-40f9-a592-5591c6cb9bfb"
+    ],
+    "purpose": "2026 race website",
+    "at": "2026-11-04T21:23:19.641Z",
+    "status": 200,
+    "finalUrl": "https://kalendar.winspace.cz/kalendar/2026-janev-cup-2026-prachatice-narodni-zavod-5c3936c1",
+    "title": "Janev Cup 2026 - Prachatice národní závod | Velomania",
+    "textLength": 225,
+    "textFile": "pages/b351e54bb6755276c153.txt",
+    "snippets": [],
+    "dateSignals": [],
+    "structuredEvents": [],
+    "needsBrowser": true,
+    "follow": []
+  },
+  {
+    "url": "https://www.okolorepubliky.cz/en/",
+    "via": [
+      "b4668e4a-3b9c-405b-bdfb-0e700b4681b4"
+    ],
+    "purpose": "2026 race website",
+    "at": "2026-11-04T21:23:20.146Z",
+    "error": "fetch failed"
+  },
+  {
+    "url": "https://kalendar.winspace.cz/kalendar/2026-mistrovstvi-planety-e3f00990",
+    "via": [
+      "70a7735b-ce47-494d-b9ac-cbc4da6a33d3"
+    ],
+    "purpose": "2026 race website",
+    "at": "2026-11-04T21:23:20.240Z",
+    "status": 200,
+    "finalUrl": "https://kalendar.winspace.cz/kalendar/2026-mistrovstvi-planety-e3f00990",
+    "title": "Mistrovství Planety | Velomania",
+    "textLength": 234,
+    "textFile": "pages/63ccccb38eaf5726b180.txt",
+    "snippets": [],
+    "dateSignals": [],
+    "structuredEvents": [],
+    "needsBrowser": true,
+    "follow": []
+  },
+  {
+    "url": "https://biketeam.estranky.cz/clanky/zavod-krizova-stezka-2026/",
+    "via": [
+      "cba701b8-3568-4a82-9e0a-60ef36b2a938"
+    ],
+    "purpose": "2026 race website",
+    "at": "2026-11-04T21:23:21.679Z",
+    "status": 404,
+    "finalUrl": "https://biketeam.estranky.cz/clanky/zavod-krizova-stezka-2026/",
+    "title": "BIKETEAM TJ Zlaté Hory - 404",
+    "textLength": 750,
+    "textFile": "pages/a01a6d063e70920dca4c.txt",
+    "snippets": [],
+    "dateSignals": [],
+    "structuredEvents": [],
+    "needsBrowser": false,
+    "follow": [
+      "https://biketeam.estranky.cz/clanky/zavod-krizova-stezka-2027/",
+      "https://biketeam.estranky.cz/clanky/casovky-goldtour/"
+    ]
+  },
+  {
+    "url": "https://www.enduroserie.cz/zavody/enduro-race-spicak-mcr/",
+    "via": [
+      "cc646445-6de8-483b-93dc-58565f8bf985"
+    ],
+    "purpose": "2026 race website",
+    "at": "2026-11-04T21:23:21.711Z",
+    "status": 200,
+    "finalUrl": "https://www.enduroserie.cz/zavody/",
+    "title": "Závody | Enduro Serie",
+    "textLength": 25,
+    "textFile": "pages/a0264ec0319fedcfefdf.txt",
+    "snippets": [],
+    "dateSignals": [],
+    "structuredEvents": [],
+    "needsBrowser": true,
+    "follow": []
+  },
+  {
+    "url": "https://kalendar.winspace.cz/kalendar/2026-cp-motol-27c32417",
+    "via": [
+      "b6a598f6-2b2d-46d6-90b1-34bee18bf0e5"
+    ],
+    "purpose": "2026 race website",
+    "at": "2026-11-04T21:23:21.461Z",
+    "status": 200,
+    "finalUrl": "https://kalendar.winspace.cz/kalendar/2026-cp-motol-27c32417",
+    "title": "ČP Motol | Velomania",
+    "textLength": 224,
+    "textFile": "pages/dc34f4da0d18bdf59248.txt",
+    "snippets": [],
+    "dateSignals": [],
+    "structuredEvents": [],
+    "needsBrowser": true,
+    "follow": []
+  },
+  {
+    "url": "http://www.tessuti-team.cz/",
+    "via": [
+      "d2dc5a4c-63b2-47b1-853b-8f01a1366566"
+    ],
+    "purpose": "2026 race website",
+    "at": "2026-11-04T21:23:21.869Z",
+    "error": "fetch failed"
+  },
+  {
+    "url": "https://www.uci.org/competition-details/2026/BMX/77069",
+    "via": [
+      "c8c70e7a-39df-4555-8a19-eb4b47f42fee"
+    ],
+    "purpose": "2026 race website",
+    "at": "2026-11-04T21:23:21.542Z",
+    "status": 200,
+    "finalUrl": "https://www.uci.org/competition-details/2026/BMX/77069",
+    "title": "UCI BMX Racing World Cup - Round 7 | UCISite logoSite logo",
+    "textLength": 0,
+    "textFile": "pages/8dd5af03808d18d8bf66.txt",
+    "snippets": [],
+    "dateSignals": [],
+    "structuredEvents": [],
+    "needsBrowser": true,
+    "follow": []
+  },
+  {
+    "url": "https://forbikes.cz/aktuality/detail?id=25374&utm_campaign=21461&utm_medium=w",
+    "via": [
+      "d93f7410-0618-4f42-b300-f7dbc70cbfc6"
+    ],
+    "purpose": "2026 race website",
+    "at": "2026-11-04T21:23:22.016Z",
+    "status": 404,
+    "finalUrl": "https://forbikes.cz/aktuality/detail?id=25374&utm_campaign=21461&utm_medium=w",
+    "title": "Stránka nenalezena | ForBikes",
+    "textLength": 657,
+    "textFile": "pages/ecf3c45582417ad374fc.txt",
+    "snippets": [],
+    "dateSignals": [],
+    "structuredEvents": [],
+    "needsBrowser": false,
+    "follow": []
+  },
+  {
+    "url": "https://www.cykloknezice.cz/",
+    "via": [
+      "dcb16814-5151-4de5-9c28-01d1e6901142"
+    ],
+    "purpose": "2026 race website",
+    "at": "2026-11-04T21:23:22.114Z",
+    "status": 200,
+    "finalUrl": "https://www.cykloknezice.cz/",
+    "title": "CykloKlub Kněžice",
+    "textLength": 69,
+    "textFile": "pages/48e945300f73508e8b4f.txt",
+    "snippets": [],
+    "dateSignals": [],
+    "structuredEvents": [],
+    "needsBrowser": true,
+    "follow": [
+      "https://cykloknezice.cz/bike-maraton/predvyber-cz-bike-maraton-vysocina-2027"
+    ]
+  },
+  {
+    "url": "https://www.mtb-nmnm.cz/",
+    "via": [
+      "de3fd931-44da-40ce-899f-181bddd2fb24"
+    ],
+    "purpose": "2026 race website",
+    "at": "2026-11-04T21:23:22.306Z",
+    "status": 200,
+    "finalUrl": "https://www.mtb-nmnm.cz/",
+    "title": "Doména je registrována na serverech Web4U s.r.o.",
+    "textLength": 134,
+    "textFile": "pages/14c8e34a57e7c520ef83.txt",
+    "snippets": [],
+    "dateSignals": [],
+    "structuredEvents": [],
+    "needsBrowser": true,
+    "follow": []
+  },
+  {
+    "url": "https://www.uci.org/race-hub/2026-uci-bmx-racing-world-cup-round-6/3vOP7XO9n8nai2ZvRMfjNj",
+    "via": [
+      "da5dd02b-40f4-4262-a12c-97dbb09578b2"
+    ],
+    "purpose": "2026 race website",
+    "at": "2026-11-04T21:23:22.122Z",
+    "status": 200,
+    "finalUrl": "https://www.uci.org/race-hub/2026-uci-bmx-racing-world-cup-round-6/3vOP7XO9n8nai2ZvRMfjNj",
+    "title": "2026 UCI BMX RACING WORLD CUP - ROUND 6 - Mentougou (CHN) | UCISite logoSite logo",
+    "textLength": 0,
+    "textFile": "pages/75ee747cb350312b540b.txt",
+    "snippets": [],
+    "dateSignals": [],
+    "structuredEvents": [],
+    "needsBrowser": true,
+    "follow": []
+  },
+  {
+    "url": "https://www.enduroserie.cz/zavody/enduro-race-moravka/",
+    "via": [
+      "e33a600b-bfd3-452b-87da-32fe156ffa0b"
+    ],
+    "purpose": "2026 race website",
+    "at": "2026-11-04T21:23:22.505Z",
+    "status": 200,
+    "finalUrl": "https://www.enduroserie.cz/zavody/",
+    "title": "Závody | Enduro Serie",
+    "textLength": 25,
+    "textFile": "pages/ace5b19073e5be04ae50.txt",
+    "snippets": [],
+    "dateSignals": [],
+    "structuredEvents": [],
+    "needsBrowser": true,
+    "follow": []
+  },
+  {
+    "url": "https://kalendar.winspace.cz/kalendar/2026-mikulassky-cyklokros-breccross-2025-cx-pohar-jmk-vi-dc330c9c",
+    "via": [
+      "d3e0bac7-179a-49d1-adb2-bb3232a90e9c"
+    ],
+    "purpose": "2026 race website",
+    "at": "2026-11-04T21:23:22.061Z",
+    "status": 200,
+    "finalUrl": "https://kalendar.winspace.cz/kalendar/2026-mikulassky-cyklokros-breccross-2025-cx-pohar-jmk-vi-dc330c9c",
+    "title": "Mikulášský cyklokros - Břeccross 2025 (Cx pohár JMK VI.) | Velomania",
+    "textLength": 260,
+    "textFile": "pages/3a060ff999cdc4a04036.txt",
+    "snippets": [],
+    "dateSignals": [],
+    "structuredEvents": [],
+    "needsBrowser": true,
+    "follow": []
+  },
+  {
+    "url": "https://kalendar.winspace.cz/kalendar/2026-kolova-iiliga-elite-3kolo-13fbaa44",
+    "via": [
+      "ecbdc2bb-7804-474e-b095-5731a26d4e2a"
+    ],
+    "purpose": "2026 race website",
+    "at": "2026-11-04T21:23:22.853Z",
+    "status": 200,
+    "finalUrl": "https://kalendar.winspace.cz/kalendar/2026-kolova-iiliga-elite-3kolo-13fbaa44",
+    "title": "Kolová - II.Liga elite - 3.kolo | Velomania",
+    "textLength": 240,
+    "textFile": "pages/4ae417e6e3f381bfdbf0.txt",
+    "snippets": [],
+    "dateSignals": [],
+    "structuredEvents": [],
+    "needsBrowser": true,
+    "follow": []
+  },
+  {
+    "url": "http://www.superiorteamjesenik.cz/",
+    "via": [
+      "ec4e85df-ab04-4d58-ad28-5f33ca359c35"
+    ],
+    "purpose": "2026 race website",
+    "at": "2026-11-04T21:23:22.843Z",
+    "status": 200,
+    "finalUrl": "https://superiorteamjesenik.cz/",
+    "title": "SUPERIOR team Jeseník",
+    "textLength": 112,
+    "textFile": "pages/e40a3217fb3f46890593.txt",
+    "snippets": [],
+    "dateSignals": [],
+    "structuredEvents": [],
+    "needsBrowser": true,
+    "follow": []
+  },
+  {
+    "url": "https://www.aimtecopenrace.cz/",
+    "via": [
+      "f1b1ad59-2f7f-4869-883d-56d87dd11b19"
+    ],
+    "purpose": "2026 race website",
+    "at": "2026-11-04T21:23:23.298Z",
+    "error": "fetch failed"
+  },
+  {
+    "url": "https://drhlensky-triatlon.webnode.cz/",
+    "via": [
+      "f5a4f150-0567-4f67-a2a2-b47eca90d2f7"
+    ],
+    "purpose": "2026 race website",
+    "at": "2026-11-04T21:23:23.425Z",
+    "status": 200,
+    "finalUrl": "https://drhlensky-triatlon.webnode.cz/",
+    "title": "Drhleny Cup",
+    "textLength": 282,
+    "textFile": "pages/ab43f13ec74a13a06109.txt",
+    "snippets": [
+      "DRHLENY CUP Menu Suhrovické rybníky - Český ráj 19.6.2027 VYTVOŘENO NA WEBNODE Líbí se vám tento web? Ten váš může být online už dnes. Líbí se vám tento web? Váš vlastní může být online ještě dnes. Popište svůj nápad a AI vytvoří první návrh. Bez kódování a zdarma. Chci vl"
+    ],
+    "dateSignals": [
+      "19.6.2027"
+    ],
+    "structuredEvents": [],
+    "needsBrowser": true,
+    "follow": []
+  },
+  {
+    "url": "https://bohemiadivide.wixsite.com/english",
+    "via": [
+      "f64b8560-5ed8-4b3f-8868-efc4a637d6c8"
+    ],
+    "purpose": "2026 race website",
+    "at": "2026-11-04T21:23:23.457Z",
+    "status": 200,
+    "finalUrl": "https://bohemiadivide.wixsite.com/english",
+    "title": "Home | english",
+    "textLength": 295,
+    "textFile": "pages/eb9b8084046d74d66890.txt",
+    "snippets": [],
+    "dateSignals": [],
+    "structuredEvents": [],
+    "needsBrowser": true,
+    "follow": []
+  },
+  {
+    "url": "https://kalendar.winspace.cz/kalendar/2026-cp-motol-e0d8ea55",
+    "via": [
+      "f76a9371-008e-4725-b7cc-221bf0c1ba27"
+    ],
+    "purpose": "2026 race website",
+    "at": "2026-11-04T21:23:23.652Z",
+    "status": 200,
+    "finalUrl": "https://kalendar.winspace.cz/kalendar/2026-cp-motol-e0d8ea55",
+    "title": "ČP Motol | Velomania",
+    "textLength": 225,
+    "textFile": "pages/a27a06a313730ec51b72.txt",
+    "snippets": [],
+    "dateSignals": [],
+    "structuredEvents": [],
+    "needsBrowser": true,
+    "follow": []
+  },
+  {
+    "url": "https://kalendar.winspace.cz/kalendar/2026-zh-cross-7-32972582",
+    "via": [
+      "f9a8bbe8-1e68-4805-9080-203cedde7c75"
+    ],
+    "purpose": "2026 race website",
+    "at": "2026-11-04T21:23:24.193Z",
+    "status": 200,
+    "finalUrl": "https://kalendar.winspace.cz/kalendar/2026-zh-cross-7-32972582",
+    "title": "ZH Cross #7 | Velomania",
+    "textLength": 221,
+    "textFile": "pages/9c14b1fced61ae1307b0.txt",
+    "snippets": [],
+    "dateSignals": [],
+    "structuredEvents": [],
+    "needsBrowser": true,
+    "follow": []
+  },
+  {
+    "url": "https://www.facebook.com/klinsketraily/",
+    "via": [
+      "faf0d1a7-9065-435d-ba39-c993b509ad6b"
+    ],
+    "purpose": "2026 race website",
+    "at": "2026-11-04T21:23:23.786Z",
+    "status": 200,
+    "finalUrl": "https://www.facebook.com/klinsketraily/",
+    "title": "Klínské Traily | Klíny",
+    "textLength": 0,
+    "textFile": "pages/c951ec88063465c43615.txt",
+    "snippets": [],
+    "dateSignals": [],
+    "structuredEvents": [],
+    "needsBrowser": true,
+    "follow": []
+  },
+  {
+    "url": "https://www.czechcyclingfederation.com/events/mcr-silnice-2026/",
+    "via": [
+      "f85e9532-5f23-49ef-9d4d-61dded8fae12"
+    ],
+    "purpose": "2026 race website",
+    "at": "2026-11-04T21:23:23.693Z",
+    "status": 404,
+    "finalUrl": "https://www.czechcyclingfederation.com/events/mcr-silnice-2026/",
+    "title": "Český svaz cyklistiky | Stránka nebyla nalezena",
+    "textLength": 2067,
+    "textFile": "pages/9662c953d79f9aa3bfc8.txt",
+    "snippets": [],
+    "dateSignals": [],
+    "structuredEvents": [],
+    "needsBrowser": false,
+    "follow": []
+  },
+  {
+    "url": "https://www.cyklokrosostrava.cz/",
+    "via": [
+      "https://www.cyklokrosostrava.cz/czechcup"
+    ],
+    "purpose": "organiser homepage alongside detail URL",
+    "at": "2026-11-04T21:23:25.676Z",
+    "status": 403,
+    "finalUrl": "https://www.cyklokrosostrava.cz/",
+    "title": "Attention Required! | Cloudflare",
+    "textLength": 730,
+    "textFile": "pages/c0a1637b81154b54b801.txt",
+    "snippets": [],
+    "dateSignals": [],
+    "structuredEvents": [],
+    "needsBrowser": false,
+    "follow": []
+  },
+  {
+    "url": "https://czenduro.cz/",
+    "via": [
+      "https://czenduro.cz/races/bikes"
+    ],
+    "purpose": "organiser homepage alongside detail URL",
+    "at": "2026-11-04T21:23:25.699Z",
+    "status": 200,
+    "finalUrl": "https://czenduro.cz/",
+    "title": "Registrace na enduro závody | CZEnduro",
+    "textLength": 0,
+    "textFile": "pages/8521f2daaf207109cf31.txt",
+    "snippets": [],
+    "dateSignals": [],
+    "structuredEvents": [],
+    "needsBrowser": true,
+    "follow": []
+  },
+  {
+    "url": "https://www.trailkids.cz/",
+    "via": [
+      "https://www.trailkids.cz/Dom%C5%AF.html"
+    ],
+    "purpose": "organiser homepage alongside detail URL",
+    "at": "2026-11-04T21:23:26.172Z",
+    "status": 200,
+    "finalUrl": "https://trailkids.cz/",
+    "title": "Grom Enduro: MTB enduro závody pro děti | Trailkids",
+    "textLength": 0,
+    "textFile": "pages/95006c4f7d3296a3e9e8.txt",
+    "snippets": [],
+    "dateSignals": [],
+    "structuredEvents": [],
+    "needsBrowser": true,
+    "follow": []
+  },
+  {
+    "url": "https://fb.me/",
+    "via": [
+      "https://fb.me/e/3yj4Em83r"
+    ],
+    "purpose": "organiser homepage alongside detail URL",
+    "at": "2026-11-04T21:23:26.214Z",
+    "status": 200,
+    "finalUrl": "https://www.facebook.com/",
+    "title": "Facebook",
+    "textLength": 0,
+    "textFile": "pages/20a20ace9aa14d1eaadc.txt",
+    "snippets": [],
+    "dateSignals": [],
+    "structuredEvents": [],
+    "needsBrowser": true,
+    "follow": []
+  },
+  {
+    "url": "https://www.okolorepubliky.cz/",
+    "via": [
+      "https://www.okolorepubliky.cz/en/"
+    ],
+    "purpose": "organiser homepage alongside detail URL",
+    "at": "2026-11-04T21:23:26.753Z",
+    "error": "fetch failed"
+  },
+  {
+    "url": "https://www.cykloman.cz/?_akce2026_06=powerman-kuncina",
+    "via": [
+      "66f63f18-449c-4610-a108-f95bc410baff"
+    ],
+    "purpose": "2026 race website",
+    "at": "2026-11-04T21:23:16.584Z",
+    "error": "fetch failed"
+  },
+  {
+    "url": "https://www.skimokrelazce.cz/",
+    "via": [
+      "https://www.skimokrelazce.cz/zavody/mokrolazecka-60-2026"
+    ],
+    "purpose": "organiser homepage alongside detail URL",
+    "at": "2026-11-04T21:23:27.302Z",
+    "status": 500,
+    "finalUrl": "https://www.skimokrelazce.cz/",
+    "title": "LYŽAŘSKÝ KLUB MOKRÉ LAZCE",
+    "textLength": 644,
+    "textFile": "pages/0890bdc5888f9fc79c61.txt",
+    "snippets": [],
+    "dateSignals": [],
+    "structuredEvents": [],
+    "needsBrowser": false,
+    "follow": []
+  },
+  {
+    "url": "https://okolosedlist.wixsite.com/",
+    "via": [
+      "https://okolosedlist.wixsite.com/jimramov"
+    ],
+    "purpose": "organiser homepage alongside detail URL",
+    "at": "2026-11-04T21:23:27.229Z",
+    "status": 404,
+    "finalUrl": "https://okolosedlist.wixsite.com/",
+    "title": "404 Error: Page Not Found | Wix.com",
+    "textLength": 0,
+    "textFile": "pages/bf56b88dc04608b78711.txt",
+    "snippets": [],
+    "dateSignals": [],
+    "structuredEvents": [],
+    "needsBrowser": true,
+    "follow": []
+  },
+  {
+    "url": "https://bohemiadivide.wixsite.com/",
+    "via": [
+      "https://bohemiadivide.wixsite.com/english"
+    ],
+    "purpose": "organiser homepage alongside detail URL",
+    "at": "2026-11-04T21:23:27.293Z",
+    "status": 404,
+    "finalUrl": "https://bohemiadivide.wixsite.com/",
+    "title": "404 Error: Page Not Found | Wix.com",
+    "textLength": 0,
+    "textFile": "pages/f05ef82b319ebb3f84d4.txt",
+    "snippets": [],
+    "dateSignals": [],
+    "structuredEvents": [],
+    "needsBrowser": true,
+    "follow": []
+  },
+  {
+    "url": "https://miko-cycles.cz/",
+    "via": [
+      "https://miko-cycles.cz/mamut/mamut-tour/propozice/"
+    ],
+    "purpose": "organiser homepage alongside detail URL",
+    "at": "2026-11-04T21:23:27.090Z",
+    "status": 200,
+    "finalUrl": "https://miko-cycles.cz/",
+    "title": "MiKo-Cycles",
+    "textLength": 88,
+    "textFile": "pages/21c92e51912e0e4f79ad.txt",
+    "snippets": [],
+    "dateSignals": [],
+    "structuredEvents": [],
+    "needsBrowser": true,
+    "follow": [
+      "https://miko-cycles.cz/darkovy-vanocni-poukaz-mamut-tour-2027/",
+      "https://miko-cycles.cz/mamut-tour-2027/"
+    ]
+  },
+  {
+    "url": "https://www.casovkanatruba.cz/registrace.php",
+    "via": [
+      "https://www.casovkanatruba.cz/"
+    ],
+    "purpose": "next-year link",
+    "at": "2026-11-04T21:23:27.538Z",
+    "status": 200,
+    "finalUrl": "https://www.casovkanatruba.cz/registrace.php",
+    "title": "Registrace 2027 - Časovka na Truba 28. 9. 2027 (Memoriál Václava Hladíka)",
+    "textLength": 267,
+    "textFile": "pages/f4ec5262090dc0901bf1.txt",
+    "snippets": [
+      "Online registrace Registrace na Časovku na Truba 2027 Závod se jede 28. 9. 2027. Startovní číslo dostanete při prezenci od 9:30 do 10:50. Online registrace začne 1. 9. 2027 Závod se jede 28. 9. 2027. Registrovat se bude možné i na místě při prezenci od 9:30 do 10:50."
+    ],
+    "dateSignals": [
+      "28. 9. 2027",
+      "1. 9. 2027"
+    ],
+    "structuredEvents": [],
+    "needsBrowser": true,
+    "follow": [
+      "https://www.casovkanatruba.cz/registrace.php"
+    ]
+  },
+  {
+    "url": "https://www.montesferrei.cz/propozice-2027/",
+    "via": [
+      "https://www.montesferrei.cz/"
+    ],
+    "purpose": "next-year link",
+    "at": "2026-11-04T21:23:28.309Z",
+    "status": 200,
+    "finalUrl": "https://www.montesferrei.cz/propozice-2027/",
+    "title": "Propozice závodu 2027 | Montes Ferrei",
+    "textLength": 104,
+    "textFile": "pages/f4a69223aef8ffbee203.txt",
+    "snippets": [
+      "Přeskočit na obsah Propozice 2027 18. – 20. 6. 2027 0 Years 0 Months 0 Days 0 Hrs 0 Mins 0 Secs CZ CZ EN"
+    ],
+    "dateSignals": [
+      "18. – 20. 6. 2027"
+    ],
+    "structuredEvents": [],
+    "needsBrowser": true,
+    "follow": [
+      "https://www.montesferrei.cz/propozice-2027/",
+      "https://www.montesferrei.cz/en/propozice-2027/"
+    ]
+  },
+  {
+    "url": "https://kalendar.winspace.cz/kalendar/2027-istria-granfondo-e35d185b",
+    "via": [
+      "https://kalendar.winspace.cz/"
+    ],
+    "purpose": "next-year link",
+    "at": "2026-11-04T21:23:28.314Z",
+    "status": 200,
+    "finalUrl": "https://kalendar.winspace.cz/kalendar/2027-istria-granfondo-e35d185b",
+    "title": "Istria Granfondo | Velomania",
+    "textLength": 207,
+    "textFile": "pages/db826b551cf615a8f897.txt",
+    "snippets": [
+      "Velomania Zpět na kalendářSilniceAmatérskýPlánovaný Istria Granfondo sobota 3. dubna 2027 Umag Zdroj: Cestné maratóny (maratony.eu) Druh: maraton. Místo: Umag. Propozice Výsledky se zobrazí po odjetí závodu."
+    ],
+    "dateSignals": [
+      "3. dubna 2027"
+    ],
+    "structuredEvents": [],
+    "needsBrowser": true,
+    "follow": []
+  },
+  {
+    "url": "https://cykloklubchynov.cz/zavody/beh-milenia/",
+    "via": [
+      "https://www.cykloklubchynov.cz/",
+      "https://cykloklubchynov.cz/"
+    ],
+    "purpose": "next-year link",
+    "at": "2026-11-04T21:23:27.606Z",
+    "status": 200,
+    "finalUrl": "https://cykloklubchynov.cz/zavody/beh-milenia/",
+    "title": "Běh Milénia Chýnov — Cykloklub Chýnov",
+    "textLength": 116,
+    "textFile": "pages/4d6f67d5939e5664f95d.txt",
+    "snippets": [],
+    "dateSignals": [],
+    "structuredEvents": [
+      {
+        "externalId": "https://cykloklubchynov.cz/zavody/beh-milenia/#event",
+        "name": "Běh Milénia",
+        "startDate": "2027-01-24",
+        "placeText": "Chýnov",
+        "description": "Běh Milénia v Chýnově — tradiční běžecký závod Cykloklubu Chýnov.",
+        "countryHint": "CZ",
+        "sourceUrl": "https://cykloklubchynov.cz/zavody/beh-milenia/",
+        "registrationUrl": "https://cykloklubchynov.cz/zavody/beh-milenia/",
+        "confidence": 0.85
+      }
+    ],
+    "needsBrowser": true,
+    "follow": []
+  },
+  {
+    "url": "https://kalendar.winspace.cz/kalendar/2027-neusiedler-see-radmarathon-7a789644",
+    "via": [
+      "https://kalendar.winspace.cz/"
+    ],
+    "purpose": "next-year link",
+    "at": "2026-11-04T21:23:28.891Z",
+    "status": 200,
+    "finalUrl": "https://kalendar.winspace.cz/kalendar/2027-neusiedler-see-radmarathon-7a789644",
+    "title": "Neusiedler See Radmarathon | Velomania",
+    "textLength": 240,
+    "textFile": "pages/c6ee47c3f3f2c755ea12.txt",
+    "snippets": [
+      "Velomania Zpět na kalendářSilniceAmatérskýPlánovaný Neusiedler See Radmarathon neděle 25. dubna 2027 Mörbisch am See Zdroj: Cestné maratóny (maratony.eu) Druh: maraton. Místo: Mörbisch am See. Propozice Výsledky se zobrazí po odjetí závodu."
+    ],
+    "dateSignals": [
+      "25. dubna 2027"
+    ],
+    "structuredEvents": [],
+    "needsBrowser": true,
+    "follow": []
+  },
+  {
+    "url": "http://www.lhota-vlasenice.cz/akce/",
+    "via": [
+      "a7667d4a-a7d2-4683-a3b8-76790625b2db"
+    ],
+    "purpose": "2026 race website",
+    "at": "2026-11-04T21:23:19.463Z",
+    "error": "The operation was aborted due to timeout"
+  },
+  {
+    "url": "https://www.porubajk.cz/",
+    "via": [
+      "d09b8365-603f-43f0-b6de-966d8972f1db"
+    ],
+    "purpose": "2026 race website",
+    "at": "2026-11-04T21:23:21.774Z",
+    "error": "The operation was aborted due to timeout"
+  },
+  {
+    "url": "http://www.lhota-vlasenice.cz/",
+    "via": [
+      "http://www.lhota-vlasenice.cz/akce/"
+    ],
+    "purpose": "organiser homepage alongside detail URL",
+    "at": "2026-11-04T21:23:34.469Z",
+    "error": "The operation was aborted due to timeout"
+  }
+]

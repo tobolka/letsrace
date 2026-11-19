@@ -1,0 +1,209 @@
+{
+  "locks": null,
+  "events": [
+    {
+      "id": "2f8a3f3c-b0b3-461e-b2e7-95161b8b49d6",
+      "name": "ERG 1900 - 7. RTF Essener Rad Genuss – Sonntag, 23. August 2026",
+      "slug": "erg-7-rtf-essener-rad-genuss-sonntag-23-august-2027",
+      "level": "local",
+      "season": "2027",
+      "status": "scheduled",
+      "formats": [
+        "gran_fondo"
+      ],
+      "audience": "adults",
+      "end_date": "2027-08-01",
+      "timezone": "Europe/Berlin",
+      "series_id": null,
+      "uci_class": null,
+      "created_at": "2026-08-13T20:37:14.331848+00:00",
+      "event_type": "ride",
+      "start_date": "2027-08-01",
+      "updated_at": "2026-10-29T09:30:58.897018+00:00",
+      "visibility": "hidden",
+      "class_label": "Local",
+      "description": null,
+      "disciplines": [
+        "gran_fondo"
+      ],
+      "fingerprint": "2027-08-01:u1hur:erg 1900 7 rtf essener rad genuss sonntag 23 august",
+      "location_id": "ff537c78-b081-4e27-a397-42f17b839f86",
+      "results_url": null,
+      "search_text": "erg 1900 7 rtf essener rad genuss sonntag 23 august 2026",
+      "source_kind": "scraped",
+      "website_url": "https://www.erg1900.de",
+      "last_seen_at": "2026-10-01T12:24:26.531+00:00",
+      "age_categories": [
+        "amateur",
+        "masters"
+      ],
+      "age_confidence": "default",
+      "merged_into_id": null,
+      "name_normalized": "erg 1900 7 rtf essener rad genuss sonntag 23 august",
+      "regulations_url": null,
+      "competition_type": "community",
+      "registration_url": "https://my.raceresult.com/411659/",
+      "registration_opens_at": null,
+      "registration_closes_at": null
+    },
+    {
+      "id": "cf06dbbb-fa41-4b3d-a802-d284edec2530",
+      "name": "NyNa Gravel Cup — Sudoměřice",
+      "slug": "nyna-gravel-cup-sarisske-bohdanovce-2026",
+      "level": "regional",
+      "season": "2026",
+      "status": "completed",
+      "formats": [],
+      "audience": "adults",
+      "end_date": "2026-05-17",
+      "timezone": "Europe/Prague",
+      "series_id": "54bfb09f-4f5c-4df6-9097-c5a94897c6f8",
+      "uci_class": null,
+      "created_at": "2026-08-18T18:02:35.822983+00:00",
+      "event_type": "cup",
+      "start_date": "2026-05-17",
+      "updated_at": "2026-10-25T02:31:36.301+00:00",
+      "visibility": "public",
+      "class_label": "Local",
+      "description": null,
+      "disciplines": [
+        "gravel"
+      ],
+      "fingerprint": "2026-09-19:u2s58:nyna gravel gajary",
+      "location_id": "e633521f-971e-45e5-ae7b-a37c861ecb3d",
+      "results_url": null,
+      "search_text": "nyna gravel cup sudomerice nyna cup slovensky pohar v graveli 2026 nyna cup detska vrl adriana babica",
+      "source_kind": "scraped",
+      "website_url": "https://www.vychodroadliga.sk/slovensky-pohar-nyna-gravel",
+      "last_seen_at": "2026-10-25T02:31:36.301+00:00",
+      "age_categories": [
+        "amateur",
+        "masters"
+      ],
+      "age_confidence": "explicit",
+      "merged_into_id": null,
+      "name_normalized": "nyna gravel sudomerice",
+      "regulations_url": "https://ctkzabokrekynn.sk/propozicie-6-rocnika-zabokreky-tour-2026/",
+      "competition_type": "community",
+      "registration_url": null,
+      "registration_opens_at": null,
+      "registration_closes_at": null
+    },
+    {
+      "id": "f3d57c60-54ab-4bf5-b0a8-e2f2096eaca7",
+      "name": "19. ročník časovky do vrchu Jantex Banské - Mláčky",
+      "slug": "19-rocnik-casovky-do-vrchu-jantex-banske-mlacky-2027",
+      "level": "local",
+      "season": "2027",
+      "status": "scheduled",
+      "formats": [
+        "hill_climb"
+      ],
+      "audience": "adults",
+      "end_date": "2027-08-15",
+      "timezone": "Europe/Prague",
+      "series_id": null,
+      "uci_class": null,
+      "created_at": "2026-10-23T21:43:50.594421+00:00",
+      "event_type": "race",
+      "start_date": "2027-08-15",
+      "updated_at": "2026-10-23T21:45:29.293+00:00",
+      "visibility": "hidden",
+      "class_label": "Local",
+      "description": null,
+      "disciplines": [
+        "hill_climb"
+      ],
+      "fingerprint": "2027-08-15:nogps:19 rocnik casovky do vrchu jantex banske mlacky",
+      "location_id": "dbfc1b4e-d34e-4093-85fa-343a636c1c9a",
+      "results_url": null,
+      "search_text": "19 rocnik casovky do vrchu jantex banske mlacky",
+      "source_kind": "scraped",
+      "website_url": "https://kalendar.winspace.cz/kalendar/2027-19-rocnik-casovky-do-vrchu-jantex-banske-mlacky-62c16eef",
+      "last_seen_at": "2026-10-23T21:43:50.529+00:00",
+      "age_categories": [
+        "amateur",
+        "masters"
+      ],
+      "age_confidence": "default",
+      "merged_into_id": null,
+      "name_normalized": "19 rocnik casovky do vrchu jantex banske mlacky",
+      "regulations_url": null,
+      "competition_type": "community",
+      "registration_url": null,
+      "registration_opens_at": null,
+      "registration_closes_at": null
+    }
+  ],
+  "locations": [
+    {
+      "id": "0c19e4c6-a6a6-4729-9308-decbdcd2dd18",
+      "lat": null,
+      "lng": null,
+      "geog": null,
+      "name": "Banské (okr. Vranov n/T), štart pred kultúrnym domom",
+      "venue": null,
+      "region": null,
+      "timezone": "Europe/Prague",
+      "created_at": "2026-10-29T15:13:28.465585+00:00",
+      "updated_at": "2026-10-29T15:13:28.465585+00:00",
+      "region_code": null,
+      "country_code": "SK",
+      "municipality": "Banské",
+      "geocode_query": "Banské",
+      "geocode_status": "pending"
+    },
+    {
+      "id": "b41afe66-40c0-4ea1-a39c-ca1071cdfcae",
+      "lat": 48.466,
+      "lng": 16.916,
+      "geog": "0101000020E6100000D122DBF97EEA3040CFF753E3A53B4840",
+      "name": "Gajary",
+      "venue": null,
+      "region": null,
+      "timezone": "Europe/Prague",
+      "created_at": "2026-08-14T08:48:46.203141+00:00",
+      "updated_at": "2026-08-14T19:18:18.779706+00:00",
+      "region_code": null,
+      "country_code": "SK",
+      "municipality": "Gajary",
+      "geocode_query": "Gajary",
+      "geocode_status": "ok"
+    }
+  ],
+  "source_links": [
+    {
+      "id": "23854278-b476-4805-a4a2-6e5404e48e5a",
+      "kind": "aggregator",
+      "event_id": "cf06dbbb-fa41-4b3d-a802-d284edec2530",
+      "raw_hash": null,
+      "created_at": "2026-09-09T11:34:36.045981+00:00",
+      "source_url": "https://www.soof.sk/podujatia-a-akcie",
+      "external_id": "nyna-gravel-2026-05-17-sudomerice",
+      "is_canonical": true,
+      "watched_url_id": "9ee2f4c5-b671-4f02-bdbf-052df059479d"
+    },
+    {
+      "id": "438e0fd9-1cbe-4560-a663-43b7fb9055ac",
+      "kind": "aggregator",
+      "event_id": "cf06dbbb-fa41-4b3d-a802-d284edec2530",
+      "raw_hash": null,
+      "created_at": "2026-09-09T11:34:33.26058+00:00",
+      "source_url": "https://www.soof.sk/podujatia-a-akcie",
+      "external_id": "nyna-gravel-2026-09-19-gajary",
+      "is_canonical": true,
+      "watched_url_id": "9ee2f4c5-b671-4f02-bdbf-052df059479d"
+    },
+    {
+      "id": "bb5dbadd-ebc9-47e2-9c6f-4a647c60b33d",
+      "kind": "aggregator",
+      "event_id": "cf06dbbb-fa41-4b3d-a802-d284edec2530",
+      "raw_hash": null,
+      "created_at": "2026-08-14T09:56:36.849977+00:00",
+      "source_url": "https://www.soof.sk/podujatia-a-akcie",
+      "external_id": "detska-vrl-2026-07-12-sarisske bohdanovce",
+      "is_canonical": true,
+      "watched_url_id": "9ee2f4c5-b671-4f02-bdbf-052df059479d"
+    }
+  ]
+}

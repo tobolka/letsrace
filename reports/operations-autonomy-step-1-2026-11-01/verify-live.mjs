@@ -1,0 +1,7 @@
+import fs from 'node:fs';import assert from 'node:assert/strict';import {parse} from 'dotenv';
+const env=parse(fs.readFileSync('.env.local'));
+const headers={Authorization:'Bearer '+env.CRON_SECRET,'x-letsrace-monitor':'1'};
+const r=await fetch('https://letsrace.cz/api/cron/watch',{method:'POST',headers,signal:AbortSignal.timeout(290000)});assert.equal(r.status,200);const result=await r.json();assert.ok(!result.status||result.status!=='already_running','Another job is running; retry verification after it finishes');
+for(const key of ['count','reads','failed','unreadable','deferred'])assert.equal(typeof result[key],'number',key+' missing');assert.equal(result.count,result.reads);assert.equal(result.ok,result.failed===0);
+const statusResponse=await fetch('https://letsrace.cz/api/ops/pipeline-status',{headers,signal:AbortSignal.timeout(15000)});assert.equal(statusResponse.status,200);const status=await statusResponse.json();const stored=status.jobs.find(j=>j.key==='server-free');assert.ok(stored?.finished_at);for(const key of ['count','reads','failed','unreadable','deferred','status'])assert.deepEqual(stored.summary[key],result[key],key+' response/storage mismatch');assert.equal(stored.status,result.status);
+fs.writeFileSync('reports/operations-autonomy-step-1-2026-11-01/live-verification.json',JSON.stringify({at:new Date().toISOString(),result,stored},null,2));console.log({verified:true,read:result.reads,failed:result.failed,unreadable:result.unreadable,deferred:result.deferred,status:stored.status});

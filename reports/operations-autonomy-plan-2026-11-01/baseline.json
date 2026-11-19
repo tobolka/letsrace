@@ -1,0 +1,395 @@
+{
+  "at": "2026-11-01T22:29:31.923474+00:00",
+  "sources": [
+    {
+      "status": "paused",
+      "last_extract_status": "ok",
+      "count": 42
+    },
+    {
+      "status": "active",
+      "last_extract_status": "ok",
+      "count": 283
+    },
+    {
+      "status": "paused",
+      "last_extract_status": "needs_review",
+      "count": 54
+    },
+    {
+      "status": "paused",
+      "last_extract_status": "error",
+      "count": 2
+    },
+    {
+      "status": "active",
+      "last_extract_status": "error",
+      "count": 2
+    },
+    {
+      "status": "paused",
+      "last_extract_status": null,
+      "count": 818
+    },
+    {
+      "status": "active",
+      "last_extract_status": "needs_review",
+      "count": 393
+    },
+    {
+      "status": "active",
+      "last_extract_status": "unchanged",
+      "count": 254
+    },
+    {
+      "status": "dead",
+      "last_extract_status": "dead",
+      "count": 16
+    },
+    {
+      "status": "active",
+      "last_extract_status": "off_season",
+      "count": 507
+    },
+    {
+      "status": "paused",
+      "last_extract_status": "off_season",
+      "count": 237
+    },
+    {
+      "status": "paused",
+      "last_extract_status": "unchanged",
+      "count": 29
+    }
+  ],
+  "candidate_states": [
+    {
+      "status": "published",
+      "count": 34,
+      "oldest_created": "2026-10-25T14:28:53.138637+00:00",
+      "oldest_updated": "2026-10-25T14:29:54.78+00:00"
+    },
+    {
+      "status": "waiting",
+      "count": 19,
+      "oldest_created": "2026-10-25T14:21:55.331204+00:00",
+      "oldest_updated": "2026-10-25T14:33:48.873+00:00"
+    },
+    {
+      "status": "rejected",
+      "count": 161,
+      "oldest_created": "2026-10-25T14:21:55.257854+00:00",
+      "oldest_updated": "2026-10-25T14:33:49.002+00:00"
+    }
+  ],
+  "review_queue": [
+    {
+      "id": "df880db5-363c-4737-a069-d736e2723a06",
+      "name": "Pražská 50",
+      "country": "CZ",
+      "reason": "independent_discovery_requires_identity_and_authority_review",
+      "created_at": "2026-10-25T14:21:55.331204+00:00",
+      "updated_at": "2026-10-25T14:33:48.873+00:00"
+    },
+    {
+      "id": "cb209d18-ff5b-435b-8061-4303b7727353",
+      "name": "ROAD STAGE SERIES 2027 — Orlické hory",
+      "country": "CZ",
+      "reason": "independent_discovery_requires_identity_and_authority_review",
+      "created_at": "2026-10-25T19:42:33.955336+00:00",
+      "updated_at": "2026-10-25T19:44:19.865+00:00"
+    },
+    {
+      "id": "5629a8fe-da76-46fd-903f-23b7cacb0748",
+      "name": "QUICK SPORT JARNÝ ŠPRINT",
+      "country": "SK",
+      "reason": "independent_discovery_requires_identity_and_authority_review",
+      "created_at": "2026-10-25T19:44:04.758213+00:00",
+      "updated_at": "2026-10-29T15:19:45.398+00:00"
+    },
+    {
+      "id": "a5fe9884-ffd5-489a-ab87-a818392f6d1b",
+      "name": "Majstrovstvá Slovenska E-XC EBIKE CUP 2026",
+      "country": "SK",
+      "reason": "independent_discovery_requires_identity_and_authority_review",
+      "created_at": "2026-10-25T19:44:04.814886+00:00",
+      "updated_at": "2026-10-29T15:19:45.145+00:00"
+    },
+    {
+      "id": "506455da-b3b3-41ac-9912-508076e012fd",
+      "name": "BikeFest maratón 2027",
+      "country": "SK",
+      "reason": "independent_discovery_requires_identity_and_authority_review",
+      "created_at": "2026-10-25T19:44:05.118194+00:00",
+      "updated_at": "2026-10-29T15:19:45.484+00:00"
+    },
+    {
+      "id": "19815d62-5a3d-4c18-870f-b587f8b4c531",
+      "name": "ŠKODA MARATÓN SLOVENSKÝ RAJ",
+      "country": "SK",
+      "reason": "independent_discovery_requires_identity_and_authority_review",
+      "created_at": "2026-10-25T19:44:05.238211+00:00",
+      "updated_at": "2026-10-29T15:19:44.956+00:00"
+    },
+    {
+      "id": "0e13ed64-21e6-47d5-acef-4a6120efeea9",
+      "name": "ŠKODA CYKLOMARATÓN TOPOLČIANKY",
+      "country": "SK",
+      "reason": "independent_discovery_requires_identity_and_authority_review",
+      "created_at": "2026-10-25T19:44:05.28934+00:00",
+      "updated_at": "2026-10-29T15:19:45.052+00:00"
+    },
+    {
+      "id": "42d4cf90-5713-4e32-ab17-736efc7c26dc",
+      "name": "Považský MTB ŠPECIÁL MARATÓN Považská Bystrica",
+      "country": "SK",
+      "reason": "independent_discovery_requires_identity_and_authority_review",
+      "created_at": "2026-10-25T19:44:05.339333+00:00",
+      "updated_at": "2026-10-29T15:19:45.314+00:00"
+    },
+    {
+      "id": "415144cf-44e4-4dd1-9268-1a0b6c8b08b5",
+      "name": "POVAŽSKÝ MTB ŠPECIALIK",
+      "country": "SK",
+      "reason": "independent_discovery_requires_identity_and_authority_review",
+      "created_at": "2026-10-25T19:44:05.388389+00:00",
+      "updated_at": "2026-10-29T15:19:44.492+00:00"
+    },
+    {
+      "id": "074faf63-97e6-4323-bebd-e2b9c2542b79",
+      "name": "MTB maratón Bike4you Hlohovec - Poniklec",
+      "country": "SK",
+      "reason": "independent_discovery_requires_identity_and_authority_review",
+      "created_at": "2026-10-25T19:44:05.731205+00:00",
+      "updated_at": "2026-10-29T15:19:43.49+00:00"
+    },
+    {
+      "id": "4ad37087-1496-4de4-8da1-a6b2d246da11",
+      "name": "BREZNIANSKY MTB MARATÓN 2027",
+      "country": "SK",
+      "reason": "independent_discovery_requires_identity_and_authority_review",
+      "created_at": "2026-10-25T19:44:05.82786+00:00",
+      "updated_at": "2026-10-29T15:19:43.405+00:00"
+    },
+    {
+      "id": "206f42f6-97a3-460c-8978-3e0a5939cbb1",
+      "name": "Detská VRL — Šarišské Bohdanovce",
+      "country": "SK",
+      "reason": "identity_review_required: conflicting fingerprint owned by 71d5b977-658f-4a1b-bedc-770356737272",
+      "created_at": "2026-10-28T21:16:28.980006+00:00",
+      "updated_at": "2026-10-29T15:19:38.775+00:00"
+    },
+    {
+      "id": "cb504b8d-0bf5-42e6-bdc5-e862b9f27ba7",
+      "name": "Zeitfahren Hintersee 2026",
+      "country": "DE",
+      "reason": "existing_data_quarantined:date_conflict",
+      "created_at": "2026-10-29T09:30:58.897018+00:00",
+      "updated_at": "2026-10-29T15:19:33.957+00:00"
+    },
+    {
+      "id": "16a1f07c-8810-4290-b559-d9ceaced491f",
+      "name": "Lost Ride",
+      "country": "CZ",
+      "reason": "Provisional date or edition: Change existing scheduled/public→tbc/hidden and lock. Candidate June1 22:00 preserved only as provisional admin value; exact start/finish town unpublished. Distance800+ and12–18k elevation not exact. Start list confirms entries exist, does not confirm final date or venue.",
+      "created_at": "2026-10-29T09:42:27.710215+00:00",
+      "updated_at": "2026-10-29T09:42:27.710215+00:00"
+    },
+    {
+      "id": "d7e8f6c7-dd91-47c7-9e32-c01308d7d2e3",
+      "name": "Author Valtické Cyklobraní",
+      "country": "CZ",
+      "reason": "Provisional date or edition: Existing locked September24 day is not a confirmed race day. Organizer says September only, temporary invalid rules; registration on Sep24/25 does not confirm race date. Preserve locked date in admin and set tbc/hidden pending official confirmation.",
+      "created_at": "2026-10-29T09:42:27.815179+00:00",
+      "updated_at": "2026-10-29T09:42:27.815179+00:00"
+    },
+    {
+      "id": "38b6c306-c67d-463b-9f45-0aecd1af0405",
+      "name": "KM TRADING CZ trophy",
+      "country": "CZ",
+      "reason": "Provisional date or edition: Public Aug15 2027 was recycled from2026. Keep historical candidate day only in admin, set tbc/hidden until2027 date announced.",
+      "created_at": "2026-10-29T09:42:27.908476+00:00",
+      "updated_at": "2026-10-29T09:42:27.908476+00:00"
+    },
+    {
+      "id": "25b5f74f-a9f1-4051-8946-cd3333d41921",
+      "name": "The Step Czech Republic",
+      "country": "CZ",
+      "reason": "Provisional date or edition: June1 is an invented month placeholder. Secondary alias likely L’Etape; do not merge until identity review against existingJune19 records. Keep as tbc/hidden.",
+      "created_at": "2026-10-29T09:42:28.089901+00:00",
+      "updated_at": "2026-10-29T09:42:28.089901+00:00"
+    },
+    {
+      "id": "0f86b993-da47-468b-a9a6-073bbc84bcb7",
+      "name": "Bohemian Border Bash Race",
+      "country": "CZ",
+      "reason": "Official website gives 11.–18. 2027 without a month; aggregator September date remains unconfirmed. Official /bbbr26-info and manual describe old edition. Require full official 2027 start date; existing 2026 editions remain separate.",
+      "created_at": "2026-10-31T07:15:15.300815+00:00",
+      "updated_at": "2026-10-31T07:15:15.300815+00:00"
+    },
+    {
+      "id": "97f72e9d-8a6e-498b-a0bc-5cb23a823d13",
+      "name": "Jesenický Ultrasurovec",
+      "country": "CZ",
+      "reason": "Aggregator gives 15.10.2027 but official cycling page inaccessible. Timing-provider 2027 programme confirms running on Oct 16–17, not the MTB ultra. Need explicit 2027 cycling date/identity confirmation; do not import running competitions as cycling.",
+      "created_at": "2026-10-31T07:15:15.300815+00:00",
+      "updated_at": "2026-10-31T07:15:15.300815+00:00"
+    }
+  ],
+  "catalogue": [
+    {
+      "country_code": "CZ",
+      "public_upcoming": 158,
+      "no_outbound": 7,
+      "without_source_evidence": 39
+    },
+    {
+      "country_code": "AT",
+      "public_upcoming": 189,
+      "no_outbound": 4,
+      "without_source_evidence": 2
+    },
+    {
+      "country_code": "PL",
+      "public_upcoming": 210,
+      "no_outbound": 2,
+      "without_source_evidence": 10
+    },
+    {
+      "country_code": "CH",
+      "public_upcoming": 89,
+      "no_outbound": 9,
+      "without_source_evidence": 2
+    },
+    {
+      "country_code": "DE",
+      "public_upcoming": 336,
+      "no_outbound": 13,
+      "without_source_evidence": 18
+    },
+    {
+      "country_code": "SK",
+      "public_upcoming": 27,
+      "no_outbound": 4,
+      "without_source_evidence": 0
+    },
+    {
+      "country_code": "IT",
+      "public_upcoming": 194,
+      "no_outbound": 64,
+      "without_source_evidence": 3
+    }
+  ],
+  "link_queue": [
+    {
+      "status": "ignored",
+      "count": 819,
+      "oldest": "2026-08-13T19:30:05.381208+00:00"
+    },
+    {
+      "status": "rejected",
+      "count": 35,
+      "oldest": "2026-09-07T17:33:23.510943+00:00"
+    },
+    {
+      "status": "pending",
+      "count": 14,
+      "oldest": "2026-10-24T23:56:24.274089+00:00"
+    },
+    {
+      "status": "accepted",
+      "count": 104,
+      "oldest": "2026-08-18T07:34:42.24001+00:00"
+    }
+  ],
+  "runs24h": {
+    "runs": 1213,
+    "failed_rows": 497,
+    "unfinished": 0,
+    "oldest_unfinished": null
+  },
+  "run_errors": [
+    {
+      "error": "unsupported_or_empty_source",
+      "count": 400
+    },
+    {
+      "error": "fetch failed",
+      "count": 29
+    },
+    {
+      "error": "dynamic_render_unavailable",
+      "count": 20
+    },
+    {
+      "error": "HTTP 500",
+      "count": 12
+    },
+    {
+      "error": "404",
+      "count": 9
+    },
+    {
+      "error": "write_failed:duatlon powerman kuncina-2026-08-22:identity_review_required: multiple matching races; source row deferred",
+      "count": 3
+    },
+    {
+      "error": "source_document_too_large",
+      "count": 3
+    },
+    {
+      "error": "write_failed:csc-1695:pipeline_data_review_required:end_before_start",
+      "count": 3
+    },
+    {
+      "error": "write_failed:oerv-2B07205C486149CF85137D9901609854-2027-06-06:identity_review_required: conflicting fingerprint owned by 284f4c69-c54d-4ef4-ae7a-0190280104de",
+      "count": 2
+    },
+    {
+      "error": "write_failed:sumator-sumavsky pohar waldkirchen-2026-04-26:identity_review_required: conflicting fingerprint owned by 4f3e8781-58b2-42aa-bac6-47cdc9ff15c6",
+      "count": 2
+    }
+  ],
+  "facts7d": [
+    {
+      "method": "watcher_update_v2",
+      "fact_rows": 12060,
+      "events": 2776
+    },
+    {
+      "method": "manual_source_review",
+      "fact_rows": 738,
+      "events": 78
+    },
+    {
+      "method": "watcher_source_evidence",
+      "fact_rows": 677,
+      "events": 509
+    },
+    {
+      "method": "manual",
+      "fact_rows": 191,
+      "events": 27
+    },
+    {
+      "method": "previous_edition",
+      "fact_rows": 110,
+      "events": 42
+    },
+    {
+      "method": "manual_verified_official",
+      "fact_rows": 86,
+      "events": 25
+    },
+    {
+      "method": "registration_links",
+      "fact_rows": 72,
+      "events": 72
+    },
+    {
+      "method": "catalogue_quality_repair",
+      "fact_rows": 30,
+      "events": 27
+    }
+  ]
+}

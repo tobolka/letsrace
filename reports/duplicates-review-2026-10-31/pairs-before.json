@@ -1,0 +1,503 @@
+[
+  {
+    "key": "01269cd3-3147-4ce6-b47f-cff6535e50e1:4bbcdb31-0dbf-4abe-8159-cd5c56370dde",
+    "date": "2026-11-01",
+    "place": "Zlaté Hory",
+    "discipline": "cx",
+    "country": "CZ",
+    "left": {
+      "id": "01269cd3-3147-4ce6-b47f-cff6535e50e1",
+      "name": "Oderský pohár — Zlaté Hory II.",
+      "startDate": "2026-11-01",
+      "endDate": "2026-11-01",
+      "disciplines": [
+        "cx"
+      ],
+      "series": "KOLÁRNA–CBA Oderský pohár",
+      "websiteUrl": "https://www.kolarna.eu/kolarna-cba-odersky-pohar-2026/",
+      "registrationUrl": null,
+      "sources": 2
+    },
+    "right": {
+      "id": "4bbcdb31-0dbf-4abe-8159-cd5c56370dde",
+      "name": "Mistrovství Olomouckého kraje v cyklokrosu",
+      "startDate": "2026-11-01",
+      "endDate": "2026-11-01",
+      "disciplines": [
+        "cx"
+      ],
+      "series": null,
+      "websiteUrl": "https://kalendar.winspace.cz/kalendar/2026-mistrovstvi-olomouckeho-kraje-v-cyklokrosu-b4a30fdf",
+      "registrationUrl": null,
+      "sources": 2
+    },
+    "reasons": [
+      "same_day",
+      "same_place",
+      "same_discipline"
+    ]
+  },
+  {
+    "key": "61089325-6107-46af-b96a-43006c420464:983b2309-de7d-43f7-96a2-dd1cff9fcebb",
+    "date": "2026-11-07",
+    "place": "Stuttgart/Vaihingen",
+    "discipline": "cx",
+    "country": "DE",
+    "left": {
+      "id": "61089325-6107-46af-b96a-43006c420464",
+      "name": "Vaihinger Radcross",
+      "startDate": "2026-11-07",
+      "endDate": "2026-11-07",
+      "disciplines": [
+        "cx"
+      ],
+      "series": null,
+      "websiteUrl": "https://rsv-vaihingen.de/rennsport/radcross/",
+      "registrationUrl": null,
+      "sources": 1
+    },
+    "right": {
+      "id": "983b2309-de7d-43f7-96a2-dd1cff9fcebb",
+      "name": "CX Bundesliga 11 — Magstadt",
+      "startDate": "2026-11-07",
+      "endDate": "2026-11-08",
+      "disciplines": [
+        "cx"
+      ],
+      "series": "Cyclo-Cross Bundesliga",
+      "websiteUrl": "https://www.rv-pfeil-magstadt.de/radcross/",
+      "registrationUrl": "https://meldungen.rad-net.de/modules.php?name=Ausschreibung&pgID_Veranstaltung=3&ID_Veranstaltung=43250&mode=ascr_detail&typ=i",
+      "sources": 2
+    },
+    "reasons": [
+      "same_day",
+      "same_place",
+      "same_discipline"
+    ]
+  },
+  {
+    "key": "09e14a6c-8fac-442b-a4db-4d1c57608922:d44ac77d-9c09-4606-8eae-15f3a1b74e18",
+    "date": "2026-11-08",
+    "place": "Wels",
+    "discipline": "cx",
+    "country": "AT",
+    "left": {
+      "id": "09e14a6c-8fac-442b-a4db-4d1c57608922",
+      "name": "DWH - dachwelten Cross powered by RCO BOA Wels",
+      "startDate": "2026-11-08",
+      "endDate": "2026-11-08",
+      "disciplines": [
+        "cx"
+      ],
+      "series": "Cycling Austria Cyclocross Cup",
+      "websiteUrl": "https://www.rc-ovilava-wels.at/",
+      "registrationUrl": "https://www.computerauswertung.at/",
+      "sources": 7
+    },
+    "right": {
+      "id": "d44ac77d-9c09-4606-8eae-15f3a1b74e18",
+      "name": "DWH Cross Wels",
+      "startDate": "2026-11-08",
+      "endDate": "2026-11-08",
+      "disciplines": [
+        "cx"
+      ],
+      "series": null,
+      "websiteUrl": "https://www.rc-ovilava-wels.at/",
+      "registrationUrl": "https://www.computerauswertung.at/",
+      "sources": 1
+    },
+    "reasons": [
+      "same_day",
+      "same_place",
+      "name_sim_low",
+      "same_discipline"
+    ]
+  },
+  {
+    "key": "af445dda-c4b0-436a-b382-402c17498b39:f88dce95-ef66-4992-bedd-3e7a0dcd8d12",
+    "date": "2026-11-14",
+    "place": "Stahnsdorf",
+    "discipline": "cx",
+    "country": "DE",
+    "left": {
+      "id": "af445dda-c4b0-436a-b382-402c17498b39",
+      "name": "BL Cyclo Cross Stahnsdorf — Stahnsdorf",
+      "startDate": "2026-11-14",
+      "endDate": "2026-11-15",
+      "disciplines": [
+        "cx"
+      ],
+      "series": null,
+      "websiteUrl": "https://www.dsergebnis.de/",
+      "registrationUrl": null,
+      "sources": 5
+    },
+    "right": {
+      "id": "f88dce95-ef66-4992-bedd-3e7a0dcd8d12",
+      "name": "Meldungen 2026 allgemein — Cyclo-Cross Bundesliga 2026/2027 Stahnsdorf / Tag 1",
+      "startDate": "2026-11-14",
+      "endDate": "2026-11-14",
+      "disciplines": [
+        "cx"
+      ],
+      "series": "Cyclo-Cross Bundesliga 2026/2027",
+      "websiteUrl": "https://race-hub.io/events/3a8a36e2-2e59-4f68-bb9f-462f2263a289/info",
+      "registrationUrl": null,
+      "sources": 4
+    },
+    "reasons": [
+      "same_day",
+      "same_place",
+      "same_discipline"
+    ]
+  },
+  {
+    "key": "d0a91d4f-022c-4836-8296-f381d66ca44a:e7bbd201-69b1-4bd0-9df2-a3c609e4b2f6",
+    "date": "2026-12-19",
+    "place": "Antwerpen",
+    "discipline": "cx",
+    "country": "BE",
+    "left": {
+      "id": "d0a91d4f-022c-4836-8296-f381d66ca44a",
+      "name": "UCI Cyclo-cross World Cup — Antwerpen",
+      "startDate": "2026-12-19",
+      "endDate": "2026-12-20",
+      "disciplines": [
+        "cx"
+      ],
+      "series": "UCI Cyclo-cross World Cup",
+      "websiteUrl": "https://www.ucicyclocrossworldcup.com/en/calendar/2026-2027/antwerpen-2",
+      "registrationUrl": "https://antwerpen.tickets.ucicyclocrossworldcup.com/selection?language=en",
+      "sources": 4
+    },
+    "right": {
+      "id": "e7bbd201-69b1-4bd0-9df2-a3c609e4b2f6",
+      "name": "4. závod SP (ME,WE) — Antverpy (Belgie)",
+      "startDate": "2026-12-19",
+      "endDate": "2026-12-19",
+      "disciplines": [
+        "cx"
+      ],
+      "series": null,
+      "websiteUrl": "https://www.cyklokros.cz/kalendar",
+      "registrationUrl": null,
+      "sources": 1
+    },
+    "reasons": [
+      "same_day",
+      "same_place",
+      "same_discipline"
+    ]
+  },
+  {
+    "key": "d3a64374-8a91-472d-b91e-a39da78aec87:eea36490-37d8-4f3f-aa50-9f62d0d1a3cd",
+    "date": "2027-01-03",
+    "place": "Zonhoven, Belgium",
+    "discipline": "cx",
+    "country": "BE",
+    "left": {
+      "id": "d3a64374-8a91-472d-b91e-a39da78aec87",
+      "name": "9. závod SP (ME,WE) — Zonhoven (Belgie)",
+      "startDate": "2027-01-03",
+      "endDate": "2027-01-03",
+      "disciplines": [
+        "cx"
+      ],
+      "series": null,
+      "websiteUrl": "https://www.cyklokros.cz/kalendar",
+      "registrationUrl": null,
+      "sources": 1
+    },
+    "right": {
+      "id": "eea36490-37d8-4f3f-aa50-9f62d0d1a3cd",
+      "name": "UCI Cyclo-cross World Cup — Zonhoven",
+      "startDate": "2027-01-03",
+      "endDate": "2027-01-03",
+      "disciplines": [
+        "cx"
+      ],
+      "series": "UCI Cyclo-cross World Cup",
+      "websiteUrl": "https://www.ucicyclocrossworldcup.com/en/calendar/2026-2027/zonhoven-4",
+      "registrationUrl": "https://zonhoven.tickets.ucicyclocrossworldcup.com/selection?language=en",
+      "sources": 1
+    },
+    "reasons": [
+      "same_day",
+      "same_place",
+      "name_sim_low",
+      "same_discipline"
+    ]
+  },
+  {
+    "key": "539dcd7c-a7a9-4d78-8a06-fd8149b2c57f:d9b7abd5-ad01-4e30-9574-75bf407c51b0",
+    "date": "2027-01-16",
+    "place": "Mannheim",
+    "discipline": "cx",
+    "country": "DE",
+    "left": {
+      "id": "539dcd7c-a7a9-4d78-8a06-fd8149b2c57f",
+      "name": "Rund um die Radrennbahn",
+      "startDate": "2027-01-16",
+      "endDate": "2027-01-16",
+      "disciplines": [
+        "cx"
+      ],
+      "series": null,
+      "websiteUrl": "https://www.rrc-endspurt-mannheim.de/",
+      "registrationUrl": null,
+      "sources": 1
+    },
+    "right": {
+      "id": "d9b7abd5-ad01-4e30-9574-75bf407c51b0",
+      "name": "Mannheim",
+      "startDate": "2027-01-16",
+      "endDate": "2027-01-16",
+      "disciplines": [
+        "cx"
+      ],
+      "series": null,
+      "websiteUrl": "https://cyclocrosscup.de/2026/08/der-cyclocross-cup-steht-fuer-2026-in-den-startloechern/",
+      "registrationUrl": null,
+      "sources": 1
+    },
+    "reasons": [
+      "same_day",
+      "same_place",
+      "same_discipline"
+    ]
+  },
+  {
+    "key": "bc995997-ac54-442d-af22-f4d5c7fb31af:d9d9b533-53c8-4ab4-a57e-bceef9da760c",
+    "date": "2027-04-17",
+    "place": "Ruda",
+    "discipline": "gravel",
+    "country": "PL",
+    "left": {
+      "id": "bc995997-ac54-442d-af22-f4d5c7fb31af",
+      "name": "GLPK Gravel",
+      "startDate": "2027-04-17",
+      "endDate": "2027-04-17",
+      "disciplines": [
+        "gravel"
+      ],
+      "series": null,
+      "websiteUrl": "https://odjazd.pl/wydarzenie/84dd99b6-bf69-4231-96ed-b5429fdab0eb",
+      "registrationUrl": null,
+      "sources": 1
+    },
+    "right": {
+      "id": "d9d9b533-53c8-4ab4-a57e-bceef9da760c",
+      "name": "Grevet Po Czarnych Szutrach - Śląsk / Chill & Race",
+      "startDate": "2027-04-17",
+      "endDate": "2027-04-17",
+      "disciplines": [
+        "gravel"
+      ],
+      "series": null,
+      "websiteUrl": "https://odjazd.pl/wydarzenie/67eaf4d6-5799-4f0d-b798-5d69c58680c7",
+      "registrationUrl": null,
+      "sources": 1
+    },
+    "reasons": [
+      "same_day",
+      "same_place",
+      "same_discipline"
+    ]
+  },
+  {
+    "key": "97e62bd3-84ab-4037-861e-889749a61325:c11f48cf-529d-4b00-96c6-58ef8677a5ca",
+    "date": "2027-05-06",
+    "place": "EVO Sportfabrik, Rodgau",
+    "discipline": "road",
+    "country": "DE",
+    "left": {
+      "id": "97e62bd3-84ab-4037-861e-889749a61325",
+      "name": "Volksradfahren Rodgau",
+      "startDate": "2027-05-06",
+      "endDate": "2027-05-06",
+      "disciplines": [
+        "road"
+      ],
+      "series": null,
+      "websiteUrl": "https://rtf.sportfreunde-rodgau.de/",
+      "registrationUrl": null,
+      "sources": 1
+    },
+    "right": {
+      "id": "c11f48cf-529d-4b00-96c6-58ef8677a5ca",
+      "name": "Odenwald Marathon",
+      "startDate": "2027-05-06",
+      "endDate": "2027-05-06",
+      "disciplines": [
+        "road",
+        "gran_fondo"
+      ],
+      "series": null,
+      "websiteUrl": "https://rtf.sportfreunde-rodgau.de/",
+      "registrationUrl": "https://tickettune.com/sfr1911/detail/index/sArticle/299",
+      "sources": 1
+    },
+    "reasons": [
+      "same_day",
+      "same_place",
+      "same_discipline"
+    ]
+  },
+  {
+    "key": "05a28ad3-3fde-4996-a663-c4f19b59e03e:ca8c9779-f418-4dd0-9325-f0087c148ef6",
+    "date": "2027-05-30",
+    "place": "Radsportheim, Wenigumstadt",
+    "discipline": "road",
+    "country": "DE",
+    "left": {
+      "id": "05a28ad3-3fde-4996-a663-c4f19b59e03e",
+      "name": "BONNET-Radmarathon",
+      "startDate": "2027-05-30",
+      "endDate": "2027-05-30",
+      "disciplines": [
+        "road",
+        "gran_fondo"
+      ],
+      "series": null,
+      "websiteUrl": "https://rsv-wenigumstadt.de/radsportwochenende/radmarathoncup",
+      "registrationUrl": "https://rsv-wenigumstadt.de/radsportwochenende/anmeldung",
+      "sources": 1
+    },
+    "right": {
+      "id": "ca8c9779-f418-4dd0-9325-f0087c148ef6",
+      "name": "Volksradfahren Wenigumstadt",
+      "startDate": "2027-05-30",
+      "endDate": "2027-05-30",
+      "disciplines": [
+        "road"
+      ],
+      "series": null,
+      "websiteUrl": "https://rsv-wenigumstadt.de/radsportwochenende/volksradfahren",
+      "registrationUrl": null,
+      "sources": 1
+    },
+    "reasons": [
+      "same_day",
+      "same_place",
+      "same_discipline"
+    ]
+  },
+  {
+    "key": "26c164f6-fd6a-4be5-83ca-fa7ed9f4ce3b:7977de31-976a-4e5c-983e-556265197b75",
+    "date": "2027-06-05",
+    "place": "Deštné v Orlických horách",
+    "discipline": "road",
+    "country": "CZ",
+    "left": {
+      "id": "26c164f6-fd6a-4be5-83ca-fa7ed9f4ce3b",
+      "name": "RoadStage — Deštné v Orlických horách",
+      "startDate": "2027-06-05",
+      "endDate": "2027-06-06",
+      "disciplines": [
+        "road"
+      ],
+      "series": "RoadStage",
+      "websiteUrl": "https://www.roadstage.cz/orlicke-hory/vikend-na-road-stage",
+      "registrationUrl": "https://registrace.sportsoft.cz/registration.aspx?e=3630",
+      "sources": 8
+    },
+    "right": {
+      "id": "7977de31-976a-4e5c-983e-556265197b75",
+      "name": "Visegrad 4 Bicycle Race — Grand Prix Czech Republic UCI 1.2",
+      "startDate": "2027-06-05",
+      "endDate": "2027-06-05",
+      "disciplines": [
+        "road_race"
+      ],
+      "series": "Visegrad 4 Bicycle Race",
+      "websiteUrl": "https://kalendar.winspace.cz/kalendar/2027-grand-prix-czech-republic-uci-12-d2e33684",
+      "registrationUrl": null,
+      "sources": 1
+    },
+    "reasons": [
+      "same_day",
+      "same_place",
+      "same_discipline"
+    ]
+  },
+  {
+    "key": "9292d95c-a282-478d-aab8-5c77107512b4:a2e2a48d-52ed-417a-b915-ed654cdbb24e",
+    "date": "2027-07-10",
+    "place": "Oybin",
+    "discipline": "mtb",
+    "country": "DE",
+    "left": {
+      "id": "9292d95c-a282-478d-aab8-5c77107512b4",
+      "name": "2Much4You | 12h & 24h MTB-Rennen im Zittauer Gebirge",
+      "startDate": "2027-07-10",
+      "endDate": "2027-07-11",
+      "disciplines": [
+        "mtb"
+      ],
+      "series": null,
+      "websiteUrl": "https://my.raceresult.com/426327/",
+      "registrationUrl": "https://my.raceresult.com/426327/",
+      "sources": 2
+    },
+    "right": {
+      "id": "a2e2a48d-52ed-417a-b915-ed654cdbb24e",
+      "name": "2much4you - Das härteste 24h MTB Rennen Deutschlands",
+      "startDate": "2027-07-10",
+      "endDate": "2027-07-11",
+      "disciplines": [
+        "xco"
+      ],
+      "series": null,
+      "websiteUrl": "http://www.2much4you.de/",
+      "registrationUrl": "https://baer-service.de/anmeldung/TMY",
+      "sources": 1
+    },
+    "reasons": [
+      "same_day",
+      "same_place",
+      "name_sim_low",
+      "same_discipline"
+    ]
+  },
+  {
+    "key": "9d94b81f-5fe8-4bf3-b992-112e560f99fa:d9277559-9378-4344-b0c7-973fb29b5314",
+    "date": "2027-08-06",
+    "place": "Ischgl",
+    "discipline": "xcc",
+    "country": "AT",
+    "left": {
+      "id": "9d94b81f-5fe8-4bf3-b992-112e560f99fa",
+      "name": "Ischgl Ironbike Short-Track",
+      "startDate": "2027-08-06",
+      "endDate": "2027-08-07",
+      "disciplines": [
+        "xcc",
+        "track"
+      ],
+      "series": null,
+      "websiteUrl": "https://www.ischglironbike.com/",
+      "registrationUrl": null,
+      "sources": 3
+    },
+    "right": {
+      "id": "d9277559-9378-4344-b0c7-973fb29b5314",
+      "name": "Ischgl Ironbike Kids & Juniors Trophy presented by Volksbank Tirol",
+      "startDate": "2027-08-06",
+      "endDate": "2027-08-06",
+      "disciplines": [
+        "mtb"
+      ],
+      "series": null,
+      "websiteUrl": "https://www.ischglironbike.com/",
+      "registrationUrl": null,
+      "sources": 2
+    },
+    "reasons": [
+      "same_day",
+      "same_place",
+      "name_sim_low",
+      "same_discipline"
+    ]
+  }
+]

@@ -1,0 +1,40 @@
+[
+  {
+    "key": "01269cd3-3147-4ce6-b47f-cff6535e50e1:4bbcdb31-0dbf-4abe-8159-cd5c56370dde",
+    "date": "2026-11-01",
+    "place": "Zlaté Hory",
+    "discipline": "cx",
+    "country": "CZ",
+    "left": {
+      "id": "01269cd3-3147-4ce6-b47f-cff6535e50e1",
+      "name": "Oderský pohár — Zlaté Hory II.",
+      "startDate": "2026-11-01",
+      "endDate": "2026-11-01",
+      "disciplines": [
+        "cx"
+      ],
+      "series": "KOLÁRNA–CBA Oderský pohár",
+      "websiteUrl": "https://www.kolarna.eu/kolarna-cba-odersky-pohar-2026/",
+      "registrationUrl": null,
+      "sources": 2
+    },
+    "right": {
+      "id": "4bbcdb31-0dbf-4abe-8159-cd5c56370dde",
+      "name": "Mistrovství Olomouckého kraje v cyklokrosu",
+      "startDate": "2026-11-01",
+      "endDate": "2026-11-01",
+      "disciplines": [
+        "cx"
+      ],
+      "series": null,
+      "websiteUrl": "https://kalendar.winspace.cz/kalendar/2026-mistrovstvi-olomouckeho-kraje-v-cyklokrosu-b4a30fdf",
+      "registrationUrl": null,
+      "sources": 2
+    },
+    "reasons": [
+      "same_day",
+      "same_place",
+      "same_discipline"
+    ]
+  }
+]

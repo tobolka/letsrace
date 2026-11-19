@@ -1,0 +1,1309 @@
+{
+  "at": "2026-10-29T13:10:49.074Z",
+  "window": {
+    "from": "2026-10-29",
+    "until": "2027-12-31"
+  },
+  "definition": "Active public unmerged listings. Populated essentials, not verified accuracy or market coverage; detailed categories and entry links are not required.",
+  "summary": [
+    {
+      "key": "2026:ALL",
+      "total": 343,
+      "populatedEssentials": 333,
+      "missing": {
+        "name": 0,
+        "date": 0,
+        "place": 2,
+        "country": 1,
+        "discipline": 3,
+        "source": 5
+      },
+      "missingCoordinates": 8
+    },
+    {
+      "key": "2026:DE",
+      "total": 74,
+      "populatedEssentials": 70,
+      "missing": {
+        "name": 0,
+        "date": 0,
+        "place": 0,
+        "country": 0,
+        "discipline": 2,
+        "source": 2
+      },
+      "missingCoordinates": 3
+    },
+    {
+      "key": "2027:ALL",
+      "total": 945,
+      "populatedEssentials": 874,
+      "missing": {
+        "name": 0,
+        "date": 0,
+        "place": 30,
+        "country": 18,
+        "discipline": 8,
+        "source": 40
+      },
+      "missingCoordinates": 36
+    },
+    {
+      "key": "2027:CZ",
+      "total": 89,
+      "populatedEssentials": 85,
+      "missing": {
+        "name": 0,
+        "date": 0,
+        "place": 1,
+        "country": 0,
+        "discipline": 2,
+        "source": 1
+      },
+      "missingCoordinates": 6
+    },
+    {
+      "key": "2027:PL",
+      "total": 149,
+      "populatedEssentials": 148,
+      "missing": {
+        "name": 0,
+        "date": 0,
+        "place": 1,
+        "country": 0,
+        "discipline": 0,
+        "source": 0
+      },
+      "missingCoordinates": 2
+    },
+    {
+      "key": "2026:CZ",
+      "total": 38,
+      "populatedEssentials": 38,
+      "missing": {
+        "name": 0,
+        "date": 0,
+        "place": 0,
+        "country": 0,
+        "discipline": 0,
+        "source": 0
+      },
+      "missingCoordinates": 2
+    },
+    {
+      "key": "2027:DE",
+      "total": 251,
+      "populatedEssentials": 242,
+      "missing": {
+        "name": 0,
+        "date": 0,
+        "place": 1,
+        "country": 0,
+        "discipline": 0,
+        "source": 8
+      },
+      "missingCoordinates": 1
+    },
+    {
+      "key": "2026:IT",
+      "total": 120,
+      "populatedEssentials": 119,
+      "missing": {
+        "name": 0,
+        "date": 0,
+        "place": 1,
+        "country": 0,
+        "discipline": 0,
+        "source": 0
+      },
+      "missingCoordinates": 2
+    },
+    {
+      "key": "2027:GB",
+      "total": 10,
+      "populatedEssentials": 6,
+      "missing": {
+        "name": 0,
+        "date": 0,
+        "place": 4,
+        "country": 0,
+        "discipline": 0,
+        "source": 1
+      },
+      "missingCoordinates": 4
+    },
+    {
+      "key": "2027:CH",
+      "total": 64,
+      "populatedEssentials": 57,
+      "missing": {
+        "name": 0,
+        "date": 0,
+        "place": 0,
+        "country": 0,
+        "discipline": 0,
+        "source": 7
+      },
+      "missingCoordinates": 0
+    },
+    {
+      "key": "2027:NL",
+      "total": 27,
+      "populatedEssentials": 27,
+      "missing": {
+        "name": 0,
+        "date": 0,
+        "place": 0,
+        "country": 0,
+        "discipline": 0,
+        "source": 0
+      },
+      "missingCoordinates": 0
+    },
+    {
+      "key": "2027:IT",
+      "total": 77,
+      "populatedEssentials": 57,
+      "missing": {
+        "name": 0,
+        "date": 0,
+        "place": 1,
+        "country": 0,
+        "discipline": 0,
+        "source": 19
+      },
+      "missingCoordinates": 1
+    },
+    {
+      "key": "2027:AT",
+      "total": 163,
+      "populatedEssentials": 158,
+      "missing": {
+        "name": 0,
+        "date": 0,
+        "place": 1,
+        "country": 0,
+        "discipline": 0,
+        "source": 4
+      },
+      "missingCoordinates": 1
+    },
+    {
+      "key": "2026:PL",
+      "total": 54,
+      "populatedEssentials": 51,
+      "missing": {
+        "name": 0,
+        "date": 0,
+        "place": 0,
+        "country": 0,
+        "discipline": 1,
+        "source": 2
+      },
+      "missingCoordinates": 0
+    },
+    {
+      "key": "2026:CH",
+      "total": 18,
+      "populatedEssentials": 18,
+      "missing": {
+        "name": 0,
+        "date": 0,
+        "place": 0,
+        "country": 0,
+        "discipline": 0,
+        "source": 0
+      },
+      "missingCoordinates": 0
+    },
+    {
+      "key": "2026:BE",
+      "total": 11,
+      "populatedEssentials": 11,
+      "missing": {
+        "name": 0,
+        "date": 0,
+        "place": 0,
+        "country": 0,
+        "discipline": 0,
+        "source": 0
+      },
+      "missingCoordinates": 0
+    },
+    {
+      "key": "2027:FR",
+      "total": 30,
+      "populatedEssentials": 29,
+      "missing": {
+        "name": 0,
+        "date": 0,
+        "place": 1,
+        "country": 0,
+        "discipline": 0,
+        "source": 0
+      },
+      "missingCoordinates": 1
+    },
+    {
+      "key": "2026:SK",
+      "total": 6,
+      "populatedEssentials": 5,
+      "missing": {
+        "name": 0,
+        "date": 0,
+        "place": 0,
+        "country": 0,
+        "discipline": 0,
+        "source": 1
+      },
+      "missingCoordinates": 0
+    },
+    {
+      "key": "2026:AT",
+      "total": 12,
+      "populatedEssentials": 12,
+      "missing": {
+        "name": 0,
+        "date": 0,
+        "place": 0,
+        "country": 0,
+        "discipline": 0,
+        "source": 0
+      },
+      "missingCoordinates": 0
+    },
+    {
+      "key": "2027:PT",
+      "total": 1,
+      "populatedEssentials": 0,
+      "missing": {
+        "name": 0,
+        "date": 0,
+        "place": 1,
+        "country": 0,
+        "discipline": 0,
+        "source": 0
+      },
+      "missingCoordinates": 1
+    },
+    {
+      "key": "2027:UNKNOWN",
+      "total": 18,
+      "populatedEssentials": 0,
+      "missing": {
+        "name": 0,
+        "date": 0,
+        "place": 18,
+        "country": 18,
+        "discipline": 6,
+        "source": 0
+      },
+      "missingCoordinates": 18
+    },
+    {
+      "key": "2027:ES",
+      "total": 15,
+      "populatedEssentials": 15,
+      "missing": {
+        "name": 0,
+        "date": 0,
+        "place": 0,
+        "country": 0,
+        "discipline": 0,
+        "source": 0
+      },
+      "missingCoordinates": 0
+    },
+    {
+      "key": "2027:HR",
+      "total": 2,
+      "populatedEssentials": 2,
+      "missing": {
+        "name": 0,
+        "date": 0,
+        "place": 0,
+        "country": 0,
+        "discipline": 0,
+        "source": 0
+      },
+      "missingCoordinates": 0
+    },
+    {
+      "key": "2027:BE",
+      "total": 16,
+      "populatedEssentials": 16,
+      "missing": {
+        "name": 0,
+        "date": 0,
+        "place": 0,
+        "country": 0,
+        "discipline": 0,
+        "source": 0
+      },
+      "missingCoordinates": 0
+    },
+    {
+      "key": "2027:SE",
+      "total": 4,
+      "populatedEssentials": 4,
+      "missing": {
+        "name": 0,
+        "date": 0,
+        "place": 0,
+        "country": 0,
+        "discipline": 0,
+        "source": 0
+      },
+      "missingCoordinates": 0
+    },
+    {
+      "key": "2027:DK",
+      "total": 5,
+      "populatedEssentials": 5,
+      "missing": {
+        "name": 0,
+        "date": 0,
+        "place": 0,
+        "country": 0,
+        "discipline": 0,
+        "source": 0
+      },
+      "missingCoordinates": 0
+    },
+    {
+      "key": "2027:FI",
+      "total": 1,
+      "populatedEssentials": 1,
+      "missing": {
+        "name": 0,
+        "date": 0,
+        "place": 0,
+        "country": 0,
+        "discipline": 0,
+        "source": 0
+      },
+      "missingCoordinates": 0
+    },
+    {
+      "key": "2026:NL",
+      "total": 5,
+      "populatedEssentials": 5,
+      "missing": {
+        "name": 0,
+        "date": 0,
+        "place": 0,
+        "country": 0,
+        "discipline": 0,
+        "source": 0
+      },
+      "missingCoordinates": 0
+    },
+    {
+      "key": "2027:GR",
+      "total": 1,
+      "populatedEssentials": 1,
+      "missing": {
+        "name": 0,
+        "date": 0,
+        "place": 0,
+        "country": 0,
+        "discipline": 0,
+        "source": 0
+      },
+      "missingCoordinates": 0
+    },
+    {
+      "key": "2026:ES",
+      "total": 2,
+      "populatedEssentials": 2,
+      "missing": {
+        "name": 0,
+        "date": 0,
+        "place": 0,
+        "country": 0,
+        "discipline": 0,
+        "source": 0
+      },
+      "missingCoordinates": 0
+    },
+    {
+      "key": "2027:SI",
+      "total": 5,
+      "populatedEssentials": 5,
+      "missing": {
+        "name": 0,
+        "date": 0,
+        "place": 0,
+        "country": 0,
+        "discipline": 0,
+        "source": 0
+      },
+      "missingCoordinates": 0
+    },
+    {
+      "key": "2027:NO",
+      "total": 4,
+      "populatedEssentials": 4,
+      "missing": {
+        "name": 0,
+        "date": 0,
+        "place": 0,
+        "country": 0,
+        "discipline": 0,
+        "source": 0
+      },
+      "missingCoordinates": 0
+    },
+    {
+      "key": "2027:CY",
+      "total": 1,
+      "populatedEssentials": 0,
+      "missing": {
+        "name": 0,
+        "date": 0,
+        "place": 1,
+        "country": 0,
+        "discipline": 0,
+        "source": 0
+      },
+      "missingCoordinates": 1
+    },
+    {
+      "key": "2027:ME",
+      "total": 1,
+      "populatedEssentials": 1,
+      "missing": {
+        "name": 0,
+        "date": 0,
+        "place": 0,
+        "country": 0,
+        "discipline": 0,
+        "source": 0
+      },
+      "missingCoordinates": 0
+    },
+    {
+      "key": "2027:LU",
+      "total": 2,
+      "populatedEssentials": 2,
+      "missing": {
+        "name": 0,
+        "date": 0,
+        "place": 0,
+        "country": 0,
+        "discipline": 0,
+        "source": 0
+      },
+      "missingCoordinates": 0
+    },
+    {
+      "key": "2027:SK",
+      "total": 8,
+      "populatedEssentials": 8,
+      "missing": {
+        "name": 0,
+        "date": 0,
+        "place": 0,
+        "country": 0,
+        "discipline": 0,
+        "source": 0
+      },
+      "missingCoordinates": 0
+    },
+    {
+      "key": "2026:UNKNOWN",
+      "total": 1,
+      "populatedEssentials": 0,
+      "missing": {
+        "name": 0,
+        "date": 0,
+        "place": 1,
+        "country": 1,
+        "discipline": 0,
+        "source": 0
+      },
+      "missingCoordinates": 1
+    },
+    {
+      "key": "2026:GB",
+      "total": 1,
+      "populatedEssentials": 1,
+      "missing": {
+        "name": 0,
+        "date": 0,
+        "place": 0,
+        "country": 0,
+        "discipline": 0,
+        "source": 0
+      },
+      "missingCoordinates": 0
+    },
+    {
+      "key": "2026:FR",
+      "total": 1,
+      "populatedEssentials": 1,
+      "missing": {
+        "name": 0,
+        "date": 0,
+        "place": 0,
+        "country": 0,
+        "discipline": 0,
+        "source": 0
+      },
+      "missingCoordinates": 0
+    },
+    {
+      "key": "2027:HU",
+      "total": 1,
+      "populatedEssentials": 1,
+      "missing": {
+        "name": 0,
+        "date": 0,
+        "place": 0,
+        "country": 0,
+        "discipline": 0,
+        "source": 0
+      },
+      "missingCoordinates": 0
+    }
+  ],
+  "issues": [],
+  "missing": [
+    {
+      "id": "00862df3-deff-45d8-816b-13a72191e6b9",
+      "name": "NN KIDS RACE",
+      "startDate": "2027-05-30",
+      "country": "CZ",
+      "missing": [
+        "discipline"
+      ]
+    },
+    {
+      "id": "02989769-475c-46cf-8cda-dfe4ee3b4777",
+      "name": "UEC Track European Championships",
+      "startDate": "2027-02-10",
+      "country": "DE",
+      "missing": [
+        "source"
+      ]
+    },
+    {
+      "id": "0360348a-2843-4217-a03c-54a712acc9ad",
+      "name": "Memorial Polese",
+      "startDate": "2027-03-20",
+      "country": "IT",
+      "missing": [
+        "source"
+      ]
+    },
+    {
+      "id": "0556bd8a-5dcc-4c40-ac3a-0f89f7bef9bc",
+      "name": "Most - Lesná RR 67 km",
+      "startDate": "2027-08-08",
+      "country": "CZ",
+      "missing": [
+        "discipline"
+      ]
+    },
+    {
+      "id": "05d39432-1ebd-403d-a0fe-4927f22aa26f",
+      "name": "Schwellbrunner Mountainbike-Event",
+      "startDate": "2027-08-14",
+      "country": "CH",
+      "missing": [
+        "source"
+      ]
+    },
+    {
+      "id": "090934a6-82b9-47b8-8d82-a952c33bc970",
+      "name": "NoLimited Cup #6 Selce",
+      "startDate": "2026-12-06",
+      "country": "SK",
+      "missing": [
+        "source"
+      ]
+    },
+    {
+      "id": "09d9f1e0-d433-4b16-9b56-024ade788dae",
+      "name": "into the wold",
+      "startDate": "2027-07-01",
+      "country": "AT",
+      "missing": [
+        "source"
+      ]
+    },
+    {
+      "id": "0a298329-6011-40f8-b713-3996dbb7fffa",
+      "name": "Neuseen Classic",
+      "startDate": "2027-06-06",
+      "country": "DE",
+      "missing": [
+        "place"
+      ]
+    },
+    {
+      "id": "0afcca7a-98a7-4c4f-9054-a58fefc2a951",
+      "name": "Isle of Mull Sportive '27",
+      "startDate": "2027-06-06",
+      "country": "GB",
+      "missing": [
+        "place"
+      ]
+    },
+    {
+      "id": "0f8774c3-f611-4e49-a8df-6a17c0798690",
+      "name": "TransPortugal MTB 2027",
+      "startDate": "2027-05-09",
+      "country": "PT",
+      "missing": [
+        "place"
+      ]
+    },
+    {
+      "id": "107a10c5-55d3-499f-89af-7c9111cf8f20",
+      "name": "Einzelzeitfahren Hintersee 2027",
+      "startDate": "2027-05-17",
+      "missing": [
+        "place",
+        "country"
+      ]
+    },
+    {
+      "id": "1aa58cd1-5c96-4868-b9ce-e6f998e3dac3",
+      "name": "Dětské cyklistické závody na pumptracku",
+      "startDate": "2027-06-13",
+      "missing": [
+        "place",
+        "country"
+      ]
+    },
+    {
+      "id": "20ea06cf-e287-4e5e-9214-53d8ced69235",
+      "name": "G.P. San Giuseppe",
+      "startDate": "2027-03-14",
+      "country": "IT",
+      "missing": [
+        "source"
+      ]
+    },
+    {
+      "id": "2155c062-2609-4e07-844d-0d54798127f7",
+      "name": "Tour de Romandie",
+      "startDate": "2027-04-27",
+      "country": "CH",
+      "missing": [
+        "source"
+      ]
+    },
+    {
+      "id": "28451850-a1e9-4e88-a63c-7d605fcac890",
+      "name": "Kraslický šíp RR 86,2 km",
+      "startDate": "2027-05-30",
+      "missing": [
+        "place",
+        "country",
+        "discipline"
+      ]
+    },
+    {
+      "id": "2a6b01e0-e2ea-4512-b70b-85cbb238e9d4",
+      "name": "Jurajski Klasyk",
+      "startDate": "2027-08-28",
+      "missing": [
+        "place",
+        "country"
+      ]
+    },
+    {
+      "id": "2f11e78c-6fad-4c7a-914d-751275cf506d",
+      "name": "G.P. Emilia",
+      "startDate": "2027-03-29",
+      "country": "IT",
+      "missing": [
+        "source"
+      ]
+    },
+    {
+      "id": "30b7fdcb-4319-441e-9d38-39bf8cf2acd9",
+      "name": "Milano-Sanremo",
+      "startDate": "2027-03-20",
+      "country": "IT",
+      "missing": [
+        "source"
+      ]
+    },
+    {
+      "id": "3226e52e-8105-4f49-be0d-0d4afdc2af30",
+      "name": "Okolo jižních Čech / Tour of South Bohemia",
+      "startDate": "2027-09-09",
+      "country": "CZ",
+      "missing": [
+        "place"
+      ]
+    },
+    {
+      "id": "373137a4-dbd4-4d1c-9adf-09d703dd6443",
+      "name": "Beskyd Tour RR 121 km a 53 km",
+      "startDate": "2027-06-26",
+      "missing": [
+        "place",
+        "country",
+        "discipline"
+      ]
+    },
+    {
+      "id": "3a8d6b4e-e22b-470e-86b6-4d2d920ea58d",
+      "name": "Deu-Lux Ultra One more Loop! Premierenausgabe 2027",
+      "startDate": "2027-07-09",
+      "missing": [
+        "place",
+        "country"
+      ]
+    },
+    {
+      "id": "3bf72ea1-812a-4e60-af03-aa5e65117564",
+      "name": "Kościuszkowski Klasyk",
+      "startDate": "2027-06-19",
+      "missing": [
+        "place",
+        "country"
+      ]
+    },
+    {
+      "id": "3e6ff269-fb43-45ff-8992-53dfe4007e92",
+      "name": "WOAMFOAHN - Südsteririscher Rennradauftakt",
+      "startDate": "2027-04-09",
+      "country": "AT",
+      "missing": [
+        "source"
+      ]
+    },
+    {
+      "id": "3f8a0665-4f25-49a2-b9be-022f4d9b0585",
+      "name": "Termine 2027 — DM EZF U17 und EZF unterm Bremer Stern",
+      "startDate": "2027-06-12",
+      "missing": [
+        "place",
+        "country"
+      ]
+    },
+    {
+      "id": "429d7535-2953-4223-b01d-9e73211f269d",
+      "name": "Termine 2027 — Bremer Stern mit Sichtung U17",
+      "startDate": "2027-06-13",
+      "missing": [
+        "place",
+        "country"
+      ]
+    },
+    {
+      "id": "45171a3e-ab1a-460e-ab6c-48d4597efacf",
+      "name": "Weihnachtsausfahrt der DIMB IG Dresden",
+      "startDate": "2026-12-12",
+      "country": "DE",
+      "missing": [
+        "discipline"
+      ]
+    },
+    {
+      "id": "48ee0a21-950d-40a5-9180-a6da29b9c061",
+      "name": "Trofeo Laigueglia",
+      "startDate": "2027-03-03",
+      "country": "IT",
+      "missing": [
+        "source"
+      ]
+    },
+    {
+      "id": "4c19f7c8-8dc6-48ce-adb0-51f203a767ac",
+      "name": "RingRingSemmering Road",
+      "startDate": "2027-04-24",
+      "country": "AT",
+      "missing": [
+        "source"
+      ]
+    },
+    {
+      "id": "4e9c5832-0017-4426-9862-103236aea1af",
+      "name": "UCI Cyprus Gran Fondo",
+      "startDate": "2027-04-02",
+      "country": "CY",
+      "missing": [
+        "place"
+      ]
+    },
+    {
+      "id": "4ed718e7-3aba-4db1-837f-80b7e808fe75",
+      "name": "Nikolaus Expedition",
+      "startDate": "2026-11-29",
+      "country": "DE",
+      "missing": [
+        "source"
+      ]
+    },
+    {
+      "id": "50520a85-3126-4dd2-a227-32d170416679",
+      "name": "Rallye Sudety",
+      "startDate": "2027-09-11",
+      "missing": [
+        "place",
+        "country",
+        "discipline"
+      ]
+    },
+    {
+      "id": "5d6e788c-0307-4168-a474-6a354a35cc6d",
+      "name": "Internazionale XCO Coppa Città di Albenga + UCI XCO Junior Series",
+      "startDate": "2027-03-05",
+      "country": "IT",
+      "missing": [
+        "source"
+      ]
+    },
+    {
+      "id": "66f4bea6-6cb4-4373-aee0-f309d56856aa",
+      "name": "Góry Sowie dla Fanów Kolarstwa 2027",
+      "startDate": "2027-05-08",
+      "missing": [
+        "place",
+        "country"
+      ]
+    },
+    {
+      "id": "6b7a561e-3e9b-46c4-9b97-e12e58b9c00b",
+      "name": "Kraslický šíp RR 86,2 km",
+      "startDate": "2027-05-23",
+      "missing": [
+        "place",
+        "country",
+        "discipline"
+      ]
+    },
+    {
+      "id": "6bc7ba32-5d79-4811-a77e-91265cbdc3ed",
+      "name": "Gran Premio del Perdono",
+      "startDate": "2027-03-29",
+      "country": "IT",
+      "missing": [
+        "source"
+      ]
+    },
+    {
+      "id": "6bd09643-ee76-4f20-9c60-0afd6a505eba",
+      "name": "3Lions — 6. RCV Gravel Cross Race",
+      "startDate": "2026-11-07",
+      "missing": [
+        "place",
+        "country"
+      ]
+    },
+    {
+      "id": "6c0f045d-8a0f-4ab2-9114-1e1b0e74249f",
+      "name": "UEC BMX Racing European Cup - Round 2",
+      "startDate": "2027-03-06",
+      "country": "IT",
+      "missing": [
+        "source"
+      ]
+    },
+    {
+      "id": "758d4b3a-be7b-49db-aed5-42619fdf2e0c",
+      "name": "Marlene Südtirol Sunshine Race + UCI XCO Junior Series",
+      "startDate": "2027-04-10",
+      "country": "IT",
+      "missing": [
+        "source"
+      ]
+    },
+    {
+      "id": "778e1fcf-caec-4e08-81cf-acce0d004970",
+      "name": "Białystok Games",
+      "startDate": "2026-11-14",
+      "country": "PL",
+      "missing": [
+        "source"
+      ]
+    },
+    {
+      "id": "7bedb47a-4974-4382-ab61-94511dfce7c6",
+      "name": "Settimana Internazionale Coppi e Bartali",
+      "startDate": "2027-03-24",
+      "country": "IT",
+      "missing": [
+        "source"
+      ]
+    },
+    {
+      "id": "7cac371f-3e6f-4959-964c-f51111176403",
+      "name": "LAWI Tour RR 100 km",
+      "startDate": "2027-08-29",
+      "missing": [
+        "place",
+        "country",
+        "discipline"
+      ]
+    },
+    {
+      "id": "84c09932-14ac-4bf2-b2af-1892f208990b",
+      "name": "GRAVmageddON / GravON Three Countries",
+      "startDate": "2027-09-03",
+      "missing": [
+        "place",
+        "country"
+      ]
+    },
+    {
+      "id": "8619e4c2-cf31-4ec9-9e83-00ac02eed2b2",
+      "name": "Alb-Packa",
+      "startDate": "2027-05-07",
+      "country": "DE",
+      "missing": [
+        "source"
+      ]
+    },
+    {
+      "id": "885c0118-047b-4429-8892-3e068564b2a2",
+      "name": "Gran Fondo della Versilia",
+      "startDate": "2027-05-02",
+      "country": "IT",
+      "missing": [
+        "place"
+      ]
+    },
+    {
+      "id": "9057a415-5eb8-49a6-9337-8276f4fb0a53",
+      "name": "7. Thüringer Gravel Night",
+      "startDate": "2027-07-10",
+      "country": "DE",
+      "missing": [
+        "source"
+      ]
+    },
+    {
+      "id": "918d0f27-6ada-402f-9b68-58c75947b354",
+      "name": "The Ben Cruachan Inn Hill Climb",
+      "startDate": "2027-05-15",
+      "country": "GB",
+      "missing": [
+        "place",
+        "source"
+      ]
+    },
+    {
+      "id": "a31652b9-4139-43b7-9100-b4d397b77825",
+      "name": "Mettenschicht im TrailCenter Rabenberg",
+      "startDate": "2026-10-30",
+      "country": "DE",
+      "missing": [
+        "discipline"
+      ]
+    },
+    {
+      "id": "a4a214c5-a079-41eb-8581-ce4fab073941",
+      "name": "GRAVmageddON / GravON Along the River",
+      "startDate": "2027-05-01",
+      "missing": [
+        "place",
+        "country"
+      ]
+    },
+    {
+      "id": "a5b1a507-b2c0-4994-be26-df92818e6c38",
+      "name": "Baselbieter Bike Challenge",
+      "startDate": "2027-08-21",
+      "country": "CH",
+      "missing": [
+        "source"
+      ]
+    },
+    {
+      "id": "a9ba41ee-4b32-4828-842d-3d8a81534447",
+      "name": "Giro di Sardegna",
+      "startDate": "2027-02-24",
+      "country": "IT",
+      "missing": [
+        "source"
+      ]
+    },
+    {
+      "id": "ad9aa861-7e11-425e-9ff5-f28de17b3e96",
+      "name": "4 Ländermeisterschaft U23 - Straße",
+      "startDate": "2027-07-04",
+      "country": "AT",
+      "missing": [
+        "place"
+      ]
+    },
+    {
+      "id": "b419db1e-db81-46f1-8ffd-397d99fb29f6",
+      "name": "GRAVmageddON / GravON Karkonosze Izery Gravel Race",
+      "startDate": "2027-08-06",
+      "missing": [
+        "place",
+        "country"
+      ]
+    },
+    {
+      "id": "b427c111-0507-4bd4-aae7-e94274df378b",
+      "name": "UEC BMX Racing European Cup - Round 1",
+      "startDate": "2027-03-05",
+      "country": "IT",
+      "missing": [
+        "source"
+      ]
+    },
+    {
+      "id": "bc66fdbd-5926-409f-88e9-1e1ae36e7365",
+      "name": "Czech MTB Cup",
+      "startDate": "2027-04-24",
+      "country": "CZ",
+      "missing": [
+        "source"
+      ]
+    },
+    {
+      "id": "bd996a36-1fb9-4884-a0dc-73d087b04eab",
+      "name": "VELKÁ CENA BÍLINY - O Radovesickou kostku RR 83,3 km",
+      "startDate": "2027-06-06",
+      "missing": [
+        "place",
+        "country",
+        "discipline"
+      ]
+    },
+    {
+      "id": "bf34b0d7-1933-41ef-9cf1-ef42b48e5956",
+      "name": "DEKOM Sudety Tour MEDIO FONDO RR 85 km",
+      "startDate": "2027-05-09",
+      "missing": [
+        "place",
+        "country"
+      ]
+    },
+    {
+      "id": "c14fc333-747d-4edd-a146-b42d75ffce51",
+      "name": "UEC BMX Racing European Cup - Round 6",
+      "startDate": "2027-04-18",
+      "country": "DE",
+      "missing": [
+        "source"
+      ]
+    },
+    {
+      "id": "c234bf41-8c29-4cfc-97db-c77dccfc15b0",
+      "name": "Witoor Ride To Capodanno",
+      "startDate": "2026-12-29",
+      "country": "IT",
+      "missing": [
+        "place"
+      ]
+    },
+    {
+      "id": "c270f285-78f9-402b-9492-3529576fbb7c",
+      "name": "Pilgrim.GRAVEL",
+      "startDate": "2027-04-18",
+      "country": "DE",
+      "missing": [
+        "source"
+      ]
+    },
+    {
+      "id": "c83d5525-6c4d-4561-994b-fdf4cab4d1e3",
+      "name": "Tour de Pologne",
+      "startDate": "2027-08-02",
+      "country": "PL",
+      "missing": [
+        "place"
+      ]
+    },
+    {
+      "id": "cd008f3c-ebb5-487e-a67f-fad75b0de65a",
+      "name": "Heidelberger Crossrennen",
+      "startDate": "2026-11-21",
+      "country": "DE",
+      "missing": [
+        "source"
+      ]
+    },
+    {
+      "id": "ce68cef3-c991-4f83-a0b7-fbb0c1396de8",
+      "name": "GP Berra Immobilier",
+      "startDate": "2027-04-18",
+      "country": "CH",
+      "missing": [
+        "source"
+      ]
+    },
+    {
+      "id": "d19b11d0-0172-474d-84f2-cd3fea5c1d37",
+      "name": "Bikerennen Arbon",
+      "startDate": "2027-03-27",
+      "country": "CH",
+      "missing": [
+        "source"
+      ]
+    },
+    {
+      "id": "d4a1548d-1454-4d31-989c-576b5c6e01e2",
+      "name": "UEC BMX Racing European Cup - Round 5",
+      "startDate": "2027-04-17",
+      "country": "DE",
+      "missing": [
+        "source"
+      ]
+    },
+    {
+      "id": "da663c0c-f1e3-45b6-aad8-5b103a412885",
+      "name": "Italian National Championships - XCM",
+      "startDate": "2027-04-18",
+      "country": "IT",
+      "missing": [
+        "source"
+      ]
+    },
+    {
+      "id": "dbe992d9-01cb-431a-8527-0deb32a9038e",
+      "name": "Trofeo Oro in Euro - Women's Bike Race",
+      "startDate": "2027-03-07",
+      "country": "IT",
+      "missing": [
+        "source"
+      ]
+    },
+    {
+      "id": "e16cd3ed-f02d-4c63-9889-328322862e94",
+      "name": "Boltby Bash Enduro",
+      "startDate": "2027-05-15",
+      "country": "GB",
+      "missing": [
+        "place"
+      ]
+    },
+    {
+      "id": "e2258c9f-8aed-4cad-a73e-5f26275c82d9",
+      "name": "SuperGiroDolomiti",
+      "startDate": "2027-06-13",
+      "country": "AT",
+      "missing": [
+        "source"
+      ]
+    },
+    {
+      "id": "e4da1272-00ac-4ed0-92da-67c573dcee9b",
+      "name": "Polish National Championships - Park",
+      "startDate": "2026-11-13",
+      "country": "PL",
+      "missing": [
+        "source"
+      ]
+    },
+    {
+      "id": "e6c19cd4-b645-4844-81f9-67fd0defd7dd",
+      "name": "międzynarodowy wyścig kolarski \"Lubuskie Warte Zachodu\" - UCI C2",
+      "startDate": "2026-12-06",
+      "country": "PL",
+      "missing": [
+        "discipline"
+      ]
+    },
+    {
+      "id": "e9d92e82-f211-46e8-992b-82f03f0dfa68",
+      "name": "Wyland Bike-Race",
+      "startDate": "2027-04-11",
+      "country": "CH",
+      "missing": [
+        "source"
+      ]
+    },
+    {
+      "id": "eb0e5903-c828-428a-adce-abba5aad3d2c",
+      "name": "Hugenotten CTF",
+      "startDate": "2027-01-10",
+      "country": "DE",
+      "missing": [
+        "source"
+      ]
+    },
+    {
+      "id": "eb207767-4ef0-450c-8c47-238e8fcca307",
+      "name": "Rando Muco",
+      "startDate": "2027-06-26",
+      "country": "FR",
+      "missing": [
+        "place"
+      ]
+    },
+    {
+      "id": "f00e099c-7e33-4b99-a813-e412eb38ab34",
+      "name": "Giro Ciclistico della Città Metropolitana di Reggio Calabria",
+      "startDate": "2027-04-10",
+      "country": "IT",
+      "missing": [
+        "source"
+      ]
+    },
+    {
+      "id": "f1e921f8-a018-4961-8ea1-b5775ad079bb",
+      "name": "Genoa Cup - Marathon dell'Appennino MTB",
+      "startDate": "2027-04-04",
+      "country": "IT",
+      "missing": [
+        "source"
+      ]
+    },
+    {
+      "id": "f4641e5f-6169-49ed-a4e7-ee2ca8a8a7cf",
+      "name": "Giro dell'Appennino Donne",
+      "startDate": "2027-03-21",
+      "country": "IT",
+      "missing": [
+        "source"
+      ]
+    },
+    {
+      "id": "f67ae8b3-14dd-46da-a75b-da54b01a66e8",
+      "name": "Ostfalenbrevet 200",
+      "startDate": "2027-03-13",
+      "country": "DE",
+      "missing": [
+        "source"
+      ]
+    },
+    {
+      "id": "fb07d5f3-cedc-4666-a0e5-b9f100881161",
+      "name": "Milano - Torino",
+      "startDate": "2027-03-17",
+      "country": "IT",
+      "missing": [
+        "source"
+      ]
+    },
+    {
+      "id": "fb9bf954-67e7-403b-bc34-72ab2f66d8ab",
+      "name": "Popolarissima",
+      "startDate": "2027-03-21",
+      "country": "IT",
+      "missing": [
+        "source"
+      ]
+    },
+    {
+      "id": "fe00d901-9f3e-4ac1-b90b-30a6f62a9fef",
+      "name": "Swiss National Championships",
+      "startDate": "2027-01-10",
+      "country": "CH",
+      "missing": [
+        "source"
+      ]
+    },
+    {
+      "id": "fe873ea6-f9c3-4df7-abe2-47029c1a7a83",
+      "name": "Pennine 500",
+      "startDate": "2027-05-29",
+      "country": "GB",
+      "missing": [
+        "place"
+      ]
+    }
+  ]
+}

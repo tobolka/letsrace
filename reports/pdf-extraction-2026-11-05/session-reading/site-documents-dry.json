@@ -1,0 +1,61 @@
+{
+ "apply": false,
+ "racesWithoutRegulations": 1047,
+ "sitesKnown": 527,
+ "sites": 222,
+ "withDocuments": 110,
+ "racesReached": 422,
+ "readDocuments": 157,
+ "found": 7,
+ "foundList": [
+  {
+   "id": "ed72dd49-74ac-4c25-a9ac-885b81f47756",
+   "name": "Oderský pohár — ACK Stará Ves n. O. II.",
+   "date": "2026-11-08",
+   "country": "CZ",
+   "url": "https://www.kolarna.eu/wp-content/uploads/2026/07/kolarna_odersky_pohar_2026.pdf"
+  },
+  {
+   "id": "778e1fcf-caec-4e08-81cf-acce0d004970",
+   "name": "Białystok Games UCI C2 Park",
+   "date": "2026-11-14",
+   "country": "PL",
+   "url": "https://pzkol.pl/pobierz/14540/s/14540_regulaminbialystok_games_uci_c2_p.pdf"
+  },
+  {
+   "id": "38549896-172b-4168-99de-00c2c8b50c1b",
+   "name": "ogólnopolski wyścig w kolarstwie przełajowym",
+   "date": "2026-11-21",
+   "country": "PL",
+   "url": "https://pzkol.pl/pobierz/14543/s/14543_regulaminogolnopolski_wyscig_w_ko.pdf"
+  },
+  {
+   "id": "822a0e25-1b5e-4648-9492-3e924d0c7f1b",
+   "name": "CX Lubuskie Warte Zachodu - UCI C2",
+   "date": "2026-12-06",
+   "country": "PL",
+   "url": "https://pzkol.pl/pobierz/14542/s/14542_regulaminlubuskie_warte_zachodu_u.pdf"
+  },
+  {
+   "id": "126046bf-245b-4573-944d-534ea59c5436",
+   "name": "Swiss Cyclo-cross Cup #4 - Radquer Hittnau",
+   "date": "2026-11-22",
+   "country": "CH",
+   "url": "https://www.vchittnau.ch/wp-content/uploads/2026/11/Guide-technique-Radquer-Hittnau-2026.pdf"
+  },
+  {
+   "id": "9787e9bc-2baa-42fa-8a84-d3a0773a1645",
+   "name": "Ultra Race Podlasie 2026",
+   "date": "2026-12-05",
+   "country": "PL",
+   "url": "https://ultraraceseries.pl/wp-content/uploads/2026/10/Regulamin-Podlasie-2026.pdf"
+  },
+  {
+   "id": "99601611-396d-4388-8cac-dee3823e74e4",
+   "name": "BGY Airport Granfondo",
+   "date": "2027-05-09",
+   "country": "IT",
+   "url": "https://www.granfondobgy.it/wp-content/uploads/2026/07/Regolamento_ENG_2027.pdf"
+  }
+ ]
+}

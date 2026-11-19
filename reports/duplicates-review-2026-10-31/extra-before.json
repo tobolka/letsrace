@@ -1,0 +1,696 @@
+{
+  "events": [
+    {
+      "id": "150df4d3-d2b9-4de2-9ecb-1fe872e312aa",
+      "slug": "magstadter-radcross-2026",
+      "name": "Magstadter Radcross",
+      "name_normalized": "magstadter radcross",
+      "series_id": null,
+      "location_id": "7ee4659d-c843-4b37-80a0-8eecd0b2d50f",
+      "start_date": "2026-11-08",
+      "end_date": "2026-11-08",
+      "timezone": "Europe/Berlin",
+      "disciplines": [
+        "cx"
+      ],
+      "audience": "mixed",
+      "status": "scheduled",
+      "website_url": "https://www.rv-pfeil-magstadt.de/radcross/",
+      "registration_url": null,
+      "registration_opens_at": null,
+      "registration_closes_at": null,
+      "fingerprint": "2026-11-08:u0wmk:magstadter radcross",
+      "source_kind": "scraped",
+      "last_seen_at": "2026-10-28T21:15:49.283+00:00",
+      "created_at": "2026-09-19T05:56:25.653238+00:00",
+      "updated_at": "2026-10-28T21:15:49.283+00:00",
+      "level": "local",
+      "class_label": null,
+      "description": null,
+      "age_categories": [],
+      "uci_class": null,
+      "formats": [],
+      "event_type": "race",
+      "competition_type": "other",
+      "season": "2026/27",
+      "visibility": "public",
+      "results_url": null,
+      "regulations_url": null,
+      "merged_into_id": null,
+      "search_text": "magstadter radcross",
+      "age_confidence": null
+    },
+    {
+      "id": "e6ceea5c-9518-4bc6-918c-bd761d73e23e",
+      "slug": "cyclo-cross-bundesliga-stahnsdorf-tag-2-2026",
+      "name": "Meldungen 2026 allgemein — Cyclo-Cross Bundesliga 2026/2027 Stahnsdorf / Tag 2",
+      "name_normalized": "meldungen allgemein cyclo cross bundesliga stahnsdorf tag 2",
+      "series_id": "ebb38fd5-1bbf-4912-8684-564d10d3c2a9",
+      "location_id": "b713e493-76ce-466b-bc84-fd61454fd1fe",
+      "start_date": "2026-11-15",
+      "end_date": "2026-11-15",
+      "timezone": "Europe/Berlin",
+      "disciplines": [
+        "cx"
+      ],
+      "audience": "mixed",
+      "status": "scheduled",
+      "website_url": "https://race-hub.io/events/ce46d0c4-00fc-4590-9b3e-f657b2ff6a0c/info",
+      "registration_url": null,
+      "registration_opens_at": null,
+      "registration_closes_at": null,
+      "fingerprint": "2026-11-15:u336h:meldungen allgemein cyclo cross bundesliga stahnsdorf tag 2",
+      "source_kind": "scraped",
+      "last_seen_at": "2026-10-25T22:38:07.242+00:00",
+      "created_at": "2026-10-23T19:35:35.536108+00:00",
+      "updated_at": "2026-10-25T22:38:07.242+00:00",
+      "level": "national",
+      "class_label": "National",
+      "description": null,
+      "age_categories": [
+        "u13",
+        "u15",
+        "u17",
+        "youth",
+        "junior",
+        "u23",
+        "elite",
+        "amateur",
+        "masters"
+      ],
+      "uci_class": null,
+      "formats": [],
+      "event_type": "series",
+      "competition_type": "national_federation",
+      "season": "2026/27",
+      "visibility": "public",
+      "results_url": null,
+      "regulations_url": "https://static.rad-net.de/html/bdr/generalausschreibungen/2026/ga-bl-cyclo-cross_26-27.pdf",
+      "merged_into_id": null,
+      "search_text": "meldungen 2026 allgemein cyclo cross bundesliga 2026 2027 stahnsdorf tag 2 meldungen 2026 allgemein cyclo cross bundesliga cyclo cross bundesliga 2026 2027",
+      "age_confidence": "explicit"
+    }
+  ],
+  "event_sources": [
+    {
+      "id": "703cd44f-2e34-4944-bfaf-a6629a0714e1",
+      "event_id": "150df4d3-d2b9-4de2-9ecb-1fe872e312aa",
+      "watched_url_id": "2d6c4cb2-01e6-45f2-b70e-3113b6da50dc",
+      "source_url": "https://radsport-events.de/events/26674",
+      "external_id": "radsport-26674-2026-11-08",
+      "raw_hash": null,
+      "is_canonical": true,
+      "created_at": "2026-09-19T05:56:25.694576+00:00",
+      "kind": "aggregator"
+    },
+    {
+      "id": "b02ff79f-6434-45e0-a7e2-371f2b185fe9",
+      "event_id": "e6ceea5c-9518-4bc6-918c-bd761d73e23e",
+      "watched_url_id": "6b03f537-a010-434e-8e06-b8d871142501",
+      "source_url": "https://race-hub.io/events/ce46d0c4-00fc-4590-9b3e-f657b2ff6a0c/participants",
+      "external_id": "llm-dsergebnis.de-meldungen allgemein cyclo cross bundesliga stahnsdorf tag 2-2026-11-15",
+      "raw_hash": null,
+      "is_canonical": true,
+      "created_at": "2026-10-24T15:26:05.362599+00:00",
+      "kind": "series"
+    },
+    {
+      "id": "f1e81cae-8240-4f68-8117-fecf97533666",
+      "event_id": "e6ceea5c-9518-4bc6-918c-bd761d73e23e",
+      "watched_url_id": "6b03f537-a010-434e-8e06-b8d871142501",
+      "source_url": "https://race-hub.io/events/ce46d0c4-00fc-4590-9b3e-f657b2ff6a0c/participants",
+      "external_id": "llm-dsergebnis.de-cyclo cross bundesliga stahnsdorf tag 2-2026-11-15",
+      "raw_hash": null,
+      "is_canonical": true,
+      "created_at": "2026-10-23T19:35:35.704952+00:00",
+      "kind": "series"
+    },
+    {
+      "id": "053bba24-89ce-4c55-9087-88dbf2bc7d3c",
+      "event_id": "e6ceea5c-9518-4bc6-918c-bd761d73e23e",
+      "watched_url_id": "2e025837-7949-4d3c-8ecd-0c7cd514f4c6",
+      "source_url": "https://race-hub.io/events/ce46d0c4-00fc-4590-9b3e-f657b2ff6a0c/info",
+      "external_id": "llm-dsergebnis.de-cyclo cross bundesliga 27 cyclo cross bundesliga stahnsdorf-2026-11-15",
+      "raw_hash": null,
+      "is_canonical": true,
+      "created_at": "2026-10-23T19:35:50.671861+00:00",
+      "kind": "series"
+    },
+    {
+      "id": "6410a182-2cf9-4ea9-aab9-97cf3519cf6d",
+      "event_id": "e6ceea5c-9518-4bc6-918c-bd761d73e23e",
+      "watched_url_id": "3ddc7047-5089-4efd-9264-8747523e6942",
+      "source_url": "https://static.rad-net.de/html/bdr/generalausschreibungen/2026/ga-bl-cyclo-cross_26-27.pdf",
+      "external_id": "cx-bundesliga-13-2026-11-15-stahnsdorf",
+      "raw_hash": null,
+      "is_canonical": true,
+      "created_at": "2026-10-23T19:41:20.792935+00:00",
+      "kind": "series"
+    }
+  ],
+  "event_facts": [
+    {
+      "id": "f28caf3b-bc49-4889-83b2-9c16fd86e572",
+      "event_id": "150df4d3-d2b9-4de2-9ecb-1fe872e312aa",
+      "field": "class_label",
+      "value": null,
+      "previous": "Local",
+      "source_url": "https://radsport-events.de/events/26674",
+      "quote": null,
+      "method": "watcher_update_v2",
+      "model": null,
+      "version": "pipeline-v2",
+      "status": "active",
+      "created_at": "2026-10-28T21:15:49.343764+00:00"
+    },
+    {
+      "id": "024624d1-416a-4c21-9ba0-0db2808f863e",
+      "event_id": "150df4d3-d2b9-4de2-9ecb-1fe872e312aa",
+      "field": "competition_type",
+      "value": "other",
+      "previous": "community",
+      "source_url": "https://radsport-events.de/events/26674",
+      "quote": null,
+      "method": "watcher_update_v2",
+      "model": null,
+      "version": "pipeline-v2",
+      "status": "active",
+      "created_at": "2026-10-28T21:15:49.343764+00:00"
+    },
+    {
+      "id": "02e0e0fb-c4ef-42eb-99a9-2682811fae6d",
+      "event_id": "150df4d3-d2b9-4de2-9ecb-1fe872e312aa",
+      "field": "source_evidence",
+      "value": {
+        "kind": "aggregator",
+        "event": {
+          "lat": 48.7451662,
+          "lng": 8.9797199,
+          "name": "Magstadter Radcross",
+          "audience": "mixed",
+          "placeText": "Magstadt",
+          "sourceUrl": "https://radsport-events.de/events/26674",
+          "startDate": "2026-11-08",
+          "categories": [
+            {
+              "name": "0 km",
+              "distanceKm": 0,
+              "elevationM": 0
+            }
+          ],
+          "confidence": 0.9,
+          "discipline": [
+            "cx"
+          ],
+          "externalId": "radsport-26674-2026-11-08",
+          "websiteUrl": "www.rv-pfeil-magstadt.de",
+          "countryHint": "DE"
+        },
+        "watchedUrlId": "2d6c4cb2-01e6-45f2-b70e-3113b6da50dc"
+      },
+      "previous": null,
+      "source_url": "https://radsport-events.de/events/26674",
+      "quote": null,
+      "method": "watcher_source_evidence",
+      "model": null,
+      "version": "source-evidence-v1",
+      "status": "active",
+      "created_at": "2026-10-06T19:16:49.485488+00:00"
+    },
+    {
+      "id": "4b3186ff-2240-462d-86a7-cbfa3f2a74f9",
+      "event_id": "e6ceea5c-9518-4bc6-918c-bd761d73e23e",
+      "field": "name",
+      "value": "Cyclo-Cross Bundesliga 2026-27 — Cyclo-Cross Bundesliga 2026/2027 Stahnsdorf",
+      "previous": "Cyclo-Cross Bundesliga 2026/2027 — Stahnsdorf / Tag 2",
+      "source_url": "https://www.dsergebnis.de/cyclo-cross-bundesliga-2026-27/",
+      "quote": "Cyclo-Cross Bundesliga 2026-27\n12. 15.11.2026 Cyclo-Cross Bundesliga 2026/2027 Stahnsdorf\n12. 15.11.2026 Cyclo-Cross Bundesliga 2026/2027 Stahnsdorf",
+      "method": "watcher_update_v2",
+      "model": "claude-haiku-5-5",
+      "version": "pipeline-v2",
+      "status": "active",
+      "created_at": "2026-10-23T19:35:50.505296+00:00"
+    },
+    {
+      "id": "f4c2d2d2-96a2-4a04-a20c-df2109075365",
+      "event_id": "e6ceea5c-9518-4bc6-918c-bd761d73e23e",
+      "field": "name",
+      "value": "Meldungen 2026 allgemein — Cyclo-Cross Bundesliga 2026/2027 Stahnsdorf / Tag 2",
+      "previous": "Cyclo-Cross Bundesliga 2026-27 — Cyclo-Cross Bundesliga 2026/2027 Stahnsdorf",
+      "source_url": "https://www.dsergebnis.de/meldelisten/",
+      "quote": "Meldungen 2026 allgemein\n15.11.2026 Cyclo-Cross Bundesliga 2026/2027 [Stahnsdorf / Tag 2]\nCyclo-Cross Bundesliga 2026/2027 [Stahnsdorf / Tag 2]",
+      "method": "watcher_update_v2",
+      "model": "claude-haiku-5-5",
+      "version": "pipeline-v2",
+      "status": "active",
+      "created_at": "2026-10-24T15:26:05.191293+00:00"
+    },
+    {
+      "id": "57a40f31-59dc-413b-83d3-d33eb8ab0ca2",
+      "event_id": "e6ceea5c-9518-4bc6-918c-bd761d73e23e",
+      "field": "regulations_url",
+      "value": "https://static.rad-net.de/html/bdr/generalausschreibungen/2026/ga-bl-cyclo-cross_26-27.pdf",
+      "previous": null,
+      "source_url": "https://www.dsergebnis.de/cyclo-cross-bundesliga-2026-27/",
+      "quote": "Cyclo-Cross Bundesliga 2026-27\n12. 15.11.2026 Cyclo-Cross Bundesliga 2026/2027 Stahnsdorf\n12. 15.11.2026 Cyclo-Cross Bundesliga 2026/2027 Stahnsdorf",
+      "method": "watcher_update_v2",
+      "model": "claude-haiku-5-5",
+      "version": "pipeline-v2",
+      "status": "active",
+      "created_at": "2026-10-23T19:35:50.505296+00:00"
+    },
+    {
+      "id": "4f47a082-480e-4ece-a6e6-e231f8613c7a",
+      "event_id": "e6ceea5c-9518-4bc6-918c-bd761d73e23e",
+      "field": "source_evidence",
+      "value": {
+        "kind": "series",
+        "event": {
+          "name": "Cyclo-Cross Bundesliga 2026-27 — Cyclo-Cross Bundesliga 2026/2027 Stahnsdorf",
+          "evidence": {
+            "model": "claude-haiku-5-5",
+            "quote": "Cyclo-Cross Bundesliga 2026-27\n12. 15.11.2026 Cyclo-Cross Bundesliga 2026/2027 Stahnsdorf\n12. 15.11.2026 Cyclo-Cross Bundesliga 2026/2027 Stahnsdorf",
+            "method": "llm_calendar",
+            "version": "calendar-v2",
+            "sourceUrl": "https://www.dsergebnis.de/cyclo-cross-bundesliga-2026-27/"
+          },
+          "placeText": "Stahnsdorf",
+          "sourceUrl": "https://race-hub.io/events/ce46d0c4-00fc-4590-9b3e-f657b2ff6a0c/info",
+          "startDate": "2026-11-15",
+          "confidence": 0.7,
+          "discipline": [
+            "cx"
+          ],
+          "externalId": "llm-dsergebnis.de-cyclo cross bundesliga 27 cyclo cross bundesliga stahnsdorf-2026-11-15",
+          "seriesName": "Cyclo-Cross Bundesliga 2026-27",
+          "websiteUrl": "https://race-hub.io/events/ce46d0c4-00fc-4590-9b3e-f657b2ff6a0c/info",
+          "countryHint": "DE",
+          "regulationsUrl": "https://static.rad-net.de/html/bdr/generalausschreibungen/2026/ga-bl-cyclo-cross_26-27.pdf"
+        },
+        "watchedUrlId": "2e025837-7949-4d3c-8ecd-0c7cd514f4c6"
+      },
+      "previous": null,
+      "source_url": "https://race-hub.io/events/ce46d0c4-00fc-4590-9b3e-f657b2ff6a0c/info",
+      "quote": null,
+      "method": "watcher_source_evidence",
+      "model": null,
+      "version": "source-evidence-v1",
+      "status": "active",
+      "created_at": "2026-10-23T19:35:50.59649+00:00"
+    },
+    {
+      "id": "93f8576b-e066-41d1-a78d-b10ab37e1422",
+      "event_id": "e6ceea5c-9518-4bc6-918c-bd761d73e23e",
+      "field": "source_evidence",
+      "value": {
+        "kind": "series",
+        "event": {
+          "name": "Cyclo-Cross Bundesliga 2026/2027 — Stahnsdorf / Tag 2",
+          "evidence": {
+            "model": "claude-haiku-5-5",
+            "quote": "Cyclo-Cross Bundesliga 2026/2027 [Stahnsdorf / Tag 2]\n15.11.2026 Cyclo-Cross Bundesliga 2026/2027 [Stahnsdorf / Tag 2](https://race-hub.io/events/ce46d0c4-00fc-4590-9b3e-f657b2ff6a0c/participants)\n15.11.2026 Cyclo-Cross Bundesliga 2026/2027 [Stahnsdorf / Tag 2]",
+            "method": "llm_calendar",
+            "version": "calendar-v2",
+            "sourceUrl": "https://www.dsergebnis.de/meldelisten/"
+          },
+          "placeText": "Stahnsdorf",
+          "sourceUrl": "https://race-hub.io/events/ce46d0c4-00fc-4590-9b3e-f657b2ff6a0c/participants",
+          "startDate": "2026-11-15",
+          "confidence": 0.7,
+          "discipline": [
+            "cx"
+          ],
+          "externalId": "llm-dsergebnis.de-cyclo cross bundesliga stahnsdorf tag 2-2026-11-15",
+          "seriesName": "Cyclo-Cross Bundesliga 2026/2027",
+          "websiteUrl": "https://race-hub.io/events/ce46d0c4-00fc-4590-9b3e-f657b2ff6a0c/participants",
+          "countryHint": "DE"
+        },
+        "watchedUrlId": "6b03f537-a010-434e-8e06-b8d871142501"
+      },
+      "previous": null,
+      "source_url": "https://race-hub.io/events/ce46d0c4-00fc-4590-9b3e-f657b2ff6a0c/participants",
+      "quote": null,
+      "method": "watcher_source_evidence",
+      "model": null,
+      "version": "source-evidence-v1",
+      "status": "active",
+      "created_at": "2026-10-23T19:35:35.635338+00:00"
+    },
+    {
+      "id": "317bb1fb-cca6-4f50-bb2e-9551271389d0",
+      "event_id": "e6ceea5c-9518-4bc6-918c-bd761d73e23e",
+      "field": "source_evidence",
+      "value": {
+        "kind": "series",
+        "event": {
+          "name": "CX Bundesliga 13 — Stahnsdorf",
+          "audience": "mixed",
+          "placeText": "Stahnsdorf",
+          "sourceUrl": "https://static.rad-net.de/html/bdr/generalausschreibungen/2026/ga-bl-cyclo-cross_26-27.pdf",
+          "startDate": "2026-11-15",
+          "confidence": 0.9,
+          "discipline": [
+            "cx"
+          ],
+          "externalId": "cx-bundesliga-13-2026-11-15-stahnsdorf",
+          "seriesName": "Cyclo-Cross Bundesliga",
+          "seriesSlug": "cx-bundesliga",
+          "websiteUrl": "https://static.rad-net.de/html/bdr/generalausschreibungen/2026/ga-bl-cyclo-cross_26-27.pdf",
+          "countryHint": "DE",
+          "seriesWebsite": "https://static.rad-net.de/html/bdr/generalausschreibungen/2026/ga-bl-cyclo-cross_26-27.pdf",
+          "regulationsUrl": "https://static.rad-net.de/html/bdr/generalausschreibungen/2026/ga-bl-cyclo-cross_26-27.pdf"
+        },
+        "watchedUrlId": "3ddc7047-5089-4efd-9264-8747523e6942"
+      },
+      "previous": null,
+      "source_url": "https://static.rad-net.de/html/bdr/generalausschreibungen/2026/ga-bl-cyclo-cross_26-27.pdf",
+      "quote": null,
+      "method": "watcher_source_evidence",
+      "model": null,
+      "version": "source-evidence-v1",
+      "status": "active",
+      "created_at": "2026-10-23T19:41:20.626534+00:00"
+    },
+    {
+      "id": "fffefe5d-07f9-41e0-aeaf-15b9ad1115ef",
+      "event_id": "e6ceea5c-9518-4bc6-918c-bd761d73e23e",
+      "field": "source_evidence",
+      "value": {
+        "kind": "series",
+        "event": {
+          "name": "Cyclo-Cross Bundesliga 2026/2027 — Stahnsdorf / Tag 2",
+          "endDate": "2026-11-15",
+          "evidence": {
+            "model": "claude-haiku-5-5",
+            "quote": "15.11.2026 Cyclo-Cross Bundesliga 2026/2027 [Stahnsdorf / Tag 2](https://race-hub.io/events/ce46d0c4-00fc-4590-9b3e-f657b2ff6a0c/participants)\n15.11.2026 Cyclo-Cross Bundesliga 2026/2027 [Stahnsdorf / Tag 2](https://race-hub.io/events/ce46d0c4-00fc-4590-9b3e-f657b2ff6a0c/participants)\n15.11.2026 Cyclo-Cross Bundesliga 2026/2027 [Stahnsdorf / Tag 2]",
+            "method": "llm_calendar",
+            "version": "calendar-v2",
+            "sourceUrl": "https://www.dsergebnis.de/meldelisten/"
+          },
+          "placeText": "Stahnsdorf",
+          "sourceUrl": "https://race-hub.io/events/ce46d0c4-00fc-4590-9b3e-f657b2ff6a0c/participants",
+          "startDate": "2026-11-15",
+          "confidence": 0.7,
+          "discipline": [
+            "cx"
+          ],
+          "externalId": "llm-dsergebnis.de-cyclo cross bundesliga stahnsdorf tag 2-2026-11-15",
+          "seriesName": "Cyclo-Cross Bundesliga 2026/2027",
+          "websiteUrl": "https://race-hub.io/events/ce46d0c4-00fc-4590-9b3e-f657b2ff6a0c/participants",
+          "countryHint": "DE"
+        },
+        "watchedUrlId": "6b03f537-a010-434e-8e06-b8d871142501"
+      },
+      "previous": null,
+      "source_url": "https://race-hub.io/events/ce46d0c4-00fc-4590-9b3e-f657b2ff6a0c/participants",
+      "quote": null,
+      "method": "watcher_source_evidence",
+      "model": null,
+      "version": "source-evidence-v1",
+      "status": "active",
+      "created_at": "2026-10-24T05:56:26.096951+00:00"
+    },
+    {
+      "id": "e65fbab6-5b0f-41b4-9e10-7d750f120f9d",
+      "event_id": "e6ceea5c-9518-4bc6-918c-bd761d73e23e",
+      "field": "source_evidence",
+      "value": {
+        "kind": "series",
+        "event": {
+          "name": "Cyclo-Cross Bundesliga 2026/2027 — Stahnsdorf / Tag 2",
+          "evidence": {
+            "model": "claude-haiku-5-5",
+            "quote": "Cyclo-Cross Bundesliga 2026/2027 [Stahnsdorf / Tag 2]\n15.11.2026 Cyclo-Cross Bundesliga 2026/2027 [Stahnsdorf / Tag 2](https://race-hub.io/events/ce46d0c4-00fc-4590-9b3e-f657b2ff6a0c/participants)\n15.11.2026 Cyclo-Cross Bundesliga 2026/2027 [Stahnsdorf / Tag 2]",
+            "method": "llm_calendar",
+            "version": "calendar-v2",
+            "sourceUrl": "https://www.dsergebnis.de/meldelisten/"
+          },
+          "placeText": "Stahnsdorf",
+          "sourceUrl": "https://race-hub.io/events/ce46d0c4-00fc-4590-9b3e-f657b2ff6a0c/participants",
+          "startDate": "2026-11-15",
+          "confidence": 0.7,
+          "discipline": [
+            "cx"
+          ],
+          "externalId": "llm-dsergebnis.de-cyclo cross bundesliga stahnsdorf tag 2-2026-11-15",
+          "seriesName": "Cyclo-Cross Bundesliga 2026/2027",
+          "websiteUrl": "https://race-hub.io/events/ce46d0c4-00fc-4590-9b3e-f657b2ff6a0c/participants",
+          "countryHint": "DE"
+        },
+        "watchedUrlId": "6b03f537-a010-434e-8e06-b8d871142501"
+      },
+      "previous": null,
+      "source_url": "https://race-hub.io/events/ce46d0c4-00fc-4590-9b3e-f657b2ff6a0c/participants",
+      "quote": null,
+      "method": "watcher_source_evidence",
+      "model": null,
+      "version": "source-evidence-v1",
+      "status": "active",
+      "created_at": "2026-10-24T07:26:45.230897+00:00"
+    },
+    {
+      "id": "50319fd9-7eee-4caa-81b0-d18eab41b857",
+      "event_id": "e6ceea5c-9518-4bc6-918c-bd761d73e23e",
+      "field": "source_evidence",
+      "value": {
+        "kind": "series",
+        "event": {
+          "name": "Meldungen 2026 allgemein — Cyclo-Cross Bundesliga 2026/2027 Stahnsdorf / Tag 2",
+          "evidence": {
+            "model": "claude-haiku-5-5",
+            "quote": "Meldungen 2026 allgemein\n15.11.2026 Cyclo-Cross Bundesliga 2026/2027 [Stahnsdorf / Tag 2]\nCyclo-Cross Bundesliga 2026/2027 [Stahnsdorf / Tag 2]",
+            "method": "llm_calendar",
+            "version": "calendar-v4",
+            "sourceUrl": "https://www.dsergebnis.de/meldelisten/"
+          },
+          "placeText": "Stahnsdorf",
+          "sourceUrl": "https://race-hub.io/events/ce46d0c4-00fc-4590-9b3e-f657b2ff6a0c/participants",
+          "startDate": "2026-11-15",
+          "confidence": 0.7,
+          "discipline": [
+            "cx"
+          ],
+          "externalId": "llm-dsergebnis.de-meldungen allgemein cyclo cross bundesliga stahnsdorf tag 2-2026-11-15",
+          "seriesName": "Meldungen 2026 allgemein",
+          "websiteUrl": "https://race-hub.io/events/ce46d0c4-00fc-4590-9b3e-f657b2ff6a0c/participants",
+          "countryHint": "DE",
+          "regulationsUrl": "https://www.dsergebnis.de/ausschreibungen-rad-net/"
+        },
+        "watchedUrlId": "6b03f537-a010-434e-8e06-b8d871142501"
+      },
+      "previous": null,
+      "source_url": "https://race-hub.io/events/ce46d0c4-00fc-4590-9b3e-f657b2ff6a0c/participants",
+      "quote": null,
+      "method": "watcher_source_evidence",
+      "model": null,
+      "version": "source-evidence-v1",
+      "status": "active",
+      "created_at": "2026-10-24T15:26:05.270426+00:00"
+    },
+    {
+      "id": "2ad58f67-e44a-4440-899a-0d7881c5cd2a",
+      "event_id": "e6ceea5c-9518-4bc6-918c-bd761d73e23e",
+      "field": "source_evidence",
+      "value": {
+        "kind": "series",
+        "event": {
+          "name": "Cyclo-Cross Bundesliga 2026-27 — Cyclo-Cross Bundesliga 2026/2027 Stahnsdorf",
+          "evidence": {
+            "model": "claude-haiku-5-5",
+            "quote": "Cyclo-Cross Bundesliga 2026-27\n12. 15.11.2026 Cyclo-Cross Bundesliga 2026/2027 Stahnsdorf",
+            "method": "llm_calendar",
+            "version": "calendar-v7",
+            "sourceUrl": "https://www.dsergebnis.de/cyclo-cross-bundesliga-2026-27/"
+          },
+          "placeText": "Stahnsdorf",
+          "sourceUrl": "https://race-hub.io/events/ce46d0c4-00fc-4590-9b3e-f657b2ff6a0c/info",
+          "startDate": "2026-11-15",
+          "confidence": 0.7,
+          "discipline": [
+            "cx"
+          ],
+          "externalId": "llm-dsergebnis.de-cyclo cross bundesliga 27 cyclo cross bundesliga stahnsdorf-2026-11-15",
+          "seriesName": "Cyclo-Cross Bundesliga 2026-27",
+          "websiteUrl": "https://race-hub.io/events/ce46d0c4-00fc-4590-9b3e-f657b2ff6a0c/info",
+          "countryHint": "DE",
+          "regulationsUrl": "https://static.rad-net.de/html/bdr/generalausschreibungen/2026/ga-bl-cyclo-cross_26-27.pdf"
+        },
+        "watchedUrlId": "2e025837-7949-4d3c-8ecd-0c7cd514f4c6"
+      },
+      "previous": null,
+      "source_url": "https://race-hub.io/events/ce46d0c4-00fc-4590-9b3e-f657b2ff6a0c/info",
+      "quote": null,
+      "method": "watcher_source_evidence",
+      "model": null,
+      "version": "source-evidence-v1",
+      "status": "active",
+      "created_at": "2026-10-25T22:38:07.607074+00:00"
+    },
+    {
+      "id": "f6a5d938-7984-47d5-b2ad-1d244c2b2f4f",
+      "event_id": "e6ceea5c-9518-4bc6-918c-bd761d73e23e",
+      "field": "source_evidence",
+      "value": {
+        "kind": "series",
+        "event": {
+          "name": "Meldungen 2026 allgemein — Cyclo-Cross Bundesliga 2026/2027 Stahnsdorf / Tag 2",
+          "evidence": {
+            "model": "claude-haiku-5-5",
+            "quote": "Meldungen 2026 allgemein\n15.11.2026 Cyclo-Cross Bundesliga 2026/2027 [Stahnsdorf / Tag 2](https://race-hub.io/events/ce46d0c4-00fc-4590-9b3e-f657b2ff6a0c/participants)\n15.11.2026 Cyclo-Cross Bundesliga 2026/2027 [Stahnsdorf / Tag 2](https://race-hub.io/events/ce46d0c4-00fc-4590-9b3e-f657b2ff6a0c/participants)",
+            "method": "llm_calendar",
+            "version": "calendar-v7",
+            "sourceUrl": "https://www.dsergebnis.de/meldelisten/"
+          },
+          "placeText": "Stahnsdorf",
+          "sourceUrl": "https://race-hub.io/events/ce46d0c4-00fc-4590-9b3e-f657b2ff6a0c/participants",
+          "startDate": "2026-11-15",
+          "confidence": 0.7,
+          "discipline": [
+            "cx"
+          ],
+          "externalId": "llm-dsergebnis.de-meldungen allgemein cyclo cross bundesliga stahnsdorf tag 2-2026-11-15",
+          "seriesName": "Meldungen 2026 allgemein",
+          "websiteUrl": "https://race-hub.io/events/ce46d0c4-00fc-4590-9b3e-f657b2ff6a0c/participants",
+          "countryHint": "DE",
+          "regulationsUrl": "https://www.dsergebnis.de/ausschreibungen-rad-net/"
+        },
+        "watchedUrlId": "6b03f537-a010-434e-8e06-b8d871142501"
+      },
+      "previous": null,
+      "source_url": "https://race-hub.io/events/ce46d0c4-00fc-4590-9b3e-f657b2ff6a0c/participants",
+      "quote": null,
+      "method": "watcher_source_evidence",
+      "model": null,
+      "version": "source-evidence-v1",
+      "status": "active",
+      "created_at": "2026-10-25T22:37:54.470223+00:00"
+    },
+    {
+      "id": "47df6030-017b-4ee3-ae7b-3bf6c731b8a0",
+      "event_id": "e6ceea5c-9518-4bc6-918c-bd761d73e23e",
+      "field": "website_url",
+      "value": "https://race-hub.io/events/ce46d0c4-00fc-4590-9b3e-f657b2ff6a0c/participants",
+      "previous": "https://race-hub.io/events/ce46d0c4-00fc-4590-9b3e-f657b2ff6a0c/info",
+      "source_url": "https://www.dsergebnis.de/meldelisten/",
+      "quote": "Cyclo-Cross Bundesliga 2026/2027 [Stahnsdorf / Tag 2]\n15.11.2026 Cyclo-Cross Bundesliga 2026/2027 [Stahnsdorf / Tag 2](https://race-hub.io/events/ce46d0c4-00fc-4590-9b3e-f657b2ff6a0c/participants)\n15.11.2026 Cyclo-Cross Bundesliga 2026/2027 [Stahnsdorf / Tag 2]",
+      "method": "watcher_update_v2",
+      "model": "claude-haiku-5-5",
+      "version": "pipeline-v2",
+      "status": "active",
+      "created_at": "2026-10-24T13:05:44.382824+00:00"
+    },
+    {
+      "id": "67252ba7-2de6-4c05-9c19-245752b44065",
+      "event_id": "e6ceea5c-9518-4bc6-918c-bd761d73e23e",
+      "field": "website_url",
+      "value": "https://race-hub.io/events/ce46d0c4-00fc-4590-9b3e-f657b2ff6a0c/info",
+      "previous": "https://race-hub.io/events/ce46d0c4-00fc-4590-9b3e-f657b2ff6a0c/participants",
+      "source_url": "https://www.dsergebnis.de/cyclo-cross-bundesliga-2026-27/",
+      "quote": "Cyclo-Cross Bundesliga 2026-27\n12. 15.11.2026 Cyclo-Cross Bundesliga 2026/2027 Stahnsdorf\n12. 15.11.2026 Cyclo-Cross Bundesliga 2026/2027 Stahnsdorf",
+      "method": "watcher_update_v2",
+      "model": "claude-haiku-5-5",
+      "version": "pipeline-v2",
+      "status": "active",
+      "created_at": "2026-10-23T19:35:50.505296+00:00"
+    },
+    {
+      "id": "4e7a2995-2a5d-4e82-98e8-53fee1150ef6",
+      "event_id": "e6ceea5c-9518-4bc6-918c-bd761d73e23e",
+      "field": "website_url",
+      "value": "https://race-hub.io/events/ce46d0c4-00fc-4590-9b3e-f657b2ff6a0c/info",
+      "previous": "https://race-hub.io/events/ce46d0c4-00fc-4590-9b3e-f657b2ff6a0c/participants",
+      "source_url": "https://www.dsergebnis.de/cyclo-cross-bundesliga-2026-27/",
+      "quote": "Cyclo-Cross Bundesliga 2026-27\n12. 15.11.2026 Cyclo-Cross Bundesliga 2026/2027 Stahnsdorf\n12. 15.11.2026 Cyclo-Cross Bundesliga 2026/2027 Stahnsdorf",
+      "method": "watcher_update_v2",
+      "model": "claude-haiku-5-5",
+      "version": "pipeline-v2",
+      "status": "active",
+      "created_at": "2026-10-24T13:06:56.592199+00:00"
+    },
+    {
+      "id": "4a517da2-b3b5-42dc-aecf-b0adbb0f5b51",
+      "event_id": "e6ceea5c-9518-4bc6-918c-bd761d73e23e",
+      "field": "website_url",
+      "value": "https://race-hub.io/events/ce46d0c4-00fc-4590-9b3e-f657b2ff6a0c/participants",
+      "previous": "https://race-hub.io/events/ce46d0c4-00fc-4590-9b3e-f657b2ff6a0c/info",
+      "source_url": "https://www.dsergebnis.de/meldelisten/",
+      "quote": "Cyclo-Cross Bundesliga 2026/2027 [Stahnsdorf / Tag 2]\n15.11.2026 Cyclo-Cross Bundesliga 2026/2027 [Stahnsdorf / Tag 2](https://race-hub.io/events/ce46d0c4-00fc-4590-9b3e-f657b2ff6a0c/participants)\n15.11.2026 Cyclo-Cross Bundesliga 2026/2027 [Stahnsdorf / Tag 2]",
+      "method": "watcher_update_v2",
+      "model": "claude-haiku-5-5",
+      "version": "pipeline-v2",
+      "status": "active",
+      "created_at": "2026-10-23T20:52:18.728645+00:00"
+    },
+    {
+      "id": "31c61ca9-a1b7-4ca2-86cd-079eba09f6d2",
+      "event_id": "e6ceea5c-9518-4bc6-918c-bd761d73e23e",
+      "field": "website_url",
+      "value": "https://race-hub.io/events/ce46d0c4-00fc-4590-9b3e-f657b2ff6a0c/info",
+      "previous": "https://race-hub.io/events/ce46d0c4-00fc-4590-9b3e-f657b2ff6a0c/participants",
+      "source_url": "https://www.dsergebnis.de/cyclo-cross-bundesliga-2026-27/",
+      "quote": "Cyclo-Cross Bundesliga 2026-27\n12. 15.11.2026 Cyclo-Cross Bundesliga 2026/2027 Stahnsdorf\n12. 15.11.2026 Cyclo-Cross Bundesliga 2026/2027 Stahnsdorf",
+      "method": "watcher_update_v2",
+      "model": "claude-haiku-5-5",
+      "version": "pipeline-v2",
+      "status": "active",
+      "created_at": "2026-10-23T20:52:28.615937+00:00"
+    },
+    {
+      "id": "8d718145-8143-434a-8ded-5a20c30c8d35",
+      "event_id": "e6ceea5c-9518-4bc6-918c-bd761d73e23e",
+      "field": "website_url",
+      "value": "https://race-hub.io/events/ce46d0c4-00fc-4590-9b3e-f657b2ff6a0c/participants",
+      "previous": "https://race-hub.io/events/ce46d0c4-00fc-4590-9b3e-f657b2ff6a0c/info",
+      "source_url": "https://www.dsergebnis.de/meldelisten/",
+      "quote": "15.11.2026 Cyclo-Cross Bundesliga 2026/2027 [Stahnsdorf / Tag 2](https://race-hub.io/events/ce46d0c4-00fc-4590-9b3e-f657b2ff6a0c/participants)\n15.11.2026 Cyclo-Cross Bundesliga 2026/2027 [Stahnsdorf / Tag 2](https://race-hub.io/events/ce46d0c4-00fc-4590-9b3e-f657b2ff6a0c/participants)\n15.11.2026 Cyclo-Cross Bundesliga 2026/2027 [Stahnsdorf / Tag 2]",
+      "method": "watcher_update_v2",
+      "model": "claude-haiku-5-5",
+      "version": "pipeline-v2",
+      "status": "active",
+      "created_at": "2026-10-24T05:56:26.054503+00:00"
+    },
+    {
+      "id": "cf518ef1-e2bc-48a0-a0d4-096f9190a23c",
+      "event_id": "e6ceea5c-9518-4bc6-918c-bd761d73e23e",
+      "field": "website_url",
+      "value": "https://race-hub.io/events/ce46d0c4-00fc-4590-9b3e-f657b2ff6a0c/participants",
+      "previous": "https://race-hub.io/events/ce46d0c4-00fc-4590-9b3e-f657b2ff6a0c/info",
+      "source_url": "https://www.dsergebnis.de/meldelisten/",
+      "quote": "Meldungen 2026 allgemein\n15.11.2026 Cyclo-Cross Bundesliga 2026/2027 [Stahnsdorf / Tag 2]\nCyclo-Cross Bundesliga 2026/2027 [Stahnsdorf / Tag 2]",
+      "method": "watcher_update_v2",
+      "model": "claude-haiku-5-5",
+      "version": "pipeline-v2",
+      "status": "active",
+      "created_at": "2026-10-24T15:26:05.191293+00:00"
+    },
+    {
+      "id": "e6043ff5-6c0f-491c-8565-cd7690755806",
+      "event_id": "e6ceea5c-9518-4bc6-918c-bd761d73e23e",
+      "field": "website_url",
+      "value": "https://race-hub.io/events/ce46d0c4-00fc-4590-9b3e-f657b2ff6a0c/info",
+      "previous": "https://race-hub.io/events/ce46d0c4-00fc-4590-9b3e-f657b2ff6a0c/participants",
+      "source_url": "https://www.dsergebnis.de/cyclo-cross-bundesliga-2026-27/",
+      "quote": "Cyclo-Cross Bundesliga 2026-27\n12. 15.11.2026 Cyclo-Cross Bundesliga 2026/2027 Stahnsdorf\n12. 15.11.2026 Cyclo-Cross Bundesliga 2026/2027 Stahnsdorf",
+      "method": "watcher_update_v2",
+      "model": "claude-haiku-5-5",
+      "version": "pipeline-v2",
+      "status": "active",
+      "created_at": "2026-10-24T07:26:50.731563+00:00"
+    },
+    {
+      "id": "1f5a304b-fcf6-437b-8405-2a5598b276b3",
+      "event_id": "e6ceea5c-9518-4bc6-918c-bd761d73e23e",
+      "field": "website_url",
+      "value": "https://race-hub.io/events/ce46d0c4-00fc-4590-9b3e-f657b2ff6a0c/info",
+      "previous": "https://race-hub.io/events/ce46d0c4-00fc-4590-9b3e-f657b2ff6a0c/participants",
+      "source_url": "https://www.dsergebnis.de/cyclo-cross-bundesliga-2026-27/",
+      "quote": "Cyclo-Cross Bundesliga 2026-27\n12. 15.11.2026 Cyclo-Cross Bundesliga 2026/2027 Stahnsdorf",
+      "method": "watcher_update_v2",
+      "model": "claude-haiku-5-5",
+      "version": "pipeline-v2",
+      "status": "active",
+      "created_at": "2026-10-25T22:38:07.527062+00:00"
+    }
+  ],
+  "event_overrides": []
+}

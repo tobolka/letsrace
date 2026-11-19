@@ -1,0 +1,124 @@
+[
+ {
+  "slug": "int-querfeldein-gp-gunskirchen-um-das-sportzentrum-oberosterreich-2026",
+  "level": "international",
+  "kept": "propozice"
+ },
+ {
+  "slug": "janev-cup-uci-c2-kolin-2026",
+  "level": "international",
+  "from": [
+   "u11",
+   "u13",
+   "u15",
+   "u17",
+   "kids",
+   "youth",
+   "junior",
+   "u23",
+   "elite"
+  ],
+  "to": [
+   "u13",
+   "u15",
+   "u17",
+   "youth",
+   "junior",
+   "u23",
+   "elite"
+  ]
+ },
+ {
+  "slug": "janev-cup-uci-c1-veseli-nad-luznici-2026",
+  "level": "international",
+  "from": [
+   "u11",
+   "u13",
+   "u15",
+   "u17",
+   "kids",
+   "youth",
+   "junior",
+   "u23",
+   "elite"
+  ],
+  "to": [
+   "u13",
+   "u15",
+   "u17",
+   "youth",
+   "junior",
+   "u23",
+   "elite"
+  ]
+ },
+ {
+  "slug": "35-ktm-kamptal-trophy-youngsters-uci-xcc-c3-zobing-2027",
+  "level": "international",
+  "kept": "mládež v názvu"
+ },
+ {
+  "slug": "35-ktm-kamptal-trophy-youngsters-uci-xcc-c3-urc-sparkasse-renner-2027",
+  "level": "international",
+  "kept": "mládež v názvu"
+ },
+ {
+  "slug": "otztaler-mountainbike-festival-2027",
+  "level": "continental",
+  "from": [
+   "u9",
+   "u11",
+   "u13",
+   "u15",
+   "u17",
+   "kids",
+   "youth",
+   "junior",
+   "u23",
+   "elite",
+   "amateur",
+   "masters"
+  ],
+  "to": [
+   "u13",
+   "u15",
+   "u17",
+   "youth",
+   "junior",
+   "u23",
+   "elite",
+   "amateur",
+   "masters"
+  ]
+ },
+ {
+  "slug": "rookies-cup-oberhof-2027",
+  "level": "international",
+  "kept": "mládež v názvu"
+ },
+ {
+  "slug": "rdc-zum-glemmride-bikefestival-2027",
+  "level": "international",
+  "kept": "mládež v názvu"
+ },
+ {
+  "slug": "rookies-cup-koprivna-bikepark-2027",
+  "level": "international",
+  "kept": "mládež v názvu"
+ },
+ {
+  "slug": "junior-cup-2027",
+  "level": "international",
+  "kept": "kategorie závodu"
+ },
+ {
+  "slug": "rookies-cup-winterberg-2027",
+  "level": "international",
+  "kept": "mládež v názvu"
+ },
+ {
+  "slug": "ixs-international-rookies-championships-schladming-2027",
+  "level": "international",
+  "kept": "citace zdroje"
+ }
+]

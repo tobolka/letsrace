@@ -1,0 +1,51 @@
+{
+  "date": "2026-11-01",
+  "deployment": "dpl_42cPvAKBdqkhjSBSqKT2wa5agn8Z",
+  "commit": "63809b77bbf54d4832c16f9a8436075902e84552",
+  "state": "READY",
+  "flags": [
+    {
+      "key": "PIPELINE_REVIEW_QUEUE",
+      "value": "1",
+      "target": [
+        "production"
+      ]
+    },
+    {
+      "key": "CATALOG_OVERVIEW_ONLY",
+      "value": "1",
+      "target": [
+        "production"
+      ]
+    },
+    {
+      "key": "BRAVE_SEARCH_LIMIT",
+      "value": "0",
+      "target": [
+        "production"
+      ]
+    },
+    {
+      "key": "LLM_BUDGET_USD",
+      "value": "0",
+      "target": [
+        "production"
+      ]
+    },
+    {
+      "key": "LLM_CALENDAR_BUDGET_USD",
+      "value": "0",
+      "target": [
+        "production"
+      ]
+    },
+    {
+      "key": "LLM_CALENDARS",
+      "value": "0",
+      "target": [
+        "production"
+      ]
+    }
+  ],
+  "notificationWebhookKeysPresentInProduction": false
+}

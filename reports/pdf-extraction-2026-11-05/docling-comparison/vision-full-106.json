@@ -1,0 +1,35 @@
+{
+  "index": 106,
+  "name": "Slovak National Championships - Park",
+  "url": "https://www.cyklistikaszc.sk/kalendar/propozicie/propoe2a4e5d50851c4189975187ed.pdf",
+  "mode": "vision-full",
+  "docling": "2.148.0",
+  "page_range": [
+    1,
+    2
+  ],
+  "ocr_options": {
+    "mode": "full_page",
+    "lang": [
+      "cs-CZ",
+      "pl-PL",
+      "de-DE",
+      "it-IT",
+      "fr-FR",
+      "en-US"
+    ],
+    "scale": 3.0,
+    "replace_broken_text_layer": false,
+    "recognition": "accurate",
+    "framework": "vision",
+    "force_full_page_ocr": true
+  },
+  "device": "cpu",
+  "threads": 4,
+  "status": "ConversionStatus.SUCCESS",
+  "errors": [],
+  "characters": 1977,
+  "tables": 0,
+  "pages": 2,
+  "seconds": 1.149
+}

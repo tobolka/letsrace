@@ -1,0 +1,116 @@
+[
+  {
+    "id": "aba3fe17-b2fd-4e6c-a161-0c9f4de022ca",
+    "name": "Čergovská reťaz 2027",
+    "slug": "cergovska-retaz-2027",
+    "start_date": "2027-01-31",
+    "end_date": "2027-01-31",
+    "visibility": "public",
+    "disciplines": [
+      "mtb"
+    ],
+    "age_categories": [],
+    "registration_url": null,
+    "country_code": "SK",
+    "place": "Prírodný Amfiteáter Raslavice",
+    "sources": 1
+  },
+  {
+    "id": "c65f3091-68a0-40aa-a302-2e96184490e4",
+    "name": "GRACIA ORLOVÁ",
+    "slug": "gracia-orlova-2027",
+    "start_date": "2027-04-29",
+    "end_date": "2027-05-02",
+    "visibility": "public",
+    "disciplines": [
+      "road"
+    ],
+    "age_categories": [],
+    "registration_url": null,
+    "country_code": "CZ",
+    "place": "Moravskoslezského a Zlínského kraje",
+    "sources": 1
+  },
+  {
+    "id": "62fab02d-7708-4b75-ae32-083ea69ab3a9",
+    "name": "E3NEXUS MTB MARATHON 2027",
+    "slug": "e3nexus-mtb-marathon-2027",
+    "start_date": "2027-05-15",
+    "end_date": "2027-05-15",
+    "visibility": "public",
+    "disciplines": [
+      "mtb",
+      "xcm"
+    ],
+    "age_categories": [],
+    "registration_url": null,
+    "country_code": "SK",
+    "place": "Selce",
+    "sources": 1
+  },
+  {
+    "id": "d74e897c-da28-4d8a-978a-a7156228b4f1",
+    "name": "7. ROČNÍK MTB SLOVENSKÝ OPÁL",
+    "slug": "7-rocnik-mtb-slovensky-opal-2027",
+    "start_date": "2027-06-12",
+    "end_date": "2027-06-12",
+    "visibility": "public",
+    "disciplines": [
+      "mtb"
+    ],
+    "age_categories": [],
+    "registration_url": null,
+    "country_code": "SK",
+    "place": "SAVORE Sigord, Kokošovce, okres Prešov",
+    "sources": 1
+  },
+  {
+    "id": "e894460e-1348-42c6-be29-60c681948889",
+    "name": "9. ročník Raslavický Pedál",
+    "slug": "9-rocnik-raslavicky-pedal-2027",
+    "start_date": "2027-07-25",
+    "end_date": "2027-07-25",
+    "visibility": "public",
+    "disciplines": [
+      "mtb"
+    ],
+    "age_categories": [],
+    "registration_url": null,
+    "country_code": "SK",
+    "place": "amfiteáter Raslavice",
+    "sources": 1
+  },
+  {
+    "id": "ff0b16e4-73ee-42ca-bfc6-b8c6456a7588",
+    "name": "MTB maratón Čarnohurec 2027",
+    "slug": "mtb-maraton-carnohurec-2027",
+    "start_date": "2027-08-21",
+    "end_date": "2027-08-21",
+    "visibility": "public",
+    "disciplines": [
+      "mtb",
+      "xcm"
+    ],
+    "age_categories": [],
+    "registration_url": null,
+    "country_code": "SK",
+    "place": "Futbalové ihrisko Brezovica, okres Sabinov",
+    "sources": 1
+  },
+  {
+    "id": "5f608ae4-a15d-4600-8029-4ceca2163a6b",
+    "name": "Podhoriansky stupák - 4. ročník",
+    "slug": "podhoriansky-stupak-4-rocnik-2027",
+    "start_date": "2027-09-12",
+    "end_date": "2027-09-12",
+    "visibility": "public",
+    "disciplines": [
+      "mtb"
+    ],
+    "age_categories": [],
+    "registration_url": null,
+    "country_code": "SK",
+    "place": "Areál Základnej školy a obecného úradu, 082 12 Podhorany pri Prešove",
+    "sources": 1
+  }
+]

@@ -1,0 +1,311 @@
+UCI adresář: 288 nadcházejících soutěží (CZE, SVK, GER, POL, AUT, ITA)
+  + 2026-11-26 Youth Grand Prix Ostrava | Ostrava, Dolní Vítkovice CZ | C1
+  = 2026-11-27 2026-2027 UCI Cyclo-cross World Cup #1, Ostr → uci-cyclo-cross-world-cup-1-ostrava-2026 [třída cdm, zdroj UCI, popisky kategorií]
+  = 2026-11-29 2026-2027 UCI Cyclo-cross World Cup #2, Tábo → uci-cyclo-cross-world-cup-2-tabor-2026 [třída cdm, zdroj UCI, popisky kategorií]
+  = 2026-12-05 Janev Cup #6 - Kolín → janev-cup-uci-c2-kolin-2026 [zdroj UCI]
+  ? 2026-12-12 Janev Cup #7 - Veselí nad Lužnicí — nejasné: janev-cup-uci-c1-veseli-nad-luznici-2026, janev-cup-mcr-mladez-veseli-nad-luznici-2026
+  = 2027-01-10 Czech National Championships → mcr-cyklokros-mlada-boleslav-2027 [zdroj UCI]
+  = 2027-04-24 Czech MTB Cup → czech-mtb-cup-2027 [zdroj UCI, popisky kategorií]
+  = 2027-04-29 Gracia → gracia-orlova-2027 [třída 2.2, kategorie +elite, zdroj UCI, popisky kategorií]
+  = 2027-05-01 Grand Prix West Bohemia → grand-prix-west-bohemia-2027 [zdroj UCI, popisky kategorií, web]
+  ? 2027-05-06 Course de la Paix Juniors — místo „Headquarters of the Course de la Paix Juniors" není obec, kterou známe
+  ? 2027-05-07 Course de la Paix Juniors Féminines — místo „Jablonec nad Nisou / Terezín (date dependent)" není obec, kterou známe
+  ? 2027-05-08 GP Junek Velodromes — místo „Nad Kapličkou" není obec, kterou známe
+  = 2027-05-08 Czech MTB Cup → cesky-pohar-mtb-xco-xcc-vimperk-2027 [zdroj UCI, popisky kategorií]
+  ? 2027-05-11 500+1 KOLO — místo „Křížkovského 416/22" není obec, kterou známe
+  + 2027-05-15 Tessuti Sport Bike Race | Dlouhoňovice CZ | 2
+  = 2027-05-20 Tour de Feminin → tour-de-feminin-2027 [zdroj UCI, popisky kategorií, e-mail pořadatele]
+  = 2027-05-21 UCI XCO Junior Series - Nové Město na Moravě → uci-mtb-world-cup-nove-mesto-na-morave-2027 [třída c1, zdroj UCI, popisky kategorií, e-mail pořadatele]
+  ? 2027-05-21 UCI Mountain Bike World Cup – XCO/XCC — nejasné: uci-mtb-world-cup-nove-mesto-na-morave-2027 (o tentýž závod se hlásí i UCI XCO Junior Series - Nové Město na Moravě)
+  ? 2027-05-27 Peace Race — místo „Hotel Perk" není obec, kterou známe
+  ? 2027-06-04 GP Framar — místo „Nad Kapličkou" není obec, kterou známe
+  = 2027-06-05 Visegrad 4 Bicycle Race - GP Czech Republic → visegrad-4-bicycle-race-grand-prix-czech-republic-uci-1-2-2027 [zdroj UCI, popisky kategorií, e-mail pořadatele, web]
+  = 2027-06-05 Czech MTB Cup → cesky-pohar-mtb-xco-xcc-bedrichov-2027 [zdroj UCI, popisky kategorií]
+  ? 2027-06-06 GP Praha 10 — místo „Nad Kapličkou" není obec, kterou známe
+  ? 2027-06-11 GP Brno track cycling — místo „Křížkovského 416/22" není obec, kterou známe
+  ? 2027-06-23 National Road Championships - Czechia — místo „Nová Baňa" není obec, kterou známe
+  + 2027-07-03 National Road Championships - Czechia (MU) | TBC CZ | CN
+    nepovedlo se: Out-of-scope or tentative candidate cannot be published
+  ? 2027-07-08 GP TUFO - VC Olomouckého kraje — místo „Kostelecká 4468/49" není obec, kterou známe
+  = 2027-07-09 4X Pro Tour - JBC 4X Revelations → jbc-4x-revelations-2027 [zdroj UCI, popisky kategorií, e-mail pořadatele, web]
+  ? 2027-07-09 GP Prostějov-Memoriál Otmara Malečka — místo „Kostelecká 4468/49" není obec, kterou známe
+  + 2027-07-16 Czech National Championships - XCO | Motol CZ | CN
+    nepovedlo se: Missing end-date evidence
+  = 2027-08-12 Czech Tour → czech-tour-2027 [třída proseries, úroveň international, kategorie +elite, zdroj UCI, popisky kategorií, e-mail pořadatele, web]
+  = 2027-08-14 Czech MTB Cup → cesky-pohar-mtb-xco-xcc-stupno-2027 [zdroj UCI, popisky kategorií]
+  + 2027-08-19 West Bohemia Tour | Plzeň CZ | 2.2U
+    nepovedlo se: Missing end-date evidence
+  + 2027-09-04 Czech National Championships | Prague CZ | CN
+  = 2027-09-09 Okolo jižních Čech / Tour of South Bohemia → okolo-jiznich-cech-tour-of-south-bohemia-2027 [zdroj UCI, popisky kategorií, e-mail pořadatele]
+  ? 2027-09-16 Grand Prix Přilba Moravy — místo „Křížkovského 416/22" není obec, kterou známe
+  ? 2026-11-21 NoLimited Cup #5 Šamorín — nejasné: 7-kolo-nolimited-cup-v-cx-uci-c1-2026, cyklokros-sered-7-kolo-nolimited-cup-v-cx-uci-c1-cyklokros-2026
+  = 2026-11-22 Grand Prix Šamorín → 8-kolo-grand-prix-samorin-uci-c2-2026 [úroveň international, zdroj UCI]
+  = 2026-12-05 Slovak National Championships → msr-v-cyklokrose-9-kolo-selce-2026 [zdroj UCI]
+  ? 2026-12-06 NoLimited Cup #6 Selce — nejasné: 10-kolo-nolimited-cup-v-cx-uci-c2-2026, cyklokros-selce-10-kolo-nolimited-cup-v-cx-uci-c2-cyklokros-2026
+  = 2027-05-15 Sp XCO Zlatnicka Dolina → sp-xco-zlatnicka-dolina-2027 [třída c3, úroveň international, kategorie +junior/elite, zdroj UCI, popisky kategorií, e-mail pořadatele, web]
+  + 2027-06-05 10th GP Prešov | Velodróm Prešov SK | 1
+    nepovedlo se: Missing end-date evidence
+  + 2027-06-05 Majstrovstvá Slovenska Juniorov | Velodróm Prešov SK | CN
+    nepovedlo se: Missing end-date evidence
+  = 2027-06-05 Sp XCO Bystricany → sp-xco-bystricany-2027 [třída c2, úroveň international, kategorie +junior/elite, zdroj UCI, popisky kategorií, e-mail pořadatele, web]
+  + 2027-06-06 Slovak National Championships - E-XC | Bystričany SK | CN
+  + 2027-06-12 National Road Championships - Slovakia (MU/WU IRR) | Tajná SK | CN
+  + 2027-06-24 National Road Championships - Slovakia | Nová Baňa SK | CN
+    nepovedlo se: Missing end-date evidence
+  + 2027-06-27 Slovak National Championships - EDR | Mýto po Ďumbierom SK | CN
+  + 2027-07-03 Slovak National Championships | Liptovský Mikuláš SK | CN
+    nepovedlo se: Missing end-date evidence
+  ? 2027-07-03 National Road Championships - Slovakia (MU) — místo „Prague" není obec, kterou známe
+  + 2027-07-10 Respect Ladies Race Slovakia | Bánovce nad Bebravou SK | 1.2
+  + 2027-07-11 Visegrad 4 Bicycle Race - GP Slovakia | Bánovce nad Bebravou SK | 1.2
+  + 2027-07-16 Medzinárodné Dni Cyklistiky Visegrad 4 Juniors | Podhájska SK | 2.1
+    nepovedlo se: Missing end-date evidence
+  ? 2027-07-17 European Para Cycling Cup - Road — místo „Svätoplukova 1463/2" není obec, kterou známe
+  = 2027-07-17 Slovak National Championships - XCO/XCC → slovak-national-championships-xco-xcc-2027 [zdroj UCI, popisky kategorií, e-mail pořadatele, web]
+  + 2027-07-17 Slovak National Championships - PUM | Donovaly SK | CN
+  = 2027-07-31 Sp XCO Oslany → sp-xco-oslany-2027 [třída c2, úroveň international, kategorie +junior/elite, zdroj UCI, popisky kategorií, e-mail pořadatele, web]
+  + 2027-08-07 GP Slovak Cycling Federation | Velodróm Prešov SK | 2
+    nepovedlo se: Missing end-date evidence
+  + 2027-08-07 Majstrovstvá Slovenska Elite | Velodróm Prešov SK | CN
+    nepovedlo se: Missing end-date evidence
+  + 2027-09-11 Sp XCO Poracpark | Poráč SK | 2
+    nepovedlo se: Missing end-date evidence
+  + 2027-09-15 Okolo Slovenska / Tour de Slovaquie | Slovensko SK | 2.1
+    nepovedlo se: Missing place, country or discipline
+  + 2027-09-24 Slovak National Championships - XCE | Turčianske Teplice SK | CN
+  + 2027-10-02 Slovak National Championships - Park | Freestyle park Šurany SK | CN
+  + 2027-01-09 Deutsche Meisterschaft Cyclocross 2027 | Baiersbronn DE | CN
+    nepovedlo se: Missing end-date evidence
+  = 2027-01-15 Sixdays Bremen → sixdays-bremen-2027 [úroveň international, kategorie +junior/elite, zdroj UCI, popisky kategorií, e-mail pořadatele, web]
+  + 2027-01-16 1. Lauf Brandenburger Sprint Cup | Oderlandhalle DE | 1
+    nepovedlo se: Missing end-date evidence
+  = 2027-01-29 Sixdays Weekend 2027 → sixdays-weekend-berlin-2027 [úroveň international, kategorie +elite, zdroj UCI, popisky kategorií, e-mail pořadatele]
+  = 2027-02-10 UEC Track European Championships → uec-track-european-championships-2027 [zdroj UCI, popisky kategorií, e-mail pořadatele, web]
+  = 2027-04-03 UCI Mountain Bike Continental Series - Fullg → 15-fullgaz-race-2027 [zdroj UCI, popisky kategorií, e-mail pořadatele]
+  = 2027-04-17 UEC BMX Racing European Cup - Round 5 → uec-bmx-racing-european-cup-round-5-2027 [třída c1, úroveň international, kategorie +junior/u23/elite, zdroj UCI, popisky kategorií, e-mail pořadatele, web]
+  = 2027-04-18 UEC BMX Racing European Cup - Round 6 → uec-bmx-racing-european-cup-round-6-2027 [třída hc, úroveň international, kategorie +junior/u23/elite, zdroj UCI, popisky kategorií, e-mail pořadatele, web]
+  ? 2027-05-01 Eschborn-Frankfurt — stejný název: adac-velotour-eschborn-frankfurt-2027
+  + 2027-05-01 BMX-Bundesliga | BMX-Arena Ahnatal DE | 1
+  + 2027-05-12 Bahnen-Tournee - Silbernen Eulen von Ludwigshafen | Radrennbahn Ludwigshafen Friesenheim DE | 2
+  + 2027-05-13 Bahnen-Tournee - Öschelbronn | Radrennbahn Öschelbronn DE | 2
+  + 2027-05-14 Bahnen-Tournee - Oberhausener Nachtrennen | Radrennbahn Oberhausen DE | 2
+  + 2027-05-15 Bahnen-Tournee - Darmstadt | Radrennbahn - Diatest Velodrom DE | 1
+    nepovedlo se: Missing end-date evidence
+  + 2027-05-17 Bahnen-Tournee Dudenhofen - Finale | Radrennbahn Dudenhofen DE | 1
+  = 2027-05-23 Rund um Köln → rund-um-koln-2027 [třída 1.1, úroveň international, kategorie +elite, zdroj UCI, popisky kategorií, e-mail pořadatele, web]
+  + 2027-06-10 LVM Saarland Trofeo | Gersheim DE | 2.1
+    nepovedlo se: Missing end-date evidence
+  + 2027-06-18 Einfach Extrem Essen | Kennedyplatz DE | 1
+    nepovedlo se: Missing end-date evidence
+  + 2027-06-18 35. Großer Preis von Deutschland im Sprint | Cottbus DE | 1
+    nepovedlo se: Missing end-date evidence
+  + 2027-06-20 LOTTO Thüringen Women Cycling Challenge | Gera DE | 1.Pro
+  + 2027-06-25 PARA CYCLING TRACK GERMAN OPEN | Lausitz - Velodrom Cottbus DE | 1
+    nepovedlo se: Missing end-date evidence
+  + 2027-06-27 Shark Attack Bike-Festival | Lennestadt-Saalhausen DE | 2
+  + 2027-06-30 140. Deutsche Meisterschaft Bahn | Cottbus DE | CN
+    nepovedlo se: Missing end-date evidence
+  ? 2027-07-04 National Road Championships - Germany (MU/WU) — místo „Niederwil" není obec, kterou známe
+  + 2027-07-10 BMX Freestyle European Series – Bremen | Domshof DE | 1
+    nepovedlo se: Missing end-date evidence
+  ? 2027-07-16 Woodstone Festival — místo „Skatepark Wendelstein (W-Stein Park)" není obec, kterou známe
+  + 2027-07-17 German National Championships - XCO/XCC | Gedern DE | CN
+    nepovedlo se: Missing end-date evidence
+  = 2027-07-25 HERO UCI Cross-country Marathon World Cup → black-forest-ultra-bike-marathon-2027 [zdroj UCI, popisky kategorií, e-mail pořadatele, web]
+  + 2027-07-30 German National Championships - Park & Flatland | Stuttgart DE | CN
+    nepovedlo se: Missing end-date evidence
+  = 2027-07-30 Kometen Schmitter Nacht von Hürth → kometen-schmitter-nacht-2027 [úroveň international, zdroj UCI, e-mail pořadatele]
+  + 2027-07-31 German National Championships | Stuttgart DE | CN
+    nepovedlo se: Missing end-date evidence
+  + 2027-08-06 Vulkan BMX | Im Lierchesseifen DE | 1
+    nepovedlo se: Missing end-date evidence
+  = 2027-08-15 ADAC Cyclassics → adac-cyclassics-2027 [třída worldtour, úroveň international, kategorie +elite, zdroj UCI, popisky kategorií, e-mail pořadatele]
+  = 2027-08-18 Lidl Deutschland Tour → lidl-deutschland-tour-2027 [třída proseries, úroveň international, kategorie +elite, zdroj UCI, popisky kategorií, e-mail pořadatele, web]
+  + 2027-08-20 Bike Park Freestyle Comp | Darmstadt-Nord DE | HC
+    nepovedlo se: Missing end-date evidence
+  + 2027-09-02 Sauerlandrundfahrt | Winterberg DE | 2.2
+    nepovedlo se: Missing end-date evidence
+  + 2027-09-10 Internationales Meeting für Sprint & Ausdauer | Radrennbahn Dudenhofen DE | 1
+    nepovedlo se: Missing end-date evidence
+  + 2027-09-12 3 Nations Cup - Esselbach | BMX-Bahn Esselbach DE | 1
+  + 2027-09-18 Majlen Sunshine Race | Winterberg DE | 1
+    nepovedlo se: Missing end-date evidence
+  = 2027-09-19 Women’s Cycling Grand Prix Region Stuttgart → brezel-race-stuttgart-region-2027 [třída proseries, úroveň international, kategorie +elite, zdroj UCI, popisky kategorií, e-mail pořadatele, web]
+  = 2027-10-03 Sparkassen Münsterland Giro → sparkassen-munsterland-giro-2027 [třída proseries, úroveň international, zdroj UCI, e-mail pořadatele, web]
+  = 2026-11-22 Przełajowy Wyścig Kolarski Bryksy Cross → xxxiii-bryksy-cross-miedzynarodowy-wyscig-w-kolarstwie-2026 [zdroj UCI]
+  = 2026-12-05 CX Włoszakowice "Cześć i Chwała Zwycięzcom" → uci-c2-cx-wloszakowice-czesc-i-chwala-zwyciezcom-dla-2026 [zdroj UCI]
+  = 2026-12-06 Lubuskie Warte Zachodu → cx-lubuskie-warte-zachodu-uci-c2-2026 [zdroj UCI]
+  = 2027-01-08 CycloCross Polish National Championships → 90-mistrzostwa-polski-w-kolarstwie-przelajowym-cybinka-2027 [kategorie +junior/u23/elite, zdroj UCI, popisky kategorií]
+  + 2027-04-29 Course de Cujavie-Poméranie pour la Coupe du Prési | Grudziądz PL | 2.1
+    nepovedlo se: Missing end-date evidence
+  + 2027-05-08 Best Prima Cup Harrachov - Jakuszyce | Polana Jakuszycka - Dolnośląskie Centrum Sportu PL | 2
+  ? 2027-05-12 Szlakiem Powiatów Łódzkich — místo „Fundacja Razem Mierzymy Wyżej" není obec, kterou známe
+  + 2027-06-05 Maja Włoszczowska MTB Race | Tor Cross Country w Polanicy-Zdroju PL | 1
+    nepovedlo se: Missing end-date evidence
+  + 2027-06-06 Visegrad 4 Bicycle Race Grand Prix Poland | Głogów PL | 1.2
+  ? 2027-06-09 Małopolski Wyścig Górski — místo „Fundacja Razem Mierzymy Wyżej" není obec, kterou známe
+  + 2027-06-10 VeloBank Ślęża Tour Dolny Śląsk | Sobótka PL | 2.1
+    nepovedlo se: Missing end-date evidence
+  ? 2027-06-30 Course Cycliste de Solidarnosc et des Champions Ol — místo „Road" není obec, kterou známe
+  ? 2027-07-14 Tour Szlakiem Mazurskich Twierdz — místo „Fundacja Razem Mierzymy Wyżej" není obec, kterou známe
+  ? 2027-07-16 Princess Anna Vasa Tour — místo „TBC" není obec, kterou známe
+  ? 2027-07-20 Memoriał Andrzeja Trochanowskiego — místo „podlasie" není obec, kterou známe
+  ? 2027-07-21 Dookoła Mazowsza — místo „mazowsze" není obec, kterou známe
+  + 2027-07-23 Tour de Pologne Women | Lublin PL | 2.Pro
+    nepovedlo se: Missing end-date evidence
+  ? 2027-07-25 Puchar MON — místo „mazowsze" není obec, kterou známe
+  = 2027-07-30 UCI Mountain Bike Continental Series - iXS E → ixs-european-downhill-cup-szczyrk-2027 [zdroj UCI, popisky kategorií]
+  = 2027-08-02 Tour de Pologne → tour-de-pologne-2027 [třída worldtour, úroveň international, kategorie +elite, zdroj UCI, popisky kategorií, e-mail pořadatele]
+  + 2027-09-18 Maja Włoszczowska MTB Race | Jelenia Góra PL | 1
+  = 2026-11-22 Int. Querfeldein GP Gunskirchen um das Sport → int-querfeldein-gp-gunskirchen-um-das-sportzentrum-oberosterreich-2026 [zdroj UCI]
+  = 2027-04-03 KTM Kamptal Trophy → 35-ktm-kamptal-trophy-uci-xco-c1-niederosterreich-2027 [zdroj UCI, popisky kategorií, e-mail pořadatele]
+  = 2027-04-24 UCI Mountain Bike Continental Series - Ötzta → otztaler-mountainbike-festival-2027 [zdroj UCI, popisky kategorií, e-mail pořadatele, web]
+  = 2027-05-01 GP Vorarlberg p/b Radhaus Rankweil → 16-gp-vorarlberg-p-b-radhaus-rankweil-uci-1-2-2027 [zdroj UCI, popisky kategorií, e-mail pořadatele]
+  = 2027-05-08 Wilder Kaiser MTB Race + UCI XCO Junior Seri → 8-wilder-kaiser-mtb-race-2027 [třída c1, úroveň international, kategorie +junior/elite, zdroj UCI, popisky kategorií, e-mail pořadatele]
+  = 2027-05-21 Weissensee DH → weissensee-downhill-2027 [třída c1, úroveň international, zdroj UCI, popisky kategorií, e-mail pořadatele, web]
+  = 2027-05-27 Oberösterreich Rundfahrt → 17-int-oberosterreich-rundfahrt-2027 [třída 2.2, úroveň international, zdroj UCI, popisky kategorií, e-mail pořadatele]
+  + 2027-05-30 Zanzenberg Race | Dornbirn AT | 1
+  = 2027-06-05 Internationaler Raiffeisen Österreich Grand  → int-raiffeisen-osterreich-grand-prix-uci-xco-c1-2027 [zdroj UCI, popisky kategorií, e-mail pořadatele, web]
+  = 2027-06-11 UCI Mountain Bike World Cup – XCO/XCC/DHI → uci-mtb-world-cup-saalfelden-leogang-salzburgerland-2027 [třída cdm, zdroj UCI, popisky kategorií, e-mail pořadatele]
+  = 2027-06-17 Alpentour Trophy → alpentour-schladming-dachstein-2027-06-17-717e94 [úroveň international, zdroj UCI, popisky kategorií, e-mail pořadatele, web]
+  ? 2027-07-04 National Road Championships - Austria (MU/WU) — místo „Niederwil" není obec, kterou známe
+  = 2027-07-06 Mountainbike Junior Festival + UCI XCO Junio → mountainbike-junior-festival-graz-stattegg-uci-c1-uci-junior-2027 [zdroj UCI, popisky kategorií, e-mail pořadatele, web]
+  = 2027-07-07 Tour of Austria → lidl-tour-of-austria-2027 [zdroj UCI, popisky kategorií, e-mail pořadatele, web]
+  = 2027-07-07 Mountainbike Junior Festival → mountainbike-junior-festival-graz-stattegg-teambewerb-2027 [třída c3, úroveň international, zdroj UCI, popisky kategorií, e-mail pořadatele, web]
+  = 2027-07-09 Mountainbike Junior Festival → mountainbike-junior-festival-graz-stattegg-uci-c3-steiermark-2027 [zdroj UCI, popisky kategorií, e-mail pořadatele, web]
+  ? 2027-07-10 Mountainbike Junior Festival — stejný název: mountainbike-junior-festival-graz-stattegg-teambewerb-2027, mountainbike-junior-festival-graz-stattegg-uci-c3-steiermark-2027
+  = 2027-07-23 Junioren Rundfahrt → 52-int-junioren-rundfahrt-2027 [třída 2.1, úroveň international, zdroj UCI, popisky kategorií, e-mail pořadatele]
+  = 2027-08-13 Roadlberg Race - PopaFlo → roadlbergrace-xcc-xco-velo-crew-popaflo-2027 [třída c1, úroveň international, zdroj UCI, popisky kategorií, e-mail pořadatele, web]
+  = 2027-09-19 NovaLabs Preis der Nationen → novalabs-preis-der-nationen-gratwein-strassengel-2027 [třída 1.2, úroveň international, zdroj UCI, popisky kategorií, e-mail pořadatele, web]
+  = 2026-12-06 Ciclocross del Brenta → abbinata-naz-11-ciclocross-del-brenta-2026 [třída c2, úroveň international, kategorie +junior/elite, zdroj UCI, web]
+  = 2026-12-08 Ciclocross Del Ponte → ciclocross-del-ponte-internazionale-cx-2026 [třída c2, úroveň international, kategorie +junior/elite, zdroj UCI, web]
+  = 2026-12-13 CX La Montagnetta → internazionale-ciclocross-3-cx-la-montagnetta-bari-2026 [třída c2, úroveň international, kategorie +junior/elite, zdroj UCI, web]
+  = 2027-02-24 Giro di Sardegna → giro-di-sardegna-2027 [třída 2.1, úroveň international, kategorie +elite, zdroj UCI, popisky kategorií, e-mail pořadatele, web]
+  = 2027-03-03 Trofeo Laigueglia → trofeo-laigueglia-2027 [třída proseries, úroveň international, kategorie +elite, zdroj UCI, popisky kategorií, e-mail pořadatele, web]
+  = 2027-03-05 UEC BMX Racing European Cup - Round 1 → uec-bmx-racing-european-cup-round-1-2027 [třída c1, úroveň international, kategorie +junior/u23/elite, zdroj UCI, popisky kategorií, e-mail pořadatele, web]
+  = 2027-03-05 Internazionale XCO Coppa Città di Albenga +  → internazionale-xco-coppa-citta-di-albenga-uci-xco-junior-2027 [třída hc, kategorie +u23/elite, zdroj UCI, popisky kategorií, e-mail pořadatele, web]
+  ? 2027-03-06 Strade Bianche Donne — nejasné: strade-bianche-pro-race-viewing-weekend-2027, strade-bianche-women-elite-2027 (o tentýž závod se hlásí i Strade Bianche)
+  = 2027-03-06 UEC BMX Racing European Cup - Round 2 → uec-bmx-racing-european-cup-round-2-2027 [třída hc, úroveň international, kategorie +junior/u23/elite, zdroj UCI, popisky kategorií, e-mail pořadatele, web]
+  ? 2027-03-06 Strade Bianche — nejasné: strade-bianche-pro-race-viewing-weekend-2027, strade-bianche-women-elite-2027 (o tentýž závod se hlásí i Strade Bianche Donne)
+  = 2027-03-07 Trofeo Oro in Euro - Women's Bike Race → trofeo-oro-in-euro-women-s-bike-race-2027 [třída 1.1, úroveň international, kategorie +elite, zdroj UCI, popisky kategorií, e-mail pořadatele, web]
+  = 2027-03-14 G.P. San Giuseppe → g-p-san-giuseppe-2027 [třída 1.2, úroveň international, kategorie +u23, zdroj UCI, popisky kategorií, e-mail pořadatele, web]
+  ? 2027-03-14 Piccolo Trofeo Alfredo Binda - Valli del Verbano — nejasné: trofeo-alfredo-binda-comune-di-cittiglio-2027 (o tentýž závod se hlásí i Trofeo Alfredo Binda - Comune di Cittiglio)
+  = 2027-03-17 Milano - Torino → milano-torino-2027 [třída proseries, úroveň international, kategorie +elite, zdroj UCI, popisky kategorií, e-mail pořadatele, web]
+  ? 2027-03-20 Milano Sanremo Women — nejasné: milano-sanremo-sanremo-italy-2027, sanremo-women-2027 (o tentýž závod se hlásí i Milano-Sanremo)
+  ? 2027-03-20 Milano-Sanremo — nejasné: milano-sanremo-sanremo-italy-2027, sanremo-women-2027 (o tentýž závod se hlásí i Milano Sanremo Women)
+  = 2027-03-20 Italia Bike Cup - Verona MTB Internationale → italia-bike-cup-verona-mtb-internationale-2027 [třída c2, zdroj UCI, popisky kategorií, e-mail pořadatele]
+  = 2027-03-20 Memorial Polese → memorial-polese-2027 [třída 1.2, úroveň international, kategorie +elite, zdroj UCI, popisky kategorií, e-mail pořadatele, web]
+  = 2027-03-21 Popolarissima → popolarissima-2027 [třída 1.2, úroveň international, kategorie +elite, zdroj UCI, popisky kategorií, e-mail pořadatele, web]
+  = 2027-03-21 Giro dell'Appennino Donne → giro-dell-appennino-donne-2027 [třída 1.1, úroveň international, kategorie +elite, zdroj UCI, popisky kategorií, e-mail pořadatele, web]
+  = 2027-03-24 Settimana Internazionale Coppi e Bartali → settimana-internazionale-coppi-e-bartali-2027 [třída 2.1, úroveň international, kategorie +elite, zdroj UCI, popisky kategorií, e-mail pořadatele, web]
+  = 2027-03-29 Gran Premio del Perdono → gran-premio-del-perdono-2027 [třída 1.1, úroveň international, kategorie +junior, zdroj UCI, popisky kategorií, e-mail pořadatele, web]
+  ? 2027-03-29 Giro del Belvedere — místo „Via Doge Alvise IV Mocenigo" není obec, kterou známe
+  = 2027-03-29 G.P. Emilia → g-p-emilia-2027 [třída 1.1, úroveň international, kategorie +elite, zdroj UCI, popisky kategorií, e-mail pořadatele, web]
+  + 2027-03-30 G.P. Palio del Recioto | Valpolicella BEST ssdrl IT | 1.2U
+  = 2027-04-03 Trofeo Piva → trofeo-piva-2027 [třída 1.2, úroveň international, kategorie +elite, zdroj UCI, popisky kategorií, e-mail pořadatele]
+  = 2027-04-04 Genoa Cup - Marathon dell'Appennino MTB → genoa-cup-marathon-dell-appennino-mtb-2027 [třída c2, úroveň international, kategorie +elite, zdroj UCI, popisky kategorií, e-mail pořadatele, web]
+  = 2027-04-04 Tr. Città di S.Vendemiano - GP Industria & C → tr-citta-di-s-vendemiano-gp-industria-commercio-2027 [třída 1.2, úroveň international, kategorie +elite, zdroj UCI, popisky kategorií, web]
+  + 2027-04-10 12° DUE GIORNI DEL MARE 2026 - ROAD | Massa IT | 1
+    nepovedlo se: Basic data conflict requires review
+  = 2027-04-10 Marlene Südtirol Sunshine Race + UCI XCO Jun → marlene-sudtirol-sunshine-race-uci-xco-junior-series-2027 [třída hc, kategorie +u23/elite, zdroj UCI, popisky kategorií, e-mail pořadatele, web]
+  = 2027-04-10 Giro Ciclistico della Città Metropolitana di → giro-ciclistico-della-citta-metropolitana-di-reggio-calabria-2027 [třída 1.1, úroveň international, kategorie +elite, zdroj UCI, popisky kategorií, e-mail pořadatele, web]
+  = 2027-04-18 Giro di Primavera - Trofeo Gino Mazzer → giro-di-primavera-trofeo-gino-mazzer-2027 [třída 1.1, úroveň international, kategorie +junior, zdroj UCI, popisky kategorií, web]
+  = 2027-04-18 Italian National Championships - XCM → italian-national-championships-xcm-2027 [zdroj UCI, popisky kategorií, e-mail pořadatele, web]
+  = 2027-04-18 Giro della Provincia di Biella - Torino-Biel → 31-giro-della-provincia-di-biella-85-torino-biella-2027 [třída 1.2, úroveň international, kategorie +elite, zdroj UCI, popisky kategorií, web]
+  ? 2027-04-19 Tour of the Alps — místo „TBC" není obec, kterou známe
+  = 2027-04-24 Liberazione Juniores → liberazione-juniores-2027 [třída 1.1, úroveň international, zdroj UCI, popisky kategorií, web]
+  + 2027-04-25 Giro dell'Appennino | Genova IT | 1.1
+  = 2027-04-25 Coppa Montes Gran Premio della Resistenza → 72-coppa-montes-gran-premio-della-resistenza-2027 [třída 1.1, úroveň international, kategorie +junior, zdroj UCI, popisky kategorií, e-mail pořadatele, web]
+  ? 2027-04-25 Gran Premio Della Liberazione Donne — nejasné: 80-gran-premio-della-liberazione-2027, liberazione-juniores-2027 (o tentýž závod se hlásí i Gran Premio della Liberazione)
+  = 2027-04-25 Gran Premio della Liberazione → 80-gran-premio-della-liberazione-2027 [třída 1.2, úroveň international, kategorie +u23, zdroj UCI, popisky kategorií]
+  + 2027-05-01 HERO UCI Cross-country Marathon World Cup | Riva del Garda IT | CDM
+  + 2027-05-08 Italia Bike Cup - MTB Caneva Trophy | Stevenà IT | 1
+  = 2027-05-09 Gran Premio Industrie del Marmo → 38-gran-premio-industrie-del-marmo-2027 [třída 1.2, úroveň international, kategorie +u23, zdroj UCI, popisky kategorií, e-mail pořadatele, web]
+  = 2027-05-16 Circuito del Porto - Trofeo Arvedi → 60-circuito-del-porto-trofeo-arvedi-2027 [třída 1.2, úroveň international, kategorie +elite, zdroj UCI, popisky kategorií, web]
+  + 2027-05-20 UCI Para Cycling Road World Cup - Maniago-Monterea | Maniago IT | CDM
+    nepovedlo se: Missing end-date evidence
+  = 2027-05-22 Due Giorni Marchigiana - G.P. Santa Rita → 45-due-giorni-marchigiana-g-p-santa-rita-2027 [třída 1.2, úroveň international, kategorie +elite, zdroj UCI, popisky kategorií]
+  = 2027-05-23 Eroica Juniores - Coppa Andrea Meneghelli → eroica-juniores-coppa-andrea-meneghelli-2027 [třída 1.1, úroveň international, zdroj UCI, popisky kategorií]
+  = 2027-05-23 Due Giorni Marchigiana - Trofeo Città di Cas → 45-due-giorni-marchigiana-trofeo-citta-castelfidardo-2027 [třída 1.2, úroveň international, kategorie +elite, zdroj UCI, popisky kategorií]
+  = 2027-06-02 TrofeoAlcide Degasperi → 71-trofeo-alcide-de-gasperi-2027 [třída 1.2, úroveň international, kategorie +elite, zdroj UCI, popisky kategorií, web]
+  + 2027-06-04 Internazionali d'Italia DH Rider Cup | Aprica IT | 1
+    nepovedlo se: Missing end-date evidence
+  = 2027-06-05 15° G.P.  F.W.R. BARON - VENETO - ITALIA → 15-g-p-f-w-r-baron-veneto-italia-2027 [třída 2.1, úroveň international, kategorie +junior, zdroj UCI, popisky kategorií, web]
+  + 2027-06-05 Italia Bike Cup + UCI XCO Junior Series | Courmayeur IT | 1
+  = 2027-06-06 Coppa della Pace - Trofeo Fratelli Anelli → 55-coppa-della-pace-52-trofeo-fratelli-anelli-2027 [třída 1.2, úroveň international, kategorie +u23, zdroj UCI, popisky kategorií, web]
+  = 2027-06-12 HERO UCI Cross-country Marathon World Cup → hero-sudtirol-dolomites-2027 [třída cdm, úroveň world_cup, kategorie +elite, zdroj UCI, popisky kategorií, e-mail pořadatele, web]
+  = 2027-06-12 Trofeo Emozione → 7-trofeo-emozione-2027 [třída 1.1, úroveň international, kategorie +junior, zdroj UCI, popisky kategorií, e-mail pořadatele, web]
+  = 2027-06-13 Giro d'Italia Next Gen → giro-d-italia-next-gen-2027 [třída 2.2, úroveň international, zdroj UCI, popisky kategorií, e-mail pořadatele, web]
+  = 2027-06-13 Trofeo GD Dorigo - M.O. Sogno Veneto - Trofe → 39-trofeo-gd-dorigo-16-m-o-sogno-veneto-5-trofeo-merotto-2027 [třída 1.1, úroveň international, kategorie +junior, zdroj UCI, popisky kategorií, e-mail pořadatele, web]
+  ? 2027-06-23 National Road Championships - Italy — místo „Via Giovanni Battista Piranesi, 46" není obec, kterou známe
+  + 2027-07-02 Internazionali d'Italia DH Rider Cup | Madesimo IT | 3
+    nepovedlo se: Missing end-date evidence
+  = 2027-07-02 UCI Mountain Bike World Cup – XCO/XCC/DHI → uci-mtb-world-cup-la-thuile-valle-d-aosta-2027 [třída cdm, zdroj UCI, popisky kategorií, e-mail pořadatele]
+  + 2027-07-03 Italian National Championships | Verona IT | CN
+    nepovedlo se: Missing end-date evidence
+  = 2027-07-04 Giro del Medio Brenta → 41-giro-del-medio-brenta-2027 [třída 1.2, úroveň international, zdroj UCI, popisky kategorií, e-mail pořadatele, web]
+  = 2027-07-06 Trofeo Città di Brescia - Mem. Rino Fiori → 64-trofeo-citta-di-brescia-mem-rino-fiori-2027 [třída 1.2, úroveň international, zdroj UCI, popisky kategorií, web]
+  + 2027-07-12 3 Sere Internazionale Città di Pordenone | Pordenone IT | 1
+    nepovedlo se: Missing end-date evidence
+  = 2027-07-14 Giro Ciclistico della Valle d'Aosta - Mont B → 63-giro-ciclistico-della-valle-d-aosta-mont-blanc-2027 [třída 2.2, úroveň international, zdroj UCI, popisky kategorií, e-mail pořadatele, web]
+  + 2027-07-16 Red Bull Cerro Abajo - Genova | Genova IT | 2
+    nepovedlo se: Missing end-date evidence
+  + 2027-07-17 Italian National Championships - DHI | Commezzadura IT | CN
+    nepovedlo se: Missing end-date evidence
+  + 2027-07-23 Internazionali d'Italia DH Rider Cup | Sestriere IT | 3
+    nepovedlo se: Missing end-date evidence
+  = 2027-07-25 Bassano - Monte Grappa → 84-bassano-monte-grappa-2027 [třída 1.2, úroveň international, zdroj UCI, popisky kategorií, web]
+  + 2027-07-29 Piccola Tre Valli Varesine Women | Casale Litta IT | 1.Ncup
+    nepovedlo se: Missing end-date evidence
+  + 2027-07-29 Piccola Tre Valli Varesine | Casale Litta IT | 1.Ncup
+    nepovedlo se: Missing end-date evidence
+  + 2027-07-30 G. P. Internazionali di Fiorenzuola - 6 giorni del | Velodromo Attilio Pavesi IT | 1
+    nepovedlo se: Missing end-date evidence
+  = 2027-08-08 Gran Premio Sportivi di Poggiana - Trofeo Bo → 51-gran-premio-sportivi-di-poggiana-51-trofeo-bonin-2027 [třída 1.2, úroveň international, zdroj UCI, popisky kategorií, e-mail pořadatele, web]
+  = 2027-08-16 GP Capodarco Comunita Di Capodarco → 55-gran-premio-capodarco-comunita-di-capodarco-2027 [třída 1.2, úroveň international, zdroj UCI, popisky kategorií]
+  = 2027-08-22 GP Colli Rovescalesi - Trofeo Enertrade → 74-gran-premio-colli-rovescalesi-18-trofeo-enertrade-2027 [třída 1.2, úroveň international, zdroj UCI, popisky kategorií, e-mail pořadatele, web]
+  = 2027-08-26 Premondiale Giro Toscana Int. Femminile - Me → premondiale-giro-di-toscana-int-le-femminile-memorial-2027 [třída 2.2, úroveň international, zdroj UCI, popisky kategorií, web]
+  = 2027-08-28 Trofeo Comune di Vertova - Memorial Pietro e → 29-trofeo-comune-di-vertova-24-mem-pietro-giovanni-merelli-2027 [třída 1.1, úroveň international, zdroj UCI, popisky kategorií, web]
+  = 2027-08-29 Trofeo Emilio Paganessi → 55-trofeo-emilio-paganessi-2027 [třída 1.1, úroveň international, zdroj UCI, popisky kategorií, web]
+  + 2027-09-02 Giro della Regione Friuli Venezia Giulia | Martignacco IT | 2.2
+    nepovedlo se: Missing end-date evidence
+  + 2027-09-03 UCI Mountain Bike Continental Series - Pila Contin | Pila IT | CS
+    nepovedlo se: Missing end-date evidence
+  + 2027-09-07 Giro Della Lunigiana | Comune di Luni IT | 2.1
+    nepovedlo se: Missing end-date evidence
+  = 2027-09-10 UCI Mountain Bike World Cup – XCO/XCC/DHI → uci-mtb-world-cup-val-di-sole-trentino-2027 [třída cdm, zdroj UCI, popisky kategorií, e-mail pořadatele]
+  + 2027-09-11 Italian National Championships - EDR | Santo Stefano d'Aveto IT | CN
+    nepovedlo se: Missing end-date evidence
+  + 2027-09-11 Memorial Marco Pantani | Cesenatico IT | 1.1
+  ? 2027-09-12 Trofeo Matteotti — místo „sede Trofeo Matteotti" není obec, kterou známe
+  + 2027-09-12 Trofeo Buffoni | Forte dei Marmi IT | 1.1
+  + 2027-09-14 Il Giro d'Abruzzo | Abruzzo IT | 2.1
+    nepovedlo se: Missing end-date evidence
+  + 2027-09-17 Internazionali d'Italia DH Rider Cup | Prali IT | 3
+    nepovedlo se: Missing end-date evidence
+  + 2027-09-18 Gran Premio del Lazio | Roma IT | 1.1
+  ? 2027-09-19 Trofeo Top Automazioni-Memorial Davide Bertozzi — místo „STABILIMENTO TOP AUTOMAZIONI" není obec, kterou známe
+  + 2027-09-19 Giro Della Romagna | Lugo IT | 1.1
+    nepovedlo se: Out-of-scope or tentative candidate cannot be published
+  + 2027-09-26 GP Industria & Artigianato | Larciano IT | 1.Pro
+  + 2027-09-26 La Dario Acquaroli Internazionale | Iseo IT | 3
+  + 2027-09-28 Ruota d'Oro - GP Festa del Perdono | Terranuova Bracciolini IT | 1.2U
+  + 2027-09-29 Giro della Toscana - Memorial Alfredo Martini | Pontedera IT | 1.1
+  + 2027-09-30 Gran Premio città di Peccioli - Coppa Sabatini | Peccioli IT | 1.Pro
+  ? 2027-10-02 Giro dell'Emilia — místo „Emilia-Romagna" není obec, kterou známe
+  ? 2027-10-02 Giro dell'Emilia Internazionale Donne Elite — místo „Emilia-Romagna" není obec, kterou známe
+  ? 2027-10-02 Il Lombardia Under 23 — místo „Via Papa Paolo VI" není obec, kterou známe
+  ? 2027-10-03 Gran Premio Ezio Del Rosso — místo „Viale Giuseppe Verdi" není obec, kterou známe
+  + 2027-10-03 Coppa Agostoni - Giro delle Brianze | Lissone IT | 1.1
+  + 2027-10-04 Coppa Bernocchi - GP Banco BPM | Legnano IT | 1.Pro
+  ? 2027-10-05 Tre Valli Varesine — stejný název: gran-fondo-tre-valli-varesine-individual-time-trial-2027
+  + 2027-10-05 Tre Valli Varesine Women's Race | Varese IT | 1.Pro
+  + 2027-10-05 Coppa Citta Di San Daniele | San Daniele del Friuli IT | 1.2
+  ? 2027-10-07 Gran Piemonte — místo „Piemonte" není obec, kterou známe
+  + 2027-10-10 Trofeo Tessile & Moda - Comuni di Valdengo e Biell | Valdengo IT | 1.1
+  + 2027-10-10 Trofeo Tessile & Moda - Valdengo Oropa | Valdengo IT | 1.1
+    nepovedlo se: identity_review_required: catalogue changed since the reviewed identity
+  + 2027-10-13 Veneto Women | Marostica IT | 1.1
+  + 2027-10-13 Giro del Veneto | Marostica IT | 1.Pro
+  + 2027-10-17 Veneto Classic | Marostica IT | 1.Pro
+{"competitions":288,"skipped":23,"matched":120,"enriched":111,"published":44,"ambiguous":48,"ruledOut":9,"failed":53}

@@ -1,0 +1,183 @@
+[
+  {
+    "externalId": "nakole-3294",
+    "name": "brněnský cykokrosový pohár",
+    "startDate": "2026-10-07",
+    "placeText": "Brno, Bikearéna Anthropos",
+    "countryHint": "CZ",
+    "discipline": [
+      "cx"
+    ],
+    "eventType": "race",
+    "sourceUrl": "https://www.nakole.cz/akce/3294-brnensky-cykokrosovy-pohar.html",
+    "websiteUrl": "https://www.oca.cz/",
+    "confidence": 0.94,
+    "evidence": {
+      "quote": "brněnský cykokrosový pohár | Závod | Termín: 07.10.2026, 16:00h - 07.10.2026, 18:30h Místo: Brno, Bikearéna Anthropos | Závody pro děti na cyklorsových i MTB kolech. jednoduchá a zábavná trať.",
+      "sourceUrl": "https://www.nakole.cz/akce/3294-brnensky-cykokrosovy-pohar.html",
+      "method": "nakole_detail",
+      "version": "nakole-v1"
+    }
+  },
+  {
+    "externalId": "nakole-3281",
+    "name": "Pražská padesátka 2026",
+    "startDate": "2026-09-19",
+    "placeText": "Praha, Praha 6 Dejvice",
+    "countryHint": "CZ",
+    "discipline": [
+      "mtb"
+    ],
+    "eventType": "race",
+    "sourceUrl": "https://www.nakole.cz/akce/3281-prazska-padesatka-2026.html",
+    "websiteUrl": "https://prazska50.cz/",
+    "confidence": 0.94,
+    "evidence": {
+      "quote": "Pražská padesátka 2026 | Závod | Termín: 19.09.2026, 08:00h - 19.09.2026, 16:00h Místo: Praha, Praha 6 Dejvice | Zveme vás na 28. ročník Pražské padesátky, tradičního závodu horských kol pro širokou veřejnost. 19. září 2026 Kampus Dejvice, Praha 6 Čeká vás přibližně 50 km dlouhá trasa, která vás provede krásným okolím Prahy – přes Divokou Šárku, Horoměřice až do Zákolan a zpět kolem zříceniny hradu Okoř. Závod je určen pro hobby jezdce i zkušené cyklisty, kteří si chtějí užít skvělou sportovní atmosféru a atraktivní trasu. Registrace jsou již otevřeny. Přihlaste se včas a využijte nejvýhodnější startovné. Pražský dětský sprint Součástí programu bude také Pražský dětský sprint pro malé cyklisty na bezpečném okruhu v okolí Kampusu Dejvice. Těšíme se na vás na startu Pražské padesátky 2026!",
+      "sourceUrl": "https://www.nakole.cz/akce/3281-prazska-padesatka-2026.html",
+      "method": "nakole_detail",
+      "version": "nakole-v1"
+    }
+  },
+  {
+    "externalId": "nakole-3293",
+    "name": "Miletínský Scorelauf 2026",
+    "startDate": "2026-09-05",
+    "placeText": "Hořice, Miletín, areál SK",
+    "countryHint": "CZ",
+    "discipline": [
+      "other"
+    ],
+    "eventType": "race",
+    "sourceUrl": "https://www.nakole.cz/akce/3293-miletinsky-scorelauf-2026.html",
+    "websiteUrl": "https://scorelauf.cz/",
+    "confidence": 0.94,
+    "evidence": {
+      "quote": "Miletínský Scorelauf 2026 | Závod | Termín: 05.09.2026, 08:00h - 05.09.2026, 17:00h Místo: Hořice, Miletín, areál SK | Miletínský Scorelauf 2026 – Nejen cyklo dobrodružství ve dvou! Prasklej Řetěz Bike Team Miletín zve na cyklisticko-orientační závod dvojic, který se koná v sobotu 5. září 2026 Start: od 08:00 do 10:00 z areálu SK Miletín Nejde o klasickou trať! Čeká vás \"scorelauf\" – orientační závod s volným pořadím kontrol. Na mapě máte spoustu bodovaných míst a časový limit, během kterého jich musíte objet co nejvíce. Každá kontrola má jinou hodnotu. Strategie, rychlost a orientace rozhodují! Překročíš limit? Máš smůlu – body dolů! Vyhrává dvojice s nejvíc body – při rovnosti rozhoduje čas. Není to jen pro cyklisty – máme 8 různých kategorií, včetně pěších a běžeckých týmů. Takže ať máš kolo, nebo kecky, přihlas se a vyraž! Info & přihlášky: www.scorelauf.cz Sleduj nás taky na sociálních sítích!",
+      "sourceUrl": "https://www.nakole.cz/akce/3293-miletinsky-scorelauf-2026.html",
+      "method": "nakole_detail",
+      "version": "nakole-v1"
+    }
+  },
+  {
+    "externalId": "nakole-3283",
+    "name": "Kolem Melechova 2026",
+    "startDate": "2026-07-11",
+    "placeText": "Světlá nad Sázavou, Dolní Město část Meziklasí",
+    "countryHint": "CZ",
+    "discipline": [
+      "road"
+    ],
+    "eventType": "race",
+    "sourceUrl": "https://www.nakole.cz/akce/3283-kolem-melechova-2026.html",
+    "websiteUrl": "https://melechov.cz/",
+    "confidence": 0.94,
+    "evidence": {
+      "quote": "Kolem Melechova 2026 | Závod | Termín: 11.07.2026, 09:30h - 11.07.2026, 14:30h Místo: Světlá nad Sázavou, Dolní Město část Meziklasí | 23. ročník cyklistického závodu Kolem Melechova. Start je tradičně v obci Meziklasí v 11 hodin v sobotu 11. července 2026. Do závodu se můžete registrovat na webu www.melechov.cz nebo na místě v den konání akce od 9:00 do 10:45. A teď několik informací k samotnému závodu a organizaci akce. Závod s hromadným startem všech zaregistrovaných kategorií účastníků se pojede na 22 km dlouhém okruhu kolem vrchu Melechov. Mapa okruhu je připojena. Okruh na komunikacích vyznačen barevnými symboly. Doporučené je kolo silniční, povinná výbava cyklistická přilba. Všechny registrované kategorie mužů absolvují 3 okruhy = 66 km. Kategorie Junioři a Ženy absolvují 2 okruhy = 44 km. Junioři se mohou na základě vlastního uvážení registrovat v kategorii muži (M = 19 až 29 let). Vyhlášení výsledků se koná bezprostředně po skončení závodu. Výsledky se rovněž započítávají do hodnocení serie sportovních akcí o Pohár Melechova 2026 (www.melechov.cz). Akce se jako již tradičně těší podpoře obce Dolní Město a Kraje Vysočina. Účastníci se tak mohou těšit na medaile, poháry a snad i nějaké věcné ceny od sponzorů. V místě startu a cíle bude k dispozici zázemí s malým občerstvením (pro registrované závodníky v ceně startovného), pitná voda, WC a provizorní místo pro očistu těla i sportovního vybavení. Parkování vozidel účastníků bude zajištěno na odstavné ploše v obci Meziklasí, mimo komunikaci III. třídy 34740, na plochu vás navedou pořadatelé. Máte-li zájem se závodu Kolem Melechova 2026 zúčastnit, sledujte web www.melechov.cz nebo FB @Melechov Zs. Po otevření registrace Vám doporučujeme zaregistrovat se do závodu přes registrační formulář. Registrace na webu není závazná. Registrací na webu usnadníte organizátorům průběh nezbytné administrace účastníků před startem a realizačnímu tým získá potřebné informace o přibližném počtu účastníků k přípravě zázemí akce. Výhodou registrace na webu je nižší startovné – web = 200 Kč, na místě=250 Kč). Startovné se platí na místě v den startu v hotovosti. Na závěr bychom Vás chtěli poprosit o pomoc s propagací akce. Pokud můžete, sdílejte prospekt nebo odkaz s Vašimi kamarády a sportovními přáteli.",
+      "sourceUrl": "https://www.nakole.cz/akce/3283-kolem-melechova-2026.html",
+      "method": "nakole_detail",
+      "version": "nakole-v1"
+    }
+  },
+  {
+    "externalId": "nakole-3282",
+    "name": "Bike Therapy Fest vol.III",
+    "startDate": "2026-06-12",
+    "endDate": "2026-06-13",
+    "placeText": "Vrchlabí, Autocamp Vejsplachy",
+    "countryHint": "CZ",
+    "discipline": [
+      "mtb"
+    ],
+    "eventType": "race",
+    "sourceUrl": "https://www.nakole.cz/akce/3282-bike-therapy-fest-vol-iii.html",
+    "websiteUrl": "https://fb.me/e/3yj4Em83r",
+    "confidence": 0.94,
+    "evidence": {
+      "quote": "Bike Therapy Fest vol.III | Závod | Termín: 12.06.2026, 15:00h - 13.06.2026, 23:59h Místo: Vrchlabí, Autocamp Vejsplachy | Z Bike Therapy Festu se pomalu stává tradice a my jsme za to rádi. I letos je jeho program postaven na třech pilířích, a to závodech, koncertech a setkání se zajímavou osobností MTB scény. Jediné co se mění je, že letos se BTF uskuteční v červnu a my tak doufáme, že tentokrát už to bude se sluncem v zádech :) ZÁVODY - 3 tradiční disciplíny, ve kterých opět poměří síly malí i velcí závodníci SETKÁNÍ S KATARÍNOU TÓTHOVOU - mistryně ČR ve sjezdu a vicemistryně ČR ve fourcrossu hostem BTF! KONCERTY - pro radost i za odměnu za vaše výkony, tradiční večerní tancovačka DOPROVODNÝ PROGRAM - zábavný program partnerů festivalu, ideální místo pro fandění i odpočinek Pátek 12.6. 14:00 Sraz v areálu kempu Vejsplachy 15:00 Vyjížďky ve skupinách dle zdatnosti účastníků, po celý den možnost tréninků na sobotní závody, registrace online, zdarma 20:00 BIKE THERAPY TALKS s Katarínou Tóthovou v kině Kartonka Vrchlabí, vstup 230 Kč, vstupenky na https://www.kinovrchlabi.cz/film/39989 Sobota 13.6. BIKE THERAPY RACES 09:00 - 10:00 Trénink Pumptrack 09:00 - 11:00 Trénink CUPRA Dual Slalom 10:30 Závod Pumptrack + vyhlášení vítězů 11:15 Kvalifikace CUPRA Dual Slalom 13:00 Závod CUPRA Dual Slalom 15:00 Whip Off Marin Contest 1. kolo 16:00 Finále CUPRA Dual Slalom 18:00 Whip Off Marin contest 2. kolo Registrace online na tomto odkazu https://www.nazavody.cz/zavod/822-bike-therapy... A hned po závodech to zakončíme BIKE THERAPY AFTER RIDE, tradiční tancovačkou, na které se předvedou Šnycl Paradajs, Prinz von Sternberk a Hippie Chippies! Vstup na koncerty 390 Kč, závodníci tradičně v ceně závodného. Doprovodný program: Kolorádo Airbag Jam Testování kol MARIN Přijďte závodit, fandit, obdivovat triky, testovat kola, zablbnout na AirBagu, dát si dobrý jídlo, večer zatancovat a užít si to společně s námi!",
+      "sourceUrl": "https://www.nakole.cz/akce/3282-bike-therapy-fest-vol-iii.html",
+      "method": "nakole_detail",
+      "version": "nakole-v1"
+    }
+  },
+  {
+    "externalId": "nakole-3279",
+    "name": "BSK GIRO Pičín 2026",
+    "startDate": "2026-06-07",
+    "placeText": "Příbram, 262 25 PIčín, okres Příbram",
+    "countryHint": "CZ",
+    "discipline": [
+      "mtb"
+    ],
+    "eventType": "race",
+    "sourceUrl": "https://www.nakole.cz/akce/3279-bsk-giro-picin-2026.html",
+    "websiteUrl": "https://www.bskjuniorsteam.cz/",
+    "confidence": 0.94,
+    "evidence": {
+      "quote": "BSK GIRO Pičín 2026 | Závod | Termín: 07.06.2026, 09:30h - 07.06.2026, 16:00h Místo: Příbram, 262 25 PIčín, okres Příbram | Závod horských kol BSK GIRO Pičín je určený pro děti od 2 let, pro širokou veřejnost až po ostřílené bajkery na hlavní trase závodu 50 km. Závod se jede v brdských lesích středočeského kraje, start a cíl je v obci Pičín. Vyhlašujeme první tři nejrychlejší v každé kategorii, dále nejrychlejší ženu a muže na hlavní trase a nejrychlejší odrážedlo chlapec a dívka. V ceně startovného je i občerstvení po závodě v zázemí závodu a občerstvení na trase závodu. Na místě je možnost nákupu pamětního trička ponožek s logem závodu.",
+      "sourceUrl": "https://www.nakole.cz/akce/3279-bsk-giro-picin-2026.html",
+      "method": "nakole_detail",
+      "version": "nakole-v1"
+    }
+  },
+  {
+    "externalId": "nakole-3274",
+    "name": "XC Troubelice",
+    "startDate": "2026-05-30",
+    "placeText": "Uničov, Troubelice ,Lazce 78383",
+    "countryHint": "CZ",
+    "discipline": [
+      "mtb"
+    ],
+    "eventType": "race",
+    "sourceUrl": "https://www.nakole.cz/akce/3274-xc-troubelice.html",
+    "websiteUrl": "https://www.promotorsport.cz/propozice-xc-troubelice/",
+    "confidence": 0.94,
+    "evidence": {
+      "quote": "XC Troubelice | Závod | Termín: 30.05.2026, 09:01h - 30.05.2026, 15:00h Místo: Uničov, Troubelice ,Lazce 78383 | Závod je určený pro amatérské sportovce i sportovní nadšence všech věkových kategorií. Začínat budou ti nejmenší na odrážedlech a postupně dojde i na zkušené borce. Malé děti pojedou okruh na hřišti a v jeho okolí, větší pojedou také na hřišti, ale k tomu si vyjedou i kousek za dědinu. No a od Mladších žáků už se pojede navíc i okruh kolem kopce Vystříbra. Podle kategorií bude různý počet okruhů a v každém se bude projíždět kolečko kolem fotbalového hřiště, kde bude zároveň i divácká základna. Technický okruh na hřišti slibuje atraktivní podívanou pro diváky. Závod bude měřen čipovou časomírou s čipem na startovním čísle. Na hřišti bude také možnost občerstvení které zajišťuje SDH Lazce. Závod se jede v rámci seriálu Šumperský pohár horských kol, který má svá jasná pravidla. Tyto pravidla a další informace o tomto seriálu naleznete na www.spmtb.cz",
+      "sourceUrl": "https://www.nakole.cz/akce/3274-xc-troubelice.html",
+      "method": "nakole_detail",
+      "version": "nakole-v1"
+    }
+  },
+  {
+    "externalId": "nakole-3246",
+    "name": "Závody horských kol Kolem kolem Líbeznic",
+    "startDate": "2026-05-24",
+    "placeText": "Praha, Areál zdraví, Líbeznice, 250 65 Líbeznice",
+    "countryHint": "CZ",
+    "discipline": [
+      "mtb"
+    ],
+    "eventType": "race",
+    "sourceUrl": "https://www.nakole.cz/akce/3246-zavody-horskych-kol-kolem-kolem-libeznic.html",
+    "websiteUrl": "https://libeznickykolobeh.cz/kolem-kolem-libeznic-2026/",
+    "confidence": 0.94,
+    "evidence": {
+      "quote": "Závody horských kol Kolem kolem Líbeznic | Závod | Termín: 24.05.2026, 09:15h - 24.05.2026, 19:00h Místo: Praha, Areál zdraví, Líbeznice, 250 65 Líbeznice | Cykloden plný pohody jen pár minut od Praha. Tradiční závod Kolem kolem Líbeznic v Líbeznicích nabízí trasy 40 km i 20 km, rodinný závod s úkoly i kategorii pro elektrokola. Přijeď si užít přátelskou závodní atmosféru v krásné krajině bez těžkých technických pasáží a bez „zbytečných“ kopců. V neděli 24. května 2026 ožijí Líbeznice tradičními cyklistickými závody Kolem kolem Líbeznic, které pořádá Líbeznický koloběh z.s. za podpory obce. V dojezdové vzdálenosti od Praha čeká den plný pohybu, přírody a přátelské sportovní atmosféry, jakou umí nabídnout jen menší, komorní akce s tradicí. Na výběr jsou dvě hlavní trasy závodu jednotlivců – 40 km pro ty, kdo si chtějí už kvalitně zazávodit, a 20 km jako vstupenka do cyklistického světa. Profil je přívětivý, žádné dlouhé brutální kopce, zato krásná krajina a zábavné úseky napříč okolními vesnicemi. Díky více věkovým kategoriím a třem trasám tu má šanci zazářit opravdu každý. Tady nejde jen o čas v cíli, ale o radost ze závodění, která navazuje na dlouholetou tradici, kdy si tu účastníci mohli doslova užít pocit „obléknout si závodní číslo“. Akce je otevřená široké veřejnosti, rodinám i jezdcům na elektrokolech, pro které je vypsaná samostatná kategorie. Speciální rodinný závod na 20 km přidává k jízdě i zábavné úkoly po trase, takže si den užijí malí i velcí. Smích, spolupráce a společný zážitek jsou tu stejně důležité jako rychlé nohy. Registrace probíhá od 9:15 hodin v Areálu zdraví v Líbeznicích, start prvních závodů je od 10:00. Startovné činí 150 Kč v předprodeji a 250 Kč na místě. Více informací a přihlášky najdou zájemci na webu libeznickykolobeh.cz.",
+      "sourceUrl": "https://www.nakole.cz/akce/3246-zavody-horskych-kol-kolem-kolem-libeznic.html",
+      "method": "nakole_detail",
+      "version": "nakole-v1"
+    }
+  },
+  {
+    "externalId": "nakole-3253",
+    "name": "JARNÍ MAUDICUP - typ Road Adventure",
+    "startDate": "2026-04-11",
+    "placeText": "Úvaly, Louka za Sokolem",
+    "countryHint": "CZ",
+    "discipline": [
+      "road"
+    ],
+    "eventType": "race",
+    "sourceUrl": "https://www.nakole.cz/akce/3253-jarni-maudicup-typ-road-adventure.html",
+    "websiteUrl": "https://maudicup.cz/",
+    "confidence": 0.94,
+    "evidence": {
+      "quote": "JARNÍ MAUDICUP - typ Road Adventure | Závod | Termín: 11.04.2026, 09:30h - 11.04.2026, 16:00h Místo: Úvaly, Louka za Sokolem | Jednodenní orientační cyklistický závod dvojic i jednotlivců typu Road Adventure. Jede se jako scorelauf (volné pořadí kontrol) s časovým limitem 5 hodin. Ideální pro jarní najíždění kilometrů. Road proto, že kontroly budou přístupné po asfaltu nebo zpevněné cestě. Lze tedy jet jak na horském, tak na silničním kole. Trasa: Trasu si určují závodníci podle své strategie a možností tak, aby projeli maximum kontrol a v limitu a ve zdraví dorazili do cíle.",
+      "sourceUrl": "https://www.nakole.cz/akce/3253-jarni-maudicup-typ-road-adventure.html",
+      "method": "nakole_detail",
+      "version": "nakole-v1"
+    }
+  }
+]

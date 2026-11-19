@@ -1,0 +1,15 @@
+import { readFileSync, mkdirSync, writeFileSync } from 'node:fs';
+import { homedir } from 'node:os';
+import { join } from 'node:path';
+import { randomUUID, createHash } from 'node:crypto';
+import { fingerprint, normalizeName } from '../../src/lib/domain';
+const input=join(homedir(),'Library/Application Support/LetsRace/data/local-pass-run/plan-new-races/changes.ndjson');
+const id='2d966321-da80-4354-a3be-660d4123bb18', location=randomUUID(), source='https://www.swissbikecup.ch/etappe/gp-osterhas';
+const rows=readFileSync(input,'utf8').split('\n').filter(Boolean).map(JSON.parse).filter(r=>r.owner===id && r.tab!=='public.event_series');
+const event=rows.find(r=>r.tab==='public.events').after;
+Object.assign(event,{name:'GP Osterhas',name_normalized:normalizeName('GP Osterhas'),slug:'gp-osterhas-2027',location_id:location,series_id:null,event_type:'race',fingerprint:fingerprint({name:'GP Osterhas',startDate:event.start_date,lat:47.2782467,lng:8.4521518})});
+rows.find(r=>r.tab==='public.event_sources').after.source_url=source;
+rows.unshift({tab:'public.locations',pk:{id:location},op:'insert',after:{id:location,name:'Affoltern am Albis',municipality:'Affoltern am Albis',country_code:'CH',lat:47.2782467,lng:8.4521518,geog:'SRID=4326;POINT(8.4521518 47.2782467)',geocode_query:'Affoltern am Albis',geocode_status:'ok',timezone:'Europe/Zurich'}});
+rows.push({tab:'public.event_facts',pk:{id:randomUUID()},owner:id,op:'insert',after:{id:undefined,event_id:id,field:'source_review',value:{name:'GP Osterhas',place:'Affoltern am Albis',date:'2027-03-27',notInSeriesStandings:true,coordinatePrecision:'municipality'},previous:null,source_url:source,quote:'Der GP Osterhas ist ein traditionsreiches Radkriterium in Affoltern am Albis, das 2027 zum 46. Mal stattfindet. Der GP Osterhas wird 2027 nicht im Gesamtklassement des Swiss Bike Cup gewertet.',method:'official_detail_review',version:'2026-11-05'}});
+rows.at(-1).after.id=rows.at(-1).pk.id;
+const dir='reports/local-release-2026-11-05/swiss-race';mkdirSync(dir,{recursive:true});const body=rows.map(r=>JSON.stringify(r)).join('\n');writeFileSync(join(dir,'changes.ndjson'),body);const sha=createHash('sha256').update(body).digest('hex');writeFileSync(join(dir,'plan.json'),JSON.stringify({rows:rows.length,reviewedAt:new Date().toISOString(),sha256:sha,review:'Official 2027 date and municipality; corrected location and explicit absence from cup standings; new race does not overwrite 2026'},null,2));console.log(sha);

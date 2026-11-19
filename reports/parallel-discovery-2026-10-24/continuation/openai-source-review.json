@@ -1,0 +1,449 @@
+{
+  "generatedAt": "2026-10-24T16:51:46.942Z",
+  "readerVersion": "pipeline-v7:calendar-v6:ai=true",
+  "metrics": {
+    "tasks": 411,
+    "states": {
+      "pending": 328,
+      "running": 0,
+      "done": 56,
+      "retry": 27
+    },
+    "blindSources": 410,
+    "extractedAssertions": 210,
+    "reviewAssertions": 98,
+    "outOfScopeAssertions": 112,
+    "provisionalNameDateGroups": 154,
+    "searchModelCostUsd": 0.21396199999999999,
+    "readModelCostUsd": 0.14198129999999998,
+    "benchmarkRows": 51,
+    "csvSourceUrlsFoundBlind": 25,
+    "benchmarkRowsWithMatchingDateSuggestion": 0
+  },
+  "reviewCounts": {
+    "identity_review": 29,
+    "possible_existing_edition": 22,
+    "out_of_scope": 112,
+    "possible_date_or_identity_conflict": 2,
+    "date_evidence_review": 7,
+    "possible_missing_edition": 15,
+    "shared_source_identity_review": 20,
+    "tentative": 3
+  },
+  "originalSourceStates": {
+    "done": 55,
+    "retry": 27
+  },
+  "catalogueAt": "2026-10-24T16:51:45.876Z",
+  "catalogueRows": 9165,
+  "reviewedFacts": [
+    {
+      "name": "Gracia Orlová",
+      "startDate": "2027-04-29",
+      "endDate": "2027-05-02",
+      "place": "Moravskoslezský a Zlínský kraj",
+      "discipline": "silnice; etapový závod žen",
+      "sourceUrl": "https://www.graciaorlova.cz/o-zavodu/",
+      "evidence": "Gracia Orlová 2027 29. 4. – 2. 5. 2027",
+      "snapshot": "/Users/radektobolka/Documents/GitHub/letsrace/tmp/discovery-comparison-2026-10-24/openai/documents/91aa8fa299b76444138f8c532ace5b5935d6aa3d0a75eae2585abb63df87078f-1453ea13f6bed8600ea3d75537e5bbdf72692e6c2b948103db2cb8374796e8ec.snapshot.json",
+      "dateSupported": true,
+      "sourceAuthority": "organiser",
+      "catalogueMatches": [
+        {
+          "id": "83e59c91-3667-46c1-8550-88b1437e3fb1",
+          "name": "Gracia Orlová",
+          "start_date": "2026-04-30",
+          "visibility": "public",
+          "status": "completed",
+          "merged_into_id": null,
+          "website_url": null,
+          "location": {
+            "country_code": "CZ"
+          },
+          "country": "CZ"
+        }
+      ],
+      "reviewNotes": "Oficiální stránka uvádí celý rozsah i území ČR. Dohledaný starší ročník 2026; automatický merge není schválený.",
+      "publicationApproved": false,
+      "sourceQueueStatus": "pending"
+    },
+    {
+      "name": "Strunk Connect Lesák CUP",
+      "startDate": "2027-08-28",
+      "endDate": null,
+      "place": "Centrum Červeného Kostelce",
+      "discipline": "MTB XCM",
+      "sourceUrl": "https://lesak-cup.cz/",
+      "evidence": "Strunk Connect Lesák CUP | 12. ročník 28. 8. 2027 | Centrum Červeného Kostelce\nPříští ročník\n\nVidíme se 28. srpna 2027 v centru Červeného Kostelce",
+      "snapshot": "/Users/radektobolka/Documents/GitHub/letsrace/tmp/discovery-comparison-2026-10-24/openai/documents/76ebbe9a9daf89a82b9c99051da5c862f63d69f9cdaefadf314d3b1c30c31e82-116363183133fe663b3c167a2c27d7463121d735e1efd4ddd30a8839750866b9.snapshot.json",
+      "dateSupported": true,
+      "sourceAuthority": "organiser",
+      "catalogueMatches": [
+        {
+          "id": "b526c810-4dff-4348-a9bb-b69843a7adc0",
+          "name": "Lesák CUP",
+          "start_date": "2026-08-29",
+          "visibility": "public",
+          "status": "completed",
+          "merged_into_id": null,
+          "website_url": "https://lesak-cup.cz/",
+          "location": {
+            "country_code": "CZ"
+          },
+          "country": "CZ"
+        }
+      ],
+      "reviewNotes": "Zkontrolovat nový areál v centru města; nepřebírat místo Bohdašín ze starého ročníku. Změna sponzorského názvu není nová identita.",
+      "publicationApproved": false,
+      "sourceQueueStatus": "pending"
+    },
+    {
+      "name": "Pražská 50",
+      "startDate": "2027-09-18",
+      "endDate": null,
+      "place": "Praha; přesný start ročníku 2027 k ověření",
+      "discipline": "MTB maraton",
+      "sourceUrl": "https://prazska50.cz/tiskova-zprava/",
+      "evidence": "TISKOVÁ ZPRÁVA 2026 – prazska50.cz\n29. ročník Pražské 50 se uskuteční v sobotu 18. září 2027.",
+      "snapshot": "/Users/radektobolka/Documents/GitHub/letsrace/tmp/discovery-comparison-2026-10-24/openai/documents/a716259eefff8614bac24c101990349fcd352adbff32b4ad951cf8335617c55b-05a52594b351618f85a62a24f4349c35460dd7bbba4d55b2e711f39cd7421114.snapshot.json",
+      "dateSupported": true,
+      "sourceAuthority": "organiser",
+      "catalogueMatches": [
+        {
+          "id": "70d48991-9f23-4116-ae13-dd721b1e4ca1",
+          "name": "Pražská padesátka 2026",
+          "start_date": "2026-09-19",
+          "visibility": "hidden",
+          "status": "hidden",
+          "merged_into_id": null,
+          "website_url": "https://prazska50.cz/",
+          "location": {
+            "country_code": "CZ"
+          },
+          "country": "CZ"
+        },
+        {
+          "id": "b0131799-67b4-42cd-8d55-a8fa98ac24f9",
+          "name": "Pražská padesátka 2026 - Memoriál Jana Hrubeše",
+          "start_date": "2026-09-19",
+          "visibility": "hidden",
+          "status": "hidden",
+          "merged_into_id": "f2db4bce-a186-4d11-aeed-13ddf0577bfc",
+          "website_url": "https://prazska50.cz/",
+          "location": {
+            "country_code": "CZ"
+          },
+          "country": "CZ"
+        },
+        {
+          "id": "f2db4bce-a186-4d11-aeed-13ddf0577bfc",
+          "name": "Pražská padesátka 2026 - Memoriál Jana Hrubeše",
+          "start_date": "2026-09-19",
+          "visibility": "public",
+          "status": "completed",
+          "merged_into_id": null,
+          "website_url": "https://cz.author.eu/maraton-tour/author-maraton-tour-2026",
+          "location": {
+            "country_code": "CZ"
+          },
+          "country": "CZ"
+        }
+      ],
+      "reviewNotes": "V katalogu je alias Pražská padesátka, včetně hidden a merged záznamů. Tisková zpráva uvádí termín příštího ročníku; údaje startu 2026 se nepřenášejí bez potvrzení.",
+      "publicationApproved": false,
+      "sourceQueueStatus": "pending"
+    }
+  ],
+  "dateConflicts": [
+    {
+      "candidateId": "dce38a6107d2d23ea4f6d1ce503ef55f795bf2b7615a37a3fbad2b515aa71ce8",
+      "name": "Decathlon Cyklomaraton Hradec Králové 2027",
+      "startDate": "2027-05-31",
+      "endDate": null,
+      "place": "Hradec Králové",
+      "sourceUrl": "https://www.zavodynakole.cz/zavody/mtb/",
+      "snapshot": "/Users/radektobolka/Documents/GitHub/letsrace/tmp/discovery-comparison-2026-10-24/openai/documents/0d1acf44324f7e39dc68da115da3f7ab356bc32cfd5f1972194da7fa67aa10d3-5494fcc1b4eaaae91828520524bc35d0f29cb5bc282517b7a093d6536e1680a0.snapshot.json",
+      "quote": "31.5.2027 | [Decathlon Cyklomaraton Hradec Králové 2027](https://www.zavodynakole.cz/zavody/decathlon-cyklomaraton-hradec-kralove-2027/) | Hradec Králové | Královéhradecký kraj | 60 km / 30 km km | MTB, XCM\n31.5.2027 | [Decathlon Cyklomaraton Hradec Králové 2027](https://www.zavodynakole.cz/zavody/decathlon-cyklomaraton-hradec-kralove-2027/) | Hradec Králové",
+      "dateSupported": true,
+      "category": "possible_date_or_identity_conflict",
+      "issues": [
+        "country_needs_verification"
+      ],
+      "catalogueSuggestions": [
+        {
+          "id": "f1689d8b-7147-4680-bd8d-f4df715c18e6",
+          "name": "Decathlon Cyklomaraton Hradec Králové",
+          "start_date": "2026-05-31",
+          "visibility": "public",
+          "status": "completed",
+          "merged_into_id": null,
+          "website_url": "https://cyklomaratontour.cz/zavody/-310-cyklomaraton-hradec-kralove.html",
+          "location": {
+            "country_code": "CZ"
+          },
+          "country": "CZ",
+          "similarity": 1
+        },
+        {
+          "id": "f1d40430-b0ae-4dcf-9b94-0288fd48e3b4",
+          "name": "Decathlon Cyklomaraton Hradec Králové",
+          "start_date": "2027-05-30",
+          "visibility": "public",
+          "status": "scheduled",
+          "merged_into_id": null,
+          "website_url": "https://www.cyklomaratontour.cz/clanky/25-rocnik-decathlon-cyklomaratonu-opet-v-hradci-kralove-734.html",
+          "location": {
+            "country_code": "CZ"
+          },
+          "country": "CZ",
+          "similarity": 1
+        }
+      ],
+      "catalogueSourceSuggestions": [],
+      "publicationApproved": false
+    },
+    {
+      "candidateId": "b499a9ec119815ed70e61991aaec70f1841309c84695de2ccd4abd6c5497033b",
+      "name": "ROAD STAGE SERIES 2027 — Orlické hory",
+      "startDate": "2027-06-05",
+      "endDate": null,
+      "place": "Orlické hory",
+      "sourceUrl": "https://www.roadstage.cz/",
+      "snapshot": "/Users/radektobolka/Documents/GitHub/letsrace/tmp/discovery-comparison-2026-10-24/openai/documents/7d1de8661aa74529f97c592fa9ac782d05121369ce566c1161eaa9e8d6ccc8b3-7bb0678d14b07aa3bffe6c45ba1a669385641cf79d32873f096bde0dfa219d32.snapshot.json",
+      "quote": "ROAD STAGE SERIES 2027\n5. 6. 2027 Orlické hory\n5. 6. 2027 Orlické hory",
+      "dateSupported": true,
+      "category": "possible_date_or_identity_conflict",
+      "issues": [
+        "country_needs_verification"
+      ],
+      "catalogueSuggestions": [
+        {
+          "id": "0e3d2362-ede4-4bc8-a120-f3ee6ba2f843",
+          "name": "Road Stage Orlické hory RR 77 km",
+          "start_date": "2027-06-06",
+          "visibility": "hidden",
+          "status": "hidden",
+          "merged_into_id": "26c164f6-fd6a-4be5-83ca-fa7ed9f4ce3b",
+          "website_url": "https://www.roadcycling.cz/roadcup/rocnik-2027",
+          "location": null,
+          "country": null,
+          "similarity": 0.8
+        },
+        {
+          "id": "13863284-c4e4-43b8-828f-464357ee87d8",
+          "name": "Road Stage Orlické hory RR 77 km",
+          "start_date": "2027-06-06",
+          "visibility": "hidden",
+          "status": "hidden",
+          "merged_into_id": "26c164f6-fd6a-4be5-83ca-fa7ed9f4ce3b",
+          "website_url": "https://www.roadcycling.cz/roadcup/rocnik-2027",
+          "location": null,
+          "country": null,
+          "similarity": 0.8
+        },
+        {
+          "id": "7de97b87-160c-475a-bc3e-bdae4a0f8578",
+          "name": "ŠKODA CUP — ROAD STAGE ORLICKÉ HORY / V4",
+          "start_date": "2026-06-06",
+          "visibility": "hidden",
+          "status": "hidden",
+          "merged_into_id": null,
+          "website_url": null,
+          "location": {
+            "country_code": "CZ"
+          },
+          "country": "CZ",
+          "similarity": 0.8
+        },
+        {
+          "id": "a21e487d-2bcd-4734-85d5-80d2b1617a79",
+          "name": "ŠKODA CUP — ROAD STAGE ORLICKÉ HORY / V4",
+          "start_date": "2026-06-06",
+          "visibility": "public",
+          "status": "completed",
+          "merged_into_id": null,
+          "website_url": "https://roadstage.cz/",
+          "location": {
+            "country_code": "CZ"
+          },
+          "country": "CZ",
+          "similarity": 0.8
+        },
+        {
+          "id": "d98f43fb-abae-4598-933f-a12278721417",
+          "name": "ROAD STAGE Orlické Hory",
+          "start_date": "2026-06-06",
+          "visibility": "hidden",
+          "status": "hidden",
+          "merged_into_id": null,
+          "website_url": "https://roadstage.cz/",
+          "location": {
+            "country_code": "CZ"
+          },
+          "country": "CZ",
+          "similarity": 0.8
+        }
+      ],
+      "catalogueSourceSuggestions": [
+        {
+          "id": "37860e18-64f6-4421-82dc-c0a2dc2391d4",
+          "name": "Road Stage",
+          "start_date": "2026-09-12",
+          "visibility": "public",
+          "status": "completed",
+          "merged_into_id": null,
+          "website_url": "https://roadstage.cz",
+          "location": {
+            "country_code": "CZ"
+          },
+          "country": "CZ"
+        },
+        {
+          "id": "53113f14-41ed-463a-97f8-25faa194d283",
+          "name": "Nabídka pro partnery",
+          "start_date": "2027-06-05",
+          "visibility": "hidden",
+          "status": "scheduled",
+          "merged_into_id": null,
+          "website_url": "https://www.roadstage.cz/nabidka-pro-partnery",
+          "location": {
+            "country_code": "CZ"
+          },
+          "country": "CZ"
+        },
+        {
+          "id": "94dd3218-8d7e-4879-9d54-53d574cc1082",
+          "name": "Výsledky a média",
+          "start_date": "2027-06-05",
+          "visibility": "public",
+          "status": "scheduled",
+          "merged_into_id": null,
+          "website_url": "https://www.roadstage.cz/vysledky-a-media",
+          "location": {
+            "country_code": "CZ"
+          },
+          "country": "CZ"
+        },
+        {
+          "id": "9c101e44-2b4d-4aac-ab94-f425ab1f39c9",
+          "name": "Stříbrný rybník",
+          "start_date": "2027-09-11",
+          "visibility": "public",
+          "status": "scheduled",
+          "merged_into_id": null,
+          "website_url": "https://www.roadstage.cz/registrace",
+          "location": {
+            "country_code": "CZ"
+          },
+          "country": "CZ"
+        },
+        {
+          "id": "a21e487d-2bcd-4734-85d5-80d2b1617a79",
+          "name": "ŠKODA CUP — ROAD STAGE ORLICKÉ HORY / V4",
+          "start_date": "2026-06-06",
+          "visibility": "public",
+          "status": "completed",
+          "merged_into_id": null,
+          "website_url": "https://roadstage.cz/",
+          "location": {
+            "country_code": "CZ"
+          },
+          "country": "CZ"
+        },
+        {
+          "id": "d8a296db-d12f-400f-83a0-9a77503b2323",
+          "name": "Grande Finale",
+          "start_date": "2027-09-12",
+          "visibility": "public",
+          "status": "scheduled",
+          "merged_into_id": null,
+          "website_url": "https://www.roadstage.cz/vysledky-a-media",
+          "location": {
+            "country_code": "CZ"
+          },
+          "country": "CZ"
+        },
+        {
+          "id": "d98f43fb-abae-4598-933f-a12278721417",
+          "name": "ROAD STAGE Orlické Hory",
+          "start_date": "2026-06-06",
+          "visibility": "hidden",
+          "status": "hidden",
+          "merged_into_id": null,
+          "website_url": "https://roadstage.cz/",
+          "location": {
+            "country_code": "CZ"
+          },
+          "country": "CZ"
+        },
+        {
+          "id": "f1b77dbb-3187-4bcc-9dcb-4f707dea4cdb",
+          "name": "Road Stage Hradec Králové",
+          "start_date": "2027-09-11",
+          "visibility": "public",
+          "status": "scheduled",
+          "merged_into_id": null,
+          "website_url": "https://www.roadstage.cz/vysledky-a-media",
+          "location": {
+            "country_code": "CZ"
+          },
+          "country": "CZ"
+        }
+      ],
+      "publicationApproved": false
+    }
+  ],
+  "sourceHandoff": {
+    "at": "2026-10-24T16:51:07.977Z",
+    "reviewedUrls": [
+      "https://www.graciaorlova.cz/o-zavodu/",
+      "https://lesak-cup.cz/",
+      "https://prazska50.cz/tiskova-zprava/"
+    ],
+    "candidateIds": [
+      "ce4eaaf8dc778ce49e91c7bb5f7b6d7cff8eff253550266b5e3bf45f3bb8b923",
+      "c1eba0aa7621aadb5c5e9e48c0402dc45476c91b93b29bf45aa2da3457b89d7b",
+      "15454a019497f47861463281dbb63157d560dd098841f44854f511e6a54920f8"
+    ],
+    "submittedUrls": [
+      "https://graciaorlova.cz/o-zavodu",
+      "https://lesak-cup.cz",
+      "https://prazska50.cz/tiskova-zprava"
+    ],
+    "eventWrites": 0,
+    "note": "Submitted for source review; existing paused/rejected sources preserved. Not a count of newly created rows.",
+    "verifiedAt": "2026-10-24T16:51:23.459Z",
+    "verifiedRows": [
+      {
+        "id": "b6216409-1282-4bec-a06f-c235bda77f5d",
+        "url": "https://graciaorlova.cz/o-zavodu",
+        "status": "pending",
+        "hint_kind": "independent_season_discovery"
+      },
+      {
+        "id": "14387a55-6ea0-4453-b8d3-3176756cd77f",
+        "url": "https://lesak-cup.cz",
+        "status": "pending",
+        "hint_kind": "independent_season_discovery"
+      },
+      {
+        "id": "9d65f635-1c4c-4a27-a4d2-671357ad2027",
+        "url": "https://prazska50.cz/tiskova-zprava",
+        "status": "pending",
+        "hint_kind": "independent_season_discovery"
+      }
+    ]
+  },
+  "limits": {
+    "approvedDailyUsd": 2.75,
+    "spentTodayUsd": 2.7239375000000066,
+    "cacheReplayAdditionalModelUsd": 0
+  },
+  "validation": {
+    "testsPassed": 1156,
+    "typecheck": true,
+    "eslintChangedFiles": true
+  },
+  "eventWrites": 0,
+  "publicationApproved": false
+}

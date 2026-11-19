@@ -1,0 +1,173 @@
+[
+  {
+    "log": "/Users/radektobolka/Library/Application Support/LetsRace/data/refresh-2026-10-28T21-14-38-168Z.log",
+    "totals": {
+      "reads": 0,
+      "created": 0,
+      "updated": 0,
+      "failed": 0,
+      "unchanged": 0
+    },
+    "federation": [
+      {
+        "status": "failed",
+        "read": 0,
+        "written": 0,
+        "created": 0,
+        "updated": 0,
+        "issue": "ČSC portal did not render its calendar grid: cdp Runtime.evaluate timed out"
+      }
+    ],
+    "end": [
+      "}",
+      "pipeline_federation {\"status\":\"failed\",\"read\":0,\"written\":0,\"created\":0,\"updated\":0,\"issue\":\"ČSC portal did not render its calendar grid: cdp Runtime.evaluate timed out\"}",
+      "=== 2026-10-28 22:17:09 done (exit 1)"
+    ]
+  },
+  {
+    "log": "/Users/radektobolka/Library/Application Support/LetsRace/data/refresh-2026-10-28T21-17-15-330Z.log",
+    "totals": {
+      "reads": 26,
+      "created": 15,
+      "updated": 44,
+      "failed": 4,
+      "unchanged": 0
+    },
+    "federation": [],
+    "end": [
+      "=== done 22:22:33",
+      "=== failed steps: 1",
+      "=== deferred steps: 0"
+    ]
+  },
+  {
+    "log": "/Users/radektobolka/Library/Application Support/LetsRace/data/refresh-2026-10-28T21-22-35-461Z.log",
+    "totals": {
+      "reads": 0,
+      "created": 0,
+      "updated": 0,
+      "failed": 0,
+      "unchanged": 0
+    },
+    "federation": [
+      {
+        "status": "needs_review",
+        "read": 419,
+        "written": 249,
+        "created": 0,
+        "updated": 0,
+        "issue": "write_failed:csc-1695:pipeline_data_review_required:end_before_start"
+      }
+    ],
+    "end": [
+      "}",
+      "pipeline_federation {\"status\":\"needs_review\",\"read\":419,\"written\":249,\"created\":0,\"updated\":0,\"issue\":\"write_failed:csc-1695:pipeline_data_review_required:end_before_start\"}",
+      "=== 2026-10-28 22:23:49 done (exit 2)"
+    ]
+  },
+  {
+    "log": "/Users/radektobolka/Library/Application Support/LetsRace/data/refresh-2026-10-28T23-22-39-991Z.log",
+    "totals": {
+      "reads": 8,
+      "created": 0,
+      "updated": 1,
+      "failed": 2,
+      "unchanged": 0
+    },
+    "federation": [],
+    "end": [
+      "=== done 00:24:48",
+      "=== failed steps: 1",
+      "=== deferred steps: 0"
+    ]
+  },
+  {
+    "log": "/Users/radektobolka/Library/Application Support/LetsRace/data/refresh-2026-10-29T01-36-37-871Z.log",
+    "totals": {
+      "reads": 73,
+      "created": 1,
+      "updated": 1,
+      "failed": 62,
+      "unchanged": 1
+    },
+    "federation": [],
+    "end": [
+      "=== done 03:28:20",
+      "=== failed steps: 2",
+      "=== deferred steps: 0"
+    ]
+  },
+  {
+    "log": "/Users/radektobolka/Library/Application Support/LetsRace/data/refresh-2026-10-29T04-34-07-727Z.log",
+    "totals": {
+      "reads": 1,
+      "created": 0,
+      "updated": 0,
+      "failed": 0,
+      "unchanged": 0
+    },
+    "federation": [],
+    "end": [
+      "=== done 06:11:01",
+      "=== failed steps: 0",
+      "=== deferred steps: 0"
+    ]
+  },
+  {
+    "log": "/Users/radektobolka/Library/Application Support/LetsRace/data/refresh-2026-10-29T07-24-31-610Z.log",
+    "totals": {
+      "reads": 26,
+      "created": 5,
+      "updated": 24,
+      "failed": 4,
+      "unchanged": 0
+    },
+    "federation": [],
+    "end": [
+      "=== done 09:00:49",
+      "=== failed steps: 1",
+      "=== deferred steps: 0"
+    ]
+  },
+  {
+    "log": "/Users/radektobolka/Library/Application Support/LetsRace/data/refresh-2026-10-29T09-02-40-528Z.log",
+    "totals": {
+      "reads": 0,
+      "created": 0,
+      "updated": 0,
+      "failed": 0,
+      "unchanged": 0
+    },
+    "federation": [
+      {
+        "status": "failed",
+        "read": 0,
+        "written": 0,
+        "created": 0,
+        "updated": 0,
+        "issue": "ČSC portal did not render its calendar grid"
+      }
+    ],
+    "end": [
+      "}",
+      "pipeline_federation {\"status\":\"failed\",\"read\":0,\"written\":0,\"created\":0,\"updated\":0,\"issue\":\"ČSC portal did not render its calendar grid\"}",
+      "=== 2026-10-29 10:06:22 done (exit 1)"
+    ]
+  },
+  {
+    "log": "/Users/radektobolka/Library/Application Support/LetsRace/data/refresh-2026-10-29T09-06-32-146Z.log",
+    "totals": {
+      "reads": 0,
+      "created": 0,
+      "updated": 0,
+      "failed": 0,
+      "unchanged": 0
+    },
+    "federation": [],
+    "end": [
+      "=== done 10:07:56",
+      "=== failed steps: 0",
+      "=== deferred steps: 0"
+    ]
+  }
+]

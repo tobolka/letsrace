@@ -1,0 +1,1089 @@
+{
+  "checkedAt": "2026-10-29T15:01:10.789Z",
+  "checks": [
+    {
+      "name": "stable URL hradec",
+      "ok": true
+    },
+    {
+      "name": "start hradec",
+      "ok": true
+    },
+    {
+      "name": "end hradec",
+      "ok": true
+    },
+    {
+      "name": "stable URL may",
+      "ok": true
+    },
+    {
+      "name": "start may",
+      "ok": true
+    },
+    {
+      "name": "end may",
+      "ok": true
+    },
+    {
+      "name": "stable URL troj",
+      "ok": true
+    },
+    {
+      "name": "start troj",
+      "ok": true
+    },
+    {
+      "name": "end troj",
+      "ok": true
+    },
+    {
+      "name": "stable URL bp",
+      "ok": true
+    },
+    {
+      "name": "start bp",
+      "ok": true
+    },
+    {
+      "name": "end bp",
+      "ok": true
+    },
+    {
+      "name": "stable URL half-bp",
+      "ok": true
+    },
+    {
+      "name": "start half-bp",
+      "ok": true
+    },
+    {
+      "name": "end half-bp",
+      "ok": true
+    },
+    {
+      "name": "stable URL p1",
+      "ok": true
+    },
+    {
+      "name": "start p1",
+      "ok": true
+    },
+    {
+      "name": "end p1",
+      "ok": true
+    },
+    {
+      "name": "stable URL p2",
+      "ok": true
+    },
+    {
+      "name": "start p2",
+      "ok": true
+    },
+    {
+      "name": "end p2",
+      "ok": true
+    },
+    {
+      "name": "stable URL p3",
+      "ok": true
+    },
+    {
+      "name": "start p3",
+      "ok": true
+    },
+    {
+      "name": "end p3",
+      "ok": true
+    },
+    {
+      "name": "stable URL p4",
+      "ok": true
+    },
+    {
+      "name": "start p4",
+      "ok": true
+    },
+    {
+      "name": "end p4",
+      "ok": true
+    },
+    {
+      "name": "stable URL pmcr",
+      "ok": true
+    },
+    {
+      "name": "start pmcr",
+      "ok": true
+    },
+    {
+      "name": "end pmcr",
+      "ok": true
+    },
+    {
+      "name": "start feminin",
+      "ok": true
+    },
+    {
+      "name": "end feminin",
+      "ok": true
+    },
+    {
+      "name": "timezone feminin",
+      "ok": true
+    },
+    {
+      "name": "country feminin",
+      "ok": true
+    },
+    {
+      "name": "CZ map pin feminin",
+      "ok": true
+    },
+    {
+      "name": "disciplines feminin",
+      "ok": true
+    },
+    {
+      "name": "start moravia",
+      "ok": true
+    },
+    {
+      "name": "end moravia",
+      "ok": true
+    },
+    {
+      "name": "timezone moravia",
+      "ok": true
+    },
+    {
+      "name": "country moravia",
+      "ok": true
+    },
+    {
+      "name": "CZ map pin moravia",
+      "ok": true
+    },
+    {
+      "name": "disciplines moravia",
+      "ok": true
+    },
+    {
+      "name": "category moravia Short route — přibližně 620 km",
+      "ok": true
+    },
+    {
+      "name": "category moravia Main route — přibližně 850 km",
+      "ok": true
+    },
+    {
+      "name": "start kozovazy",
+      "ok": true
+    },
+    {
+      "name": "end kozovazy",
+      "ok": true
+    },
+    {
+      "name": "timezone kozovazy",
+      "ok": true
+    },
+    {
+      "name": "country kozovazy",
+      "ok": true
+    },
+    {
+      "name": "CZ map pin kozovazy",
+      "ok": true
+    },
+    {
+      "name": "disciplines kozovazy",
+      "ok": true
+    },
+    {
+      "name": "category kozovazy 0. kategorie — 2018 a mladší, zkrácená trať",
+      "ok": true
+    },
+    {
+      "name": "category kozovazy 1. kategorie — 2012–2017",
+      "ok": true
+    },
+    {
+      "name": "category kozovazy 2. kategorie — 1977–2011",
+      "ok": true
+    },
+    {
+      "name": "category kozovazy 3. kategorie — 1976 a starší",
+      "ok": true
+    },
+    {
+      "name": "start meandr",
+      "ok": true
+    },
+    {
+      "name": "end meandr",
+      "ok": true
+    },
+    {
+      "name": "timezone meandr",
+      "ok": true
+    },
+    {
+      "name": "country meandr",
+      "ok": true
+    },
+    {
+      "name": "CZ map pin meandr",
+      "ok": true
+    },
+    {
+      "name": "disciplines meandr",
+      "ok": true
+    },
+    {
+      "name": "event type meandr",
+      "ok": true
+    },
+    {
+      "name": "start racz",
+      "ok": true
+    },
+    {
+      "name": "end racz",
+      "ok": true
+    },
+    {
+      "name": "timezone racz",
+      "ok": true
+    },
+    {
+      "name": "country racz",
+      "ok": true
+    },
+    {
+      "name": "CZ map pin racz",
+      "ok": true
+    },
+    {
+      "name": "disciplines racz",
+      "ok": true
+    },
+    {
+      "name": "category racz Short route — přibližně 800 km",
+      "ok": true
+    },
+    {
+      "name": "category racz Full route — přibližně 1100 km",
+      "ok": true
+    },
+    {
+      "name": "stable URL v4",
+      "ok": true
+    },
+    {
+      "name": "start v4",
+      "ok": true
+    },
+    {
+      "name": "end v4",
+      "ok": true
+    },
+    {
+      "name": "timezone v4",
+      "ok": true
+    },
+    {
+      "name": "country v4",
+      "ok": true
+    },
+    {
+      "name": "CZ map pin v4",
+      "ok": true
+    },
+    {
+      "name": "disciplines v4",
+      "ok": true
+    },
+    {
+      "name": "category v4 V4 — přibližně 1684 km",
+      "ok": true
+    },
+    {
+      "name": "start seven",
+      "ok": true
+    },
+    {
+      "name": "end seven",
+      "ok": true
+    },
+    {
+      "name": "timezone seven",
+      "ok": true
+    },
+    {
+      "name": "country seven",
+      "ok": true
+    },
+    {
+      "name": "CZ map pin seven",
+      "ok": true
+    },
+    {
+      "name": "disciplines seven",
+      "ok": true
+    },
+    {
+      "name": "category seven UB30 — přibližně 1200 km",
+      "ok": true
+    },
+    {
+      "name": "category seven UB20 — přibližně 900 km",
+      "ok": true
+    },
+    {
+      "name": "start mtbo-tri-dvory",
+      "ok": true
+    },
+    {
+      "name": "end mtbo-tri-dvory",
+      "ok": true
+    },
+    {
+      "name": "timezone mtbo-tri-dvory",
+      "ok": true
+    },
+    {
+      "name": "country mtbo-tri-dvory",
+      "ok": true
+    },
+    {
+      "name": "CZ map pin mtbo-tri-dvory",
+      "ok": true
+    },
+    {
+      "name": "disciplines mtbo-tri-dvory",
+      "ok": true
+    },
+    {
+      "name": "MTBO in MTB filter mtbo-tri-dvory",
+      "ok": true
+    },
+    {
+      "name": "category mtbo-tri-dvory MČR sprint",
+      "ok": true
+    },
+    {
+      "name": "category mtbo-tri-dvory middle",
+      "ok": true
+    },
+    {
+      "name": "category mtbo-tri-dvory long",
+      "ok": true
+    },
+    {
+      "name": "start mtbo-nejdek",
+      "ok": true
+    },
+    {
+      "name": "end mtbo-nejdek",
+      "ok": true
+    },
+    {
+      "name": "timezone mtbo-nejdek",
+      "ok": true
+    },
+    {
+      "name": "country mtbo-nejdek",
+      "ok": true
+    },
+    {
+      "name": "CZ map pin mtbo-nejdek",
+      "ok": true
+    },
+    {
+      "name": "disciplines mtbo-nejdek",
+      "ok": true
+    },
+    {
+      "name": "MTBO in MTB filter mtbo-nejdek",
+      "ok": true
+    },
+    {
+      "name": "category mtbo-nejdek long",
+      "ok": true
+    },
+    {
+      "name": "category mtbo-nejdek middle",
+      "ok": true
+    },
+    {
+      "name": "start mtbo-mar-lazne",
+      "ok": true
+    },
+    {
+      "name": "end mtbo-mar-lazne",
+      "ok": true
+    },
+    {
+      "name": "timezone mtbo-mar-lazne",
+      "ok": true
+    },
+    {
+      "name": "country mtbo-mar-lazne",
+      "ok": true
+    },
+    {
+      "name": "CZ map pin mtbo-mar-lazne",
+      "ok": true
+    },
+    {
+      "name": "disciplines mtbo-mar-lazne",
+      "ok": true
+    },
+    {
+      "name": "MTBO in MTB filter mtbo-mar-lazne",
+      "ok": true
+    },
+    {
+      "name": "category mtbo-mar-lazne sprint",
+      "ok": true
+    },
+    {
+      "name": "category mtbo-mar-lazne MČR štafety",
+      "ok": true
+    },
+    {
+      "name": "category mtbo-mar-lazne middle",
+      "ok": true
+    },
+    {
+      "name": "start mtbo-plzen",
+      "ok": true
+    },
+    {
+      "name": "end mtbo-plzen",
+      "ok": true
+    },
+    {
+      "name": "timezone mtbo-plzen",
+      "ok": true
+    },
+    {
+      "name": "country mtbo-plzen",
+      "ok": true
+    },
+    {
+      "name": "CZ map pin mtbo-plzen",
+      "ok": true
+    },
+    {
+      "name": "disciplines mtbo-plzen",
+      "ok": true
+    },
+    {
+      "name": "MTBO in MTB filter mtbo-plzen",
+      "ok": true
+    },
+    {
+      "name": "category mtbo-plzen sprint",
+      "ok": true
+    },
+    {
+      "name": "category mtbo-plzen middle",
+      "ok": true
+    },
+    {
+      "name": "category mtbo-plzen long",
+      "ok": true
+    },
+    {
+      "name": "start mtbo-jedovnice",
+      "ok": true
+    },
+    {
+      "name": "end mtbo-jedovnice",
+      "ok": true
+    },
+    {
+      "name": "timezone mtbo-jedovnice",
+      "ok": true
+    },
+    {
+      "name": "country mtbo-jedovnice",
+      "ok": true
+    },
+    {
+      "name": "CZ map pin mtbo-jedovnice",
+      "ok": true
+    },
+    {
+      "name": "disciplines mtbo-jedovnice",
+      "ok": true
+    },
+    {
+      "name": "MTBO in MTB filter mtbo-jedovnice",
+      "ok": true
+    },
+    {
+      "name": "category mtbo-jedovnice MČR middle",
+      "ok": true
+    },
+    {
+      "name": "category mtbo-jedovnice MČR long",
+      "ok": true
+    },
+    {
+      "name": "start mtbo-vrchlabi",
+      "ok": true
+    },
+    {
+      "name": "end mtbo-vrchlabi",
+      "ok": true
+    },
+    {
+      "name": "timezone mtbo-vrchlabi",
+      "ok": true
+    },
+    {
+      "name": "country mtbo-vrchlabi",
+      "ok": true
+    },
+    {
+      "name": "CZ map pin mtbo-vrchlabi",
+      "ok": true
+    },
+    {
+      "name": "disciplines mtbo-vrchlabi",
+      "ok": true
+    },
+    {
+      "name": "MTBO in MTB filter mtbo-vrchlabi",
+      "ok": true
+    },
+    {
+      "name": "category mtbo-vrchlabi sprint",
+      "ok": true
+    },
+    {
+      "name": "category mtbo-vrchlabi middle",
+      "ok": true
+    },
+    {
+      "name": "category mtbo-vrchlabi MČR družstva",
+      "ok": true
+    },
+    {
+      "name": "start emtbo",
+      "ok": true
+    },
+    {
+      "name": "end emtbo",
+      "ok": true
+    },
+    {
+      "name": "timezone emtbo",
+      "ok": true
+    },
+    {
+      "name": "country emtbo",
+      "ok": true
+    },
+    {
+      "name": "CZ map pin emtbo",
+      "ok": true
+    },
+    {
+      "name": "disciplines emtbo",
+      "ok": true
+    },
+    {
+      "name": "MTBO in MTB filter emtbo",
+      "ok": true
+    },
+    {
+      "name": "category emtbo Sprint — 5.5.2027",
+      "ok": true
+    },
+    {
+      "name": "category emtbo Middle — 6.5.2027",
+      "ok": true
+    },
+    {
+      "name": "category emtbo Mixed relay / junior & youth relay — 7.5.2027",
+      "ok": true
+    },
+    {
+      "name": "category emtbo Long — 8.5.2027",
+      "ok": true
+    },
+    {
+      "name": "stable URL krakonos",
+      "ok": true
+    },
+    {
+      "name": "start krakonos",
+      "ok": true
+    },
+    {
+      "name": "end krakonos",
+      "ok": true
+    },
+    {
+      "name": "timezone krakonos",
+      "ok": true
+    },
+    {
+      "name": "country krakonos",
+      "ok": true
+    },
+    {
+      "name": "CZ map pin krakonos",
+      "ok": true
+    },
+    {
+      "name": "disciplines krakonos",
+      "ok": true
+    },
+    {
+      "name": "category krakonos B — krátká trať, přibližně 86 km",
+      "ok": true
+    },
+    {
+      "name": "category krakonos A — dlouhá trať, přibližně 135 km",
+      "ok": true
+    },
+    {
+      "name": "category krakonos Dětské závody — 10:30–11:45",
+      "ok": true
+    },
+    {
+      "name": "start oremon",
+      "ok": true
+    },
+    {
+      "name": "end oremon",
+      "ok": true
+    },
+    {
+      "name": "timezone oremon",
+      "ok": true
+    },
+    {
+      "name": "country oremon",
+      "ok": true
+    },
+    {
+      "name": "CZ map pin oremon",
+      "ok": true
+    },
+    {
+      "name": "disciplines oremon",
+      "ok": true
+    },
+    {
+      "name": "event type oremon",
+      "ok": true
+    },
+    {
+      "name": "category oremon Okruh — přibližně 310 km",
+      "ok": true
+    },
+    {
+      "name": "stable URL lost",
+      "ok": true
+    },
+    {
+      "name": "start lost",
+      "ok": true
+    },
+    {
+      "name": "not confirmed lost",
+      "ok": true
+    },
+    {
+      "name": "stable URL dokola",
+      "ok": true
+    },
+    {
+      "name": "start dokola",
+      "ok": true
+    },
+    {
+      "name": "end dokola",
+      "ok": true
+    },
+    {
+      "name": "timezone dokola",
+      "ok": true
+    },
+    {
+      "name": "country dokola",
+      "ok": true
+    },
+    {
+      "name": "CZ map pin dokola",
+      "ok": true
+    },
+    {
+      "name": "disciplines dokola",
+      "ok": true
+    },
+    {
+      "name": "category dokola DoKola! — přibližně 400 km",
+      "ok": true
+    },
+    {
+      "name": "category dokola DoKolečka! — přibližně 200 km",
+      "ok": true
+    },
+    {
+      "name": "category dokola 1/2 DoKolečka! — přibližně 100 km",
+      "ok": true
+    },
+    {
+      "name": "stable URL roh",
+      "ok": true
+    },
+    {
+      "name": "start roh",
+      "ok": true
+    },
+    {
+      "name": "end roh",
+      "ok": true
+    },
+    {
+      "name": "timezone roh",
+      "ok": true
+    },
+    {
+      "name": "country roh",
+      "ok": true
+    },
+    {
+      "name": "CZ map pin roh",
+      "ok": true
+    },
+    {
+      "name": "disciplines roh",
+      "ok": true
+    },
+    {
+      "name": "stable URL cyklobrani",
+      "ok": true
+    },
+    {
+      "name": "start cyklobrani",
+      "ok": true
+    },
+    {
+      "name": "not confirmed cyklobrani",
+      "ok": true
+    },
+    {
+      "name": "stable URL km-trophy",
+      "ok": true
+    },
+    {
+      "name": "start km-trophy",
+      "ok": true
+    },
+    {
+      "name": "not confirmed km-trophy",
+      "ok": true
+    },
+    {
+      "name": "stable URL the-step",
+      "ok": true
+    },
+    {
+      "name": "start the-step",
+      "ok": true
+    },
+    {
+      "name": "not confirmed the-step",
+      "ok": true
+    },
+    {
+      "name": "stable URL fichtl",
+      "ok": true
+    },
+    {
+      "name": "start fichtl",
+      "ok": true
+    },
+    {
+      "name": "excluded fichtl",
+      "ok": true
+    },
+    {
+      "name": "merged alias 1feea986-a0a6-4bb0-9f9e-d34d387ff21b",
+      "ok": true
+    },
+    {
+      "name": "merged alias 9c101e44-2b4d-4aac-ab94-f425ab1f39c9",
+      "ok": true
+    },
+    {
+      "name": "stable URL roadstage-hk",
+      "ok": true
+    },
+    {
+      "name": "start roadstage-hk",
+      "ok": true
+    },
+    {
+      "name": "end roadstage-hk",
+      "ok": true
+    },
+    {
+      "name": "timezone roadstage-hk",
+      "ok": true
+    },
+    {
+      "name": "country roadstage-hk",
+      "ok": true
+    },
+    {
+      "name": "CZ map pin roadstage-hk",
+      "ok": true
+    },
+    {
+      "name": "disciplines roadstage-hk",
+      "ok": true
+    },
+    {
+      "name": "start south",
+      "ok": true
+    },
+    {
+      "name": "end south",
+      "ok": true
+    },
+    {
+      "name": "timezone south",
+      "ok": true
+    },
+    {
+      "name": "country south",
+      "ok": true
+    },
+    {
+      "name": "no invented stage location",
+      "ok": true
+    },
+    {
+      "name": "disciplines south",
+      "ok": true
+    },
+    {
+      "name": "stable URL mulda",
+      "ok": true
+    },
+    {
+      "name": "start mulda",
+      "ok": true
+    },
+    {
+      "name": "end mulda",
+      "ok": true
+    },
+    {
+      "name": "stable URL epic",
+      "ok": true
+    },
+    {
+      "name": "start epic",
+      "ok": true
+    },
+    {
+      "name": "end epic",
+      "ok": true
+    },
+    {
+      "name": "stable URL truba",
+      "ok": true
+    },
+    {
+      "name": "start truba",
+      "ok": true
+    },
+    {
+      "name": "end truba",
+      "ok": true
+    },
+    {
+      "name": "stable URL rusava",
+      "ok": true
+    },
+    {
+      "name": "start rusava",
+      "ok": true
+    },
+    {
+      "name": "end rusava",
+      "ok": true
+    },
+    {
+      "name": "stable URL porubajk",
+      "ok": true
+    },
+    {
+      "name": "start porubajk",
+      "ok": true
+    },
+    {
+      "name": "end porubajk",
+      "ok": true
+    },
+    {
+      "name": "stable URL junior",
+      "ok": true
+    },
+    {
+      "name": "start junior",
+      "ok": true
+    },
+    {
+      "name": "end junior",
+      "ok": true
+    },
+    {
+      "name": "stable URL kral",
+      "ok": true
+    },
+    {
+      "name": "start kral",
+      "ok": true
+    },
+    {
+      "name": "end kral",
+      "ok": true
+    }
+  ],
+  "mtboUi": {
+    "stored": [
+      "mtb",
+      "mtbo"
+    ],
+    "displayed": [
+      "mtb"
+    ],
+    "standaloneMtboFilterAvailable": false
+  },
+  "duplicateReadback": [
+    {
+      "id": "df72ac6c-d903-4b0f-b671-602f3966f74a",
+      "name": "Brdský Meandr",
+      "start_date": "2027-06-05",
+      "visibility": "public",
+      "merged_into_id": null
+    },
+    {
+      "id": "36878ddd-54c4-482d-a99f-0bbfa0314d19",
+      "name": "Český pohár MTBO — Mariánské Lázně",
+      "start_date": "2027-06-19",
+      "visibility": "public",
+      "merged_into_id": null
+    },
+    {
+      "id": "3044fcbe-3b85-42a5-aa66-b9dee3fff9b4",
+      "name": "Moravia Divide",
+      "start_date": "2027-05-28",
+      "visibility": "public",
+      "merged_into_id": null
+    },
+    {
+      "id": "a137c3e0-db7b-4e68-a28d-163c45aabdde",
+      "name": "Tour de Feminin",
+      "start_date": "2027-05-20",
+      "visibility": "public",
+      "merged_into_id": null
+    },
+    {
+      "id": "a0825091-004c-438e-a539-4176640ad411",
+      "name": "Race Across Czechia",
+      "start_date": "2027-07-15",
+      "visibility": "public",
+      "merged_into_id": null
+    },
+    {
+      "id": "39a6fc31-96e9-431d-90c9-2811c7412fd5",
+      "name": "Český pohár MTBO — Tři Dvory",
+      "start_date": "2027-04-17",
+      "visibility": "public",
+      "merged_into_id": null
+    },
+    {
+      "id": "79674606-133c-4712-a77d-3eb23534183a",
+      "name": "Tour de Kozovazy",
+      "start_date": "2027-06-05",
+      "visibility": "public",
+      "merged_into_id": null
+    },
+    {
+      "id": "cd82d70a-89fb-4646-ac28-7217198e560a",
+      "name": "UB30 / UB20: Seven Wineyards Challenge",
+      "start_date": "2027-08-19",
+      "visibility": "public",
+      "merged_into_id": null
+    },
+    {
+      "id": "97aec3a7-aac3-4ef6-8798-21d90ca1ddd0",
+      "name": "Český pohár MTBO — Nejdek",
+      "start_date": "2027-05-22",
+      "visibility": "public",
+      "merged_into_id": null
+    },
+    {
+      "id": "547e9dd0-a712-42d4-a4df-46ba695739ac",
+      "name": "Český pohár MTBO — Plzeň",
+      "start_date": "2027-07-02",
+      "visibility": "public",
+      "merged_into_id": null
+    },
+    {
+      "id": "6683713d-8659-4db5-84b4-d1136c19df78",
+      "name": "Český pohár MTBO — Vrchlabí",
+      "start_date": "2027-10-02",
+      "visibility": "public",
+      "merged_into_id": null
+    },
+    {
+      "id": "f705559e-8c58-4a50-b10b-340ba19e0c52",
+      "name": "Český pohár MTBO — Jedovnice",
+      "start_date": "2027-09-11",
+      "visibility": "public",
+      "merged_into_id": null
+    },
+    {
+      "id": "58a25cf9-06dd-47a1-91f8-a29b91c6ffed",
+      "name": "CASIA Krakonošův cyklomaraton",
+      "start_date": "2027-06-12",
+      "visibility": "public",
+      "merged_into_id": null
+    },
+    {
+      "id": "2cea23e1-d7ce-4606-84c3-7533bebd087c",
+      "name": "Mistrovství Evropy MTBO — Hradec Králové",
+      "start_date": "2027-05-05",
+      "visibility": "public",
+      "merged_into_id": null
+    },
+    {
+      "id": "134db97e-dd3d-4d2f-8f83-46d2227bf684",
+      "name": "CASIA Krakonošův cyklomaraton RR 100,5 km",
+      "start_date": "2027-06-12",
+      "visibility": "hidden",
+      "merged_into_id": "58a25cf9-06dd-47a1-91f8-a29b91c6ffed"
+    }
+  ],
+  "summary": {
+    "inspected": 42,
+    "created": 15,
+    "updated": 10,
+    "unchanged": 17,
+    "merged": 3
+  }
+}

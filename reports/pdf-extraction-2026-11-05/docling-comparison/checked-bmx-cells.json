@@ -1,0 +1,350 @@
+{
+  "rapid": {
+    "cells": [
+      {
+        "row": "Volný trénink",
+        "column": "Park Elite Muži",
+        "expected": "10:00-12:00",
+        "actual": "10:00-12:00",
+        "match": true
+      },
+      {
+        "row": "Volný trénink",
+        "column": "Park Elite Ženy",
+        "expected": "10:00-12:00",
+        "actual": "10:00-12:00",
+        "match": true
+      },
+      {
+        "row": "Volný trénink",
+        "column": "Flatland",
+        "expected": "8:00-14:00",
+        "actual": "8:00-14:00",
+        "match": true
+      },
+      {
+        "row": "Volný trénink",
+        "column": "Park Junior",
+        "expected": "8:00-10:00",
+        "actual": "8:00-10:00",
+        "match": true
+      },
+      {
+        "row": "Potvrzení registrace",
+        "column": "Park Elite Muži",
+        "expected": "10:00-12:00",
+        "actual": "10:00-12:00",
+        "match": true
+      },
+      {
+        "row": "Potvrzení registrace",
+        "column": "Park Elite Ženy",
+        "expected": "10:00-12:00",
+        "actual": "10:00-12:00",
+        "match": true
+      },
+      {
+        "row": "Potvrzení registrace",
+        "column": "Flatland",
+        "expected": "10:00-12:00",
+        "actual": "10:00-12:00",
+        "match": true
+      },
+      {
+        "row": "Potvrzení registrace",
+        "column": "Park Junior",
+        "expected": "10:00-11:00",
+        "actual": "10:00-11:00",
+        "match": true
+      },
+      {
+        "row": "Warmup 1",
+        "column": "Park Elite Muži",
+        "expected": "13:15-13:30",
+        "actual": "13:15-13:30",
+        "match": true
+      },
+      {
+        "row": "Warmup 1",
+        "column": "Park Elite Ženy",
+        "expected": "-",
+        "actual": "-",
+        "match": true
+      },
+      {
+        "row": "Warmup 1",
+        "column": "Flatland",
+        "expected": "14:00-15:00",
+        "actual": "14:00-15:00",
+        "match": true
+      },
+      {
+        "row": "Warmup 1",
+        "column": "Park Junior",
+        "expected": "12:00-12:15",
+        "actual": "12:00-12:15",
+        "match": true
+      },
+      {
+        "row": "Kvalifikace",
+        "column": "Park Elite Muži",
+        "expected": "13:30-15:00",
+        "actual": "13:30-15:00",
+        "match": true
+      },
+      {
+        "row": "Kvalifikace",
+        "column": "Park Elite Ženy",
+        "expected": "-",
+        "actual": "-",
+        "match": true
+      },
+      {
+        "row": "Kvalifikace",
+        "column": "Flatland",
+        "expected": "15:00-16:00",
+        "actual": "15:00-16:00",
+        "match": true
+      },
+      {
+        "row": "Kvalifikace",
+        "column": "Park Junior",
+        "expected": "12:15-13:15",
+        "actual": "12:15-13:15",
+        "match": true
+      },
+      {
+        "row": "Warmup 2",
+        "column": "Park Elite Muži",
+        "expected": "17:45-18:15",
+        "actual": "17:45-18:15",
+        "match": true
+      },
+      {
+        "row": "Warmup 2",
+        "column": "Park Elite Ženy",
+        "expected": "17:00-17:30",
+        "actual": "17:00-17:30",
+        "match": true
+      },
+      {
+        "row": "Warmup 2",
+        "column": "Flatland",
+        "expected": "16:00-17:00",
+        "actual": "16:00-17:00",
+        "match": true
+      },
+      {
+        "row": "Warmup 2",
+        "column": "Park Junior",
+        "expected": "16:00-16:20",
+        "actual": "16:00-16:20",
+        "match": true
+      },
+      {
+        "row": "Finále",
+        "column": "Park Elite Muži",
+        "expected": "18:15-19:00",
+        "actual": "18:15-19:00",
+        "match": true
+      },
+      {
+        "row": "Finále",
+        "column": "Park Elite Ženy",
+        "expected": "17:30-17:45",
+        "actual": "17:30-17:45",
+        "match": true
+      },
+      {
+        "row": "Finále",
+        "column": "Flatland",
+        "expected": "17:00-17:30",
+        "actual": "17:00-17:30",
+        "match": true
+      },
+      {
+        "row": "Finále",
+        "column": "Park Junior",
+        "expected": "16:20-17:00",
+        "actual": "16:20-17:00",
+        "match": true
+      }
+    ],
+    "correct": 24,
+    "total": 24
+  },
+  "vision-full": {
+    "cells": [
+      {
+        "row": "Volný trénink",
+        "column": "Park Elite Muži",
+        "expected": "10:00-12:00",
+        "actual": "10:00-12:00",
+        "match": true
+      },
+      {
+        "row": "Volný trénink",
+        "column": "Park Elite Ženy",
+        "expected": "10:00-12:00",
+        "actual": "10:00-12:00",
+        "match": true
+      },
+      {
+        "row": "Volný trénink",
+        "column": "Flatland",
+        "expected": "8:00-14:00",
+        "actual": "8:00-14:00",
+        "match": true
+      },
+      {
+        "row": "Volný trénink",
+        "column": "Park Junior",
+        "expected": "8:00-10:00",
+        "actual": "8:00-10:00",
+        "match": true
+      },
+      {
+        "row": "Potvrzení registrace",
+        "column": "Park Elite Muži",
+        "expected": "10:00-12:00",
+        "actual": "10:00-12:00",
+        "match": true
+      },
+      {
+        "row": "Potvrzení registrace",
+        "column": "Park Elite Ženy",
+        "expected": "10:00-12:00",
+        "actual": "10:00-12:00",
+        "match": true
+      },
+      {
+        "row": "Potvrzení registrace",
+        "column": "Flatland",
+        "expected": "10:00-12:00",
+        "actual": "10:00-12:00",
+        "match": true
+      },
+      {
+        "row": "Potvrzení registrace",
+        "column": "Park Junior",
+        "expected": "10:00-11:00",
+        "actual": "10:00-11:00",
+        "match": true
+      },
+      {
+        "row": "Warmup 1",
+        "column": "Park Elite Muži",
+        "expected": "13:15-13:30",
+        "actual": "13:15-13:30",
+        "match": true
+      },
+      {
+        "row": "Warmup 1",
+        "column": "Park Elite Ženy",
+        "expected": "-",
+        "actual": null,
+        "match": false
+      },
+      {
+        "row": "Warmup 1",
+        "column": "Flatland",
+        "expected": "14:00-15:00",
+        "actual": "14:00-15:00",
+        "match": true
+      },
+      {
+        "row": "Warmup 1",
+        "column": "Park Junior",
+        "expected": "12:00-12:15",
+        "actual": "12:00-12:15",
+        "match": true
+      },
+      {
+        "row": "Kvalifikace",
+        "column": "Park Elite Muži",
+        "expected": "13:30-15:00",
+        "actual": "13:30-15:00",
+        "match": true
+      },
+      {
+        "row": "Kvalifikace",
+        "column": "Park Elite Ženy",
+        "expected": "-",
+        "actual": null,
+        "match": false
+      },
+      {
+        "row": "Kvalifikace",
+        "column": "Flatland",
+        "expected": "15:00-16:00",
+        "actual": "15:00-16:00",
+        "match": true
+      },
+      {
+        "row": "Kvalifikace",
+        "column": "Park Junior",
+        "expected": "12:15-13:15",
+        "actual": "12:15-13:15",
+        "match": true
+      },
+      {
+        "row": "Warmup 2",
+        "column": "Park Elite Muži",
+        "expected": "17:45-18:15",
+        "actual": "17:45-18:15",
+        "match": true
+      },
+      {
+        "row": "Warmup 2",
+        "column": "Park Elite Ženy",
+        "expected": "17:00-17:30",
+        "actual": "17:00-17:30",
+        "match": true
+      },
+      {
+        "row": "Warmup 2",
+        "column": "Flatland",
+        "expected": "16:00-17:00",
+        "actual": "16:00-17:00",
+        "match": true
+      },
+      {
+        "row": "Warmup 2",
+        "column": "Park Junior",
+        "expected": "16:00-16:20",
+        "actual": "16:00-16:20",
+        "match": true
+      },
+      {
+        "row": "Finále",
+        "column": "Park Elite Muži",
+        "expected": "18:15-19:00",
+        "actual": "18:15-19:00",
+        "match": true
+      },
+      {
+        "row": "Finále",
+        "column": "Park Elite Ženy",
+        "expected": "17:30-17:45",
+        "actual": "17:30-17:45",
+        "match": true
+      },
+      {
+        "row": "Finále",
+        "column": "Flatland",
+        "expected": "17:00-17:30",
+        "actual": "17:00-17:30",
+        "match": true
+      },
+      {
+        "row": "Finále",
+        "column": "Park Junior",
+        "expected": "16:20-17:00",
+        "actual": "16:20-17:00",
+        "match": true
+      }
+    ],
+    "correct": 22,
+    "total": 24
+  }
+}

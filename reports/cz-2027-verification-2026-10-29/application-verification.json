@@ -1,0 +1,22 @@
+{
+  "checkedAt": "2026-10-29T15:06:51.952627+00:00",
+  "databaseAssertions": 240,
+  "apiChecks": 8,
+  "targetedTests": 37,
+  "build": "passed",
+  "typecheck": "passed",
+  "httpViews": {
+    "list": 200,
+    "calendar": 200,
+    "map": 200,
+    "v4": 200,
+    "ride": 200
+  },
+  "visualReview": "Moravia detail verified; final full list/calendar/map rendering not verified because browser became unavailable",
+  "limitations": [
+    "No standalone MTBO UI filter",
+    "Tour of South Bohemia stage venues and coordinates not published",
+    "Four existing events hidden as provisional; actual review queue retained",
+    "13 additional leads remain unverified"
+  ]
+}

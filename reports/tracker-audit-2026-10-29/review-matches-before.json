@@ -1,0 +1,2875 @@
+[
+  {
+    "id": "cb504b8d-0bf5-42e6-bdc5-e862b9f27ba7",
+    "event_id": "aa7ce393-5666-4361-97ef-51cde8ae2564",
+    "reason": "existing_data_quarantined:date_conflict",
+    "candidate_name": "Zeitfahren Hintersee 2026",
+    "candidate_date": "2027-05-17",
+    "candidate_end": "2027-05-17",
+    "conflict_id": "aa7ce393-5666-4361-97ef-51cde8ae2564",
+    "name": "Zeitfahren Hintersee 2026",
+    "start_date": "2027-05-17",
+    "end_date": "2027-05-17",
+    "visibility": "hidden",
+    "disciplines": [
+      "road"
+    ],
+    "country_code": "DE",
+    "municipality": "Hintersee",
+    "sources": [
+      {
+        "url": "https://my.raceresult.com/382600/",
+        "kind": "aggregator",
+        "external_id": "rr-382600"
+      }
+    ]
+  },
+  {
+    "id": "0354f550-e0ea-4d5d-9a10-6a421d2d74d2",
+    "event_id": "7ff0bc3f-f5fa-4eaf-ae05-225e37591344",
+    "reason": "existing_data_quarantined:date_conflict",
+    "candidate_name": "SEVEROČESKÝ PUMPTRACKOVÝ POHÁR",
+    "candidate_date": "2026-04-26",
+    "candidate_end": "2025-04-26",
+    "conflict_id": "7ff0bc3f-f5fa-4eaf-ae05-225e37591344",
+    "name": "SEVEROČESKÝ PUMPTRACKOVÝ POHÁR",
+    "start_date": "2026-04-26",
+    "end_date": "2025-04-26",
+    "visibility": "hidden",
+    "disciplines": [
+      "bmx"
+    ],
+    "country_code": "CZ",
+    "municipality": "Sobotka",
+    "sources": [
+      {
+        "url": "https://portal.czechcyclingfederation.com/RaceDetail/Race/1695",
+        "kind": "national_federation",
+        "external_id": "csc-1695"
+      }
+    ]
+  },
+  {
+    "id": "2a280713-51eb-4fb8-a53e-442e7e600a7f",
+    "event_id": "2f8a3f3c-b0b3-461e-b2e7-95161b8b49d6",
+    "reason": "existing_data_quarantined:date_conflict",
+    "candidate_name": "ERG 1900 - 7. RTF Essener Rad Genuss – Sonntag, 23. August 2026",
+    "candidate_date": "2027-08-01",
+    "candidate_end": "2027-08-01",
+    "conflict_id": "2f8a3f3c-b0b3-461e-b2e7-95161b8b49d6",
+    "name": "ERG 1900 - 7. RTF Essener Rad Genuss – Sonntag, 23. August 2026",
+    "start_date": "2027-08-01",
+    "end_date": "2027-08-01",
+    "visibility": "hidden",
+    "disciplines": [
+      "gran_fondo"
+    ],
+    "country_code": "DE",
+    "municipality": "Essen",
+    "sources": [
+      {
+        "url": "https://radsport-events.de/events/1290",
+        "kind": "other",
+        "external_id": "radsport-1290-2026-08-23"
+      },
+      {
+        "url": "https://radsport-events.de/events/12674",
+        "kind": "other",
+        "external_id": "radsport-12674-2026-08-23"
+      },
+      {
+        "url": "https://my.raceresult.com/411659/",
+        "kind": "aggregator",
+        "external_id": "rr-411659"
+      }
+    ]
+  },
+  {
+    "id": "eb7ff064-823f-4285-81b4-330cbe4dc0b7",
+    "event_id": "ad406a6d-905a-47ec-a2a4-0a4e3698a749",
+    "reason": "existing_data_quarantined:missing_source_and_date_conflict",
+    "candidate_name": "Mikołajki - W krainie Sielawowego Króla Łaciate Mazury MTB Etap 8 - 13.09.2026",
+    "candidate_date": "2026-09-07",
+    "candidate_end": "2026-09-05",
+    "conflict_id": "ad406a6d-905a-47ec-a2a4-0a4e3698a749",
+    "name": "Mikołajki - W krainie Sielawowego Króla Łaciate Mazury MTB Etap 8 - 13.09.2026",
+    "start_date": "2026-09-07",
+    "end_date": "2026-09-05",
+    "visibility": "hidden",
+    "disciplines": [
+      "mtb",
+      "xcm"
+    ],
+    "country_code": null,
+    "municipality": null,
+    "sources": null
+  },
+  {
+    "id": "b429e8ad-2894-4ac9-9c47-0fb3f77fa4a4",
+    "event_id": null,
+    "reason": "free_structured_calendar_requires_review",
+    "candidate_name": "7. ROČNÍK MTB SLOVENSKÝ OPÁL",
+    "candidate_date": "2027-06-12",
+    "candidate_end": null,
+    "conflict_id": null,
+    "name": null,
+    "start_date": null,
+    "end_date": null,
+    "visibility": null,
+    "disciplines": null,
+    "country_code": null,
+    "municipality": null,
+    "sources": null
+  },
+  {
+    "id": "4b276c64-8d65-4084-8d39-d57a4eda6f24",
+    "event_id": null,
+    "reason": "free_structured_calendar_requires_review",
+    "candidate_name": "Podhoriansky stupák - 4. ročník",
+    "candidate_date": "2027-09-12",
+    "candidate_end": null,
+    "conflict_id": null,
+    "name": null,
+    "start_date": null,
+    "end_date": null,
+    "visibility": null,
+    "disciplines": null,
+    "country_code": null,
+    "municipality": null,
+    "sources": null
+  },
+  {
+    "id": "9edfbdd8-f6b5-49a9-9335-3a68f01cee1c",
+    "event_id": null,
+    "reason": "free_structured_calendar_requires_review",
+    "candidate_name": "4. ročník Novoveský pojazd",
+    "candidate_date": "2027-07-31",
+    "candidate_end": null,
+    "conflict_id": null,
+    "name": null,
+    "start_date": null,
+    "end_date": null,
+    "visibility": null,
+    "disciplines": null,
+    "country_code": null,
+    "municipality": null,
+    "sources": null
+  },
+  {
+    "id": "e10ce72e-68cc-4344-abdd-956ca2a871dc",
+    "event_id": null,
+    "reason": "free_structured_calendar_requires_review",
+    "candidate_name": "19. ročník časovky do vrchu Jantex Banské - Mláčky",
+    "candidate_date": "2027-08-15",
+    "candidate_end": null,
+    "conflict_id": null,
+    "name": null,
+    "start_date": null,
+    "end_date": null,
+    "visibility": null,
+    "disciplines": null,
+    "country_code": null,
+    "municipality": null,
+    "sources": null
+  },
+  {
+    "id": "1c075b66-d917-43b6-ad60-09383be9f1a3",
+    "event_id": null,
+    "reason": "free_structured_calendar_requires_review",
+    "candidate_name": "9. ročník Raslavický Pedál",
+    "candidate_date": "2027-07-25",
+    "candidate_end": null,
+    "conflict_id": null,
+    "name": null,
+    "start_date": null,
+    "end_date": null,
+    "visibility": null,
+    "disciplines": null,
+    "country_code": null,
+    "municipality": null,
+    "sources": null
+  },
+  {
+    "id": "f313d8ee-a38f-4c4a-a2b2-218f055d7108",
+    "event_id": null,
+    "reason": "free_structured_calendar_requires_review",
+    "candidate_name": "Humenský MTB maratón Singletracky Hubková 2027",
+    "candidate_date": "2027-06-19",
+    "candidate_end": null,
+    "conflict_id": null,
+    "name": null,
+    "start_date": null,
+    "end_date": null,
+    "visibility": null,
+    "disciplines": null,
+    "country_code": null,
+    "municipality": null,
+    "sources": null
+  },
+  {
+    "id": "d0c342d9-aa10-422b-981c-fced5eb7bb96",
+    "event_id": null,
+    "reason": "free_structured_calendar_requires_review",
+    "candidate_name": "12. ročník Ondavský cyklomaratón",
+    "candidate_date": "2027-07-18",
+    "candidate_end": null,
+    "conflict_id": null,
+    "name": null,
+    "start_date": null,
+    "end_date": null,
+    "visibility": null,
+    "disciplines": null,
+    "country_code": null,
+    "municipality": null,
+    "sources": null
+  },
+  {
+    "id": "1ce5189c-a7d4-4d27-9882-6f55a2700faf",
+    "event_id": null,
+    "reason": "free_structured_calendar_requires_review",
+    "candidate_name": "MTB maratón Čarnohurec 2027",
+    "candidate_date": "2027-08-21",
+    "candidate_end": null,
+    "conflict_id": null,
+    "name": null,
+    "start_date": null,
+    "end_date": null,
+    "visibility": null,
+    "disciplines": null,
+    "country_code": null,
+    "municipality": null,
+    "sources": null
+  },
+  {
+    "id": "52babeda-61b2-4388-9edc-329405d7d4c0",
+    "event_id": null,
+    "reason": "free_structured_calendar_requires_review",
+    "candidate_name": "E3NEXUS MTB MARATHON 2027",
+    "candidate_date": "2027-05-15",
+    "candidate_end": null,
+    "conflict_id": null,
+    "name": null,
+    "start_date": null,
+    "end_date": null,
+    "visibility": null,
+    "disciplines": null,
+    "country_code": null,
+    "municipality": null,
+    "sources": null
+  },
+  {
+    "id": "f9bc34a6-c081-4738-b0fe-bb05e745df1e",
+    "event_id": null,
+    "reason": "free_structured_calendar_requires_review",
+    "candidate_name": "Čergovská reťaz 2027",
+    "candidate_date": "2027-01-31",
+    "candidate_end": null,
+    "conflict_id": null,
+    "name": null,
+    "start_date": null,
+    "end_date": null,
+    "visibility": null,
+    "disciplines": null,
+    "country_code": null,
+    "municipality": null,
+    "sources": null
+  },
+  {
+    "id": "8459f0fe-a317-4aae-a936-4bc56d8c13bb",
+    "event_id": null,
+    "reason": "identity_review_required: conflicting fingerprint owned by 0203f1d0-9ef5-4030-a2d9-66432678bc95",
+    "candidate_name": "UCI MTB World CUP",
+    "candidate_date": "2026-06-28",
+    "candidate_end": null,
+    "conflict_id": "0203f1d0-9ef5-4030-a2d9-66432678bc95",
+    "name": "UCI MTB World CUP",
+    "start_date": "2026-06-28",
+    "end_date": "2026-06-28",
+    "visibility": "hidden",
+    "disciplines": [
+      "xco"
+    ],
+    "country_code": "IT",
+    "municipality": "Val di Fassa",
+    "sources": [
+      {
+        "url": "https://hynekmusil.cz",
+        "kind": "aggregator",
+        "external_id": "hynek-edr uci world-2026-06-28"
+      }
+    ]
+  },
+  {
+    "id": "836572c4-13d0-44d6-9d4d-c623a101a2ea",
+    "event_id": null,
+    "reason": "identity_review_required: conflicting fingerprint owned by 0596d77f-f12b-4201-b234-1341e273b4e3",
+    "candidate_name": "UCI MTB World CUP",
+    "candidate_date": "2026-06-13",
+    "candidate_end": null,
+    "conflict_id": "0596d77f-f12b-4201-b234-1341e273b4e3",
+    "name": "UCI MTB World CUP",
+    "start_date": "2026-06-13",
+    "end_date": "2026-06-14",
+    "visibility": "hidden",
+    "disciplines": [
+      "xcc",
+      "xco"
+    ],
+    "country_code": "AT",
+    "municipality": "Saalfelden-Leogang Salzburgerland",
+    "sources": [
+      {
+        "url": "https://hynekmusil.cz",
+        "kind": "aggregator",
+        "external_id": "hynek-3 xcc dhi edr uci world-2026-06-13"
+      }
+    ]
+  },
+  {
+    "id": "69717ccc-f62f-47cc-b68e-b4d565e66212",
+    "event_id": null,
+    "reason": "identity_review_required: conflicting fingerprint owned by 05b89dc8-efdc-4740-b648-397ed2c20c48",
+    "candidate_name": "Manitou Železné hory",
+    "candidate_date": "2026-08-15",
+    "candidate_end": null,
+    "conflict_id": "05b89dc8-efdc-4740-b648-397ed2c20c48",
+    "name": "Manitou Železné hory",
+    "start_date": "2026-08-15",
+    "end_date": "2026-08-15",
+    "visibility": "public",
+    "disciplines": [
+      "xcm"
+    ],
+    "country_code": "CZ",
+    "municipality": "Třemošnice",
+    "sources": [
+      {
+        "url": "https://hynekmusil.cz",
+        "kind": "other",
+        "external_id": "hynek-5 kpz manitou zelezne hory-2026-08-15"
+      },
+      {
+        "url": "https://hynekmusil.cz/?serialosss=kpz",
+        "kind": "aggregator",
+        "external_id": "hynek-kolo pro zivot manitou zelezne hory-2026-08-15"
+      },
+      {
+        "url": "https://hynekmusil.cz/?serialosss=kpz",
+        "kind": "series",
+        "external_id": "hynek-kolo pro zivot manitou zelezne hory-2026-08-15"
+      },
+      {
+        "url": "https://sumator.cz/race/manitou-zelezne-hory-15-8-2026",
+        "kind": "series",
+        "external_id": "sumator-manitou zelezne hory-2026-08-15"
+      },
+      {
+        "url": "https://www.kolopro.cz/zavody/manitou-zelezne-hory/",
+        "kind": "series",
+        "external_id": "kolopro-2026-08-15-manitou zelezne hory"
+      },
+      {
+        "url": "https://www.kolopro.cz/zavody/manitou-zelezne-hory/",
+        "kind": "series",
+        "external_id": "kolopro-2026-08-15-manitou zelezne hory"
+      },
+      {
+        "url": "https://sumator.cz/race/manitou-zelezne-hory-15-8-2026",
+        "kind": "aggregator",
+        "external_id": "sumator-manitou zelezne hory-2026-08-15"
+      }
+    ]
+  },
+  {
+    "id": "ebf0beb4-1109-4ae9-8f12-d69539586900",
+    "event_id": null,
+    "reason": "identity_review_required: conflicting fingerprint owned by 0d323c45-7ec0-40fe-835d-e257d5dda773",
+    "candidate_name": "Okruh Pařížov - Seč - Hrbokov - Bučina  (etapa v rámci Poháru Železných hor)",
+    "candidate_date": "2026-04-29",
+    "candidate_end": null,
+    "conflict_id": "0d323c45-7ec0-40fe-835d-e257d5dda773",
+    "name": "Okruh Pařížov - Seč - Hrbokov - Bučina (etapa v rámci Poháru Železných hor)",
+    "start_date": "2026-04-29",
+    "end_date": "2026-04-29",
+    "visibility": "public",
+    "disciplines": [
+      "road"
+    ],
+    "country_code": "CZ",
+    "municipality": "Seč",
+    "sources": [
+      {
+        "url": "https://sumator.cz/race/okruh-parizov-sec-hrbokov-bucina-etapa-v-ramci-poharu-zeleznych-hor-29-4-2026",
+        "kind": "aggregator",
+        "external_id": "sumator-okruh parizov sec hrbokov bucina etapa v ramci poharu zeleznych hor-2026-04-29"
+      }
+    ]
+  },
+  {
+    "id": "ce746ff3-1d68-41c1-aa17-b82070cdc26f",
+    "event_id": null,
+    "reason": "identity_review_required: conflicting fingerprint owned by 0eabee25-f50a-43f3-ad0f-12dac1ef3431",
+    "candidate_name": "Cyprus Granfondo",
+    "candidate_date": "2025-04-06",
+    "candidate_end": null,
+    "conflict_id": "0eabee25-f50a-43f3-ad0f-12dac1ef3431",
+    "name": "Cyprus Granfondo",
+    "start_date": "2025-04-06",
+    "end_date": "2025-04-06",
+    "visibility": "public",
+    "disciplines": [
+      "road",
+      "gran_fondo"
+    ],
+    "country_code": "CY",
+    "municipality": "Paphos",
+    "sources": [
+      {
+        "url": "https://sumator.cz/race/cyprus-granfondo-4-4-2025",
+        "kind": "series",
+        "external_id": "sumator-cyprus granfondo-2025-04-06"
+      }
+    ]
+  },
+  {
+    "id": "89b0f80f-ec28-43a9-ad65-8d80cb0b5499",
+    "event_id": null,
+    "reason": "identity_review_required: conflicting fingerprint owned by 149186c7-151f-4be5-bd3c-dcd42754dba5",
+    "candidate_name": "Granfondo Novi Sad",
+    "candidate_date": "2025-06-08",
+    "candidate_end": null,
+    "conflict_id": "149186c7-151f-4be5-bd3c-dcd42754dba5",
+    "name": "Granfondo Novi Sad",
+    "start_date": "2025-06-08",
+    "end_date": "2025-06-08",
+    "visibility": "public",
+    "disciplines": [
+      "road",
+      "gran_fondo"
+    ],
+    "country_code": "RS",
+    "municipality": "Novi Sad",
+    "sources": [
+      {
+        "url": "https://sumator.cz/race/granfondo-novi-sad-8-6-2025",
+        "kind": "series",
+        "external_id": "sumator-granfondo novi sad-2025-06-08"
+      }
+    ]
+  },
+  {
+    "id": "6aefd0d9-6b23-4a37-82c1-67a1b7578e4c",
+    "event_id": null,
+    "reason": "identity_review_required: conflicting fingerprint owned by 156b07a7-8bfd-421c-81b3-70d2cfa7d9c7",
+    "candidate_name": "Schleck Granfondo",
+    "candidate_date": "2026-05-30",
+    "candidate_end": null,
+    "conflict_id": "156b07a7-8bfd-421c-81b3-70d2cfa7d9c7",
+    "name": "Schleck Granfondo",
+    "start_date": "2026-05-30",
+    "end_date": "2026-05-30",
+    "visibility": "hidden",
+    "disciplines": [
+      "road",
+      "gran_fondo"
+    ],
+    "country_code": "LU",
+    "municipality": "Mondorf-les-Bains",
+    "sources": [
+      {
+        "url": "https://sumator.cz/race/schleck-granfondo-30-5-2026",
+        "kind": "aggregator",
+        "external_id": "sumator-schleck granfondo-2026-05-30"
+      },
+      {
+        "url": "https://sumator.cz/race/schleck-granfondo-30-5-2026",
+        "kind": "series",
+        "external_id": "sumator-schleck granfondo-2026-05-30"
+      },
+      {
+        "url": "https://sumator.cz/race/schleck-granfondo-30-5-2026",
+        "kind": "aggregator",
+        "external_id": "sumator-schleck granfondo-2026-05-30"
+      }
+    ]
+  },
+  {
+    "id": "f156b0bb-91b6-4d8b-b096-b28cb31b3066",
+    "event_id": null,
+    "reason": "identity_review_required: conflicting fingerprint owned by 1841ca9a-61d0-4ad3-acbb-be8673e2c391",
+    "candidate_name": "14. Fullgaz Race 2026",
+    "candidate_date": "2026-03-29",
+    "candidate_end": null,
+    "conflict_id": "1841ca9a-61d0-4ad3-acbb-be8673e2c391",
+    "name": "14. Fullgaz Race 2026",
+    "start_date": "2026-03-29",
+    "end_date": "2026-03-29",
+    "visibility": "hidden",
+    "disciplines": [
+      "xco"
+    ],
+    "country_code": "DE",
+    "municipality": "Obergessertshausen",
+    "sources": [
+      {
+        "url": "https://hynekmusil.cz",
+        "kind": "other",
+        "external_id": "hynek-1 bundesliga 14 fullgaz race-2026-03-29"
+      },
+      {
+        "url": "https://hynekmusil.cz/?serialosss=mtbbl",
+        "kind": "aggregator",
+        "external_id": "hynek-bundesliga 14 fullgaz race-2026-03-29"
+      }
+    ]
+  },
+  {
+    "id": "86dd10a9-7272-46db-8102-b3116d1b2183",
+    "event_id": null,
+    "reason": "identity_review_required: conflicting fingerprint owned by 1a83e9b5-a02c-4888-9c19-59908f01a6d8",
+    "candidate_name": "UCI MTB World CUP",
+    "candidate_date": "2026-07-18",
+    "candidate_end": null,
+    "conflict_id": "1a83e9b5-a02c-4888-9c19-59908f01a6d8",
+    "name": "UCI MTB World CUP",
+    "start_date": "2026-07-18",
+    "end_date": "2026-07-18",
+    "visibility": "public",
+    "disciplines": [
+      "xco"
+    ],
+    "country_code": "CH",
+    "municipality": "Bellwald",
+    "sources": [
+      {
+        "url": "https://hynekmusil.cz",
+        "kind": "aggregator",
+        "external_id": "hynek-edr uci world-2026-07-18"
+      }
+    ]
+  },
+  {
+    "id": "e3d694ac-a99b-413c-b1b1-097d84646ea5",
+    "event_id": null,
+    "reason": "identity_review_required: conflicting fingerprint owned by 220a9d91-6da7-42ff-9150-d7a8623163c6",
+    "candidate_name": "UCI Marathon World CUP",
+    "candidate_date": "2026-05-09",
+    "candidate_end": null,
+    "conflict_id": "220a9d91-6da7-42ff-9150-d7a8623163c6",
+    "name": "UCI Marathon World CUP",
+    "start_date": "2026-05-09",
+    "end_date": "2026-05-09",
+    "visibility": "hidden",
+    "disciplines": [
+      "xcm"
+    ],
+    "country_code": "IT",
+    "municipality": "Capoliveri - Elba Island, Italy",
+    "sources": [
+      {
+        "url": "https://hynekmusil.cz",
+        "kind": "aggregator",
+        "external_id": "hynek-1 uci marathon world-2026-05-09"
+      }
+    ]
+  },
+  {
+    "id": "3abc8797-a794-490c-a44b-e22f4308e5a6",
+    "event_id": null,
+    "reason": "identity_review_required: conflicting fingerprint owned by 2486b459-2563-4104-abe6-83aad58ab210",
+    "candidate_name": "UCI MTB World CUP",
+    "candidate_date": "2026-06-26",
+    "candidate_end": null,
+    "conflict_id": "2486b459-2563-4104-abe6-83aad58ab210",
+    "name": "UCI MTB World CUP",
+    "start_date": "2026-06-26",
+    "end_date": "2026-06-26",
+    "visibility": "hidden",
+    "disciplines": [
+      "xco"
+    ],
+    "country_code": "IT",
+    "municipality": "Val di Fassa",
+    "sources": [
+      {
+        "url": "https://hynekmusil.cz",
+        "kind": "aggregator",
+        "external_id": "hynek-edr uci world-2026-06-26"
+      }
+    ]
+  },
+  {
+    "id": "c1b87d4a-c0c6-482a-ad09-a66252695185",
+    "event_id": null,
+    "reason": "identity_review_required: conflicting fingerprint owned by 248ee964-12c4-4de7-9ba4-81f2a27d2020",
+    "candidate_name": "Bike the Rock",
+    "candidate_date": "2026-05-16",
+    "candidate_end": null,
+    "conflict_id": "248ee964-12c4-4de7-9ba4-81f2a27d2020",
+    "name": "Bike the Rock",
+    "start_date": "2026-05-16",
+    "end_date": "2026-05-16",
+    "visibility": "public",
+    "disciplines": [
+      "xco"
+    ],
+    "country_code": "DE",
+    "municipality": "Heubach",
+    "sources": [
+      {
+        "url": "https://hynekmusil.cz/?serialosss=mtbbl",
+        "kind": "aggregator",
+        "external_id": "hynek-bundesliga bike the rock-2026-05-16"
+      }
+    ]
+  },
+  {
+    "id": "a677058c-6bc3-40c9-b73a-ee3ab8803f9a",
+    "event_id": null,
+    "reason": "identity_review_required: conflicting fingerprint owned by 2b965e9a-615b-429f-b917-759e65383785",
+    "candidate_name": "The Grand Escape Tuscany",
+    "candidate_date": "2027-10-09",
+    "candidate_end": null,
+    "conflict_id": "2b965e9a-615b-429f-b917-759e65383785",
+    "name": "The Grand Escape Tuscany",
+    "start_date": "2027-10-09",
+    "end_date": "2027-10-09",
+    "visibility": "public",
+    "disciplines": [
+      "gravel"
+    ],
+    "country_code": "IT",
+    "municipality": "Campiglia Marittima",
+    "sources": [
+      {
+        "url": "https://radsport-events.de/events/27839",
+        "kind": "aggregator",
+        "external_id": "radsport-27839-2027-10-09"
+      }
+    ]
+  },
+  {
+    "id": "475789e8-a420-485e-b4d1-789bd666bf5f",
+    "event_id": null,
+    "reason": "identity_review_required: conflicting fingerprint owned by 344d0ad7-d6ca-4199-a809-866f15ec69d4",
+    "candidate_name": "Bike the Rock",
+    "candidate_date": "2026-05-17",
+    "candidate_end": null,
+    "conflict_id": "344d0ad7-d6ca-4199-a809-866f15ec69d4",
+    "name": "Bike the Rock",
+    "start_date": "2026-05-17",
+    "end_date": "2026-05-17",
+    "visibility": "hidden",
+    "disciplines": [
+      "xco"
+    ],
+    "country_code": "DE",
+    "municipality": "Heubach",
+    "sources": [
+      {
+        "url": "https://hynekmusil.cz",
+        "kind": "other",
+        "external_id": "hynek-2 bundesliga bike the rock-2026-05-17"
+      },
+      {
+        "url": "https://hynekmusil.cz/?serialosss=mtbbl",
+        "kind": "aggregator",
+        "external_id": "hynek-bundesliga bike the rock-2026-05-17"
+      }
+    ]
+  },
+  {
+    "id": "cb3b5266-3d1a-42c9-b7b2-42a9b32ebc11",
+    "event_id": null,
+    "reason": "identity_review_required: conflicting fingerprint owned by 38cc5e9a-cb1f-4ad6-ba3e-a18e55b2e50f",
+    "candidate_name": "UCI MTB World CUP",
+    "candidate_date": "2026-06-20",
+    "candidate_end": null,
+    "conflict_id": "38cc5e9a-cb1f-4ad6-ba3e-a18e55b2e50f",
+    "name": "UCI MTB World CUP",
+    "start_date": "2026-06-20",
+    "end_date": "2026-06-20",
+    "visibility": "public",
+    "disciplines": [
+      "xcc",
+      "xco"
+    ],
+    "country_code": "CH",
+    "municipality": "Lenzerheide",
+    "sources": [
+      {
+        "url": "https://hynekmusil.cz",
+        "kind": "aggregator",
+        "external_id": "hynek-4 xcc dhi uci world-2026-06-20"
+      }
+    ]
+  },
+  {
+    "id": "cb5a295a-53a8-4baf-a525-fc924045d253",
+    "event_id": null,
+    "reason": "identity_review_required: conflicting fingerprint owned by 3b0f2efb-1d84-4d6f-b555-1fea52391632",
+    "candidate_name": "NyNa Gravel Cup — Sudoměřice",
+    "candidate_date": "2026-05-17",
+    "candidate_end": null,
+    "conflict_id": "3b0f2efb-1d84-4d6f-b555-1fea52391632",
+    "name": "NyNa Gravel Cup — Sudoměřice",
+    "start_date": "2026-05-17",
+    "end_date": "2026-05-17",
+    "visibility": "public",
+    "disciplines": [
+      "gravel"
+    ],
+    "country_code": "CZ",
+    "municipality": "Sudoměřice",
+    "sources": null
+  },
+  {
+    "id": "c5cf3438-98cd-4fb2-a4bd-32499c0d3c2f",
+    "event_id": null,
+    "reason": "identity_review_required: conflicting fingerprint owned by 3d503919-1af6-41ed-bbfc-a5e3af10aeb6",
+    "candidate_name": "Vulkan Race Gedern",
+    "candidate_date": "2026-05-23",
+    "candidate_end": null,
+    "conflict_id": "3d503919-1af6-41ed-bbfc-a5e3af10aeb6",
+    "name": "Vulkan Race Gedern",
+    "start_date": "2026-05-23",
+    "end_date": "2026-05-23",
+    "visibility": "public",
+    "disciplines": [
+      "xco"
+    ],
+    "country_code": "DE",
+    "municipality": "Gedern",
+    "sources": [
+      {
+        "url": "https://hynekmusil.cz/?serialosss=mtbbl",
+        "kind": "aggregator",
+        "external_id": "hynek-bundesliga vulkan race gedern-2026-05-23"
+      }
+    ]
+  },
+  {
+    "id": "72097e37-8f14-4cc8-9b57-c2810f16f564",
+    "event_id": null,
+    "reason": "identity_review_required: conflicting fingerprint owned by 4362e4e6-20ee-4376-97ac-344e13d41683",
+    "candidate_name": "UCI MTB World CUP",
+    "candidate_date": "2026-06-19",
+    "candidate_end": null,
+    "conflict_id": "4362e4e6-20ee-4376-97ac-344e13d41683",
+    "name": "UCI MTB World CUP",
+    "start_date": "2026-06-19",
+    "end_date": "2026-06-20",
+    "visibility": "hidden",
+    "disciplines": [
+      "xcc",
+      "xco"
+    ],
+    "country_code": "CH",
+    "municipality": "Lenzerheide",
+    "sources": [
+      {
+        "url": "https://hynekmusil.cz",
+        "kind": "aggregator",
+        "external_id": "hynek-4 xcc dhi uci world-2026-06-19"
+      }
+    ]
+  },
+  {
+    "id": "62d7b743-5ee2-4f5a-b94a-ad74e3ce4003",
+    "event_id": null,
+    "reason": "identity_review_required: conflicting fingerprint owned by 4606f9b4-b675-454f-8451-79518e86bc09",
+    "candidate_name": "ROHANSKÉ STEZKY",
+    "candidate_date": "2026-06-20",
+    "candidate_end": null,
+    "conflict_id": "4606f9b4-b675-454f-8451-79518e86bc09",
+    "name": "Rohanské stezky 2026",
+    "start_date": "2026-06-20",
+    "end_date": "2026-06-20",
+    "visibility": "public",
+    "disciplines": [
+      "mtb"
+    ],
+    "country_code": "CZ",
+    "municipality": "Lomnice nad Popelkou",
+    "sources": [
+      {
+        "url": "https://mtbs.cz/clanek/rohanske-stezky-74327/kategorie/xcm",
+        "kind": "aggregator",
+        "external_id": "mtbs-rohanske stezky-2026-06-20"
+      },
+      {
+        "url": "https://sumator.cz/race/rohanske-stezky-20-6-2026",
+        "kind": "aggregator",
+        "external_id": "sumator-rohanske stezky-2026-06-20"
+      },
+      {
+        "url": "https://sumator.cz/race/rohanske-stezky-20-6-2026",
+        "kind": "aggregator",
+        "external_id": "sumator-rohanske stezky-2026-06-20"
+      },
+      {
+        "url": "https://my.raceresult.com/387179/",
+        "kind": "aggregator",
+        "external_id": "rr-387179"
+      },
+      {
+        "url": "https://portal.czechcyclingfederation.com/RaceDetail/Race/1747",
+        "kind": "national_federation",
+        "external_id": "csc-1747"
+      }
+    ]
+  },
+  {
+    "id": "0c68d335-27be-48b6-aa5a-6982a0dac2dd",
+    "event_id": null,
+    "reason": "identity_review_required: conflicting fingerprint owned by 4680bedd-333c-4372-a1b8-4e3e33d533f6",
+    "candidate_name": "UCI MTB MARATHON WCH",
+    "candidate_date": "2026-09-13",
+    "candidate_end": null,
+    "conflict_id": "4680bedd-333c-4372-a1b8-4e3e33d533f6",
+    "name": "UCI MTB MARATHON WCH",
+    "start_date": "2026-09-13",
+    "end_date": "2026-09-13",
+    "visibility": "hidden",
+    "disciplines": [
+      "xco",
+      "xcm"
+    ],
+    "country_code": "IT",
+    "municipality": "Primiero San Martino di Castrozza, Italy",
+    "sources": [
+      {
+        "url": "https://hynekmusil.cz",
+        "kind": "aggregator",
+        "external_id": "hynek-cmm uci marathon wch-2026-09-13"
+      },
+      {
+        "url": "https://hynekmusil.cz/?serialosss=uci",
+        "kind": "series",
+        "external_id": "hynek-uci championships uci marathon wch-2026-09-13"
+      }
+    ]
+  },
+  {
+    "id": "b903d491-ddba-458a-a25b-40f03662dcc3",
+    "event_id": null,
+    "reason": "identity_review_required: conflicting fingerprint owned by 482255d4-d1f8-4878-91c7-6676d2d08088",
+    "candidate_name": "UCI MTB World CUP",
+    "candidate_date": "2026-06-11",
+    "candidate_end": null,
+    "conflict_id": "482255d4-d1f8-4878-91c7-6676d2d08088",
+    "name": "UCI MTB World CUP",
+    "start_date": "2026-06-11",
+    "end_date": "2026-06-13",
+    "visibility": "hidden",
+    "disciplines": [
+      "xcc",
+      "xco"
+    ],
+    "country_code": "AT",
+    "municipality": "Saalfelden-Leogang Salzburgerland",
+    "sources": [
+      {
+        "url": "https://hynekmusil.cz",
+        "kind": "aggregator",
+        "external_id": "hynek-3 xcc dhi edr uci world-2026-06-11"
+      }
+    ]
+  },
+  {
+    "id": "03d527bb-c66f-4d94-ae4c-6da2b519f3d6",
+    "event_id": null,
+    "reason": "identity_review_required: conflicting fingerprint owned by 4abc86ab-e294-479c-9c69-9c2016e95ef8",
+    "candidate_name": "Schleck Granfondo",
+    "candidate_date": "2025-05-24",
+    "candidate_end": null,
+    "conflict_id": "4abc86ab-e294-479c-9c69-9c2016e95ef8",
+    "name": "Schleck Granfondo",
+    "start_date": "2025-05-24",
+    "end_date": "2025-05-24",
+    "visibility": "public",
+    "disciplines": [
+      "road",
+      "gran_fondo"
+    ],
+    "country_code": "LU",
+    "municipality": "Mondorf-les-Bains",
+    "sources": [
+      {
+        "url": "https://sumator.cz/race/schleck-granfondo-24-5-2025",
+        "kind": "series",
+        "external_id": "sumator-schleck granfondo-2025-05-24"
+      }
+    ]
+  },
+  {
+    "id": "0bf518ff-becb-4b3d-8732-4f4d068a32cb",
+    "event_id": null,
+    "reason": "identity_review_required: conflicting fingerprint owned by 4d055cf0-496f-4bb7-8fff-b70a7635a2f3",
+    "candidate_name": "Cyprus Granfondo",
+    "candidate_date": "2026-04-05",
+    "candidate_end": null,
+    "conflict_id": "4d055cf0-496f-4bb7-8fff-b70a7635a2f3",
+    "name": "Cyprus Granfondo",
+    "start_date": "2026-04-05",
+    "end_date": "2026-04-05",
+    "visibility": "public",
+    "disciplines": [
+      "road",
+      "gran_fondo"
+    ],
+    "country_code": "CY",
+    "municipality": "Paphos",
+    "sources": [
+      {
+        "url": "https://sumator.cz/race/cyprus-granfondo-3-4-2026",
+        "kind": "aggregator",
+        "external_id": "sumator-cyprus granfondo-2026-04-05"
+      },
+      {
+        "url": "https://sumator.cz/race/cyprus-granfondo-3-4-2026",
+        "kind": "series",
+        "external_id": "sumator-cyprus granfondo-2026-04-05"
+      },
+      {
+        "url": "https://sumator.cz/race/cyprus-granfondo-3-4-2026",
+        "kind": "aggregator",
+        "external_id": "sumator-cyprus granfondo-2026-04-05"
+      }
+    ]
+  },
+  {
+    "id": "71cf15bd-780e-4038-ba38-23f608151aa1",
+    "event_id": null,
+    "reason": "identity_review_required: conflicting fingerprint owned by 4d055cf0-496f-4bb7-8fff-b70a7635a2f3",
+    "candidate_name": "Cyprus Granfondo",
+    "candidate_date": "2026-04-05",
+    "candidate_end": null,
+    "conflict_id": "4d055cf0-496f-4bb7-8fff-b70a7635a2f3",
+    "name": "Cyprus Granfondo",
+    "start_date": "2026-04-05",
+    "end_date": "2026-04-05",
+    "visibility": "public",
+    "disciplines": [
+      "road",
+      "gran_fondo"
+    ],
+    "country_code": "CY",
+    "municipality": "Paphos",
+    "sources": [
+      {
+        "url": "https://sumator.cz/race/cyprus-granfondo-3-4-2026",
+        "kind": "aggregator",
+        "external_id": "sumator-cyprus granfondo-2026-04-05"
+      },
+      {
+        "url": "https://sumator.cz/race/cyprus-granfondo-3-4-2026",
+        "kind": "series",
+        "external_id": "sumator-cyprus granfondo-2026-04-05"
+      },
+      {
+        "url": "https://sumator.cz/race/cyprus-granfondo-3-4-2026",
+        "kind": "aggregator",
+        "external_id": "sumator-cyprus granfondo-2026-04-05"
+      }
+    ]
+  },
+  {
+    "id": "9c4371e6-596b-4725-bc6f-1bff34b5bd47",
+    "event_id": null,
+    "reason": "identity_review_required: conflicting fingerprint owned by 4d055cf0-496f-4bb7-8fff-b70a7635a2f3",
+    "candidate_name": "Cyprus Granfondo",
+    "candidate_date": "2026-04-05",
+    "candidate_end": null,
+    "conflict_id": "4d055cf0-496f-4bb7-8fff-b70a7635a2f3",
+    "name": "Cyprus Granfondo",
+    "start_date": "2026-04-05",
+    "end_date": "2026-04-05",
+    "visibility": "public",
+    "disciplines": [
+      "road",
+      "gran_fondo"
+    ],
+    "country_code": "CY",
+    "municipality": "Paphos",
+    "sources": [
+      {
+        "url": "https://sumator.cz/race/cyprus-granfondo-3-4-2026",
+        "kind": "aggregator",
+        "external_id": "sumator-cyprus granfondo-2026-04-05"
+      },
+      {
+        "url": "https://sumator.cz/race/cyprus-granfondo-3-4-2026",
+        "kind": "series",
+        "external_id": "sumator-cyprus granfondo-2026-04-05"
+      },
+      {
+        "url": "https://sumator.cz/race/cyprus-granfondo-3-4-2026",
+        "kind": "aggregator",
+        "external_id": "sumator-cyprus granfondo-2026-04-05"
+      }
+    ]
+  },
+  {
+    "id": "b0e3950b-0422-474a-b3c6-f83c35a24aad",
+    "event_id": null,
+    "reason": "identity_review_required: conflicting fingerprint owned by 4e91d883-7a64-4812-a69e-0a9f06f6c707",
+    "candidate_name": "SLOVAK E-BIKE CUP 2026 Zlatnícka dolina",
+    "candidate_date": "2026-05-17",
+    "candidate_end": null,
+    "conflict_id": "4e91d883-7a64-4812-a69e-0a9f06f6c707",
+    "name": "SLOVAK E-BIKE CUP 2026 Zlatnícka dolina",
+    "start_date": "2026-05-17",
+    "end_date": "2026-05-17",
+    "visibility": "public",
+    "disciplines": [
+      "other"
+    ],
+    "country_code": "SK",
+    "municipality": "Zlatnícka dolina (BIKE ARÉNA ZLATNÍCKA DOLINA), Slovensko",
+    "sources": [
+      {
+        "url": "https://mtbs.cz/clanek/slovak-e-bike-cup-2026-zlatnicka-dolina-74928/kategorie/akce",
+        "kind": "aggregator",
+        "external_id": "mtbs-slovak e bike zlatnicka dolina-2026-05-17"
+      }
+    ]
+  },
+  {
+    "id": "a245ca84-5819-4de6-a48a-383e64695555",
+    "event_id": null,
+    "reason": "identity_review_required: conflicting fingerprint owned by 4f3e8781-58b2-42aa-bac6-47cdc9ff15c6",
+    "candidate_name": "Šumavský pohár MTB Waldkirchen",
+    "candidate_date": "2026-04-26",
+    "candidate_end": null,
+    "conflict_id": "4f3e8781-58b2-42aa-bac6-47cdc9ff15c6",
+    "name": "Šumavský pohár MTB — Waldkirchen",
+    "start_date": "2026-04-26",
+    "end_date": "2026-04-26",
+    "visibility": "public",
+    "disciplines": [
+      "xco"
+    ],
+    "country_code": "DE",
+    "municipality": "Waldkirchen",
+    "sources": [
+      {
+        "url": "https://sumator.cz/race/sumavsky-pohar-mtb-waldkirchen-26-4-2026",
+        "kind": "series",
+        "external_id": "sumator-sumavsky pohar waldkirchen-2026-04-26"
+      },
+      {
+        "url": "https://jcp-mtb.cz/",
+        "kind": "series",
+        "external_id": "sumavsky-2026-04-26-waldkirchen"
+      },
+      {
+        "url": "https://sumator.cz/race/sumavsky-pohar-mtb-waldkirchen-26-4-2026",
+        "kind": "aggregator",
+        "external_id": "sumator-sumavsky pohar waldkirchen-2026-04-26"
+      },
+      {
+        "url": "https://sumator.cz/race/sumavsky-pohar-mtb-waldkirchen-26-4-2026",
+        "kind": "aggregator",
+        "external_id": "sumator-sumavsky pohar waldkirchen-2026-04-26"
+      },
+      {
+        "url": "https://portal.czechcyclingfederation.com/RaceDetail/Race/1619",
+        "kind": "national_federation",
+        "external_id": "csc-1619"
+      }
+    ]
+  },
+  {
+    "id": "60acfb6a-2b7c-4d63-ae9d-964242b19a0b",
+    "event_id": null,
+    "reason": "identity_review_required: conflicting fingerprint owned by 4f3e8781-58b2-42aa-bac6-47cdc9ff15c6",
+    "candidate_name": "Šumavský pohár MTB Waldkirchen",
+    "candidate_date": "2026-04-26",
+    "candidate_end": null,
+    "conflict_id": "4f3e8781-58b2-42aa-bac6-47cdc9ff15c6",
+    "name": "Šumavský pohár MTB — Waldkirchen",
+    "start_date": "2026-04-26",
+    "end_date": "2026-04-26",
+    "visibility": "public",
+    "disciplines": [
+      "xco"
+    ],
+    "country_code": "DE",
+    "municipality": "Waldkirchen",
+    "sources": [
+      {
+        "url": "https://sumator.cz/race/sumavsky-pohar-mtb-waldkirchen-26-4-2026",
+        "kind": "series",
+        "external_id": "sumator-sumavsky pohar waldkirchen-2026-04-26"
+      },
+      {
+        "url": "https://jcp-mtb.cz/",
+        "kind": "series",
+        "external_id": "sumavsky-2026-04-26-waldkirchen"
+      },
+      {
+        "url": "https://sumator.cz/race/sumavsky-pohar-mtb-waldkirchen-26-4-2026",
+        "kind": "aggregator",
+        "external_id": "sumator-sumavsky pohar waldkirchen-2026-04-26"
+      },
+      {
+        "url": "https://sumator.cz/race/sumavsky-pohar-mtb-waldkirchen-26-4-2026",
+        "kind": "aggregator",
+        "external_id": "sumator-sumavsky pohar waldkirchen-2026-04-26"
+      },
+      {
+        "url": "https://portal.czechcyclingfederation.com/RaceDetail/Race/1619",
+        "kind": "national_federation",
+        "external_id": "csc-1619"
+      }
+    ]
+  },
+  {
+    "id": "cfa082c1-ba5e-4153-863b-059d7ea4c80a",
+    "event_id": null,
+    "reason": "identity_review_required: conflicting fingerprint owned by 4f3e8781-58b2-42aa-bac6-47cdc9ff15c6",
+    "candidate_name": "Šumavský pohár MTB Waldkirchen",
+    "candidate_date": "2026-04-26",
+    "candidate_end": null,
+    "conflict_id": "4f3e8781-58b2-42aa-bac6-47cdc9ff15c6",
+    "name": "Šumavský pohár MTB — Waldkirchen",
+    "start_date": "2026-04-26",
+    "end_date": "2026-04-26",
+    "visibility": "public",
+    "disciplines": [
+      "xco"
+    ],
+    "country_code": "DE",
+    "municipality": "Waldkirchen",
+    "sources": [
+      {
+        "url": "https://sumator.cz/race/sumavsky-pohar-mtb-waldkirchen-26-4-2026",
+        "kind": "series",
+        "external_id": "sumator-sumavsky pohar waldkirchen-2026-04-26"
+      },
+      {
+        "url": "https://jcp-mtb.cz/",
+        "kind": "series",
+        "external_id": "sumavsky-2026-04-26-waldkirchen"
+      },
+      {
+        "url": "https://sumator.cz/race/sumavsky-pohar-mtb-waldkirchen-26-4-2026",
+        "kind": "aggregator",
+        "external_id": "sumator-sumavsky pohar waldkirchen-2026-04-26"
+      },
+      {
+        "url": "https://sumator.cz/race/sumavsky-pohar-mtb-waldkirchen-26-4-2026",
+        "kind": "aggregator",
+        "external_id": "sumator-sumavsky pohar waldkirchen-2026-04-26"
+      },
+      {
+        "url": "https://portal.czechcyclingfederation.com/RaceDetail/Race/1619",
+        "kind": "national_federation",
+        "external_id": "csc-1619"
+      }
+    ]
+  },
+  {
+    "id": "bebd8dcd-98b3-4d66-854b-8081173a4138",
+    "event_id": null,
+    "reason": "identity_review_required: conflicting fingerprint owned by 59ce3e81-3e01-4396-a330-13a6abb53f0e",
+    "candidate_name": "UCI MTB World CUP",
+    "candidate_date": "2026-07-04",
+    "candidate_end": null,
+    "conflict_id": "59ce3e81-3e01-4396-a330-13a6abb53f0e",
+    "name": "UCI MTB World CUP",
+    "start_date": "2026-07-04",
+    "end_date": "2026-07-04",
+    "visibility": "hidden",
+    "disciplines": [
+      "xcc",
+      "xco"
+    ],
+    "country_code": "IT",
+    "municipality": "La Thuile",
+    "sources": [
+      {
+        "url": "https://hynekmusil.cz",
+        "kind": "aggregator",
+        "external_id": "hynek-5 xcc dhi edr uci world-2026-07-04"
+      }
+    ]
+  },
+  {
+    "id": "d57d06a5-d350-4855-8119-c9faeb62fabb",
+    "event_id": null,
+    "reason": "identity_review_required: conflicting fingerprint owned by 5d5a317b-eeb2-4c3b-a02a-de4fe1b9593e",
+    "candidate_name": "Škoda MTB Maratón - Rajecké Teplice",
+    "candidate_date": "2026-05-10",
+    "candidate_end": null,
+    "conflict_id": "5d5a317b-eeb2-4c3b-a02a-de4fe1b9593e",
+    "name": "Škoda MTB Maratón - Rajecké Teplice",
+    "start_date": "2026-05-10",
+    "end_date": "2026-05-10",
+    "visibility": "public",
+    "disciplines": [
+      "xcm"
+    ],
+    "country_code": "SK",
+    "municipality": "Rajecké Teplice",
+    "sources": [
+      {
+        "url": "https://sumator.cz/race/skoda-mtb-maraton-rajecke-teplice-10-5-2026",
+        "kind": "aggregator",
+        "external_id": "sumator-skoda maraton rajecke teplice-2026-05-10"
+      },
+      {
+        "url": "https://sumator.cz/race/skoda-mtb-maraton-rajecke-teplice-10-5-2026",
+        "kind": "aggregator",
+        "external_id": "sumator-skoda maraton rajecke teplice-2026-05-10"
+      }
+    ]
+  },
+  {
+    "id": "5a946539-12e0-46ae-9411-34eec33afeb3",
+    "event_id": null,
+    "reason": "identity_review_required: conflicting fingerprint owned by 5d5a317b-eeb2-4c3b-a02a-de4fe1b9593e",
+    "candidate_name": "Škoda MTB Maratón - Rajecké Teplice",
+    "candidate_date": "2026-05-10",
+    "candidate_end": null,
+    "conflict_id": "5d5a317b-eeb2-4c3b-a02a-de4fe1b9593e",
+    "name": "Škoda MTB Maratón - Rajecké Teplice",
+    "start_date": "2026-05-10",
+    "end_date": "2026-05-10",
+    "visibility": "public",
+    "disciplines": [
+      "xcm"
+    ],
+    "country_code": "SK",
+    "municipality": "Rajecké Teplice",
+    "sources": [
+      {
+        "url": "https://sumator.cz/race/skoda-mtb-maraton-rajecke-teplice-10-5-2026",
+        "kind": "aggregator",
+        "external_id": "sumator-skoda maraton rajecke teplice-2026-05-10"
+      },
+      {
+        "url": "https://sumator.cz/race/skoda-mtb-maraton-rajecke-teplice-10-5-2026",
+        "kind": "aggregator",
+        "external_id": "sumator-skoda maraton rajecke teplice-2026-05-10"
+      }
+    ]
+  },
+  {
+    "id": "a8c6f7da-ac34-4c50-b8f2-11db1fa4da68",
+    "event_id": null,
+    "reason": "identity_review_required: conflicting fingerprint owned by 68c1b696-66b1-455d-abc0-6e9a256d31ac",
+    "candidate_name": "1000 Miles Adventure",
+    "candidate_date": "2026-07-05",
+    "candidate_end": null,
+    "conflict_id": "68c1b696-66b1-455d-abc0-6e9a256d31ac",
+    "name": "1000 Miles Adventure",
+    "start_date": "2026-07-05",
+    "end_date": "2026-07-05",
+    "visibility": "public",
+    "disciplines": [
+      "other"
+    ],
+    "country_code": "SK",
+    "municipality": "Česká republika",
+    "sources": [
+      {
+        "url": "https://sumator.cz/race/1000-miles-adventure-5-7-2026",
+        "kind": "aggregator",
+        "external_id": "sumator-1000 miles adventure-2026-07-05"
+      }
+    ]
+  },
+  {
+    "id": "c4e8c89f-8b4e-4de1-a6bc-bc19c96080e8",
+    "event_id": null,
+    "reason": "identity_review_required: conflicting fingerprint owned by 68c1b696-66b1-455d-abc0-6e9a256d31ac",
+    "candidate_name": "1000 Miles Adventure",
+    "candidate_date": "2026-07-05",
+    "candidate_end": null,
+    "conflict_id": "68c1b696-66b1-455d-abc0-6e9a256d31ac",
+    "name": "1000 Miles Adventure",
+    "start_date": "2026-07-05",
+    "end_date": "2026-07-05",
+    "visibility": "public",
+    "disciplines": [
+      "other"
+    ],
+    "country_code": "SK",
+    "municipality": "Česká republika",
+    "sources": [
+      {
+        "url": "https://sumator.cz/race/1000-miles-adventure-5-7-2026",
+        "kind": "aggregator",
+        "external_id": "sumator-1000 miles adventure-2026-07-05"
+      }
+    ]
+  },
+  {
+    "id": "206f42f6-97a3-460c-8978-3e0a5939cbb1",
+    "event_id": null,
+    "reason": "identity_review_required: conflicting fingerprint owned by 71d5b977-658f-4a1b-bedc-770356737272",
+    "candidate_name": "Detská VRL — Šarišské Bohdanovce",
+    "candidate_date": "2026-07-12",
+    "candidate_end": null,
+    "conflict_id": "71d5b977-658f-4a1b-bedc-770356737272",
+    "name": "Detská VRL — Šarišské Bohdanovce",
+    "start_date": "2026-07-12",
+    "end_date": "2026-07-12",
+    "visibility": "public",
+    "disciplines": [
+      "gravel"
+    ],
+    "country_code": "SK",
+    "municipality": "Šarišské Bohdanovce",
+    "sources": [
+      {
+        "url": "https://my.raceresult.com/408877/",
+        "kind": "aggregator",
+        "external_id": "rr-408877"
+      },
+      {
+        "url": "https://www.soof.sk/podujatia-a-akcie",
+        "kind": "aggregator",
+        "external_id": "nyna-gravel-2026-07-12-sarisske bohdanovce"
+      }
+    ]
+  },
+  {
+    "id": "443cdf47-cbb2-455f-8aa9-bd95f5672cc4",
+    "event_id": null,
+    "reason": "identity_review_required: conflicting fingerprint owned by 7a037248-b7b4-44eb-ab05-2a4d84661170",
+    "candidate_name": "Majlen Sunshine Race",
+    "candidate_date": "2026-08-09",
+    "candidate_end": null,
+    "conflict_id": "7a037248-b7b4-44eb-ab05-2a4d84661170",
+    "name": "Majlen Sunshine Race",
+    "start_date": "2026-08-09",
+    "end_date": "2026-08-09",
+    "visibility": "public",
+    "disciplines": [
+      "xco"
+    ],
+    "country_code": "DE",
+    "municipality": "Winterberg",
+    "sources": [
+      {
+        "url": "https://hynekmusil.cz",
+        "kind": "other",
+        "external_id": "hynek-5 bundesliga majlen sunshine race-2026-08-09"
+      },
+      {
+        "url": "https://www.mtb-bundesliga.net/rennen/",
+        "kind": "series",
+        "external_id": "mtb-bl-2026-08-09-winterberg"
+      },
+      {
+        "url": "https://hynekmusil.cz/?serialosss=mtbbl",
+        "kind": "aggregator",
+        "external_id": "hynek-bundesliga majlen sunshine race-2026-08-09"
+      }
+    ]
+  },
+  {
+    "id": "aca538b3-7c42-4aa5-b944-f91f417aeb98",
+    "event_id": null,
+    "reason": "identity_review_required: conflicting fingerprint owned by 7a047bb6-567d-4c10-ba4b-63b467b96cb7",
+    "candidate_name": "UCI Marathon World CUP",
+    "candidate_date": "2026-07-26",
+    "candidate_end": null,
+    "conflict_id": "7a047bb6-567d-4c10-ba4b-63b467b96cb7",
+    "name": "UCI Marathon World CUP",
+    "start_date": "2026-07-26",
+    "end_date": "2026-07-26",
+    "visibility": "public",
+    "disciplines": [
+      "xcm"
+    ],
+    "country_code": "DE",
+    "municipality": "Kirchzarten, Germany",
+    "sources": [
+      {
+        "url": "https://hynekmusil.cz",
+        "kind": "aggregator",
+        "external_id": "hynek-4 uci marathon world-2026-07-26"
+      }
+    ]
+  },
+  {
+    "id": "966552e1-2cc9-4066-ac66-9790a6cf23aa",
+    "event_id": null,
+    "reason": "identity_review_required: conflicting fingerprint owned by 7eb2025e-bd6c-4fc8-9175-20c85bf6d81b",
+    "candidate_name": "The Grand Escape - Tuscany",
+    "candidate_date": "2026-10-10",
+    "candidate_end": "2026-10-13",
+    "conflict_id": "7eb2025e-bd6c-4fc8-9175-20c85bf6d81b",
+    "name": "The Grand Escape - Tuscany",
+    "start_date": "2026-10-10",
+    "end_date": "2026-10-13",
+    "visibility": "public",
+    "disciplines": [
+      "road"
+    ],
+    "country_code": "IT",
+    "municipality": "Campiglia Marittima",
+    "sources": [
+      {
+        "url": "https://eventivsport.com/events/the-grand-escape-tuscany",
+        "kind": "aggregator",
+        "external_id": "eventiv-d5fb6c61-3489-48f3-8384-da9c6256ab45-2026-10-10"
+      },
+      {
+        "url": "https://eventivsport.com/events/the-grand-escape-tuscany-1",
+        "kind": "aggregator",
+        "external_id": "eventiv-92b6ab26-f171-48e5-9fd1-73ec2091e7c7-2026-10-10"
+      },
+      {
+        "url": "https://kalendarzrowerowy.pl/wydarzenie/the-grand-escape-tuscany-2026/",
+        "kind": "aggregator",
+        "external_id": "kalrow-the-grand-escape-tuscany-2026"
+      },
+      {
+        "url": "https://eventivsport.com/events/the-grand-escape-tuscany-2",
+        "kind": "aggregator",
+        "external_id": "eventiv-d73a5e48-68b0-4948-bef1-cedd978a46cc-2026-10-10"
+      }
+    ]
+  },
+  {
+    "id": "5709575c-163a-497d-ab21-ba6bc1deffec",
+    "event_id": null,
+    "reason": "identity_review_required: conflicting fingerprint owned by 9024b845-9e54-48c1-b0ef-1e5c0e89968c",
+    "candidate_name": "UCI MTB World CUP",
+    "candidate_date": "2026-07-06",
+    "candidate_end": null,
+    "conflict_id": "9024b845-9e54-48c1-b0ef-1e5c0e89968c",
+    "name": "UCI MTB World CUP",
+    "start_date": "2026-07-06",
+    "end_date": "2026-07-06",
+    "visibility": "hidden",
+    "disciplines": [
+      "xcc",
+      "xco"
+    ],
+    "country_code": "IT",
+    "municipality": "La Thuile",
+    "sources": [
+      {
+        "url": "https://hynekmusil.cz",
+        "kind": "aggregator",
+        "external_id": "hynek-5 xcc dhi edr uci world-2026-07-06"
+      }
+    ]
+  },
+  {
+    "id": "47017476-6658-40be-824b-93799654821b",
+    "event_id": null,
+    "reason": "identity_review_required: conflicting fingerprint owned by 9353f397-51cd-4734-b983-ab955b2f521c",
+    "candidate_name": "UCI MTB World CUP",
+    "candidate_date": "2026-07-19",
+    "candidate_end": null,
+    "conflict_id": "9353f397-51cd-4734-b983-ab955b2f521c",
+    "name": "UCI MTB World CUP",
+    "start_date": "2026-07-19",
+    "end_date": "2026-07-19",
+    "visibility": "hidden",
+    "disciplines": [
+      "xco"
+    ],
+    "country_code": "CH",
+    "municipality": "Bellwald",
+    "sources": [
+      {
+        "url": "https://hynekmusil.cz",
+        "kind": "aggregator",
+        "external_id": "hynek-edr uci world-2026-07-19"
+      }
+    ]
+  },
+  {
+    "id": "14c73414-1fa1-4b73-b360-da165199efce",
+    "event_id": null,
+    "reason": "identity_review_required: conflicting fingerprint owned by 968f2c6f-83db-4fa4-a095-60152a4c29df",
+    "candidate_name": "UCI MTB World CUP",
+    "candidate_date": "2026-07-05",
+    "candidate_end": null,
+    "conflict_id": "968f2c6f-83db-4fa4-a095-60152a4c29df",
+    "name": "UCI MTB World CUP",
+    "start_date": "2026-07-05",
+    "end_date": "2026-07-05",
+    "visibility": "hidden",
+    "disciplines": [
+      "xcc",
+      "xco"
+    ],
+    "country_code": "IT",
+    "municipality": "La Thuile",
+    "sources": [
+      {
+        "url": "https://hynekmusil.cz",
+        "kind": "aggregator",
+        "external_id": "hynek-5 xcc dhi edr uci world-2026-07-05"
+      }
+    ]
+  },
+  {
+    "id": "8b7a1ac5-322b-42ce-9f41-1e636926b044",
+    "event_id": null,
+    "reason": "identity_review_required: conflicting fingerprint owned by 99f9287b-2d62-4b36-ab6b-d44a91a679df",
+    "candidate_name": "Treibjagd im Dunkelwald - Etapový závod MTB v Krušných horách",
+    "candidate_date": "2026-07-23",
+    "candidate_end": "2026-07-26",
+    "conflict_id": "99f9287b-2d62-4b36-ab6b-d44a91a679df",
+    "name": "Treibjagd im Dunkelwald - Etapový závod MTB v Krušných horách",
+    "start_date": "2026-07-23",
+    "end_date": "2026-07-26",
+    "visibility": "public",
+    "disciplines": [
+      "xcm"
+    ],
+    "country_code": "DE",
+    "municipality": "Breitenbrunn, TrailCenter Rabenberg, Německo",
+    "sources": [
+      {
+        "url": "https://mtbs.cz/clanek/treibjagd-im-dunkelwald-etapovy-zavod-mtb-v-krusnych-horach-74836/kategorie/xcm",
+        "kind": "aggregator",
+        "external_id": "mtbs-treibjagd im dunkelwald etapovy zavod v krusnych horach-2026-07-23"
+      }
+    ]
+  },
+  {
+    "id": "203469b9-f900-400c-b85c-2d2092fe7428",
+    "event_id": null,
+    "reason": "identity_review_required: conflicting fingerprint owned by 9b2c8536-2b75-44a8-afb6-08d89b17f62b",
+    "candidate_name": "Granfondo Novi Sad",
+    "candidate_date": "2026-06-07",
+    "candidate_end": null,
+    "conflict_id": "9b2c8536-2b75-44a8-afb6-08d89b17f62b",
+    "name": "Granfondo Novi Sad",
+    "start_date": "2026-06-07",
+    "end_date": "2026-06-07",
+    "visibility": "hidden",
+    "disciplines": [
+      "road",
+      "gran_fondo"
+    ],
+    "country_code": "RS",
+    "municipality": "Novi Sad",
+    "sources": [
+      {
+        "url": "https://sumator.cz/race/granfondo-novi-sad-7-6-2026",
+        "kind": "aggregator",
+        "external_id": "sumator-granfondo novi sad-2026-06-07"
+      },
+      {
+        "url": "https://sumator.cz/race/granfondo-novi-sad-7-6-2026",
+        "kind": "series",
+        "external_id": "sumator-granfondo novi sad-2026-06-07"
+      },
+      {
+        "url": "https://sumator.cz/race/granfondo-novi-sad-7-6-2026",
+        "kind": "aggregator",
+        "external_id": "sumator-granfondo novi sad-2026-06-07"
+      }
+    ]
+  },
+  {
+    "id": "3c81864a-9a69-42e2-a095-5df073cd0c01",
+    "event_id": null,
+    "reason": "identity_review_required: conflicting fingerprint owned by 9b92f60a-93c3-4fe7-b24e-e3f8296c3ace",
+    "candidate_name": "Enduro Race Czarna Gora",
+    "candidate_date": "2026-06-28",
+    "candidate_end": null,
+    "conflict_id": "9b92f60a-93c3-4fe7-b24e-e3f8296c3ace",
+    "name": "Enduro Race Czarna Gora",
+    "start_date": "2026-06-28",
+    "end_date": "2026-06-28",
+    "visibility": "public",
+    "disciplines": [
+      "enduro"
+    ],
+    "country_code": "PL",
+    "municipality": "Czarna Gora",
+    "sources": [
+      {
+        "url": "https://www.enduroserie.cz/zavody/enduro-race-tba/",
+        "kind": "series",
+        "external_id": "enduroserie-enduro-race-tba-2026-06-28"
+      },
+      {
+        "url": "https://sumator.cz/race/enduro-race-czarna-gora-26-6-2026",
+        "kind": "series",
+        "external_id": "sumator-enduro race czarna gora-2026-06-28"
+      },
+      {
+        "url": "https://sumator.cz/race/enduro-race-czarna-gora-26-6-2026",
+        "kind": "aggregator",
+        "external_id": "sumator-enduro race czarna gora-2026-06-28"
+      },
+      {
+        "url": "https://www.enduroserie.cz/zavody/enduro-race-tba/",
+        "kind": "series",
+        "external_id": "enduroserie-enduro-race-tba-2026-06-28"
+      },
+      {
+        "url": "https://sumator.cz/race/enduro-race-czarna-gora-26-6-2026",
+        "kind": "aggregator",
+        "external_id": "sumator-enduro race czarna gora-2026-06-28"
+      },
+      {
+        "url": "https://www.enduroserie.cz/zavody/enduro-race-tba/",
+        "kind": "series",
+        "external_id": "enduroserie-enduro-race-tba-2026-06-28"
+      }
+    ]
+  },
+  {
+    "id": "b1896246-8b0e-476e-934c-7a36b5f2d323",
+    "event_id": null,
+    "reason": "identity_review_required: conflicting fingerprint owned by 9b92f60a-93c3-4fe7-b24e-e3f8296c3ace",
+    "candidate_name": "Enduro Race Czarna Gora",
+    "candidate_date": "2026-06-28",
+    "candidate_end": null,
+    "conflict_id": "9b92f60a-93c3-4fe7-b24e-e3f8296c3ace",
+    "name": "Enduro Race Czarna Gora",
+    "start_date": "2026-06-28",
+    "end_date": "2026-06-28",
+    "visibility": "public",
+    "disciplines": [
+      "enduro"
+    ],
+    "country_code": "PL",
+    "municipality": "Czarna Gora",
+    "sources": [
+      {
+        "url": "https://www.enduroserie.cz/zavody/enduro-race-tba/",
+        "kind": "series",
+        "external_id": "enduroserie-enduro-race-tba-2026-06-28"
+      },
+      {
+        "url": "https://sumator.cz/race/enduro-race-czarna-gora-26-6-2026",
+        "kind": "series",
+        "external_id": "sumator-enduro race czarna gora-2026-06-28"
+      },
+      {
+        "url": "https://sumator.cz/race/enduro-race-czarna-gora-26-6-2026",
+        "kind": "aggregator",
+        "external_id": "sumator-enduro race czarna gora-2026-06-28"
+      },
+      {
+        "url": "https://www.enduroserie.cz/zavody/enduro-race-tba/",
+        "kind": "series",
+        "external_id": "enduroserie-enduro-race-tba-2026-06-28"
+      },
+      {
+        "url": "https://sumator.cz/race/enduro-race-czarna-gora-26-6-2026",
+        "kind": "aggregator",
+        "external_id": "sumator-enduro race czarna gora-2026-06-28"
+      },
+      {
+        "url": "https://www.enduroserie.cz/zavody/enduro-race-tba/",
+        "kind": "series",
+        "external_id": "enduroserie-enduro-race-tba-2026-06-28"
+      }
+    ]
+  },
+  {
+    "id": "d830b9db-ab7a-4f8d-8177-151f69cdad32",
+    "event_id": null,
+    "reason": "identity_review_required: conflicting fingerprint owned by 9b92f60a-93c3-4fe7-b24e-e3f8296c3ace",
+    "candidate_name": "Enduro Race Czarna Gora",
+    "candidate_date": "2026-06-28",
+    "candidate_end": null,
+    "conflict_id": "9b92f60a-93c3-4fe7-b24e-e3f8296c3ace",
+    "name": "Enduro Race Czarna Gora",
+    "start_date": "2026-06-28",
+    "end_date": "2026-06-28",
+    "visibility": "public",
+    "disciplines": [
+      "enduro"
+    ],
+    "country_code": "PL",
+    "municipality": "Czarna Gora",
+    "sources": [
+      {
+        "url": "https://www.enduroserie.cz/zavody/enduro-race-tba/",
+        "kind": "series",
+        "external_id": "enduroserie-enduro-race-tba-2026-06-28"
+      },
+      {
+        "url": "https://sumator.cz/race/enduro-race-czarna-gora-26-6-2026",
+        "kind": "series",
+        "external_id": "sumator-enduro race czarna gora-2026-06-28"
+      },
+      {
+        "url": "https://sumator.cz/race/enduro-race-czarna-gora-26-6-2026",
+        "kind": "aggregator",
+        "external_id": "sumator-enduro race czarna gora-2026-06-28"
+      },
+      {
+        "url": "https://www.enduroserie.cz/zavody/enduro-race-tba/",
+        "kind": "series",
+        "external_id": "enduroserie-enduro-race-tba-2026-06-28"
+      },
+      {
+        "url": "https://sumator.cz/race/enduro-race-czarna-gora-26-6-2026",
+        "kind": "aggregator",
+        "external_id": "sumator-enduro race czarna gora-2026-06-28"
+      },
+      {
+        "url": "https://www.enduroserie.cz/zavody/enduro-race-tba/",
+        "kind": "series",
+        "external_id": "enduroserie-enduro-race-tba-2026-06-28"
+      }
+    ]
+  },
+  {
+    "id": "b1d4f13b-5629-498c-b214-f3bbac6aa515",
+    "event_id": null,
+    "reason": "identity_review_required: conflicting fingerprint owned by a2135ad9-0e8c-4c9b-98a4-3e798e702bd1",
+    "candidate_name": "Tartu Rattaralli",
+    "candidate_date": "2026-06-07",
+    "candidate_end": null,
+    "conflict_id": "a2135ad9-0e8c-4c9b-98a4-3e798e702bd1",
+    "name": "Tartu Rattaralli",
+    "start_date": "2026-06-07",
+    "end_date": "2026-06-07",
+    "visibility": "public",
+    "disciplines": [
+      "road"
+    ],
+    "country_code": "EE",
+    "municipality": "Tartu",
+    "sources": [
+      {
+        "url": "https://sumator.cz/race/tartu-rattaralli-7-6-2026",
+        "kind": "aggregator",
+        "external_id": "sumator-tartu rattaralli-2026-06-07"
+      },
+      {
+        "url": "https://sumator.cz/race/tartu-rattaralli-7-6-2026",
+        "kind": "series",
+        "external_id": "sumator-tartu rattaralli-2026-06-07"
+      },
+      {
+        "url": "https://sumator.cz/race/tartu-rattaralli-7-6-2026",
+        "kind": "aggregator",
+        "external_id": "sumator-tartu rattaralli-2026-06-07"
+      }
+    ]
+  },
+  {
+    "id": "d8552863-3415-4b87-9c2b-222fd7f3abb5",
+    "event_id": null,
+    "reason": "identity_review_required: conflicting fingerprint owned by b2b46c9d-5865-4c8d-bce2-ba470dad9add",
+    "candidate_name": "UCI MTB World CUP",
+    "candidate_date": "2026-06-21",
+    "candidate_end": null,
+    "conflict_id": "b2b46c9d-5865-4c8d-bce2-ba470dad9add",
+    "name": "UCI MTB World CUP",
+    "start_date": "2026-06-21",
+    "end_date": "2026-06-21",
+    "visibility": "hidden",
+    "disciplines": [
+      "xcc",
+      "xco"
+    ],
+    "country_code": "CH",
+    "municipality": "Lenzerheide",
+    "sources": [
+      {
+        "url": "https://hynekmusil.cz",
+        "kind": "aggregator",
+        "external_id": "hynek-4 xcc dhi uci world-2026-06-21"
+      }
+    ]
+  },
+  {
+    "id": "850f9d09-cf25-47e2-a535-7427a0d7dedc",
+    "event_id": null,
+    "reason": "identity_review_required: conflicting fingerprint owned by b7931561-15aa-47cd-9f00-2694622fbc22",
+    "candidate_name": "UCI MTB World CUP",
+    "candidate_date": "2026-07-17",
+    "candidate_end": null,
+    "conflict_id": "b7931561-15aa-47cd-9f00-2694622fbc22",
+    "name": "UCI MTB World CUP",
+    "start_date": "2026-07-17",
+    "end_date": "2026-07-18",
+    "visibility": "hidden",
+    "disciplines": [
+      "xco"
+    ],
+    "country_code": "CH",
+    "municipality": "Bellwald",
+    "sources": [
+      {
+        "url": "https://hynekmusil.cz",
+        "kind": "aggregator",
+        "external_id": "hynek-edr uci world-2026-07-17"
+      }
+    ]
+  },
+  {
+    "id": "8fb6a5a5-1448-4823-be54-001d1c704cef",
+    "event_id": null,
+    "reason": "identity_review_required: conflicting fingerprint owned by b8bd9ef3-e31a-4d7e-acdd-65a5f3f9828b",
+    "candidate_name": "Wyniki",
+    "candidate_date": "2026-09-27",
+    "candidate_end": null,
+    "conflict_id": "b8bd9ef3-e31a-4d7e-acdd-65a5f3f9828b",
+    "name": "Wyniki",
+    "start_date": "2026-09-27",
+    "end_date": "2026-09-27",
+    "visibility": "hidden",
+    "disciplines": [],
+    "country_code": "PL",
+    "municipality": "Wyniki",
+    "sources": [
+      {
+        "url": "http://www.mazurymtb.pl/zawody/wyniki",
+        "kind": "series",
+        "external_id": "generic-wyniki-2026-09-27"
+      },
+      {
+        "url": "https://www.mazurymtb.pl/zawody/wyniki",
+        "kind": "series",
+        "external_id": "generic-wyniki-2026-09-27"
+      }
+    ]
+  },
+  {
+    "id": "f1359a13-8ba3-428f-b8a1-bf4e17440d60",
+    "event_id": null,
+    "reason": "identity_review_required: conflicting fingerprint owned by bd1d615c-c0c7-474a-8082-1127223825e7",
+    "candidate_name": "PEKLO SEVERU 2026 #2 - 33.Sebnitzer MTB-Cup",
+    "candidate_date": "2026-05-02",
+    "candidate_end": null,
+    "conflict_id": "bd1d615c-c0c7-474a-8082-1127223825e7",
+    "name": "PEKLO SEVERU 2026 #2 - 33.Sebnitzer MTB-Cup",
+    "start_date": "2026-05-02",
+    "end_date": "2026-05-02",
+    "visibility": "public",
+    "disciplines": [
+      "xcm"
+    ],
+    "country_code": "DE",
+    "municipality": "Sebnitz (Německo)",
+    "sources": [
+      {
+        "url": "https://www.pekloseveru.cz/cz/registrace/",
+        "kind": "other",
+        "external_id": "peklo-severu-2026-05-02-33 sebnitzer"
+      },
+      {
+        "url": "https://mtbs.cz/clanek/peklo-severu-2026-2-33-sebnitzer-mtb-cup-74738/kategorie/xcm",
+        "kind": "aggregator",
+        "external_id": "mtbs-peklo severu 2 33 sebnitzer-2026-05-02"
+      }
+    ]
+  },
+  {
+    "id": "28dd0051-af36-4d47-9b76-d4e7d82e97be",
+    "event_id": null,
+    "reason": "identity_review_required: conflicting fingerprint owned by cf06dbbb-fa41-4b3d-a802-d284edec2530",
+    "candidate_name": "NyNa Gravel Cup — Gajary",
+    "candidate_date": "2026-09-19",
+    "candidate_end": null,
+    "conflict_id": "cf06dbbb-fa41-4b3d-a802-d284edec2530",
+    "name": "NyNa Gravel Cup — Sudoměřice",
+    "start_date": "2026-05-17",
+    "end_date": "2026-05-17",
+    "visibility": "public",
+    "disciplines": [
+      "gravel"
+    ],
+    "country_code": "CZ",
+    "municipality": "Sudoměřice",
+    "sources": [
+      {
+        "url": "https://www.soof.sk/podujatia-a-akcie",
+        "kind": "aggregator",
+        "external_id": "nyna-gravel-2026-05-17-sudomerice"
+      },
+      {
+        "url": "https://www.soof.sk/podujatia-a-akcie",
+        "kind": "aggregator",
+        "external_id": "nyna-gravel-2026-09-19-gajary"
+      },
+      {
+        "url": "https://www.soof.sk/podujatia-a-akcie",
+        "kind": "aggregator",
+        "external_id": "detska-vrl-2026-07-12-sarisske bohdanovce"
+      }
+    ]
+  },
+  {
+    "id": "dc50ea42-a986-4154-8693-ab3b8f0d809b",
+    "event_id": null,
+    "reason": "identity_review_required: conflicting fingerprint owned by d3a64374-8a91-472d-b91e-a39da78aec87",
+    "candidate_name": "9. závod SP (ME,WE) — Zonhoven (Belgie)",
+    "candidate_date": "2027-01-03",
+    "candidate_end": null,
+    "conflict_id": "d3a64374-8a91-472d-b91e-a39da78aec87",
+    "name": "9. závod SP (ME,WE) — Zonhoven (Belgie)",
+    "start_date": "2027-01-03",
+    "end_date": "2027-01-03",
+    "visibility": "public",
+    "disciplines": [
+      "cx"
+    ],
+    "country_code": "BE",
+    "municipality": "Zonhoven, Belgium",
+    "sources": [
+      {
+        "url": "https://www.cyklokros.cz/kalendar",
+        "kind": "series",
+        "external_id": "cyklokros-2027-01-03-zonhoven-(belgie)"
+      }
+    ]
+  },
+  {
+    "id": "ab10b82c-e018-4274-b8a5-0ae4752bd722",
+    "event_id": null,
+    "reason": "identity_review_required: conflicting fingerprint owned by d58c7a66-04bc-4cd2-9711-89078195eaa5",
+    "candidate_name": "UCI MTB World CUP",
+    "candidate_date": "2026-06-12",
+    "candidate_end": null,
+    "conflict_id": "d58c7a66-04bc-4cd2-9711-89078195eaa5",
+    "name": "UCI MTB World CUP",
+    "start_date": "2026-06-12",
+    "end_date": "2026-06-12",
+    "visibility": "public",
+    "disciplines": [
+      "xcc",
+      "xco"
+    ],
+    "country_code": "AT",
+    "municipality": "Saalfelden-Leogang Salzburgerland",
+    "sources": [
+      {
+        "url": "https://hynekmusil.cz",
+        "kind": "aggregator",
+        "external_id": "hynek-3 xcc dhi edr uci world-2026-06-12"
+      }
+    ]
+  },
+  {
+    "id": "61a3b56c-63b4-4b16-872a-de9fe024fa1c",
+    "event_id": null,
+    "reason": "identity_review_required: conflicting fingerprint owned by d93f37aa-15c4-4025-a3b2-ec47452b4d9d",
+    "candidate_name": "Tartu Rattaralli",
+    "candidate_date": "2025-06-01",
+    "candidate_end": null,
+    "conflict_id": "d93f37aa-15c4-4025-a3b2-ec47452b4d9d",
+    "name": "Tartu Rattaralli",
+    "start_date": "2025-06-01",
+    "end_date": "2025-06-01",
+    "visibility": "public",
+    "disciplines": [
+      "road",
+      "gran_fondo"
+    ],
+    "country_code": "EE",
+    "municipality": "Tartu",
+    "sources": [
+      {
+        "url": "https://sumator.cz/race/tartu-rattaralli-1-6-2025",
+        "kind": "series",
+        "external_id": "sumator-tartu rattaralli-2025-06-01"
+      }
+    ]
+  },
+  {
+    "id": "000eeb76-b836-4b97-9c35-14b02ece8c41",
+    "event_id": null,
+    "reason": "identity_review_required: conflicting fingerprint owned by dccfb71d-8697-4267-894a-8ad3fc361459",
+    "candidate_name": "UCI Marathon World CUP",
+    "candidate_date": "2026-06-13",
+    "candidate_end": null,
+    "conflict_id": "dccfb71d-8697-4267-894a-8ad3fc361459",
+    "name": "UCI Marathon World CUP",
+    "start_date": "2026-06-13",
+    "end_date": "2026-06-13",
+    "visibility": "hidden",
+    "disciplines": [
+      "xcm"
+    ],
+    "country_code": "IT",
+    "municipality": "Selva Val Gardena, Italy",
+    "sources": [
+      {
+        "url": "https://hynekmusil.cz",
+        "kind": "aggregator",
+        "external_id": "hynek-3 uci marathon world-2026-06-13"
+      }
+    ]
+  },
+  {
+    "id": "b62048c6-f03d-4faf-a702-0c205aa00823",
+    "event_id": null,
+    "reason": "identity_review_required: conflicting fingerprint owned by e50e866c-b177-44bc-8096-3879ab66f835",
+    "candidate_name": "4 Ländermeisterschaft Straße U23",
+    "candidate_date": "2026-07-05",
+    "candidate_end": null,
+    "conflict_id": "e50e866c-b177-44bc-8096-3879ab66f835",
+    "name": "4 Ländermeisterschaft Straße U23",
+    "start_date": "2026-07-05",
+    "end_date": "2026-07-05",
+    "visibility": "public",
+    "disciplines": [
+      "road_race"
+    ],
+    "country_code": "LU",
+    "municipality": "(LUX)",
+    "sources": [
+      {
+        "url": "https://bikeboard.at/termine/4-laendermeisterschaft-strasse-u23-termin15984",
+        "kind": "aggregator",
+        "external_id": "bikeboard-15984"
+      }
+    ]
+  },
+  {
+    "id": "28ba8158-a3f1-4724-8a08-94c092a53d87",
+    "event_id": null,
+    "reason": "identity_review_required: conflicting fingerprint owned by e70e2804-8707-4350-b0c6-5871fb01b43b",
+    "candidate_name": "Puchar Polski MTB XCO #6 — Sobótka",
+    "candidate_date": "2026-07-05",
+    "candidate_end": null,
+    "conflict_id": "e70e2804-8707-4350-b0c6-5871fb01b43b",
+    "name": "Puchar Polski MTB XCO #6 — Sobótka",
+    "start_date": "2026-07-05",
+    "end_date": "2026-07-05",
+    "visibility": "public",
+    "disciplines": [
+      "xco"
+    ],
+    "country_code": "PL",
+    "municipality": "Sobótka",
+    "sources": [
+      {
+        "url": "https://pucharmtb.pl/kalendarz-2026/",
+        "kind": "series",
+        "external_id": "pp-xco-6-2026-07-05"
+      }
+    ]
+  },
+  {
+    "id": "3f755139-dd68-40ad-9cd0-12f5270f78ec",
+    "event_id": null,
+    "reason": "identity_review_required: conflicting fingerprint owned by e7bbd201-69b1-4bd0-9df2-a3c609e4b2f6",
+    "candidate_name": "4. závod SP (ME,WE) — Antverpy (Belgie)",
+    "candidate_date": "2026-12-19",
+    "candidate_end": null,
+    "conflict_id": "e7bbd201-69b1-4bd0-9df2-a3c609e4b2f6",
+    "name": "4. závod SP (ME,WE) — Antverpy (Belgie)",
+    "start_date": "2026-12-19",
+    "end_date": "2026-12-19",
+    "visibility": "public",
+    "disciplines": [
+      "cx"
+    ],
+    "country_code": "BE",
+    "municipality": "Antverpy",
+    "sources": [
+      {
+        "url": "https://www.cyklokros.cz/kalendar",
+        "kind": "series",
+        "external_id": "cyklokros-2026-12-19-antverpy-(belgie)"
+      }
+    ]
+  },
+  {
+    "id": "0f99f5b7-4729-44ed-9df6-74190ae15eb1",
+    "event_id": null,
+    "reason": "identity_review_required: conflicting fingerprint owned by e7da7a9c-c7e8-4f98-96de-cfbddf87620f",
+    "candidate_name": "UCI MTB World CUP",
+    "candidate_date": "2026-06-14",
+    "candidate_end": null,
+    "conflict_id": "e7da7a9c-c7e8-4f98-96de-cfbddf87620f",
+    "name": "UCI MTB World CUP",
+    "start_date": "2026-06-14",
+    "end_date": "2026-06-14",
+    "visibility": "public",
+    "disciplines": [
+      "xcc",
+      "xco"
+    ],
+    "country_code": "AT",
+    "municipality": "Saalfelden-Leogang Salzburgerland",
+    "sources": [
+      {
+        "url": "https://hynekmusil.cz",
+        "kind": "aggregator",
+        "external_id": "hynek-3 xcc dhi edr uci world-2026-06-14"
+      }
+    ]
+  },
+  {
+    "id": "f20d788d-0e8c-45e3-bd86-016b7145c547",
+    "event_id": null,
+    "reason": "identity_review_required: conflicting fingerprint owned by e7dcc329-fb06-444c-8b2c-aaa823ca9bf9",
+    "candidate_name": "UCI MTB World CUP",
+    "candidate_date": "2026-06-27",
+    "candidate_end": null,
+    "conflict_id": "e7dcc329-fb06-444c-8b2c-aaa823ca9bf9",
+    "name": "UCI MTB World CUP",
+    "start_date": "2026-06-27",
+    "end_date": "2026-06-27",
+    "visibility": "hidden",
+    "disciplines": [
+      "xco"
+    ],
+    "country_code": "IT",
+    "municipality": "Val di Fassa",
+    "sources": [
+      {
+        "url": "https://hynekmusil.cz",
+        "kind": "aggregator",
+        "external_id": "hynek-edr uci world-2026-06-27"
+      }
+    ]
+  },
+  {
+    "id": "59291712-cd94-41f1-88d1-70bec340ce63",
+    "event_id": null,
+    "reason": "identity_review_required: conflicting fingerprint owned by ea909a2c-7d1c-4e0b-8e4e-63a96b54cc8b",
+    "candidate_name": "Vulkan Race Gedern",
+    "candidate_date": "2026-05-24",
+    "candidate_end": null,
+    "conflict_id": "ea909a2c-7d1c-4e0b-8e4e-63a96b54cc8b",
+    "name": "Vulkan Race Gedern",
+    "start_date": "2026-05-24",
+    "end_date": "2026-05-24",
+    "visibility": "public",
+    "disciplines": [
+      "xco"
+    ],
+    "country_code": "DE",
+    "municipality": "Gedern",
+    "sources": [
+      {
+        "url": "https://hynekmusil.cz/?serialosss=mtbbl",
+        "kind": "aggregator",
+        "external_id": "hynek-bundesliga vulkan race gedern-2026-05-24"
+      }
+    ]
+  },
+  {
+    "id": "71f6cdfe-25f8-4779-855e-a48f9ffdabd2",
+    "event_id": null,
+    "reason": "identity_review_required: conflicting fingerprint owned by eb209a54-de20-4aec-843d-50018958ac7f",
+    "candidate_name": "GRAVEL Tour Vír",
+    "candidate_date": "2026-05-30",
+    "candidate_end": null,
+    "conflict_id": "eb209a54-de20-4aec-843d-50018958ac7f",
+    "name": "Gravel Tour Vír 2026",
+    "start_date": "2026-05-30",
+    "end_date": "2026-05-30",
+    "visibility": "public",
+    "disciplines": [
+      "gravel"
+    ],
+    "country_code": "CZ",
+    "municipality": "Vír",
+    "sources": [
+      {
+        "url": "https://hynekmusil.cz",
+        "kind": "other",
+        "external_id": "hynek-2 gravel gravel tour vir 2 gravel-2026-05-30"
+      },
+      {
+        "url": "https://sumator.cz/race/gravel-tour-vir-30-5-2026",
+        "kind": "aggregator",
+        "external_id": "sumator-gravel tour vir-2026-05-30"
+      },
+      {
+        "url": "https://portal.czechcyclingfederation.com/RaceDetail/Race/1264",
+        "kind": "national_federation",
+        "external_id": "csc-1264"
+      },
+      {
+        "url": "https://mtbs.cz/clanek/gravel-tour-vir-2026-74880/kategorie/gravelk",
+        "kind": "aggregator",
+        "external_id": "mtbs-gravel tour vir-2026-05-30"
+      }
+    ]
+  },
+  {
+    "id": "9bf0ce1c-0e71-466b-bf76-607f476c024b",
+    "event_id": null,
+    "reason": "identity_review_required: conflicting fingerprint owned by eb209a54-de20-4aec-843d-50018958ac7f",
+    "candidate_name": "Gravel Tour Vír",
+    "candidate_date": "2026-05-30",
+    "candidate_end": null,
+    "conflict_id": "eb209a54-de20-4aec-843d-50018958ac7f",
+    "name": "Gravel Tour Vír 2026",
+    "start_date": "2026-05-30",
+    "end_date": "2026-05-30",
+    "visibility": "public",
+    "disciplines": [
+      "gravel"
+    ],
+    "country_code": "CZ",
+    "municipality": "Vír",
+    "sources": [
+      {
+        "url": "https://hynekmusil.cz",
+        "kind": "other",
+        "external_id": "hynek-2 gravel gravel tour vir 2 gravel-2026-05-30"
+      },
+      {
+        "url": "https://sumator.cz/race/gravel-tour-vir-30-5-2026",
+        "kind": "aggregator",
+        "external_id": "sumator-gravel tour vir-2026-05-30"
+      },
+      {
+        "url": "https://portal.czechcyclingfederation.com/RaceDetail/Race/1264",
+        "kind": "national_federation",
+        "external_id": "csc-1264"
+      },
+      {
+        "url": "https://mtbs.cz/clanek/gravel-tour-vir-2026-74880/kategorie/gravelk",
+        "kind": "aggregator",
+        "external_id": "mtbs-gravel tour vir-2026-05-30"
+      }
+    ]
+  },
+  {
+    "id": "671cbb10-8774-4455-bb51-335dd7c1dc0d",
+    "event_id": null,
+    "reason": "identity_review_required: conflicting fingerprint owned by ee45250b-d120-43ae-b1c4-071292ae2161",
+    "candidate_name": "34. Scott Erzgebirgs Bike Marathon",
+    "candidate_date": "2026-08-02",
+    "candidate_end": null,
+    "conflict_id": "ee45250b-d120-43ae-b1c4-071292ae2161",
+    "name": "34. Scott Erzgebirgs Bike Marathon",
+    "start_date": "2026-08-02",
+    "end_date": "2026-08-02",
+    "visibility": "public",
+    "disciplines": [
+      "xcm"
+    ],
+    "country_code": "DE",
+    "municipality": "Seiffen",
+    "sources": [
+      {
+        "url": "https://bikeboard.at/termine/34-scott-erzgebirgs-bike-marathon-termin16099",
+        "kind": "aggregator",
+        "external_id": "bikeboard-16099"
+      }
+    ]
+  },
+  {
+    "id": "d83e61ec-42ad-4b12-8751-a5dd58890490",
+    "event_id": null,
+    "reason": "identity_review_required: conflicting fingerprint owned by eed25067-5f70-4574-99d6-60a2c2f24294",
+    "candidate_name": "SenseBike",
+    "candidate_date": "2027-08-15",
+    "candidate_end": null,
+    "conflict_id": "eed25067-5f70-4574-99d6-60a2c2f24294",
+    "name": "SenseBike",
+    "start_date": "2027-08-15",
+    "end_date": "2027-08-15",
+    "visibility": "public",
+    "disciplines": [
+      "xco"
+    ],
+    "country_code": "CH",
+    "municipality": "Renngelände, Alterswil",
+    "sources": [
+      {
+        "url": "https://radsport-events.de/events/27127",
+        "kind": "aggregator",
+        "external_id": "radsport-27127-2027-08-15"
+      }
+    ]
+  },
+  {
+    "id": "fed9a31b-363f-401c-ba0e-7aedd22d5d7a",
+    "event_id": null,
+    "reason": "identity_review_required: conflicting fingerprint owned by f47e8640-17a3-43a8-b953-e4bcd325a35c",
+    "candidate_name": "Brevet Niepodległa",
+    "candidate_date": "2026-11-07",
+    "candidate_end": null,
+    "conflict_id": "f47e8640-17a3-43a8-b953-e4bcd325a35c",
+    "name": "Brevet Niepodległa",
+    "start_date": "2026-11-07",
+    "end_date": "2026-11-07",
+    "visibility": "public",
+    "disciplines": [
+      "road"
+    ],
+    "country_code": "PL",
+    "municipality": "Kórnik",
+    "sources": [
+      {
+        "url": "https://odjazd.pl/wydarzenie/f9956db0-816c-404d-8ea9-6a742a2b731f",
+        "kind": "aggregator",
+        "external_id": "odjazd-f9956db0-816c-404d-8ea9-6a742a2b731f"
+      }
+    ]
+  },
+  {
+    "id": "78d78ad3-2548-4a3e-9dfe-9637f7aeaed4",
+    "event_id": null,
+    "reason": "identity_review_required: conflicting fingerprint owned by f6fc7a6c-4e10-4872-bacb-69983607fef2",
+    "candidate_name": "Sečský okruh přes počátky",
+    "candidate_date": "2026-05-27",
+    "candidate_end": null,
+    "conflict_id": "f6fc7a6c-4e10-4872-bacb-69983607fef2",
+    "name": "Sečský okruh přes počátky",
+    "start_date": "2026-05-27",
+    "end_date": "2026-05-27",
+    "visibility": "public",
+    "disciplines": [
+      "road"
+    ],
+    "country_code": "CZ",
+    "municipality": "Seč",
+    "sources": [
+      {
+        "url": "https://sumator.cz/race/secsky-okruh-pres-pocatky-27-5-2026",
+        "kind": "aggregator",
+        "external_id": "sumator-secsky okruh pres pocatky-2026-05-27"
+      }
+    ]
+  },
+  {
+    "id": "9aa7d887-ccbd-4b32-99c8-7a2f27c69d68",
+    "event_id": null,
+    "reason": "identity_review_required: conflicting fingerprint owned by f9404eb6-c3f2-4b0f-95af-65002bf4329e",
+    "candidate_name": "14. Fullgaz Race 2026",
+    "candidate_date": "2026-03-28",
+    "candidate_end": null,
+    "conflict_id": "f9404eb6-c3f2-4b0f-95af-65002bf4329e",
+    "name": "14. Fullgaz Race 2026",
+    "start_date": "2026-03-28",
+    "end_date": "2026-03-29",
+    "visibility": "public",
+    "disciplines": [
+      "xco"
+    ],
+    "country_code": "DE",
+    "municipality": "Obergessertshausen",
+    "sources": [
+      {
+        "url": "https://hynekmusil.cz",
+        "kind": "other",
+        "external_id": "hynek-1 bundesliga 14 fullgaz race-2026-03-28"
+      },
+      {
+        "url": "https://hynekmusil.cz/?serialosss=mtbbl",
+        "kind": "aggregator",
+        "external_id": "hynek-bundesliga 14 fullgaz race-2026-03-28"
+      },
+      {
+        "url": "https://www.mtb-bundesliga.net/rennen/",
+        "kind": "series",
+        "external_id": "mtb-bl-2026-03-28-obergessertshausen"
+      }
+    ]
+  },
+  {
+    "id": "07880c61-87ae-4422-b521-bad273cd4cc2",
+    "event_id": null,
+    "reason": "identity_review_required: conflicting fingerprint owned by f97af194-ab61-45b8-ac5f-468c85b12bf8",
+    "candidate_name": "TOUR Transalp",
+    "candidate_date": "2026-06-21",
+    "candidate_end": "2026-06-27",
+    "conflict_id": "f97af194-ab61-45b8-ac5f-468c85b12bf8",
+    "name": "TOUR Transalp",
+    "start_date": "2026-06-21",
+    "end_date": "2026-06-27",
+    "visibility": "public",
+    "disciplines": [
+      "road_race"
+    ],
+    "country_code": "AT",
+    "municipality": "Lienz",
+    "sources": [
+      {
+        "url": "https://bikeboard.at/termine/tour-transalp-termin16129",
+        "kind": "aggregator",
+        "external_id": "bikeboard-16129"
+      }
+    ]
+  },
+  {
+    "id": "3cc5f547-6dd9-49b3-8739-36f9e9792ba5",
+    "event_id": null,
+    "reason": "identity_review_required: multiple matching races; source row deferred",
+    "candidate_name": "SALZKAMMERGUT TROPHY",
+    "candidate_date": "2026-07-18",
+    "candidate_end": null,
+    "conflict_id": null,
+    "name": null,
+    "start_date": null,
+    "end_date": null,
+    "visibility": null,
+    "disciplines": null,
+    "country_code": null,
+    "municipality": null,
+    "sources": null
+  },
+  {
+    "id": "2109237e-da7a-45fd-99db-76f998149b94",
+    "event_id": null,
+    "reason": "identity_review_required: multiple matching races; source row deferred",
+    "candidate_name": "SALZKAMMERGUT TROPHY",
+    "candidate_date": "2026-07-17",
+    "candidate_end": null,
+    "conflict_id": null,
+    "name": null,
+    "start_date": null,
+    "end_date": null,
+    "visibility": null,
+    "disciplines": null,
+    "country_code": null,
+    "municipality": null,
+    "sources": null
+  },
+  {
+    "id": "4dcd295c-3e3d-4d08-b71d-d0fb2026d891",
+    "event_id": null,
+    "reason": "identity_review_required: multiple matching races; source row deferred",
+    "candidate_name": "MTB-Fahrtechnikkurs \"Allround\", Nürnberg",
+    "candidate_date": "2027-04-03",
+    "candidate_end": null,
+    "conflict_id": null,
+    "name": null,
+    "start_date": null,
+    "end_date": null,
+    "visibility": null,
+    "disciplines": null,
+    "country_code": null,
+    "municipality": null,
+    "sources": null
+  },
+  {
+    "id": "75ffce23-e3c7-4ff6-9f6b-3994c37bb1ca",
+    "event_id": null,
+    "reason": "identity_review_required: multiple matching races; source row deferred",
+    "candidate_name": "SALZKAMMERGUT TROPHY",
+    "candidate_date": "2026-07-19",
+    "candidate_end": null,
+    "conflict_id": null,
+    "name": null,
+    "start_date": null,
+    "end_date": null,
+    "visibility": null,
+    "disciplines": null,
+    "country_code": null,
+    "municipality": null,
+    "sources": null
+  },
+  {
+    "id": "dfd4eef1-1e36-47bc-832d-66986eb55deb",
+    "event_id": null,
+    "reason": "identity_review_required: multiple matching races; source row deferred",
+    "candidate_name": "Duatlon Powerman Kunčina",
+    "candidate_date": "2026-08-22",
+    "candidate_end": null,
+    "conflict_id": null,
+    "name": null,
+    "start_date": null,
+    "end_date": null,
+    "visibility": null,
+    "disciplines": null,
+    "country_code": null,
+    "municipality": null,
+    "sources": null
+  },
+  {
+    "id": "d31768c7-0daa-4d3d-b84c-f6a2ba870d90",
+    "event_id": null,
+    "reason": "identity_review_required: multiple matching races; source row deferred",
+    "candidate_name": "Duatlon Powerman Kunčina",
+    "candidate_date": "2026-08-22",
+    "candidate_end": null,
+    "conflict_id": null,
+    "name": null,
+    "start_date": null,
+    "end_date": null,
+    "visibility": null,
+    "disciplines": null,
+    "country_code": null,
+    "municipality": null,
+    "sources": null
+  },
+  {
+    "id": "680648ad-22cd-47ad-a245-a495a8ae385b",
+    "event_id": null,
+    "reason": "identity_review_required: multiple matching races; source row deferred",
+    "candidate_name": "Duatlon Powerman Kunčina",
+    "candidate_date": "2026-08-22",
+    "candidate_end": null,
+    "conflict_id": null,
+    "name": null,
+    "start_date": null,
+    "end_date": null,
+    "visibility": null,
+    "disciplines": null,
+    "country_code": null,
+    "municipality": null,
+    "sources": null
+  },
+  {
+    "id": "4ad37087-1496-4de4-8da1-a6b2d246da11",
+    "event_id": null,
+    "reason": "independent_discovery_requires_identity_and_authority_review",
+    "candidate_name": "BREZNIANSKY MTB MARATÓN 2027",
+    "candidate_date": "2027-09-18",
+    "candidate_end": null,
+    "conflict_id": null,
+    "name": null,
+    "start_date": null,
+    "end_date": null,
+    "visibility": null,
+    "disciplines": null,
+    "country_code": null,
+    "municipality": null,
+    "sources": null
+  },
+  {
+    "id": "074faf63-97e6-4323-bebd-e2b9c2542b79",
+    "event_id": null,
+    "reason": "independent_discovery_requires_identity_and_authority_review",
+    "candidate_name": "MTB maratón Bike4you Hlohovec - Poniklec",
+    "candidate_date": "2027-08-21",
+    "candidate_end": null,
+    "conflict_id": null,
+    "name": null,
+    "start_date": null,
+    "end_date": null,
+    "visibility": null,
+    "disciplines": null,
+    "country_code": null,
+    "municipality": null,
+    "sources": null
+  },
+  {
+    "id": "473f4363-bf7e-4da9-a4b7-d169303475d0",
+    "event_id": null,
+    "reason": "independent_discovery_requires_identity_and_authority_review",
+    "candidate_name": "Majstrovstva Slovenska XCO/XCC Bratislava",
+    "candidate_date": "2027-07-17",
+    "candidate_end": null,
+    "conflict_id": null,
+    "name": null,
+    "start_date": null,
+    "end_date": null,
+    "visibility": null,
+    "disciplines": null,
+    "country_code": null,
+    "municipality": null,
+    "sources": null
+  },
+  {
+    "id": "b4ed894f-393d-4afd-b0c9-ce2df6c0cd1f",
+    "event_id": null,
+    "reason": "independent_discovery_requires_identity_and_authority_review",
+    "candidate_name": "ISTROFINAL SNEŽNICKÝ MTB maratón - Kysucká vrchovina",
+    "candidate_date": "2027-09-04",
+    "candidate_end": null,
+    "conflict_id": null,
+    "name": null,
+    "start_date": null,
+    "end_date": null,
+    "visibility": null,
+    "disciplines": null,
+    "country_code": null,
+    "municipality": null,
+    "sources": null
+  },
+  {
+    "id": "8d5f24e0-0367-4be2-b51b-b0e309374c3d",
+    "event_id": null,
+    "reason": "independent_discovery_requires_identity_and_authority_review",
+    "candidate_name": "Zlatnická dolina MTB XCO Slovenský pohár UCI 3",
+    "candidate_date": "2027-05-15",
+    "candidate_end": null,
+    "conflict_id": null,
+    "name": null,
+    "start_date": null,
+    "end_date": null,
+    "visibility": null,
+    "disciplines": null,
+    "country_code": null,
+    "municipality": null,
+    "sources": null
+  },
+  {
+    "id": "2882515a-f845-43be-9359-eb57601d1722",
+    "event_id": null,
+    "reason": "independent_discovery_requires_identity_and_authority_review",
+    "candidate_name": "Čergovská Reťaz MTB",
+    "candidate_date": "2027-01-31",
+    "candidate_end": null,
+    "conflict_id": null,
+    "name": null,
+    "start_date": null,
+    "end_date": null,
+    "visibility": null,
+    "disciplines": null,
+    "country_code": null,
+    "municipality": null,
+    "sources": null
+  },
+  {
+    "id": "6b65420b-3d00-4ef3-820f-98c99cb2271d",
+    "event_id": null,
+    "reason": "independent_discovery_requires_identity_and_authority_review",
+    "candidate_name": "ŠKODA MTB MARATÓN Rajecké Teplice",
+    "candidate_date": "2027-05-22",
+    "candidate_end": null,
+    "conflict_id": null,
+    "name": null,
+    "start_date": null,
+    "end_date": null,
+    "visibility": null,
+    "disciplines": null,
+    "country_code": null,
+    "municipality": null,
+    "sources": null
+  },
+  {
+    "id": "88c7b712-9fea-4b09-a937-4ca338bffa86",
+    "event_id": null,
+    "reason": "independent_discovery_requires_identity_and_authority_review",
+    "candidate_name": "E3NEXUS MTB MARATÓN+DUATLON",
+    "candidate_date": "2027-05-15",
+    "candidate_end": null,
+    "conflict_id": null,
+    "name": null,
+    "start_date": null,
+    "end_date": null,
+    "visibility": null,
+    "disciplines": null,
+    "country_code": null,
+    "municipality": null,
+    "sources": null
+  },
+  {
+    "id": "85234aa2-cae3-4adb-b909-87d072b6785c",
+    "event_id": null,
+    "reason": "independent_discovery_requires_identity_and_authority_review",
+    "candidate_name": "SP XC0 Bystričany",
+    "candidate_date": "2027-06-05",
+    "candidate_end": null,
+    "conflict_id": null,
+    "name": null,
+    "start_date": null,
+    "end_date": null,
+    "visibility": null,
+    "disciplines": null,
+    "country_code": null,
+    "municipality": null,
+    "sources": null
+  },
+  {
+    "id": "b4761274-1511-45e2-801d-9043c68ec78f",
+    "event_id": null,
+    "reason": "independent_discovery_requires_identity_and_authority_review",
+    "candidate_name": "Oslianske dni cyklistiky/Slovak E=BIKE CUP+ SP XCO+HOBBY//",
+    "candidate_date": "2027-07-31",
+    "candidate_end": null,
+    "conflict_id": null,
+    "name": null,
+    "start_date": null,
+    "end_date": null,
+    "visibility": null,
+    "disciplines": null,
+    "country_code": null,
+    "municipality": null,
+    "sources": null
+  },
+  {
+    "id": "415144cf-44e4-4dd1-9268-1a0b6c8b08b5",
+    "event_id": null,
+    "reason": "independent_discovery_requires_identity_and_authority_review",
+    "candidate_name": "POVAŽSKÝ MTB ŠPECIALIK",
+    "candidate_date": "2027-07-04",
+    "candidate_end": null,
+    "conflict_id": null,
+    "name": null,
+    "start_date": null,
+    "end_date": null,
+    "visibility": null,
+    "disciplines": null,
+    "country_code": null,
+    "municipality": null,
+    "sources": null
+  },
+  {
+    "id": "91cf3687-ccae-45d6-92d1-ba8c91321db4",
+    "event_id": null,
+    "reason": "independent_discovery_requires_identity_and_authority_review",
+    "candidate_name": "Oslianske dni cyklistiky/Slovak E=BIKE CUP+ SP XCO+HOBBY",
+    "candidate_date": "2027-08-01",
+    "candidate_end": null,
+    "conflict_id": null,
+    "name": null,
+    "start_date": null,
+    "end_date": null,
+    "visibility": null,
+    "disciplines": null,
+    "country_code": null,
+    "municipality": null,
+    "sources": null
+  },
+  {
+    "id": "9aae1c9f-0fc8-46dd-b6b5-53719d71c8bc",
+    "event_id": null,
+    "reason": "independent_discovery_requires_identity_and_authority_review",
+    "candidate_name": "ŠKODA HORAL MTB MARATÓN",
+    "candidate_date": "2027-08-14",
+    "candidate_end": null,
+    "conflict_id": null,
+    "name": null,
+    "start_date": null,
+    "end_date": null,
+    "visibility": null,
+    "disciplines": null,
+    "country_code": null,
+    "municipality": null,
+    "sources": null
+  },
+  {
+    "id": "a408dce1-27d1-4f76-b851-1c8dfeadd0ae",
+    "event_id": null,
+    "reason": "independent_discovery_requires_identity_and_authority_review",
+    "candidate_name": "RASLAVICKÝ PEDÁL",
+    "candidate_date": "2027-07-25",
+    "candidate_end": null,
+    "conflict_id": null,
+    "name": null,
+    "start_date": null,
+    "end_date": null,
+    "visibility": null,
+    "disciplines": null,
+    "country_code": null,
+    "municipality": null,
+    "sources": null
+  },
+  {
+    "id": "19815d62-5a3d-4c18-870f-b587f8b4c531",
+    "event_id": null,
+    "reason": "independent_discovery_requires_identity_and_authority_review",
+    "candidate_name": "ŠKODA MARATÓN SLOVENSKÝ RAJ",
+    "candidate_date": "2027-06-05",
+    "candidate_end": null,
+    "conflict_id": null,
+    "name": null,
+    "start_date": null,
+    "end_date": null,
+    "visibility": null,
+    "disciplines": null,
+    "country_code": null,
+    "municipality": null,
+    "sources": null
+  },
+  {
+    "id": "0e13ed64-21e6-47d5-acef-4a6120efeea9",
+    "event_id": null,
+    "reason": "independent_discovery_requires_identity_and_authority_review",
+    "candidate_name": "ŠKODA CYKLOMARATÓN TOPOLČIANKY",
+    "candidate_date": "2027-06-19",
+    "candidate_end": null,
+    "conflict_id": null,
+    "name": null,
+    "start_date": null,
+    "end_date": null,
+    "visibility": null,
+    "disciplines": null,
+    "country_code": null,
+    "municipality": null,
+    "sources": null
+  },
+  {
+    "id": "a5fe9884-ffd5-489a-ab87-a818392f6d1b",
+    "event_id": null,
+    "reason": "independent_discovery_requires_identity_and_authority_review",
+    "candidate_name": "Majstrovstvá Slovenska E-XC EBIKE CUP 2026",
+    "candidate_date": "2027-05-06",
+    "candidate_end": null,
+    "conflict_id": null,
+    "name": null,
+    "start_date": null,
+    "end_date": null,
+    "visibility": null,
+    "disciplines": null,
+    "country_code": null,
+    "municipality": null,
+    "sources": null
+  },
+  {
+    "id": "42d4cf90-5713-4e32-ab17-736efc7c26dc",
+    "event_id": null,
+    "reason": "independent_discovery_requires_identity_and_authority_review",
+    "candidate_name": "Považský MTB ŠPECIÁL MARATÓN Považská Bystrica",
+    "candidate_date": "2027-07-03",
+    "candidate_end": null,
+    "conflict_id": null,
+    "name": null,
+    "start_date": null,
+    "end_date": null,
+    "visibility": null,
+    "disciplines": null,
+    "country_code": null,
+    "municipality": null,
+    "sources": null
+  },
+  {
+    "id": "5629a8fe-da76-46fd-903f-23b7cacb0748",
+    "event_id": null,
+    "reason": "independent_discovery_requires_identity_and_authority_review",
+    "candidate_name": "QUICK SPORT JARNÝ ŠPRINT",
+    "candidate_date": "2027-04-25",
+    "candidate_end": null,
+    "conflict_id": null,
+    "name": null,
+    "start_date": null,
+    "end_date": null,
+    "visibility": null,
+    "disciplines": null,
+    "country_code": null,
+    "municipality": null,
+    "sources": null
+  },
+  {
+    "id": "506455da-b3b3-41ac-9912-508076e012fd",
+    "event_id": null,
+    "reason": "independent_discovery_requires_identity_and_authority_review",
+    "candidate_name": "BikeFest maratón 2027",
+    "candidate_date": "2027-05-30",
+    "candidate_end": null,
+    "conflict_id": null,
+    "name": null,
+    "start_date": null,
+    "end_date": null,
+    "visibility": null,
+    "disciplines": null,
+    "country_code": null,
+    "municipality": null,
+    "sources": null
+  },
+  {
+    "id": "3bbea97f-24d4-4d48-a56b-43d295690f6e",
+    "event_id": null,
+    "reason": "pipeline_data_review_required:end_before_start",
+    "candidate_name": "SEVEROČESKÝ PUMPTRACKOVÝ POHÁR",
+    "candidate_date": "2026-04-26",
+    "candidate_end": "2025-04-26",
+    "conflict_id": null,
+    "name": null,
+    "start_date": null,
+    "end_date": null,
+    "visibility": null,
+    "disciplines": null,
+    "country_code": null,
+    "municipality": null,
+    "sources": null
+  }
+]

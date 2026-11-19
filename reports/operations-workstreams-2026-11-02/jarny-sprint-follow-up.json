@@ -1,0 +1,52 @@
+{
+  "at": "2026-11-02T08:04:04.007Z",
+  "apply": true,
+  "eligible": 1,
+  "processed": 1,
+  "fetchedUrls": 3,
+  "sourceUrls": 3,
+  "eventWrites": 0,
+  "modelCalls": 0,
+  "outcomes": [
+    {
+      "id": "5629a8fe-da76-46fd-903f-23b7cacb0748",
+      "name": "QUICK SPORT JARNÝ ŠPRINT",
+      "version": 1,
+      "attempts": 2,
+      "failures": 0,
+      "checkedAt": "2026-11-02T08:04:03.943Z",
+      "nextCheckAt": "2026-11-03T08:04:03.943Z",
+      "outcome": "changed",
+      "needsReview": true,
+      "documents": [
+        {
+          "url": "https://www.bikepoint.sk/kalendar/",
+          "outcome": "read",
+          "documentHash": "7d1fe0d21bc317cbc5449df0d16f30d15722e9fab19d4eac29e6a43fbf195aa0",
+          "textHash": "669dfaa3ff78966fbcabe1b68d3fe77ed9809356f2c414e3ebcebcc4c88dcbe2",
+          "snapshot": "/Users/radektobolka/Documents/GitHub/letsrace/tmp/candidate-follow-ups/a6e3db4651d192e36044c00fd7c62ae0c1dc16341d47f7424d7d6b467e878b0b-7d1fe0d21bc317cbc5449df0d16f30d15722e9fab19d4eac29e6a43fbf195aa0.json",
+          "organizerUrls": []
+        },
+        {
+          "url": "https://www.bikepoint.sk/kalendar/april/25-04-2027/quick-sport-jarny-sprint/",
+          "outcome": "read",
+          "documentHash": "b291c9d80851447f9d81b2552d96810a4d64147664a29d2a8df3bb5206cf9744",
+          "textHash": "8784c5df3f5a955f179592dc2b93f30c50449ac3ee3fc95b9c685aa3e87ee317",
+          "snapshot": "/Users/radektobolka/Documents/GitHub/letsrace/tmp/candidate-follow-ups/a4c20773024e9bd7b227720cbe6f117521a6cd9eea31115eb99a9711d78ca82a-b291c9d80851447f9d81b2552d96810a4d64147664a29d2a8df3bb5206cf9744.json",
+          "organizerUrls": [
+            "http://www.jarnysprint.sk/"
+          ]
+        },
+        {
+          "url": "http://www.jarnysprint.sk/",
+          "outcome": "read",
+          "documentHash": "02282fb31e70292d588ccfa9c6f9dbeda4e1150dfc1069f2b9511fdbc3123bb0",
+          "textHash": "32f6afda880d83629c227328ab634c6d7c05f467559cd59e383299a834066f57",
+          "snapshot": "/Users/radektobolka/Documents/GitHub/letsrace/tmp/candidate-follow-ups/a59986dd42517632676837f1af075372dd98348d31fec0c2ae59da00ebfc0abc-02282fb31e70292d588ccfa9c6f9dbeda4e1150dfc1069f2b9511fdbc3123bb0.json",
+          "organizerUrls": [],
+          "linkedFrom": "https://www.bikepoint.sk/kalendar/april/25-04-2027/quick-sport-jarny-sprint/"
+        }
+      ]
+    }
+  ]
+}

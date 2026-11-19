@@ -1,0 +1,128 @@
+{
+ "apply": false,
+ "sources": 551,
+ "pages": 535,
+ "races": 1495,
+ "changes": [
+  {
+   "id": "a5298f52-bb4c-4960-ad7e-e1d8d14f36c9",
+   "name": "Slovácký Kros — Kyjov",
+   "date": "2026-11-15",
+   "row": "ne 15.11.2026 | Kyjov | [Slovácký Kros]",
+   "source": "https://www.cyklokros.cz/kalendar",
+   "regulations_url": "https://www.cyklokros.cz/files/slovacky-kros-rozpis-kyjov-2026-final-2.pdf"
+  },
+  {
+   "id": "090934a6-82b9-47b8-8d82-a952c33bc970",
+   "name": "NoLimited Cup #6 Selce",
+   "date": "2026-12-06",
+   "row": "6.12.2026 | 10. kolo: NoLimited cup v CX (UCI C2) Cyklokros | Selce | |",
+   "source": "https://www.cyklistikaszc.sk/sk/cyklokros/kalendar",
+   "regulations_url": "https://www.cyklistikaszc.sk/kalendar/propozicie/669a58f02835483533f1e6e0b2.zip"
+  },
+  {
+   "id": "0d13d973-06a1-4dc1-95eb-4dd9132bb96a",
+   "name": "8. kolo: Grand Prix Šamorín (UCI C2)",
+   "date": "2026-11-22",
+   "row": "22.11.2026 | 8. kolo: Grand Prix Šamorín (UCI C2) Cyklokros | Šamorín | | |",
+   "source": "https://www.cyklistikaszc.sk/sk/cyklokros/kalendar",
+   "regulations_url": "https://www.cyklistikaszc.sk/kalendar/propozicie/221c7e8a40087efd09b9757e041.zip"
+  },
+  {
+   "id": "43d0f6a8-c942-462f-99f1-5728be6fbc32",
+   "name": "10. kolo: NoLimited cup v CX (UCI C2)",
+   "date": "2026-12-06",
+   "row": "6.12.2026 | 10. kolo: NoLimited cup v CX (UCI C2) Cyklokros | Selce | |",
+   "source": "https://www.cyklistikaszc.sk/sk/cyklokros/kalendar",
+   "regulations_url": "https://www.cyklistikaszc.sk/kalendar/propozicie/669a58f02835483533f1e6e0b2.zip"
+  },
+  {
+   "id": "47bec5f3-1f99-458f-acd1-0a80d4c5308e",
+   "name": "7. kolo: NoLimited cup v CX (UCI C1)",
+   "date": "2026-11-21",
+   "row": "21.11.2026 | 7. kolo: NoLimited cup v CX (UCI C1) Cyklokros | Šamorín | | |",
+   "source": "https://www.cyklistikaszc.sk/sk/cyklokros/kalendar",
+   "regulations_url": "https://www.cyklistikaszc.sk/kalendar/propozicie/217d01e5c7fbe82335d40441723.zip"
+  }
+ ],
+ "byHost": {
+  "cyklistikaszc.sk": {
+   "pages": 8,
+   "rows": 216,
+   "regulations": 4,
+   "results": 0
+  },
+  "cyklokros.cz": {
+   "pages": 1,
+   "rows": 17,
+   "regulations": 1,
+   "results": 0
+  },
+  "downhill-cup.at": {
+   "pages": 1,
+   "rows": 1,
+   "regulations": 0,
+   "results": 0
+  },
+  "mtb-liga.at": {
+   "pages": 1,
+   "rows": 5,
+   "regulations": 0,
+   "results": 0
+  },
+  "sportklasse-cup.at": {
+   "pages": 1,
+   "rows": 4,
+   "regulations": 0,
+   "results": 0
+  },
+  "youngsters-cup.at": {
+   "pages": 1,
+   "rows": 7,
+   "regulations": 0,
+   "results": 0
+  },
+  "maraton.cz": {
+   "pages": 1,
+   "rows": 1,
+   "regulations": 0,
+   "results": 0
+  },
+  "prahamtb.cz": {
+   "pages": 1,
+   "rows": 8,
+   "regulations": 0,
+   "results": 0
+  },
+  "skvelopraha.cz": {
+   "pages": 1,
+   "rows": 1,
+   "regulations": 0,
+   "results": 0
+  },
+  "czechcyclingfederation.com": {
+   "pages": 3,
+   "rows": 17,
+   "regulations": 0,
+   "results": 0
+  },
+  "rad-bundesliga.net": {
+   "pages": 4,
+   "rows": 7,
+   "regulations": 0,
+   "results": 0
+  },
+  "radclub-moedling.at": {
+   "pages": 1,
+   "rows": 5,
+   "regulations": 0,
+   "results": 0
+  },
+  "sloxcup.com": {
+   "pages": 1,
+   "rows": 9,
+   "regulations": 0,
+   "results": 0
+  }
+ }
+}

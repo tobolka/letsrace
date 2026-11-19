@@ -1,0 +1,213 @@
+## Ogólnopolskiego Wyścigu w Kolarstwie Przetajowym
+
+## Regulamin III Memoriat Mieczystawa Brzezińskiego II SERIA PUCHARU POLSKI 7.11.2026
+
+## 1. Organizator :
+
+Ludowy Uczniowski Klub Sportowy TRÓJKA Piaseczno
+
+## 2. Wspotorganizatorzy :
+
+Mazowiecki Związek Kolarski
+
+Mazowieckie Zrzeszenie LZS
+
+Urząd Marszałkowski Województwa Mazowieckiego
+
+## 3. Cel wyscigu :
+
+Uczczenie pamięci wybitnego trenera Mieczystawa Brzezińskiego
+
+Popularyzacja kolarstwa przełajowego na Mazowszu
+
+Propagowanie zdrowego stylu życia wśród dzieci i młodzieży po przez ruch na świeżym powietrzu
+
+Zdobycie punktów do klasyfikacji Pucharu Polski i Challange Polskiego Związku Kolarskiego
+
+Promocja Mazowsza
+
+## 4. Dyrektor wyścigu
+
+Pawet Tomaszewski , tel. kontaktowy 608 056 865
+
+## 5. Data i miejsce wyścigu
+
+## Wyścig rozegrany zostanie w dniu .listopada 2026 r (sobota) na trasie wyznaczonej
+
+Osrodek Planeta Zalesie Górne ulica Wczasowa 1
+
+Długość jednego okrążenia 2500m.
+
+## 6. Biuro Wyścigu :
+
+Biuro wyścigu zlokalizowane będzie na parkingu , na wysokości mety Podczas wyścigu organizator nie dysponuje szatnią.
+
+## 7. Klasa wyścigu :
+
+Wyścig umieszczony jest w kalendarzu Polskiego Związku Kolarskiego na sezon 2026/2027 i posiada rangę Pucharu Polski
+
+## 8. Komisja sędziowska :
+
+Komisję sędziowską wyznacza Kolegium Sędziów Polskiego Związku Kolarskiego oraz Kolegium Sędziów MWZKOL
+
+## 9. Uczestnictwo :
+
+W Wyścigu prawo startu maja zawodnicy i zawodniczki z aktualną licencją PZKOL na rok 2026 oraz ważne badania lekarskie pozwalające na udział w zawodach.
+
+- Pełnoletni zawodnicy bez licencji mają prawo startu w wyścigu w kategorii AMATOR na rowerach przełajowych jak i MTB .
+- Zawodnicy muszą podpisać oświadczenie o braku przeciwskazań zdrowotnych i petnej odpowiedzialności związanej z uczestnictwem w wyścigu
+- Uczestnicy wyścigu obowiązani są posiadać polisę OC i NNW
+- Zawodnicy startują na własna odpowiedzialność
+
+## 10. Zgłoszenia i opłaty :
+
+Zgłoszenia i opłaty do wyścigu wyłącznie drogą elektroniczną w terminie 5.11.2026r (czwartek do godziny 18:00 TARYFIKATOR „A")
+
+Po przez stronę www.akces-sport.pl/zapisy/
+
+| Kategorie                             | optata startowa „A"   | optata startowa „B"   |
+|---------------------------------------|-----------------------|-----------------------|
+| Zak Dz. / Cht                         | 15zł                  | 30 zt                 |
+| Młodzik /młodziczka                   | 25zł                  | 50 zł                 |
+| Junior mtodszy /juniorka młodsza 30zł |                       | 60 zł                 |
+| Junior / juniorka                     | 50 zł                 | 100 zł                |
+| Elita M/K                             | 60 zł                 | 120 zł                |
+| U 23-M/K                              | 60 zł                 | 120 zt                |
+| Masters M/K                           | 80 zł                 | 160 zł                |
+| Amator M /K                           | 100 zł                | 150 zł                |
+
+Zgłoszenia w biurze zawodów OBOWIĄZUJE taryfikator „B"
+
+Weryfikacja zgłoszeń i wydawanie numerów startowych i chipów w dniu zawodów w biurze na godzinę przed startem poszczególnych kategorii wiekowych
+
+UWAGA : zawodnik ma obowiązek zwrócić komplet numerów startowych i chip
+
+Za niezwrócenie lub zniszczenie numeru lub chipa opłata 100zł
+
+Osoba zgłaszana do wyścigu aby uczestniczyć w zawodach musi znać i akceptować regulamin (organizator nie przyjmuje zastrzeżeń do trasy i warunków panujących na trasie zawodów) .
+
+Zawodnicy kategorii Amator będą ustawiani na starcie zgodnie z kolejnością zgłoszeń, pozostałe kategorie zgodnie z przepisami Polskiego Związku Kolarskiego .
+
+## 11. Program Zawodów :
+
+8:00 - otwarcie biura
+
+8:00 - 8.50 - Trening na trasie zawodów
+
+9:00 - kategoria Amator Mężczyźni (około 45 min)
+
+9:01 - kategoria Amator Kobiety (Okoto 30 min)
+
+10:00 - kategoria Masters I (35-44), II (45-54) (ok 45 minut)
+
+10:01 - kategoria Masters III (55-64), IV (65 i starsi) (okoto 35 min)
+
+11:00— kategoria Elita Kobiet / U-23 / Juniorka (ok 45 minut)
+
+11:01— kategoria Juniorka Mtodsza (około 30 min)
+
+11:02 - kategoria Zak Chłopcy, Zak Dziewczyny - Jedna Pełna Runda
+
+12:00- I BLOK DEKORACYJNY (Zakończonych wyścigów)
+
+12:30 - kategoria Elita Mężczyzn / U -23 ( ok 60 minut)
+
+12:31 - kategoria Junior ( ok 40 minut)
+
+13:45- kategoria Młodzik (ok 20 minut)
+
+13:46 - kategoria Młodziczka ) ok 20 minut)
+
+14:20- kategoria Junior Mtodszy
+
+15:20 \_ II BLOK DEKORACYJNY
+
+## 12. Nagrody
+
+Suma nagród finansowych zawodników licencjonowanych zgodnie z wytycznymi na sezon przetajowy 2026/2027 w klasie Pucharu Polski wynosi 16.000,00 zł
+
+| KATEGORIA                      | 1      | 2       |        | 4      | 5      |        |   7 |   8 |   9 |   10 | SUMA    |
+|--------------------------------|--------|---------|--------|--------|--------|--------|-----|-----|-----|------|---------|
+| Elita -M/U 23 (Open)           | 1200   | 900     | 700    | 500    | 400    | 350    | 250 | 200 | 150 |  150 | 4800,0l |
+| U-23 M                         | 500    | 400     | 300    |        |        |        |     |     |     |      | 1200,01 |
+| Junior                         | 400    | 300     | 250    | 200    | 150    | 150    | 100 |     |     |      | 1550,0( |
+| Elita -K U-23, Juniorka (Open) | 1200   | 900     | 700    | 500    | 400    | 350    | 250 | 200 | 150 |  150 | 4800,01 |
+| Juniorka                       | 400    | 300     | 250    |        |        |        |     |     |     |      | 950,00  |
+| Junior młodszy                 | 300    | 250     | 200    | 150    | 150    | 100    | 100 | 100 |     |      | 1350,01 |
+| Juniorka młodsza               | 300    | 250     | 200    | 150    | 150    | 100    | 100 | 100 |     |      | 1350,01 |
+| Masters I                      | puchar | pucha r | puchar |        |        |        |     |     |     |      |         |
+| Masters II                     | Puchar | pucha r | puchar |        |        |        |     |     |     |      |         |
+| Masters III                    | puchar | pucha   | puchar |        |        |        |     |     |     |      |         |
+| Masters IV                     | puchar | pucha r | puchar |        |        |        |     |     |     |      |         |
+| Zak Chłopcy                    | puchar | puchar  | puchar | puchar | Puchar | puchar |     |     |     |      |         |
+| Żak Dziewczęta                 | puchar | puchar  | puchar | puchar | Puchar | puchar |     |     |     |      |         |
+| Mtodzik                        | puchar | puchar  | puchar | puchar | Puchar | puchar |     |     |     |      |         |
+| Młodziczka                     | puchar | puchar  | puchar | puchar | Puchar | puchar |     |     |     |      |         |
+| Amator M                       | puchar | puchar  | puchar |        |        |        |     |     |     |      |         |
+| Amator K                       | puchar | puchar  | puchar |        |        |        |     |     |     |      |         |
+
+Do dekoracji obowiązek mają zgłosić się najlepsi zawodnicy /zawodniczki zgodnie z wykazem nagród finansowych i rzeczowych z poszczególnych kategorii wiekowych w klubowych strojach sportowych . Organizator zapewnia statuetki/puchary dla najlepszego zawodnika /zawodniczki w każdej kategorii wiekowej .
+
+## 13. Postanowienie końcowe :
+
+- wyścig przeprowadzony zgodnie z przepisami Polskiego Związku Kolarskiego i niniejszym regulaminem .
+- W kategorii Amator Mężczyźni i Kobiety dozwolony jest start na rowerach przełajowych oraz MTB , w pozostałych kategoriach zgodnie z przepisami Polskiego Związku Kolarskiego .
+- w sprawach nieujętych w regulaminie decyduje Sędzia Główny w porozumieniu z Organizatorem.
+- Organızator zastrzega sobie prawo do wprowadzenia wszystkich niezbędnych zmian technicznych w wyścigu w porozumieniu z Sędzią Głównym zawodów.
+- podczas zawodów obowiązują przepisy antydopingowe Polskiego Związku Kolarskiego i Polskiej Agencji Antydopingowej POLADA .
+- Wszyscy zawodnicy mają obowiązek jeździć w kaskach sztywnych i zabrania się pod karą dyskwalifikacji przebywania na trasie wyścigu podczas startów innych kategorii wiekowych.
+- Organizator nie ubezpiecza zawodników i osób towarzyszących od następstw nieszczęśliwych wypadków i od odpowiedzialności cywilnej.
+- Każdy uczestnik bierze udział w zawodach na własną odpowiedzialność , a w przypadku uczestników niepełnoletnich na wyłączną odpowiedzialność rodziców lub opiekunów .
+- Organizator oraz wszystkie osoby działające w jego imieniu lub z jego upoważnienia związane z przeprowadzeniem i organizacją zawodów nie ponoszą odpowiedzialności za szkody osobowe , rzeczowe i majątkowe uczestników, które wystąpiły przed, w trakcie i po zawodach .
+
+## 14. Najbliższe Szpitale :
+
+- Szpital św. Anny w Piasecznie Ul. Adama Mickiewicza 39, 05-500 Piaseczno, Tel 22 735 41 00
+- Powiatowe Centrum Medyczne w Grójcu Ul. Ks. Piotra Skargi 10, 05-600 Grójec,
+
+Tel 48 664 91 00
+
+<!-- image -->
+
+## Regulamin zatwierdzono PZKol w dhlu.... pruszköw, dn
+
+## Dane osobowe:
+
+<!-- image -->
+
+1. Administratorem danych osobowych uczestników, trenerów, członków drużyn i innego personelu jest LUKS Trójka Piaseczno 05-500 , ul. Kusocińskiego 9/2
+2. Wszelkie pytania związane z przetwarzaniem przez LUKS danych osobowych można kierować na adres: pt822wp.pl
+3. Dane osobowe (tj. imię i nazwisko, rocznik/kategoria wiekowa, nazwa licencji, nazwa klubu, województwo, wynik, wizerunek) będą przetwarzane w celu: umożliwienia startu w wyścigu i81 rocznica Powstania Warszawskiego", przeprowadzenia i odbycia Zawodów, informowania o przebiegu Zawodów i wynikach zawodników na nich osiąganych, promowania Zawodów w mediach oraz sprawozdawczości dotyczącej Zawodów.
+4. Podstawą przetwarzania Państwa danych osobowych jest: art. 6 ust. 1 lit. f RODO - prawnie uzasadniony interes LUKS w postaci umożliwienia zorganizowania i promowania Zawodów i działań LUKS z tym związanych, realizacji celów statutowych LUKS , w szczególności wspierania i upowszechniania kultury fizycznej i sportu oraz promowania rozwoju sportu, rekreacji i wychowania fizycznego oraz art. 6 ust. 1 lit. e RODO - niezbędność do wykonania zadania (zorganizowania Zawodów), realizowanego w interesie publicznym.
+5. LUKS Trójka może ujawniać dane osobowe upoważnionym pracownikom/współpracownikom LUKS, którzy w celu wykonywania swoich obowiązków muszą posiadać dostęp do tych danych; pozostałym wspótorganizatorom; partnerom i sponsorom Zawodów; przedstawicielom mediów relacjonującym przebieg Zawodów; podmiotom świadczącym na rzecz LUKS Trójka usługi, np. ustugi hostingu, usługi informatyczne; dostawcy oprogramowania służącego do zgłaszania kandydatów oraz podmiotom, w tym organom i urzędom, które mogą żądać ujawnienia danych osobowych na podstawie przepisów prawa (odbiorcy danych).
+6. Dane osobowe będą przechowywane do czasu zaistnienia podstawy do ich usunięcia.
+7. Posiada Pani/Pan prawo dostępu do treści swoich danych oraz prawo do ich:
+- 1) sprostowania w przypadku gdy Pani/Pana dane są nieprawidłowe lub niekompletne,
+- 2) usunięcia w przypadku gdy:
+- a) dane nie są już niezbędne do celów, dla których zostały przetwarzane,
+- b) cofnie Pani/Pan swoją zgodę na przetwarzanie danych i brak jest innej podstawy przetwarzania,
+- c) wniesie Pani/Pan sprzeciw wobec przetwarzania danych i brak jest nadrzędnych prawnie uzasadnionych podstaw przetwarzania,
+- d) dane są przetwarzane niezgodnie z prawem,
+- e) dane powinny być usunięte w celu wywiązania się z obowiązku wynikającego z przepisu prawa,
+- 3) ograniczenia przetwarzania w przypadku, gdy:
+- a) kwestionuje Pani/Pan prawidfowość danych osobowych - na okres pozwalający sprawdzić prawidłowość tych danych,
+- b) dane są przetwarzane niezgodnie z prawem, ale nie wyraża Pani/Pan zgody na ich usunięcie,
+- c) dane nie są już potrzebne dla LUKS Trójka , ale mogą być potrzebne Pani/Panu do obrony lub dochodzenia roszczeń,
+- d) wniesie Pani/Pan sprzeciw wobec przetwarzania danych - do czasu ustalenia, czy prawnie uzasadnione podstawy po stronie LUKS Trójka są nadrzędne wobec podstawy Pani/Pana sprzeciwu,
+- 4) przenoszenia danych w przypadku gdy przetwarzanie danych odbywa się na podstawie zgody oraz odbywa się w sposób zautomatyzowany,
+- 5) wniesienia sprzeciwu wobec ich przetwarzania w przypadku, gdy przetwarzanie odbywa się na podstawie prawnie uzasadnionego interesu, a sprzeciw jest uzasadniony w związku z Pani/Pana szczególną sytuacją.
+8. Posiada Pani/Pan prawo wniesienia skargi do organu nadzorczego, którym jest Prezes Urzędu Ochrony Danych Osobowych, gdy uzna Pani/Pan, iż przetwarzanie danych osobowych jest niezgodne z obowiązującymi przepisami.
+9. W przypadku jeśli Pani/Pana dane osobowe nie zostały podane przez Panią/Pana osobiście, oznacza to, że
+
+uzyskaliśmy je od klubu sportowego lub związku sportowego, do którego Pan/Pani przynależy. Podanie danych osobowych nie było wymogiem ustawowym, ale jest konieczne do wzięcia udziału w Zawodach.
+
+10. Pani/Pana dane osobowe nie będą przekazywane do odbiorców w państwach trzecich.
+11. Pani/Pana dane osobowe nie podlegają zautomatyzowanemu podejmowaniu decyzji.
+
+Wizerunek. Wszyscy uczestnicy, trenerzy, członkowie drużyn i inny powiązany personel biorący udział w Zawodach 81 Rocznica Powstania Warszawskiego wyrażają zgodę na rozpowszechnienie swojego wizerunku, utrwalonego w formie zdjęć lub relacji video, sporządzanych w trakcie Zawodów, w tym np. w czasie udziału w zawodach, również w obecności innych uczestników. Zdjęcia i relacje video mogą być dostępne w prasie, na stronach internetowych Organizatorów, branżowych stronach internetowych, kontach Organizatorów w mediach spotecznościowych oraz w informatorach branżowych.
+
+## POLSKI ZWIĄZEK KOLARSKI
+
+<!-- image -->
+
+<!-- image -->

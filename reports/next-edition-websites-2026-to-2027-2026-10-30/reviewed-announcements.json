@@ -1,0 +1,200 @@
+[
+  {
+    "race2026": {
+      "id": "9b9321de-d8f7-427b-a3f8-21f7fc482b57",
+      "slug": "krkonosska-70-mtb-2026",
+      "name": "Krkonošská 70 MTB",
+      "start_date": "2026-09-05",
+      "website_url": "https://www.krkonosska70mtb.cz",
+      "location": {
+        "country_code": "CZ",
+        "municipality": "5.9.2026"
+      }
+    },
+    "announcedName": "Krkonošská 70 MTB",
+    "startDate": "2027-09-04",
+    "endDate": null,
+    "sourceUrl": "https://www.krkonosska70mtb.cz/",
+    "evidenceFile": "pages/68a6f95268d82d3166e7.txt",
+    "status": "published",
+    "notes": "Datum oznámeno u jubilejního 20. ročníku. Před přenosem místa opravit historický údaj: obec v záznamu 2026 chybně obsahuje datum 5.9.2026; pořadatel uvádí Janské Lázně.",
+    "catalogueCheck": "Published 2026-10-30 after explicit user instruction; public page HTTP 200 and date verified.",
+    "publicUrl": "https://letsrace.cz/cs/race/krkonosska-70-mtb-2027"
+  },
+  {
+    "race2026": {
+      "id": "b526c810-4dff-4348-a9bb-b69843a7adc0",
+      "slug": "lesak-cup-2026",
+      "name": "Lesák CUP",
+      "start_date": "2026-08-29",
+      "website_url": "https://lesak-cup.cz/",
+      "location": {
+        "country_code": "CZ",
+        "municipality": "Červený Kostelec"
+      }
+    },
+    "announcedName": "Lesák Cup",
+    "startDate": "2027-08-28",
+    "endDate": null,
+    "sourceUrl": "https://lesak-cup.cz/",
+    "evidenceFile": "pages/76ebbe9a9daf89a82b9c.txt",
+    "status": "published",
+    "notes": "Výslovné oznámení příštího ročníku. Nové dějiště je centrum Červeného Kostelce; staré podrobnosti pro Bohdašín nepřenášet jako potvrzené.",
+    "catalogueCheck": "Published 2026-10-30 after explicit user instruction; public page HTTP 200 and date verified.",
+    "publicUrl": "https://letsrace.cz/cs/race/lesak-cup-2027"
+  },
+  {
+    "race2026": {
+      "id": "c7227c5f-649a-4e08-8145-fc540b46a275",
+      "slug": "praha-doksy-2026",
+      "name": "PRAHA – DOKSY",
+      "start_date": "2026-05-28",
+      "website_url": "https://doksy.vinohradskeslapky.com/",
+      "location": {
+        "country_code": "CZ",
+        "municipality": "Všetaty"
+      }
+    },
+    "announcedName": "Praha–Doksy",
+    "startDate": "2027-05-27",
+    "endDate": null,
+    "sourceUrl": "https://doksy.vinohradskeslapky.com/",
+    "evidenceFile": "pages/fc2a51809722f78e1280.txt",
+    "status": "published",
+    "notes": "Poděkování za 44. ročník výslovně uvádí další ročník 27.05.2027.",
+    "catalogueCheck": "Published 2026-10-30 after explicit user instruction; public page HTTP 200 and date verified.",
+    "publicUrl": "https://letsrace.cz/cs/race/praha-doksy-2027"
+  },
+  {
+    "race2026": {
+      "id": "be6c6652-e382-48c2-91a5-e59ea6140a1e",
+      "slug": "ozp-50-podralsko-2026",
+      "name": "OZP 50 PODRALSKO",
+      "start_date": "2026-06-07",
+      "website_url": "https://www.mtbpodralsko.cz",
+      "location": {
+        "country_code": "CZ",
+        "municipality": "Osečná"
+      }
+    },
+    "announcedName": "OZP 50 Podralsko",
+    "startDate": "2027-06-06",
+    "endDate": null,
+    "sourceUrl": "https://www.mtbpodralsko.cz/",
+    "evidenceFile": "pages/aa3c1c620fcc0bf4daa7.txt",
+    "status": "published",
+    "notes": "Datum je uvedeno u názvu závodu v záhlaví pořadatele.",
+    "catalogueCheck": "Published 2026-10-30 after explicit user instruction; public page HTTP 200 and date verified.",
+    "publicUrl": "https://letsrace.cz/cs/race/ozp-50-podralsko-2027"
+  },
+  {
+    "race2026": {
+      "id": "e8a17fb2-9103-4cd9-a3a9-40bfbb2f057d",
+      "slug": "montes-ferrei-latinsky-hory-zelezne-2026",
+      "name": "Montes Ferrei (latinsky) – Hory železné",
+      "start_date": "2026-07-18",
+      "website_url": "https://www.montesferrei.cz/",
+      "location": {
+        "country_code": "CZ",
+        "municipality": "Hlinsko"
+      }
+    },
+    "announcedName": "Montes Ferrei",
+    "startDate": "2027-06-16",
+    "endDate": null,
+    "sourceUrl": "https://www.montesferrei.cz/",
+    "evidenceFile": "pages/97cdca69af549e5d32ad.txt",
+    "status": "published",
+    "notes": "Nový termín je výslovný; nepřepočítávat jej ze starého červencového termínu. V roce 2026 existují dva podobné záznamy s různými dny; před založením vyřešit totožnost. Propozice 2027 termín opakují.",
+    "catalogueCheck": "Published 2026-10-30 after explicit user instruction; public page HTTP 200 and date verified.",
+    "publicUrl": "https://letsrace.cz/cs/race/montes-ferrei-2027"
+  },
+  {
+    "race2026": {
+      "id": "7c25ac30-3bab-4844-8a9e-6b6fd2342998",
+      "slug": "casovka-3xtop-cz-lysa-hora-2026",
+      "name": "Časovka 3xTOP.cz Lysá hora",
+      "start_date": "2026-08-09",
+      "website_url": "https://www.3xtop.cz/cs/",
+      "location": {
+        "country_code": "CZ",
+        "municipality": "Lysá hora"
+      }
+    },
+    "announcedName": "Časovka 3xTOP.cz Lysá hora",
+    "startDate": "2027-08-08",
+    "endDate": null,
+    "sourceUrl": "https://www.3xtop.cz/cs/8-cesky-obsah/novinky/218-%C4%8Dasovka-3xtop-cz-lys%C3%A1-hora-2027",
+    "evidenceFile": "pages/6ab0fdb77292ee5cfc3f.txt",
+    "status": "published",
+    "notes": "Odstavec Termín uvádí neděli 8.8.2027, start Papežov od 12 hodin. Datum 7.8.2027 na hlavní stránce je uzávěrka přihlášek, nikoli závod.",
+    "catalogueCheck": "Published 2026-10-30 after explicit user instruction; public page HTTP 200 and date verified.",
+    "publicUrl": "https://letsrace.cz/cs/race/casovka-3xtop-cz-lysa-hora-2027"
+  },
+  {
+    "race2026": {
+      "id": "f20ef423-3dc2-4841-b5cd-1bb84a91198f",
+      "slug": "iv-morava-bike-2026",
+      "name": "IV. MORAVA BIKE",
+      "start_date": "2026-06-13",
+      "website_url": "https://moravaflow.cz/moravabike/",
+      "location": {
+        "country_code": "CZ",
+        "municipality": "Dolní Morava"
+      }
+    },
+    "announcedName": "V. Morava Bike",
+    "startDate": "2027-06-19",
+    "endDate": "2027-06-20",
+    "sourceUrl": "https://moravaflow.cz/moravabike/",
+    "evidenceFile": "pages/471afcea27a0b580ba4c.txt",
+    "status": "published",
+    "notes": "Oznámení obou výzev výslovně přiřazuje cyklistické výzvě 19.–20. června. Koloběžková Morava Footbike má jiný termín 5.–6. června 2027; nepřiřazovat jej cyklistickému závodu.",
+    "catalogueCheck": "Published 2026-10-30 after explicit user instruction; public page HTTP 200 and date verified.",
+    "publicUrl": "https://letsrace.cz/cs/race/morava-bike-2027"
+  },
+  {
+    "race2026": {
+      "id": "45c78a4c-0472-45a9-9b08-64ce834154eb",
+      "slug": "svejkova-sobota-cykloturistika-2026",
+      "name": "Švejkova sobota - cykloturistika",
+      "start_date": "2026-08-29",
+      "website_url": "https://www.cyklosvec.cz/svejkova-sobota",
+      "location": {
+        "country_code": "CZ",
+        "municipality": "Písek"
+      }
+    },
+    "announcedName": "Švejkova sobota – cykloturistika",
+    "startDate": "2027-08-28",
+    "endDate": null,
+    "sourceUrl": "https://www.cyklosvec.cz/svejkova-sobota",
+    "evidenceFile": "pages/470afd6596979a48c76f.txt",
+    "status": "published",
+    "notes": "Jde o turistický pochod a cyklojízdu, nikoli automaticky závod. Zachovat správný typ akce.",
+    "catalogueCheck": "Published 2026-10-30 after explicit user instruction; public page HTTP 200 and date verified.",
+    "publicUrl": "https://letsrace.cz/cs/race/svejkova-sobota-cykloturistika-2027"
+  },
+  {
+    "race2026": {
+      "id": "b6d3c2b1-9324-4b31-b02e-06bbe3002416",
+      "slug": "sensor-cyklo-mastale-gravel-2026",
+      "name": "SENSOR Cyklo Maštale Gravel",
+      "start_date": "2026-06-20",
+      "website_url": "https://www.cyklomastale.cz/cs",
+      "location": {
+        "country_code": "CZ",
+        "municipality": "Maštale"
+      }
+    },
+    "announcedName": "Sensor Cyklo Maštale – hlavní závod MTB",
+    "startDate": "2027-06-19",
+    "endDate": null,
+    "sourceUrl": "https://www.cyklomastale.cz/cs/25-rocnik-zavodu-se-bude-konat-19-cervna-2027",
+    "evidenceFile": "pages/e50042980fa683b5e2ce.txt",
+    "status": "published",
+    "notes": "Výslovný termín 25. ročníku. Starý záznam nese označení Gravel; oznámení hlavního závodu samo nepotvrzuje konání nové gravelové varianty. Nepřenášet její disciplínu bez ověření.",
+    "catalogueCheck": "Published 2026-10-30 after explicit user instruction; public page HTTP 200 and date verified.",
+    "publicUrl": "https://letsrace.cz/cs/race/sensor-cyklo-mastale-2027"
+  }
+]

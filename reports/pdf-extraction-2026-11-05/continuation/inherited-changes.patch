@@ -1,0 +1,410 @@
+diff --git a/scripts/ocr-document.swift b/scripts/ocr-document.swift
+index b624bca1..7ad96fb5 100644
+--- a/scripts/ocr-document.swift
++++ b/scripts/ocr-document.swift
+@@ -1,25 +1,69 @@
+ // Read public organizer documents with macOS Vision. No network or model cost.
++// Images give one list of rows; a PDF gives one list per page. "file.pdf#2,5" reads only those pages.
+ import Foundation
+ import Vision
+ import ImageIO
++import CoreGraphics
+ 
+ struct Line: Codable { let text: String; let confidence: Float }
+-var output: [[Line]] = []
+-for path in CommandLine.arguments.dropFirst() {
++let maxSide: CGFloat = 2800
++let languages = ["cs-CZ", "pl-PL", "de-DE", "it-IT", "fr-FR", "en-US"]
++
++func recognise(_ handler: VNImageRequestHandler) -> [Line] {
+     let request = VNRecognizeTextRequest()
+     request.recognitionLevel = .accurate
+     request.usesLanguageCorrection = false
+     request.automaticallyDetectsLanguage = false
+     request.usesCPUOnly = true
+     let supported = (try? request.supportedRecognitionLanguages()) ?? []
+-    request.recognitionLanguages = ["en-US"].filter { supported.contains($0) }
+-    do {
+-        try VNImageRequestHandler(url: URL(fileURLWithPath: path)).perform([request])
+-        output.append((request.results ?? []).compactMap { observation in
+-            guard let candidate = observation.topCandidates(1).first else { return nil }
+-            return Line(text: candidate.string, confidence: candidate.confidence)
+-        })
+-    } catch { output.append([]) }
++    request.recognitionLanguages = languages.filter { supported.contains($0) }
++    guard (try? handler.perform([request])) != nil else { return [] }
++    // A table's cells come back one by one. Rows are what make "10:00 žáci" mean anything.
++    let cells: [(text: String, confidence: Float, box: CGRect)] = (request.results ?? []).compactMap { observation in
++        guard let candidate = observation.topCandidates(1).first else { return nil }
++        return (candidate.string, candidate.confidence, observation.boundingBox)
++    }.sorted { $0.box.midY > $1.box.midY }
++    var rows: [[(text: String, confidence: Float, box: CGRect)]] = []
++    for cell in cells {
++        if let last = rows.last, let first = last.first, abs(first.box.midY - cell.box.midY) < min(first.box.height, cell.box.height) * 0.6 {
++            rows[rows.count - 1].append(cell)
++        } else { rows.append([cell]) }
++    }
++    return rows.map { row in
++        let ordered = row.sorted { $0.box.minX < $1.box.minX }
++        return Line(text: ordered.map { $0.text }.joined(separator: "  "), confidence: ordered.map { $0.confidence }.min() ?? 0)
++    }
++}
++
++func pdfPage(_ page: CGPDFPage) -> CGImage? {
++    let box = page.getBoxRect(.mediaBox)
++    guard box.width > 0, box.height > 0 else { return nil }
++    let scale = min(maxSide / max(box.width, box.height), 3)
++    let width = Int(box.width * scale), height = Int(box.height * scale)
++    guard let context = CGContext(data: nil, width: width, height: height, bitsPerComponent: 8, bytesPerRow: 0,
++        space: CGColorSpaceCreateDeviceRGB(), bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue) else { return nil }
++    context.setFillColor(CGColor(red: 1, green: 1, blue: 1, alpha: 1))
++    context.fill(CGRect(x: 0, y: 0, width: width, height: height))
++    context.scaleBy(x: scale, y: scale)
++    context.translateBy(x: -box.minX, y: -box.minY)
++    context.drawPDFPage(page)
++    return context.makeImage()
++}
++
++var output: [[Line]] = []
++for argument in CommandLine.arguments.dropFirst() {
++    let parts = argument.components(separatedBy: "#")
++    let path = parts[0]
++    if path.lowercased().hasSuffix(".pdf") {
++        guard let document = CGPDFDocument(URL(fileURLWithPath: path) as CFURL) else { output.append([]); continue }
++        let wanted = parts.count > 1 ? parts[1].split(separator: ",").compactMap { Int($0) } : Array(1...max(1, document.numberOfPages))
++        for number in wanted {
++            guard let page = document.page(at: number), let image = pdfPage(page) else { output.append([]); continue }
++            output.append(recognise(VNImageRequestHandler(cgImage: image)))
++        }
++    } else {
++        output.append(recognise(VNImageRequestHandler(url: URL(fileURLWithPath: path))))
++    }
+ }
+ let encoded = try JSONEncoder().encode(output)
+ FileHandle.standardOutput.write(encoded)
+diff --git a/src/lib/__tests__/practical-extraction.test.ts b/src/lib/__tests__/practical-extraction.test.ts
+index 428ffc3f..759a2d4e 100644
+--- a/src/lib/__tests__/practical-extraction.test.ts
++++ b/src/lib/__tests__/practical-extraction.test.ts
+@@ -1,5 +1,5 @@
+-import { expect, it } from "vitest";
+-import { verifyPracticalExtraction } from "@/lib/catalog/practical-extraction";
++import { describe, expect, it } from "vitest";
++import { isOwnDocument, verifyPracticalExtraction } from "@/lib/catalog/practical-extraction";
+ import { practicalDetailsForEvent, readPracticalDetails } from "@/lib/practical-details";
+ const url = "https://club.test/race-2027";
+ const identity = "JBC 4X Revelations";
+@@ -53,3 +53,17 @@ it("rejects a malformed source URL without losing another correctly sourced fiel
+   expect(result.rejected).toEqual(["venue"]);
+   expect(result.details.organizer?.value.name).toBe("Revelations Club");
+ });
++
++describe("a race's own regulations", () => {
++  const context = { name: "Mistrovství Ústeckého kraje v cyklokrosu", startDate: "2026-11-07", municipality: "Nové Město v Krušných horách" };
++  const own = { url: "https://x.cz/propozice.pdf", links: [], text: "ROZPIS\nMistrovství Ústeckého kraje v cyklokrosu pro rok 2026\nTermín Sobota 7.11 2026 v 10:00 hod\nMísto Běžecký stadion Nové Město v Krušných horách\nRegistrace do 6.11.2026" };
++  it("recognises a document opening with the race's day and name", () => expect(isOwnDocument(own, context)).toBe(true));
++  it("does not take a series' rulebook for it", () => {
++    const rulebook = { ...own, text: `Generalausschreibung Mistrovství Ústeckého kraje\n7.11.2026 Kolo 1\n14.11.2026 Kolo 2\n21.11.2026 Kolo 3\n28.11.2026 Kolo 4\n5.12.2026 Kolo 5` };
++    expect(isOwnDocument({ ...rulebook, text: rulebook.text.replace(/\n5\.12\.2026 Kolo 5/, "\n1.12.2026 Kolo 5") }, context)).toBe(false);
++  });
++  it("does not take a document about another day or another race", () => {
++    expect(isOwnDocument({ ...own, text: own.text.replace("7.11 2026", "8.11 2026").replace("6.11.2026", "9.10.2026") }, context)).toBe(false);
++    expect(isOwnDocument({ ...own, url: "https://x.cz/jine.pdf", text: "Jiný závod v Brně\nTermín 7.11.2026" }, context)).toBe(false);
++  });
++});
+diff --git a/src/lib/__tests__/practical-partial-read.test.ts b/src/lib/__tests__/practical-partial-read.test.ts
+index 5f54def2..1a3b3339 100644
+--- a/src/lib/__tests__/practical-partial-read.test.ts
++++ b/src/lib/__tests__/practical-partial-read.test.ts
+@@ -48,7 +48,7 @@ for (const website of [null, "https://mtbs.cz/sekce/kalendar"]) {
+       const result = await enrichPracticalDetails({ ids: ["race"], structuredOnly: true, apply: true, audit });
+       expect(result).toMatchObject({ considered: 1, read: 1, changedFacts: 0, failed: 0 });
+       expect(mocks.read).toHaveBeenCalledExactlyOnceWith(mocks.regulations, expect.anything());
+-      expect(audit).toHaveBeenCalledWith(expect.objectContaining({ checked: { details: {}, rejected: [] } }));
++      expect(audit).toHaveBeenCalledWith(expect.objectContaining({ checked: expect.objectContaining({ details: {}, rejected: [] }) }));
+       expect(mocks.mark).toHaveBeenCalledWith(expect.anything(), mocks.regulations, expect.stringContaining("race"), expect.any(String));
+     } finally { mocks.website = "https://club.test/"; mocks.regulations = null; }
+   });
+diff --git a/src/lib/catalog/document-ocr.ts b/src/lib/catalog/document-ocr.ts
+index 904e76fb..dd318335 100644
+--- a/src/lib/catalog/document-ocr.ts
++++ b/src/lib/catalog/document-ocr.ts
+@@ -9,7 +9,7 @@ import * as cheerio from "cheerio";
+ type OcrLine = { text: string; confidence: number };
+ let building: Promise<string> | undefined;
+ const execute = (command: string, args: string[], timeout: number) => new Promise<string>((ok, fail) => {
+-  execFile(command, args, { timeout, maxBuffer: 4 * 1024 * 1024 }, (error, stdout) => error ? fail(error) : ok(stdout));
++  execFile(command, args, { timeout, maxBuffer: 32 * 1024 * 1024 }, (error, stdout) => error ? fail(error) : ok(stdout));
+ });
+ async function binary(): Promise<string> {
+   building ??= (async () => {
+@@ -58,3 +58,58 @@ export async function embeddedDocumentText(html: string): Promise<string> {
+     return texts.join("\n\n");
+   } finally { await rm(folder, { recursive: true, force: true }); }
+ }
++
++const MAX_OCR_PAGES = 15;
++const PAGE_TIMEOUT = 45_000;
++// The first use after a while spends about 40 s loading the recognition models.
++const COLD_START = 90_000;
++
++/** Pages of a PDF that hold no real text, read as pictures. Numbers count from 1. Cached by bytes. */
++export async function pdfPagesText(bytes: Uint8Array, pages: number[]): Promise<Map<number, string>> {
++  const read = new Map<number, string>();
++  const wanted = pages.slice(0, MAX_OCR_PAGES);
++  if (process.platform !== "darwin" || !wanted.length) return read;
++  const hash = createHash("sha1").update(bytes).digest("hex");
++  await mkdir(resolve("tmp/ocr-cache"), { recursive: true });
++  const cachePath = (page: number) => resolve(`tmp/ocr-cache/${hash}-p${page}.json`);
++  const missing: number[] = [];
++  for (const page of wanted) {
++    if (existsSync(cachePath(page))) read.set(page, JSON.parse(await readFile(cachePath(page), "utf8")));
++    else missing.push(page);
++  }
++  if (!missing.length) return read;
++  const folder = await mkdtemp(join(tmpdir(), "letsrace-ocr-"));
++  try {
++    const path = join(folder, "document.pdf");
++    await writeFile(path, bytes);
++    const got = JSON.parse(await execute(await binary(), [`${path}#${missing.join(",")}`], COLD_START + PAGE_TIMEOUT * missing.length)) as OcrLine[][];
++    for (const [index, page] of missing.entries()) {
++      const text = (got[index] ?? []).map((line) => line.text).join("\n");
++      read.set(page, text);
++      const temporary = `${cachePath(page)}.${randomUUID()}`;
++      await writeFile(temporary, JSON.stringify(text));
++      await rename(temporary, cachePath(page));
++    }
++    return read;
++  } finally { await rm(folder, { recursive: true, force: true }); }
++}
++
++/** A poster or scan sent as a picture. */
++export async function imageText(bytes: Uint8Array): Promise<string> {
++  if (process.platform !== "darwin" || bytes.length > 12 * 1024 * 1024) return "";
++  const hash = createHash("sha1").update(bytes).digest("hex");
++  await mkdir(resolve("tmp/ocr-cache"), { recursive: true });
++  const cache = resolve(`tmp/ocr-cache/${hash}-image.json`);
++  if (existsSync(cache)) return JSON.parse(await readFile(cache, "utf8"));
++  const folder = await mkdtemp(join(tmpdir(), "letsrace-ocr-"));
++  try {
++    const path = join(folder, "image");
++    await writeFile(path, bytes);
++    const got = JSON.parse(await execute(await binary(), [path], COLD_START + PAGE_TIMEOUT)) as OcrLine[][];
++    const text = (got[0] ?? []).map((line) => line.text).join("\n");
++    const temporary = `${cache}.${randomUUID()}`;
++    await writeFile(temporary, JSON.stringify(text));
++    await rename(temporary, cache);
++    return text;
++  } finally { await rm(folder, { recursive: true, force: true }); }
++}
+diff --git a/src/lib/catalog/practical-enrichment.ts b/src/lib/catalog/practical-enrichment.ts
+index 7ceeee08..9c79615c 100644
+--- a/src/lib/catalog/practical-enrichment.ts
++++ b/src/lib/catalog/practical-enrichment.ts
+@@ -77,7 +77,7 @@ export async function enrichPracticalDetails(options: { max?: number; ids?: stri
+   const history = new Map(probes.map(p => [p.event_id, p]));
+   const today = new Date().toISOString().slice(0, 10);
+   const rows = await readAllRows((from, to) => {
+-    let query = db.from("events").select("id,name,start_date,end_date,public_revision,practical_details,website_url,registration_url,regulations_url,location:locations(venue,country_code)").eq("visibility", "public").is("merged_into_id", null).gte("start_date", today).or("website_url.not.is.null,regulations_url.not.is.null,registration_url.not.is.null").order("start_date").order("id").range(from, to);
++    let query = db.from("events").select("id,name,start_date,end_date,public_revision,practical_details,website_url,registration_url,regulations_url,location:locations(venue,country_code,municipality)").eq("visibility", "public").is("merged_into_id", null).gte("start_date", today).or("website_url.not.is.null,regulations_url.not.is.null,registration_url.not.is.null").order("start_date").order("id").range(from, to);
+     if (options.ids?.length) query = query.in("id", options.ids);
+     return query;
+   });
+@@ -129,7 +129,7 @@ export async function enrichPracticalDetails(options: { max?: number; ids?: stri
+       const hash = createHash("sha256").update(JSON.stringify({ documents, name: row.name, startDate: row.start_date, endDate: row.end_date, knownVenue: row.location?.venue })).digest("hex"), reader = `${probe}:${row.id}`;
+       if (await alreadyRead(db, checkpointUrl, reader, hash)) { result.unchanged++; checkpoint = partial ? "failed" : "silent"; continue; }
+       if (Date.now() + 10_000 >= deadline) { defer(); break; }
+-      const context = { name: row.name, startDate: row.start_date, endDate: row.end_date, knownVenue: row.location?.venue ?? undefined, documents };
++      const context = { name: row.name, startDate: row.start_date, endDate: row.end_date, knownVenue: row.location?.venue ?? undefined, municipality: row.location?.municipality ?? null, ownUrls: [row.website_url, row.regulations_url], documents };
+       let deterministic: PracticalDetails = {};
+       for (const document of documents) deterministic = combinePracticalFindings(deterministic, practicalProgramme(document, context));
+       const fieldsNeeded = ["venue", "organizer", "schedule", "fees", "routes"].filter(field => !(field in deterministic));
+diff --git a/src/lib/catalog/practical-extraction.ts b/src/lib/catalog/practical-extraction.ts
+index 59bde357..bd2f6d75 100644
+--- a/src/lib/catalog/practical-extraction.ts
++++ b/src/lib/catalog/practical-extraction.ts
+@@ -66,62 +66,116 @@ const fold = (s: string) => s.normalize("NFD").replace(/\p{M}/gu, "").toLowerCas
+ const contains = (text: string, value: string) => fold(text).includes(fold(value));
+ const numberIn = (text: string, value: number) => new RegExp(`(?:^|[^\\d])${String(value).replace(".", "[.,]")}(?:[^\\d]|$)`).test(text.replace(/(\d)[\s\u00a0](?=\d{3}(?:\D|$))/g, "$1"));
+ 
++const OWN_DOCUMENT_HEAD = 2_400;
++const allDatesIn = (text: string) => new Set([...text.matchAll(/(?<![\d.])(\d{1,2})\.\s*(\d{1,2})\.?\s*(20\d{2})(?!\d)|(?<!\d)(20\d{2})-(\d{2})-(\d{2})(?!\d)/g)].map(m => m[1] ? `${m[3]}-${m[2]!.padStart(2, "0")}-${m[1].padStart(2, "0")}` : `${m[4]}-${m[5]}-${m[6]}`));
++/**
++ * Regulations name the race in their heading and its fee a page later, so one line rarely carries
++ * both. A document whose opening states this race's day and names it or its town is the race's own,
++ * and all of it speaks about this race. A series' rulebook lists many race days and is not.
++ */
++export function isOwnDocument(doc: PracticalDocument, context: { name: string; startDate: string; municipality?: string | null; ownUrls?: (string | null | undefined)[] }): boolean {
++  const head = doc.text.slice(0, OWN_DOCUMENT_HEAD);
++  // "Sobota 7.11 2026" is a full date too, however the separators fell.
++  if (!quoteContainsDate(head, context.startDate) && !allDatesIn(head).has(context.startDate)) return false;
++  const year = context.startDate.slice(0, 4);
++  // A deadline or two beside the race day is normal; a list of race days is a calendar.
++  if ([...allDatesIn(head)].filter(date => date.startsWith(year) && date !== context.startDate).length > 3) return false;
++  // The race's own record links it and it opens with the race's day: a nickname cannot change that.
++  if (context.ownUrls?.includes(doc.url)) return true;
++  const words = fold(context.name).replace(/\b20\d{2}\b/g, "").match(/[a-z0-9]{4,}/g) ?? [];
++  const foldedHead = fold(head), foldedUrl = fold(decodeURIComponent(doc.url.replace(/%(?![0-9a-f]{2})/gi, "%25")));
++  const place = fold(context.municipality ?? "");
++  return (place.length >= 3 && foldedHead.includes(place)) || words.filter(word => foldedHead.includes(word) || foldedUrl.includes(word)).length >= Math.min(2, words.length) && words.length > 0;
++}
++/** In a two-day programme the rows stand under their day. The nearest race day above the row is its day. */
++function headingDay(text: string, quote: string, start: string, end: string, states: (text: string, day: string) => boolean): string | null {
++  const days: string[] = [];
++  for (let at = Date.parse(`${start}T00:00:00Z`); at <= Date.parse(`${end}T00:00:00Z`) && days.length < 14; at += 86_400_000) days.push(new Date(at).toISOString().slice(0, 10));
++  const lines = text.split("\n"), first = quote.split("\n")[0] ?? quote, row = lines.findIndex(line => contains(line, first));
++  if (row < 0) return null;
++  for (let index = row; index >= Math.max(0, row - 40); index--) {
++    const found = days.filter(day => states(lines[index]!, day));
++    if (found.length === 1) return found[0]!;
++    if (found.length > 1) return null;
++  }
++  return null;
++}
++/** A label is the model's wording of a row; most of its words must still stand in the quote. */
++const labelSupported = (quote: string, label: string) => {
++  if (contains(quote, label)) return true;
++  const words = fold(label).match(/[\p{L}\p{N}]{3,}/gu) ?? [], text = fold(quote);
++  return words.length > 0 && words.filter(word => text.includes(word)).length * 2 >= words.length;
++};
++
+ /** Verify each field independently; a valid quotation is necessary but its values must match too. */
+-export function verifyPracticalExtraction(raw: unknown, context: { name: string; startDate: string; endDate?: string | null; knownVenue?: string; documents: PracticalDocument[]; now?: string }): { details: PracticalDetails; rejected: string[] } {
+-  const details: Record<string, unknown> = {}, rejected: string[] = [];
++export function verifyPracticalExtraction(raw: unknown, context: { name: string; startDate: string; endDate?: string | null; knownVenue?: string; municipality?: string | null; ownUrls?: (string | null | undefined)[]; documents: PracticalDocument[]; now?: string }): { details: PracticalDetails; rejected: string[]; reasons: Record<string, string> } {
++  const details: Record<string, unknown> = {}, rejected: string[] = [], reasons: Record<string, string> = {};
++  const refuse = (key: string, why: string) => { rejected.push(key); reasons[key] = why; };
+   const facts = z.object({ facts: z.record(z.string(), z.unknown()) }).safeParse(raw);
+-  if (!facts.success) return { details: {}, rejected: ["invalid_response"] };
++  if (!facts.success) return { details: {}, rejected: ["invalid_response"], reasons: { invalid_response: "not_facts" } };
+   const year = Number(context.startDate.slice(0, 4));
+   for (const [key, input] of Object.entries(facts.data.facts)) {
+-    if (!(key in practicalValueSchemas)) { rejected.push(key); continue; }
++    if (!(key in practicalValueSchemas)) { refuse(key, "unknown_field"); continue; }
+     const field = key as PracticalField, candidate = rawFact.safeParse(input);
+-    if (!candidate.success) { rejected.push(key); continue; }
++    if (!candidate.success) { refuse(key, "no_quote"); continue; }
+     const fact = candidate.data, doc = context.documents.find(d => d.url === fact.source_url);
+     const value = practicalValueSchemas[field].safeParse(fact.value);
+     const quoted = Boolean(doc && contains(doc.text, fact.quote));
+     const raceWords = fold(context.name).replace(/\b20\d{2}\b/g, "").match(/[a-z0-9]{3,}/g)?.filter(word => !["tour","cup","pro","mtb","cycling","race","maraton","marathon","challenge","series","pohar","zavod"].includes(word)) ?? [];
+     const identity = Boolean(doc && fact.identity_quote.length >= 4 && contains(doc.text, fact.identity_quote) && raceWords.filter(word => new RegExp(`\\b${word}\\b`).test(fold(fact.identity_quote))).length >= Math.min(2, raceWords.length) && raceWords.length > 0);
+     const edition = Boolean(doc && fact.edition_quote.length >= 8 && fact.edition_quote.includes(String(year)) && contains(doc.text, fact.edition_quote) && !/copyright|©/i.test(fact.edition_quote));
+-    if (!value.success || !quoted || !doc || (!identity && !(field === "venue" && context.knownVenue))) { rejected.push(key); continue; }
+-    if (fact.status === "current" && (!edition || [...fact.quote.matchAll(/(?:ročník|edition|saison|season|programme|program|propozice)\s*[:—-]?\s*(20\d{2})/gi)].some(match => Number(match[1]) !== year))) { rejected.push(key); continue; }
+-    if (["schedule", "fees", "routes"].includes(field) && fact.status !== "current") { rejected.push(key); continue; }
++    const ownDocument = Boolean(doc && isOwnDocument(doc, context));
++    if (!value.success) { refuse(key, "bad_value"); continue; }
++    if (!quoted || !doc) { refuse(key, "quote_not_in_document"); continue; }
++    if (!identity && !ownDocument && !(field === "venue" && context.knownVenue)) { refuse(key, "not_about_this_race"); continue; }
++    if (fact.status === "current" && ((!edition && !ownDocument) || [...fact.quote.matchAll(/(?:ročník|edition|saison|season|programme|program|propozice)\s*[:—-]?\s*(20\d{2})/gi)].some(match => Number(match[1]) !== year))) { refuse(key, "not_this_edition"); continue; }
++    if (["schedule", "fees", "routes"].includes(field) && fact.status !== "current" && !ownDocument) { refuse(key, "not_this_edition"); continue; }
+     const linkOK = (url?: string) => !url || doc.links.includes(url) || url === doc.url;
+     let supported = false;
+     if (field === "venue") {
+       const v = practicalValueSchemas.venue.parse(value.data);
+-      supported = [v.name, v.streetAddress, v.postalCode, v.locality].filter((v): v is string => Boolean(v)).every(part => contains(fact.quote, part)) && (identity || v.name === context.knownVenue);
+-      if (v.precision === "start" && !/start|départ|partenza|štart/i.test(fact.quote)) supported = false;
++      // Its address may stand a line or two from its name, but it must be in the document.
++      supported = (labelSupported(fact.quote, v.name) || ownDocument && contains(doc.text, v.name)) && [v.streetAddress, v.postalCode, v.locality].filter((part): part is string => Boolean(part)).every(part => contains(doc.text, part)) && (identity || ownDocument || v.name === context.knownVenue);
++      // Not every venue is said to be the start; it is then simply the venue.
++      if (v.precision === "start" && !/start|départ|partenza|štart/i.test(fact.quote)) value.data = { ...v, precision: "venue" };
+     } else if (field === "organizer") {
+       const v = practicalValueSchemas.organizer.parse(value.data);
+-      supported = contains(fact.quote, v.name) && /poradat|porada|organis|organizz|organiz|veranstalter|promoter/i.test(fold(fact.quote).replace(/\s/g, "")) && linkOK(v.url);
++      // "Organizátor:" often heads the lines below it, so the word may stand just above the quote.
++      const lines = doc.text.split("\n"), at = lines.findIndex(line => contains(line, v.name));
++      const nearby = at >= 0 ? lines.slice(Math.max(0, at - 3), at + 1).join(" ") : "";
++      const compactName = fold(v.name).replace(/[^a-z0-9]/g, ""), host = (() => { try { return fold(new URL(doc.url).hostname).replace(/[^a-z0-9]/g, ""); } catch { return ""; } })();
++      // A page on the club's own domain needs no "organiser" word to say whose it is.
++      supported = contains(doc.text, v.name) && (compactName.length >= 5 && host.includes(compactName) || /poradat|porada|usporiadat|organis|organizz|organiz|veranstalter|ausrichter|promoter/i.test(fold(`${fact.quote} ${nearby}`).replace(/\s/g, "")));
++      if (supported && !linkOK(v.url)) { const { url: _unsupported, ...rest } = v; value.data = rest; }
+     } else if (field === "schedule") {
+       const rows = practicalValueSchemas.schedule.parse(value.data).flatMap(v => {
+         const itemDoc = context.documents.find(d => d.url === (v.sourceUrl ?? doc.url));
+         const q = v.sourceQuote ?? fact.quote;
+-        const time = new RegExp(`\\b0?${Number(v.time.slice(0, 2))}[:.]${v.time.slice(3)}\\b`);
++        const time = new RegExp(`\\b0?${Number(v.time.slice(0, 2))}[:.h]${v.time.slice(3)}\\b`);
+         const oneDay = !context.endDate || context.endDate === context.startDate;
+-        const dateOK = quoteContainsDate(q, v.date) || oneDay && v.date === context.startDate && quoteContainsDate(itemDoc?.text.slice(0, 1600) ?? "", v.date);
+-        if (!itemDoc || !contains(itemDoc.text, q) || !contains(q, v.label) || v.date < context.startDate || v.date > (context.endDate ?? context.startDate) || !dateOK || !time.test(q)) return [];
++        const statesDay = (text: string, day: string) => quoteContainsDate(text, day) || allDatesIn(text).has(day);
++        const dateOK = statesDay(q, v.date) || oneDay && v.date === context.startDate && statesDay(itemDoc?.text.slice(0, OWN_DOCUMENT_HEAD) ?? "", v.date) || !oneDay && headingDay(itemDoc?.text ?? "", q, context.startDate, context.endDate ?? context.startDate, statesDay) === v.date;
++        if (!itemDoc || !contains(itemDoc.text, q) || !labelSupported(q, v.label) || v.date < context.startDate || v.date > (context.endDate ?? context.startDate) || !dateOK || !time.test(q)) return [];
+         return [{ ...v, approximate: v.approximate || /~\s*\d|cca\s*\d|approx|přibliž|pribliz/i.test(q), sourceQuote: q, sourceUrl: itemDoc.url, checkedAt: context.now ?? new Date().toISOString() }];
+       });
+       value.data = rows; supported = rows.length > 0;
+     } else if (field === "fees") {
+       const rows = practicalValueSchemas.fees.parse(value.data).filter(v => {
+         const itemDoc = context.documents.find(d => d.url === (v.sourceUrl ?? doc.url)), q = v.sourceQuote ?? fact.quote;
+-        return itemDoc && contains(itemDoc.text, q) && contains(q, v.label) && feeQuoteSupports(q, v.amount, v.currency, v.validUntil) && (!v.url || itemDoc.links.includes(v.url) || v.url === itemDoc.url);
++        return itemDoc && contains(itemDoc.text, q) && labelSupported(q, v.label) && !/\b(?:ceny|preis(?:geld)?|prize|premi|nagrod|poradie|prämie)\b/i.test(fold(q)) && feeQuoteSupports(q, v.amount, v.currency, v.validUntil) && (!v.url || itemDoc.links.includes(v.url) || v.url === itemDoc.url);
+       }).map(v => ({ ...v, sourceQuote: v.sourceQuote ?? fact.quote, sourceUrl: v.sourceUrl ?? doc.url, checkedAt: context.now ?? new Date().toISOString() }));
+       value.data = rows; supported = rows.length > 0;
+     } else {
+       const rows = practicalValueSchemas.routes.parse(value.data).filter(v => {
+         const itemDoc = context.documents.find(d => d.url === (v.sourceUrl ?? doc.url)), q = v.sourceQuote ?? fact.quote;
+-        return itemDoc && contains(itemDoc.text, q) && contains(q, v.name) && (v.distanceKm == null || numberIn(q, v.distanceKm) && /\bkm\b/i.test(q)) && (v.elevationM == null || numberIn(q, v.elevationM) && /převýš|prevys|elev|ascent|climb|höhen|v[ýy][šs]kov|dénivel|dislivello/i.test(q)) && (!v.surface || contains(q, v.surface)) && (!v.gpxUrl || itemDoc.links.includes(v.gpxUrl)) && (!v.mapUrl || itemDoc.links.includes(v.mapUrl));
++        return itemDoc && contains(itemDoc.text, q) && labelSupported(q, v.name) && (v.distanceKm == null || numberIn(q, v.distanceKm) && /\bkm\b/i.test(q) || numberIn(q, Math.round(v.distanceKm * 1000)) && /\d\s*m\b/i.test(q)) && (v.elevationM == null || numberIn(q, v.elevationM) && /převýš|prevys|elev|ascent|climb|höhen|v[ýy][šs]kov|dénivel|dislivello/i.test(q)) && (!v.gpxUrl || itemDoc.links.includes(v.gpxUrl)) && (!v.mapUrl || itemDoc.links.includes(v.mapUrl));
+       }).map(v => ({ ...v, sourceQuote: v.sourceQuote ?? fact.quote, sourceUrl: v.sourceUrl ?? doc.url, checkedAt: context.now ?? new Date().toISOString() }));
+       value.data = rows; supported = rows.length > 0;
+     }
+-    if (!supported) { rejected.push(key); continue; }
++    if (!supported) { refuse(key, "values_not_supported"); continue; }
+     details[field] = { value: value.data, sourceUrl: doc.url, quote: fact.quote, checkedAt: context.now ?? new Date().toISOString(), editionYear: year, status: fact.status };
+   }
+-  return { details: practicalDetailsSchema.parse(details), rejected };
++  return { details: practicalDetailsSchema.parse(details), rejected, reasons };
+ }
+ 
+ const dateTokens = (text: string) => [...text.matchAll(/\b(?:20\d{2}-\d{2}-\d{2}|\d{1,2}\.\s*\d{1,2}\.\s*20\d{2})\b/g)];
+diff --git a/src/lib/catalog/regulation-ages.ts b/src/lib/catalog/regulation-ages.ts
+index 1eee6054..f5cd8621 100644
+--- a/src/lib/catalog/regulation-ages.ts
++++ b/src/lib/catalog/regulation-ages.ts
+@@ -105,13 +105,31 @@ function isPdf(type: string, bytes: Uint8Array, url: string): boolean {
+   );
+ }
+ 
++/** A page with hardly any letters, or with letters from a font that lost its mapping, is a picture of text. */
++export function pageNeedsOcr(text: string): boolean {
++  const compact = text.replace(/\s/g, "");
++  if (compact.length < 40) return true;
++  const broken = [...compact].filter((c) => c === "\ufffd" || (c >= "\ue000" && c <= "\uf8ff") || (c >= "\u0000" && c < "\u0020")).length;
++  return broken / compact.length > 0.1;
++}
++
+ export async function pdfText(bytes: Uint8Array): Promise<string> {
+   const { extractText, getDocumentProxy } = await import("unpdf");
+   // Broken embedded fonts make pdf.js print one "Warning:" line per glyph.
+   // The text still extracts; only real failures should reach the log.
+-  const pdf = await getDocumentProxy(bytes, { verbosity: 0 });
++  // pdf.js takes the bytes away, and the picture reader may still need them.
++  const pdf = await getDocumentProxy(bytes.slice(), { verbosity: 0 });
+   const { text } = await extractText(pdf, { mergePages: false });
+-  return (Array.isArray(text) ? text : [text]).join("\n\n");
++  const pages = Array.isArray(text) ? text : [text];
++  const toRead = pages.flatMap((page, index) => pageNeedsOcr(page) ? [index + 1] : []);
++  if (!toRead.length) return pages.join("\n\n");
++  const { pdfPagesText } = await import("@/lib/catalog/document-ocr");
++  // Without the picture reader the document is still worth what its text pages hold.
++  const read = await pdfPagesText(bytes, toRead).catch(() => new Map<number, string>());
++  return pages.map((page, index) => {
++    const seen = read.get(index + 1);
++    return seen && seen.replace(/\s/g, "").length > page.replace(/\s/g, "").length ? seen : page;
++  }).join("\n\n");
+ }
+ 
+ export function htmlText(html: string): string {
+@@ -250,6 +268,11 @@ export async function readDocument(url: string, opts?: { maxBytes?: number }): P
+   const doc = await fetchBytes(url, opts?.maxBytes);
+   if (!doc) return null;
+   if (isPdf(doc.type, doc.bytes, url)) return { url, text: await pdfText(doc.bytes), html: null, thin: false };
++  if (/^image\/(png|jpe?g|webp|tiff)/.test(doc.type) || /\.(png|jpe?g|webp)(\?|$)/i.test(url)) {
++    const { imageText } = await import("@/lib/catalog/document-ocr");
++    const text = await imageText(doc.bytes).catch(() => "");
++    return text ? { url, text, html: null, thin: text.length < 300 } : null;
++  }
+   if (/text\/plain/.test(doc.type)) return { url, text: new TextDecoder("utf-8").decode(doc.bytes), html: null, thin: false };
+   if (isOfficeDocument(doc.type, doc.bytes, url)) {
+     const text = await officeText(doc.bytes, url);

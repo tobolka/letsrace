@@ -1,0 +1,149 @@
+{
+  "at": "2026-10-29T15:27:10.236Z",
+  "publicPages": [
+    {
+      "id": "1e89401b-7414-467e-99ff-26a9ff5751a2",
+      "slug": "sp-xco-zlatnicka-dolina-2027",
+      "name": "Sp XCO Zlatnicka Dolina",
+      "start_date": "2027-05-15",
+      "end_date": "2027-05-16",
+      "visibility": "public",
+      "location": {
+        "country_code": "SK",
+        "municipality": "Zlatnícka dolina (BIKE ARÉNA ZLATNÍCKA DOLINA), Slovensko"
+      },
+      "url": "https://letsrace.cz/cs/e/sp-xco-zlatnicka-dolina-2027",
+      "http": 200
+    },
+    {
+      "id": "211a0257-58b2-4c90-806a-5d5d62b85f6c",
+      "slug": "12-rocnik-ondavsky-cyklomaraton-2027",
+      "name": "12. ročník Ondavský cyklomaratón",
+      "start_date": "2027-07-18",
+      "end_date": "2027-07-18",
+      "visibility": "public",
+      "location": {
+        "country_code": "SK",
+        "municipality": "Stropkov"
+      },
+      "url": "https://letsrace.cz/cs/e/12-rocnik-ondavsky-cyklomaraton-2027",
+      "http": 200
+    },
+    {
+      "id": "2e2b3ce3-6eb9-4d8b-bb94-e0f4eed3b2f2",
+      "slug": "sp-xco-oslany-2027",
+      "name": "Sp XCO Oslany",
+      "start_date": "2027-07-31",
+      "end_date": "2027-08-01",
+      "visibility": "public",
+      "location": {
+        "country_code": "SK",
+        "municipality": "Oslany"
+      },
+      "url": "https://letsrace.cz/cs/e/sp-xco-oslany-2027",
+      "http": 200
+    },
+    {
+      "id": "32accab5-9f80-4c70-8f85-6c909403b3b2",
+      "slug": "humensky-mtb-maraton-singletracky-hubkova-2027",
+      "name": "Humenský MTB maratón Singletracky Hubková 2027",
+      "start_date": "2027-06-19",
+      "end_date": "2027-06-19",
+      "visibility": "public",
+      "location": {
+        "country_code": "SK",
+        "municipality": "Humenné"
+      },
+      "url": "https://letsrace.cz/cs/e/humensky-mtb-maraton-singletracky-hubkova-2027",
+      "http": 200
+    },
+    {
+      "id": "909f3f21-1c77-4814-ac72-895b6f2977ac",
+      "slug": "sp-xco-bystricany-2027",
+      "name": "Sp XCO Bystricany",
+      "start_date": "2027-06-05",
+      "end_date": "2027-06-06",
+      "visibility": "public",
+      "location": {
+        "country_code": "SK",
+        "municipality": "Bystričany"
+      },
+      "url": "https://letsrace.cz/cs/e/sp-xco-bystricany-2027",
+      "http": 200
+    },
+    {
+      "id": "9375abdf-f0ab-4f3c-a178-77724a2f7a48",
+      "slug": "istrofinal-sneznicky-mtb-maraton-2027",
+      "name": "ISTROFINAL Snežnický MTB maratón 2027",
+      "start_date": "2027-09-04",
+      "end_date": "2027-09-04",
+      "visibility": "public",
+      "location": {
+        "country_code": "SK",
+        "municipality": "Snežnica"
+      },
+      "url": "https://letsrace.cz/cs/e/istrofinal-sneznicky-mtb-maraton-2027",
+      "http": 200
+    },
+    {
+      "id": "976ae665-fab9-4382-a3d7-f0d0357c64aa",
+      "slug": "slovak-national-championships-xco-xcc-2027",
+      "name": "Slovak National Championships - XCO/XCC",
+      "start_date": "2027-07-17",
+      "end_date": "2027-07-18",
+      "visibility": "public",
+      "location": {
+        "country_code": "SK",
+        "municipality": "Bratislava"
+      },
+      "url": "https://letsrace.cz/cs/e/slovak-national-championships-xco-xcc-2027",
+      "http": 200
+    },
+    {
+      "id": "a8293764-24cb-42af-bdb3-6c159df04513",
+      "slug": "skoda-mtb-maraton-rajecke-teplice-2027",
+      "name": "ŠKODA MTB MARATÓN Rajecké Teplice 2027",
+      "start_date": "2027-05-22",
+      "end_date": "2027-05-22",
+      "visibility": "public",
+      "location": {
+        "country_code": "SK",
+        "municipality": "Rajecké Teplice"
+      },
+      "url": "https://letsrace.cz/cs/e/skoda-mtb-maraton-rajecke-teplice-2027",
+      "http": 200
+    },
+    {
+      "id": "e93c3021-d26c-4e12-9d73-c7e1ebe4d492",
+      "slug": "4-rocnik-novovesky-pojazd-2027",
+      "name": "4. ročník Novoveský pojazd",
+      "start_date": "2027-07-31",
+      "end_date": "2027-07-31",
+      "visibility": "public",
+      "location": {
+        "country_code": "SK",
+        "municipality": "Ruská Nová Ves"
+      },
+      "url": "https://letsrace.cz/cs/e/4-rocnik-novovesky-pojazd-2027",
+      "http": 200
+    },
+    {
+      "id": "f3d57c60-54ab-4bf5-b0a8-e2f2096eaca7",
+      "slug": "19-rocnik-casovky-do-vrchu-jantex-banske-mlacky-2027",
+      "name": "19. ročník časovky do vrchu Jantex Banské - Mláčky",
+      "start_date": "2027-08-15",
+      "end_date": "2027-08-15",
+      "visibility": "public",
+      "location": {
+        "country_code": "SK",
+        "municipality": "Banské"
+      },
+      "url": "https://letsrace.cz/cs/e/19-rocnik-casovky-do-vrchu-jantex-banske-mlacky-2027",
+      "http": 200
+    }
+  ],
+  "opsHttp": 200,
+  "opsReviewCandidates": 20,
+  "databaseOpenReviews": 20,
+  "passed": true
+}

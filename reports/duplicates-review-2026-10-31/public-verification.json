@@ -1,0 +1,34 @@
+[
+  {
+    "slug": "road-stage-orlicke-hory-2027",
+    "status": 200,
+    "date": "2027-06-05",
+    "end": "2027-06-05",
+    "place": "Deštné v Orlických horách",
+    "verified": true
+  },
+  {
+    "slug": "ischgl-ironbike-2027",
+    "status": 200,
+    "date": "2027-08-06",
+    "end": "2027-08-06",
+    "place": "Ischgl",
+    "verified": true
+  },
+  {
+    "slug": "glpk-gravel-2027",
+    "status": 200,
+    "date": "2027-04-17",
+    "end": "2027-04-17",
+    "place": "Ruda koło Górzna",
+    "verified": true
+  },
+  {
+    "slug": "bl-cyclo-cross-stahnsdorf-2026",
+    "status": 200,
+    "date": "2026-11-14",
+    "end": "2026-11-14",
+    "place": "Stahnsdorf",
+    "verified": true
+  }
+]

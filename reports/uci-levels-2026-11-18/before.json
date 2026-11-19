@@ -1,0 +1,520 @@
+[
+ {
+  "id": "548b093a-0ebf-4257-a685-f300fc66dae9",
+  "slug": "utsunomiya-cyclo-cross-day-2-2026",
+  "level": "local",
+  "age_categories": [],
+  "age_confidence": null,
+  "patch": {
+   "level": "international",
+   "age_categories": [
+    "junior",
+    "u23",
+    "elite"
+   ],
+   "age_confidence": "default"
+  }
+ },
+ {
+  "id": "482a44d8-7d1d-4ef3-8bc1-c86bd78708bd",
+  "slug": "astana-open-series-ii-2026",
+  "level": "local",
+  "age_categories": [
+   "kids",
+   "amateur"
+  ],
+  "age_confidence": "explicit",
+  "patch": {
+   "level": "international"
+  }
+ },
+ {
+  "id": "e676c38c-caa6-48ab-8cb5-a0c3c262147a",
+  "slug": "uci-mountain-bike-continental-series-dhi-araucania-2026",
+  "level": "continental",
+  "age_categories": [],
+  "age_confidence": null,
+  "patch": {
+   "age_categories": [
+    "junior",
+    "u23",
+    "elite"
+   ],
+   "age_confidence": "default"
+  }
+ },
+ {
+  "id": "df36fc06-addf-4855-8c4b-ddb3298cdc35",
+  "slug": "matsubushi-cyclocross-2026",
+  "level": "local",
+  "age_categories": [],
+  "age_confidence": null,
+  "patch": {
+   "level": "international",
+   "age_categories": [
+    "junior",
+    "u23",
+    "elite"
+   ],
+   "age_confidence": "default"
+  }
+ },
+ {
+  "id": "140fbc6c-a246-4b52-8db5-01a40372a16a",
+  "slug": "kansai-cyclocross-biwako-grand-prix-2026",
+  "level": "local",
+  "age_categories": [],
+  "age_confidence": null,
+  "patch": {
+   "level": "international",
+   "age_categories": [
+    "junior",
+    "u23",
+    "elite"
+   ],
+   "age_confidence": "default"
+  }
+ },
+ {
+  "id": "8ea9e0f7-53fa-4166-a875-b81daefa17d6",
+  "slug": "campeonato-internacional-de-luces-2026",
+  "level": "local",
+  "age_categories": [],
+  "age_confidence": null,
+  "patch": {
+   "level": "international",
+   "age_categories": [
+    "junior",
+    "u23",
+    "elite"
+   ],
+   "age_confidence": "default"
+  }
+ },
+ {
+  "id": "498a0022-be0a-4e6e-a89a-c8100980d629",
+  "slug": "ronde-van-brugge-tour-of-bruges-2027-03-25",
+  "level": "local",
+  "age_categories": [],
+  "age_confidence": null,
+  "patch": {
+   "level": "international",
+   "age_categories": [
+    "junior",
+    "u23",
+    "elite"
+   ],
+   "age_confidence": "default"
+  }
+ },
+ {
+  "id": "eb88af0c-1792-4f3c-9d43-d82ecdfb8562",
+  "slug": "santos-tour-down-under-2027-01-22",
+  "level": "local",
+  "age_categories": [],
+  "age_confidence": null,
+  "patch": {
+   "level": "international",
+   "age_categories": [
+    "junior",
+    "u23",
+    "elite"
+   ],
+   "age_confidence": "default"
+  }
+ },
+ {
+  "id": "31a5d0d0-46d2-41f2-9241-cf0bf70d1979",
+  "slug": "copenhagen-sprint-2027-06-13",
+  "level": "local",
+  "age_categories": [],
+  "age_confidence": null,
+  "patch": {
+   "level": "international",
+   "age_categories": [
+    "junior",
+    "u23",
+    "elite"
+   ],
+   "age_confidence": "default"
+  }
+ },
+ {
+  "id": "7f7cad60-12f0-49c4-9b1b-47f678abdf77",
+  "slug": "campeonato-brasileiro-de-ciclismo-de-pista-2026",
+  "level": "national",
+  "age_categories": [],
+  "age_confidence": null,
+  "patch": {
+   "age_categories": [
+    "junior",
+    "u23",
+    "elite"
+   ],
+   "age_confidence": "default"
+  }
+ },
+ {
+  "id": "9f04201c-eb43-4416-a30e-90fc288fdae5",
+  "slug": "hardwood-cross-2026",
+  "level": "local",
+  "age_categories": [],
+  "age_confidence": null,
+  "patch": {
+   "level": "international",
+   "age_categories": [
+    "junior",
+    "u23",
+    "elite"
+   ],
+   "age_confidence": "default"
+  }
+ },
+ {
+  "id": "efc25790-b296-47cd-8644-8e231b641934",
+  "slug": "campeonato-argentino-de-ciclismo-en-pista-2026",
+  "level": "local",
+  "age_categories": [],
+  "age_confidence": null,
+  "patch": {
+   "level": "international",
+   "age_categories": [
+    "junior",
+    "u23",
+    "elite"
+   ],
+   "age_confidence": "default"
+  }
+ },
+ {
+  "id": "0832d81d-cbd1-4e2c-9688-097d5ee06710",
+  "slug": "fnb-wines2whales-xcms-2026",
+  "level": "local",
+  "age_categories": [],
+  "age_confidence": null,
+  "patch": {
+   "level": "international",
+   "age_categories": [
+    "junior",
+    "u23",
+    "elite"
+   ],
+   "age_confidence": "default"
+  }
+ },
+ {
+  "id": "1841f20d-df1b-41ed-87d1-738925f35f7b",
+  "slug": "ibero-americano-xco-xcc-2026",
+  "level": "local",
+  "age_categories": [],
+  "age_confidence": null,
+  "patch": {
+   "level": "international",
+   "age_categories": [
+    "junior",
+    "u23",
+    "elite"
+   ],
+   "age_confidence": "default"
+  }
+ },
+ {
+  "id": "ddb63d03-26a3-4dc3-959d-f000760f9c25",
+  "slug": "national-track-championships-taichung-city-taiwan-2026",
+  "level": "national",
+  "age_categories": [],
+  "age_confidence": null,
+  "patch": {
+   "age_categories": [
+    "junior",
+    "u23",
+    "elite"
+   ],
+   "age_confidence": "default"
+  }
+ },
+ {
+  "id": "e2afc10d-c4eb-4b55-8997-b04b1547f722",
+  "slug": "cx-de-levis-2026",
+  "level": "local",
+  "age_categories": [],
+  "age_confidence": null,
+  "patch": {
+   "level": "international",
+   "age_categories": [
+    "junior",
+    "u23",
+    "elite"
+   ],
+   "age_confidence": "default"
+  }
+ },
+ {
+  "id": "df50385d-0eb2-4595-b814-3a0bf88d0d06",
+  "slug": "austral-wheelrace-2026",
+  "level": "local",
+  "age_categories": [],
+  "age_confidence": null,
+  "patch": {
+   "level": "international",
+   "age_categories": [
+    "junior",
+    "u23",
+    "elite"
+   ],
+   "age_confidence": "default"
+  }
+ },
+ {
+  "id": "859969a2-1e25-4b3c-93fb-9223cdf9c530",
+  "slug": "asia-mountain-bike-series-dirt-heroes-international-2026",
+  "level": "international",
+  "age_categories": [],
+  "age_confidence": null,
+  "patch": {
+   "age_categories": [
+    "junior",
+    "u23",
+    "elite"
+   ],
+   "age_confidence": "default"
+  }
+ },
+ {
+  "id": "6149714d-1065-4b7c-8fb2-390551d31520",
+  "slug": "national-track-championships-omnium-madison-2026",
+  "level": "national",
+  "age_categories": [],
+  "age_confidence": null,
+  "patch": {
+   "age_categories": [
+    "junior",
+    "u23",
+    "elite"
+   ],
+   "age_confidence": "default"
+  }
+ },
+ {
+  "id": "38fac618-d992-4009-ad36-a8f46f8cdff4",
+  "slug": "new-zealand-international-2026",
+  "level": "international",
+  "age_categories": [],
+  "age_confidence": null,
+  "patch": {
+   "age_categories": [
+    "junior",
+    "u23",
+    "elite"
+   ],
+   "age_confidence": "default"
+  }
+ },
+ {
+  "id": "b7649697-3331-406a-8469-a4e2dd4b1f7a",
+  "slug": "campeonato-nacional-de-pista-chile-2026",
+  "level": "local",
+  "age_categories": [],
+  "age_confidence": null,
+  "patch": {
+   "level": "international",
+   "age_categories": [
+    "junior",
+    "u23",
+    "elite"
+   ],
+   "age_confidence": "default"
+  }
+ },
+ {
+  "id": "2e73ae22-4a4f-4d8f-8a32-2c504c2890fe",
+  "slug": "acc-track-asia-cup-2026",
+  "level": "local",
+  "age_categories": [],
+  "age_confidence": null,
+  "patch": {
+   "level": "international",
+   "age_categories": [
+    "junior",
+    "u23",
+    "elite"
+   ],
+   "age_confidence": "default"
+  }
+ },
+ {
+  "id": "5f9fe0cd-e6e3-465a-ba21-c5a0c0e109b5",
+  "slug": "uae-tour-2027",
+  "level": "local",
+  "age_categories": [],
+  "age_confidence": null,
+  "patch": {
+   "level": "international",
+   "age_categories": [
+    "junior",
+    "u23",
+    "elite"
+   ],
+   "age_confidence": "default"
+  }
+ },
+ {
+  "id": "df479125-fa04-48a2-a6f5-ea01c4899af3",
+  "slug": "utsunomiya-cyclo-cross-day-1-2026",
+  "level": "local",
+  "age_categories": [],
+  "age_confidence": null,
+  "patch": {
+   "level": "international",
+   "age_categories": [
+    "junior",
+    "u23",
+    "elite"
+   ],
+   "age_confidence": "default"
+  }
+ },
+ {
+  "id": "4b4d47cb-2055-4b80-9a44-577eeff89048",
+  "slug": "new-zealand-grand-prix-2026",
+  "level": "local",
+  "age_categories": [],
+  "age_confidence": null,
+  "patch": {
+   "level": "international",
+   "age_categories": [
+    "junior",
+    "u23",
+    "elite"
+   ],
+   "age_confidence": "default"
+  }
+ },
+ {
+  "id": "087f89de-b935-4adb-8721-4a397940cbd3",
+  "slug": "uae-tour-women-2027",
+  "level": "local",
+  "age_categories": [],
+  "age_confidence": null,
+  "patch": {
+   "level": "international",
+   "age_categories": [
+    "junior",
+    "u23",
+    "elite"
+   ],
+   "age_confidence": "default"
+  }
+ },
+ {
+  "id": "e8ce569b-8db9-424e-9e8b-330a4e3b0271",
+  "slug": "mapei-cadel-evans-great-ocean-road-race-men-2027",
+  "level": "local",
+  "age_categories": [],
+  "age_confidence": null,
+  "patch": {
+   "level": "international",
+   "age_categories": [
+    "junior",
+    "u23",
+    "elite"
+   ],
+   "age_confidence": "default"
+  }
+ },
+ {
+  "id": "bf2192a1-3869-4a45-8244-40a1c5eac7e6",
+  "slug": "santos-tour-down-under-victoria-square-tarntanyangga-2027",
+  "level": "local",
+  "age_categories": [],
+  "age_confidence": null,
+  "patch": {
+   "level": "international",
+   "age_categories": [
+    "junior",
+    "u23",
+    "elite"
+   ],
+   "age_confidence": "default"
+  }
+ },
+ {
+  "id": "2154c4f3-85c2-4312-bee0-4b269f9c8dff",
+  "slug": "mapei-cadel-evans-great-ocean-road-race-women-2027",
+  "level": "local",
+  "age_categories": [],
+  "age_confidence": null,
+  "patch": {
+   "level": "international",
+   "age_categories": [
+    "junior",
+    "u23",
+    "elite"
+   ],
+   "age_confidence": "default"
+  }
+ },
+ {
+  "id": "dbeffc11-cd26-4067-9cdc-260465dbef6a",
+  "slug": "grand-prix-cycliste-de-quebec-2027",
+  "level": "local",
+  "age_categories": [],
+  "age_confidence": null,
+  "patch": {
+   "level": "international",
+   "age_categories": [
+    "junior",
+    "u23",
+    "elite"
+   ],
+   "age_confidence": "default"
+  }
+ },
+ {
+  "id": "fcbd9514-4525-4759-aeae-a5bc3bc364fd",
+  "slug": "tour-of-guangxi-2027",
+  "level": "local",
+  "age_categories": [],
+  "age_confidence": null,
+  "patch": {
+   "level": "international",
+   "age_categories": [
+    "junior",
+    "u23",
+    "elite"
+   ],
+   "age_confidence": "default"
+  }
+ },
+ {
+  "id": "b1d96777-4d27-4016-9a1c-28b92c1ff7be",
+  "slug": "grand-prix-cycliste-de-montreal-2027",
+  "level": "local",
+  "age_categories": [],
+  "age_confidence": null,
+  "patch": {
+   "level": "international",
+   "age_categories": [
+    "junior",
+    "u23",
+    "elite"
+   ],
+   "age_confidence": "default"
+  }
+ },
+ {
+  "id": "d4de01a5-c6c7-4670-b83b-7985e17d015d",
+  "slug": "tour-of-chongming-island-2027",
+  "level": "regional",
+  "age_categories": [],
+  "age_confidence": null,
+  "patch": {
+   "age_categories": [
+    "junior",
+    "u23",
+    "elite"
+   ],
+   "age_confidence": "default"
+  }
+ }
+]

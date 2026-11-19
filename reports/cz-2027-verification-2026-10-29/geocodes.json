@@ -1,0 +1,92 @@
+{
+  "Krásná Lípa": {
+    "lat": 50.9136,
+    "lng": 14.5094,
+    "countryCode": "CZ",
+    "displayName": "Krásná Lípa"
+  },
+  "Javorník, okres Jeseník": {
+    "lat": 50.2296,
+    "lng": 17.2047,
+    "countryCode": "CZ",
+    "displayName": "Javorník, okres Jeseník"
+  },
+  "Kozovazy, Vyšehořovice": {
+    "lat": 50.1313212,
+    "lng": 14.7689787,
+    "displayName": "Kozovazy, Vyšehořovice, okres Praha-východ, Středočeský kraj, 250 87, Česko",
+    "countryCode": "CZ"
+  },
+  "Řevnice": {
+    "lat": 49.914333,
+    "lng": 14.2361169,
+    "displayName": "Řevnice, okres Praha-západ, Středočeský kraj, 252 30, Česko",
+    "countryCode": "CZ"
+  },
+  "Chodová Planá": {
+    "lat": 49.8944618,
+    "lng": 12.729449,
+    "displayName": "Chodová Planá, okres Tachov, Plzeňský kraj, Jihozápad, 348 13, Česko",
+    "countryCode": "CZ"
+  },
+  "Břeclav": {
+    "lat": 48.759,
+    "lng": 16.882,
+    "countryCode": "CZ",
+    "displayName": "Břeclav"
+  },
+  "Tři Dvory, okres Kolín": {
+    "lat": 50.0281,
+    "lng": 15.2006,
+    "countryCode": "CZ",
+    "displayName": "Tři Dvory, okres Kolín"
+  },
+  "Nejdek": {
+    "lat": 50.3247878,
+    "lng": 12.7332967,
+    "displayName": "Nejdek, okres Karlovy Vary, Karlovarský kraj, Česko",
+    "countryCode": "CZ"
+  },
+  "Mariánské Lázně": {
+    "lat": 49.9646,
+    "lng": 12.701,
+    "countryCode": "CZ",
+    "displayName": "Mariánské Lázně"
+  },
+  "Plzeň": {
+    "lat": 49.7384,
+    "lng": 13.3736,
+    "countryCode": "CZ",
+    "displayName": "Plzeň"
+  },
+  "Jedovnice": {
+    "lat": 49.3445314,
+    "lng": 16.7559491,
+    "displayName": "Jedovnice, okres Blansko, Jihomoravský kraj, 679 06, Česko",
+    "countryCode": "CZ"
+  },
+  "Vrchlabí": {
+    "lat": 50.627,
+    "lng": 15.609,
+    "countryCode": "CZ",
+    "displayName": "Vrchlabí"
+  },
+  "Trutnov": {
+    "lat": 50.561,
+    "lng": 15.9128,
+    "countryCode": "CZ",
+    "displayName": "Trutnov"
+  },
+  "Český Jiřetín": {
+    "lat": 50.7073002,
+    "lng": 13.5471241,
+    "displayName": "Český Jiřetín, okres Most, Ústecký kraj, Česko",
+    "countryCode": "CZ"
+  },
+  "Prusinovice": {
+    "lat": 49.3786628,
+    "lng": 17.5874259,
+    "displayName": "Prusinovice, okres Kroměříž, Zlínský kraj, 768 42, Česko",
+    "countryCode": "CZ"
+  }
+}

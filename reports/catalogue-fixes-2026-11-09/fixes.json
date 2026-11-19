@@ -1,0 +1,132 @@
+{
+ "reviewedBy": "claude 2026-11-09",
+ "merges": [
+  {
+   "keep": "0af22121-814d-493b-9049-5386b1a65145",
+   "drop": "a29fb9a6-9646-49b3-b004-ec37c4175199",
+   "name": "Lakeland GRVL",
+   "why": "same race 26-30 maja 2027 (lakeland.gravel.love); the copy came from a calendar site"
+  },
+  {
+   "keep": "a48f503c-7cde-4eab-b615-0c8d678716a4",
+   "drop": "2eb9d5cf-25c7-4640-8611-a94c262305cf",
+   "name": "PBT Rozjazd / Polish Bike Tour",
+   "why": "same event 2.10.2027 Gliwice; the copy came from odjazd.pl"
+  },
+  {
+   "keep": "c4c58e40-3893-41b2-ac1a-76057c97bc1a",
+   "drop": "bd9b907c-afdc-44f8-82fb-5e2bc469ccfc",
+   "name": "Wanoga Gravel",
+   "why": "organiser states WANOGA #7 27-30 maja 2027; this copy says 29–31 May"
+  },
+  {
+   "keep": "f5e29b0d-da2f-43b8-a533-e07443f61e61",
+   "drop": "bd512353-3cbf-498b-a448-861023784bb3",
+   "name": "Montes Ferrei",
+   "why": "organiser states 18.–20. června 2027; this copy says 16 June"
+  },
+  {
+   "keep": "43ed3e2d-1e73-480d-ab20-937d62e67efa",
+   "drop": "6e4518f0-d5c6-4ab3-a944-97b13a5b324a",
+   "name": "Polish Bike Tour - Warm-up",
+   "why": "the organiser's own PBT Rozgrzewka 3.–4.4.2027; finishers.com gives only an estimate (such as \"End of April 2027\"), the 1st of the month was never announced"
+  },
+  {
+   "keep": "baffc628-83e5-454a-a7c3-c6c25852cbef",
+   "drop": "ac73ea87-1f23-4f94-a417-3e6907749155",
+   "name": "Polish Bike Tour - Baltic 600",
+   "why": "the organiser's own PBT Bałtyk 600 from 31.7.2027; finishers.com gives only an estimate (such as \"End of April 2027\"), the 1st of the month was never announced"
+  },
+  {
+   "keep": "7a62f3b2-b51a-4fe6-b3d1-fd613f6bcbda",
+   "drop": "681056a1-425e-4751-90dd-0bda665b5c21",
+   "name": "Polish Bike Tour - East 1200",
+   "why": "the organiser's own PBT Wschód 1200 from 3.7.2027; finishers.com gives only an estimate (such as \"End of April 2027\"), the 1st of the month was never announced"
+  },
+  {
+   "keep": "0dbf5d00-55d7-4806-81d2-9fd36268592b",
+   "drop": "d653dcae-d897-4994-be99-219fd2d39430",
+   "name": "UCI Neusiedler See Radmarathon",
+   "why": "the organiser's own Neusiedler See Radmarathon 25.4.2027; finishers.com gives only an estimate (such as \"End of April 2027\"), the 1st of the month was never announced"
+  }
+ ],
+ "holds": [
+  {
+   "id": "01084fa6-79f9-42d5-95f0-45405c650fe8",
+   "name": "Winter Poland Bike Marathon",
+   "why": "finishers.com gives only an estimate (such as \"End of April 2027\"), the 1st of the month was never announced"
+  },
+  {
+   "id": "cab942c5-7457-40d8-b7f4-1d9917fc950d",
+   "name": "Stanisław Królak Memorial Race",
+   "why": "finishers.com gives only an estimate (such as \"End of April 2027\"), the 1st of the month was never announced"
+  },
+  {
+   "id": "f28d77db-22d1-4cd3-99e3-27402c3c6dc9",
+   "name": "Run & Bike Orlich Gniazd",
+   "why": "finishers.com gives only an estimate (such as \"End of April 2027\"), the 1st of the month was never announced"
+  },
+  {
+   "id": "571e893e-d44b-49a5-b6e9-2fb72cbc101e",
+   "name": "Silesia Bike Road Race - Psary",
+   "why": "finishers.com gives only an estimate (such as \"End of April 2027\"), the 1st of the month was never announced"
+  },
+  {
+   "id": "31dcf797-9849-4404-98f2-c8f5d45457d4",
+   "name": "Polish Bike Tour - Pink Race",
+   "why": "finishers.com gives only an estimate (such as \"End of April 2027\"), the 1st of the month was never announced"
+  },
+  {
+   "id": "9746a683-bf2c-4e31-a314-16e525eb5eb8",
+   "name": "PZU Gran Fondo Ełk",
+   "why": "finishers.com gives only an estimate (such as \"End of April 2027\"), the 1st of the month was never announced"
+  },
+  {
+   "id": "f8acc62f-6af9-450b-8b05-a5b6ccd3150b",
+   "name": "Dads at the Starting Line",
+   "why": "finishers.com gives only an estimate (such as \"End of April 2027\"), the 1st of the month was never announced"
+  },
+  {
+   "id": "8542e993-d59c-4774-9238-3888fb016893",
+   "name": "Tauron Lang Team Race Arłamów",
+   "why": "finishers.com gives only an estimate (such as \"End of April 2027\"), the 1st of the month was never announced"
+  },
+  {
+   "id": "a5f299fa-a95d-45bf-b7d3-c61de2f2c72e",
+   "name": "Traveler's Marathon",
+   "why": "finishers.com gives only an estimate (such as \"End of April 2027\"), the 1st of the month was never announced"
+  }
+ ],
+ "dates": [],
+ "localOnly": {
+  "note": "Bundes-Radsport-Treffen BRT27 stands four times (one per day, 22.–25.7.2027) only in the Mac copy; it is a ride held from sending, so nothing on the server needs fixing.",
+  "merges": [
+   {
+    "keep": "78d20e78-2315-4524-a776-1ae7b1ce0739",
+    "drop": "faba9333-a913-47f8-816d-205322810a4d",
+    "name": "Bundes-Radsport-Treffen BRT27",
+    "why": "one meeting 22.–25.7.2027 (brt27.de), listed once per day"
+   },
+   {
+    "keep": "78d20e78-2315-4524-a776-1ae7b1ce0739",
+    "drop": "8b48bc55-628a-481c-9e44-f4f2aeec4c3f",
+    "name": "Bundes-Radsport-Treffen BRT27",
+    "why": "one meeting 22.–25.7.2027 (brt27.de), listed once per day"
+   },
+   {
+    "keep": "78d20e78-2315-4524-a776-1ae7b1ce0739",
+    "drop": "0ab2cd36-5ec4-4970-b810-50b60d4c81e5",
+    "name": "Bundes-Radsport-Treffen BRT27",
+    "why": "one meeting 22.–25.7.2027 (brt27.de), listed once per day"
+   }
+  ],
+  "dates": [
+   {
+    "id": "78d20e78-2315-4524-a776-1ae7b1ce0739",
+    "name": "Bundes-Radsport-Treffen BRT27",
+    "end_date": "2027-07-25",
+    "why": "brt27.de: \"BRT27 22.–25.7.2027 Mindelheim im Allgäu\""
+   }
+  ]
+ }
+}

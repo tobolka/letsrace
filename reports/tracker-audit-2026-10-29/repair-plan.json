@@ -1,0 +1,387 @@
+{
+  "version": 1,
+  "actions": [
+    {
+      "id": "08c93bd0-3b61-4f90-b3a7-d7b7a7573d14",
+      "name": "Pedalata Ecologica",
+      "patch": {
+        "status": "scheduled"
+      },
+      "before": {
+        "status": "completed"
+      },
+      "reason": "The stored start date is in the future; completed is internally inconsistent. Date is retained without claiming fresh source verification.",
+      "source": null
+    },
+    {
+      "id": "26e7ecd4-e9e3-4043-88bc-45a517f27bc4",
+      "name": "slowUp Mountain Albula",
+      "patch": {
+        "status": "scheduled"
+      },
+      "before": {
+        "status": "completed"
+      },
+      "reason": "The stored start date is in the future; completed is internally inconsistent. Date is retained without claiming fresh source verification.",
+      "source": null
+    },
+    {
+      "id": "2f8a3f3c-b0b3-461e-b2e7-95161b8b49d6",
+      "name": "ERG 1900 - 7. RTF Essener Rad Genuss – Sonntag, 23. August 2026",
+      "patch": {
+        "visibility": "hidden"
+      },
+      "before": {
+        "visibility": "public"
+      },
+      "reason": "Conflicting dates or title edition; quarantine the existing assertion for source review, never guess a replacement date.",
+      "source": null
+    },
+    {
+      "id": "5aa0bb2e-68f3-4dc1-9621-730764b6d1c2",
+      "name": "French Borders",
+      "patch": {
+        "status": "scheduled"
+      },
+      "before": {
+        "status": "completed"
+      },
+      "reason": "The stored start date is in the future; completed is internally inconsistent. Date is retained without claiming fresh source verification.",
+      "source": null
+    },
+    {
+      "id": "5d306501-c7c4-4752-9b3b-1172fa1d6f3f",
+      "name": "The Grand Escape Germany/Austria",
+      "patch": {
+        "status": "scheduled"
+      },
+      "before": {
+        "status": "completed"
+      },
+      "reason": "The stored start date is in the future; completed is internally inconsistent. Date is retained without claiming fresh source verification.",
+      "source": null
+    },
+    {
+      "id": "6aae0c2d-1c54-4cd5-ab6a-f6cec412d1f9",
+      "name": "slowUp Emmental-Oberaargau",
+      "patch": {
+        "status": "scheduled"
+      },
+      "before": {
+        "status": "completed"
+      },
+      "reason": "The stored start date is in the future; completed is internally inconsistent. Date is retained without claiming fresh source verification.",
+      "source": null
+    },
+    {
+      "id": "7ff0bc3f-f5fa-4eaf-ae05-225e37591344",
+      "name": "SEVEROČESKÝ PUMPTRACKOVÝ POHÁR",
+      "patch": {
+        "visibility": "hidden"
+      },
+      "before": {
+        "visibility": "public"
+      },
+      "reason": "Conflicting dates or title edition; quarantine the existing assertion for source review, never guess a replacement date.",
+      "source": null
+    },
+    {
+      "id": "9292d95c-a282-478d-aab8-5c77107512b4",
+      "name": "2Much4You | 12h & 24h MTB-Rennen im Zittauer Gebirge",
+      "patch": {
+        "status": "scheduled"
+      },
+      "before": {
+        "status": "completed"
+      },
+      "reason": "The stored start date is in the future; completed is internally inconsistent. Date is retained without claiming fresh source verification.",
+      "source": null
+    },
+    {
+      "id": "a65d4bff-4ecd-496d-a6c1-e98f82c9a990",
+      "name": "Radtag-Stilfserjoch",
+      "patch": {
+        "status": "scheduled"
+      },
+      "before": {
+        "status": "completed"
+      },
+      "reason": "The stored start date is in the future; completed is internally inconsistent. Date is retained without claiming fresh source verification.",
+      "source": null
+    },
+    {
+      "id": "aa7ce393-5666-4361-97ef-51cde8ae2564",
+      "name": "Zeitfahren Hintersee 2026",
+      "patch": {
+        "visibility": "hidden"
+      },
+      "before": {
+        "visibility": "public"
+      },
+      "reason": "Conflicting dates or title edition; quarantine the existing assertion for source review, never guess a replacement date.",
+      "source": null
+    },
+    {
+      "id": "ad406a6d-905a-47ec-a2a4-0a4e3698a749",
+      "name": "Mikołajki - W krainie Sielawowego Króla Łaciate Mazury MTB Etap 8 - 13.09.2026",
+      "patch": {
+        "visibility": "hidden"
+      },
+      "before": {
+        "visibility": "public"
+      },
+      "reason": "Conflicting dates or title edition; quarantine the existing assertion for source review, never guess a replacement date.",
+      "source": null
+    },
+    {
+      "id": "f611e53a-7eb2-4b30-a343-9041cb4fce71",
+      "name": "Brevet 200 - ARA Leipzig",
+      "patch": {
+        "status": "scheduled"
+      },
+      "before": {
+        "status": "completed"
+      },
+      "reason": "The stored start date is in the future; completed is internally inconsistent. Date is retained without claiming fresh source verification.",
+      "source": null
+    },
+    {
+      "id": "4e9c5832-0017-4426-9862-103236aea1af",
+      "name": "UCI Cyprus Gran Fondo",
+      "patch": {
+        "location_id": "6b674b70-ef37-4b45-aa29-8d0a04f13ba8"
+      },
+      "before": {
+        "location_id": "e891eb19-9d8d-44e8-9434-ef91d3383f28"
+      },
+      "reason": "Source explicitly says Cyprus; correct Switzerland to Cyprus without inventing a town.",
+      "source": "https://eventivsport.com/events/uci-cyprus-gran-fondo"
+    },
+    {
+      "id": "70613a5d-dcb8-476f-8680-358e10eeff87",
+      "name": "39. Ernst Feuchtner Gedenkrennen in Söll",
+      "patch": {
+        "location_id": "db340e6e-6067-4e3d-8fd4-c58ada94fec4"
+      },
+      "before": {
+        "location_id": "fbc205e0-9c70-4ef5-8c54-824db15977aa"
+      },
+      "reason": "Official Start/Ziel: 6306 Söll; 4 April 2027.",
+      "source": "https://www.cyclingaustria.at/index.php?option=com_events&view=event&id=F872352324254E258A8DA248C0487432"
+    },
+    {
+      "id": "ad9aa861-7e11-425e-9ff5-f28de17b3e96",
+      "name": "4 Ländermeisterschaft U23 - Straße",
+      "patch": {
+        "location_id": "6b3c5a20-c529-47c2-857c-746556998b99"
+      },
+      "before": {
+        "location_id": "fbc205e0-9c70-4ef5-8c54-824db15977aa"
+      },
+      "reason": "Country is known, municipality is not. Replace the country-as-town placeholder and remove unsupported coordinates.",
+      "source": "https://www.cyclingaustria.at/index.php?option=com_events&view=event&id=8C97485C89064D7BB629E7627FAAF7A7&filter=page=4"
+    },
+    {
+      "id": "c234bf41-8c29-4cfc-97db-c77dccfc15b0",
+      "name": "Witoor Ride To Capodanno",
+      "patch": {
+        "location_id": "7d5fbe16-9aba-4489-94c5-7a2f9b386d56"
+      },
+      "before": {
+        "location_id": "56d61ebc-3776-4535-8105-3c0dd1cc1431"
+      },
+      "reason": "Country is known, municipality is not. Replace the country-as-town placeholder and remove unsupported coordinates.",
+      "source": "https://eventivsport.com/events/witoor-ride-to-capodanno"
+    },
+    {
+      "id": "c83d5525-6c4d-4561-994b-fdf4cab4d1e3",
+      "name": "Tour de Pologne",
+      "patch": {
+        "location_id": "002a6f50-8f48-4a22-bfd5-884ecd1eb814"
+      },
+      "before": {
+        "location_id": "cea53e91-ccd8-49cf-8ca4-7c97c36e96a2"
+      },
+      "reason": "Country is known, municipality is not. Replace the country-as-town placeholder and remove unsupported coordinates.",
+      "source": "https://eventivsport.com/events/tour-de-pologne-1"
+    },
+    {
+      "id": "ce93409c-87ee-4886-8ff9-5a07000b0dc0",
+      "name": "Lost Ride",
+      "patch": {
+        "location_id": "164f82a7-b15a-407d-82bd-d7c5d079e394"
+      },
+      "before": {
+        "location_id": "293c2b74-c804-4745-8804-1b4a50fb2bea"
+      },
+      "reason": "Country is known, municipality is not. Replace the country-as-town placeholder and remove unsupported coordinates.",
+      "source": "https://lost-ride.cz/"
+    },
+    {
+      "id": "35bba84c-dcdf-4990-9a06-7e7f0b264d44",
+      "name": "Puchar Polski MTB XCO #3 — Nędzerzew",
+      "patch": {
+        "disciplines": [
+          "xco"
+        ],
+        "formats": [
+          "xco"
+        ]
+      },
+      "before": {
+        "disciplines": [
+          "mtb"
+        ],
+        "formats": []
+      },
+      "reason": "Restore the recorded XCO assertion lost to a less-specific MTB calendar update; no dates or identity changed.",
+      "source": "https://pzkol.pl/kalendarz/2773,puchar-polski-mtb-eliminacje-oom-mtb.html"
+    },
+    {
+      "id": "f9417f05-e3b7-4a6e-a820-231fc15ad485",
+      "name": "Puchar Polski MTB XCO #1 — Ogrodniczki",
+      "patch": {
+        "disciplines": [
+          "xco"
+        ],
+        "formats": [
+          "xco"
+        ]
+      },
+      "before": {
+        "disciplines": [
+          "mtb"
+        ],
+        "formats": []
+      },
+      "reason": "Restore the recorded XCO assertion lost to a less-specific MTB calendar update; no dates or identity changed.",
+      "source": "https://pzkol.pl/kalendarz/2708,xxii-mtb-rusza-peleton-puchar-polski-iv-memorial-im-wieslawa-grabka.html"
+    },
+    {
+      "id": "3915a5d6-c2c9-45fd-b063-91b2b22a276e",
+      "name": "KTM Junior Challenge — Mank",
+      "patch": {
+        "disciplines": [
+          "xco"
+        ],
+        "formats": [
+          "xco"
+        ]
+      },
+      "before": {
+        "disciplines": [
+          "mtb"
+        ],
+        "formats": []
+      },
+      "reason": "Restore the recorded XCO assertion lost to a less-specific MTB calendar update; no dates or identity changed.",
+      "source": "https://bikeboard.at/termine/junior-challenge-mank-termin16093"
+    }
+  ],
+  "locations": [
+    {
+      "id": "6b674b70-ef37-4b45-aa29-8d0a04f13ba8",
+      "name": "Cyprus",
+      "municipality": null,
+      "country_code": "CY",
+      "lat": null,
+      "lng": null,
+      "geocode_query": null,
+      "geocode_status": "skipped",
+      "timezone": "Asia/Nicosia"
+    },
+    {
+      "id": "db340e6e-6067-4e3d-8fd4-c58ada94fec4",
+      "name": "Söll",
+      "municipality": "Söll",
+      "country_code": "AT",
+      "lat": 47.5,
+      "lng": 12.19,
+      "geocode_query": "Söll",
+      "geocode_status": "ok",
+      "timezone": "Europe/Vienna"
+    },
+    {
+      "id": "6b3c5a20-c529-47c2-857c-746556998b99",
+      "name": "Austria",
+      "municipality": null,
+      "country_code": "AT",
+      "lat": null,
+      "lng": null,
+      "geocode_query": null,
+      "geocode_status": "skipped",
+      "timezone": "Europe/Vienna"
+    },
+    {
+      "id": "7d5fbe16-9aba-4489-94c5-7a2f9b386d56",
+      "name": "Italy",
+      "municipality": null,
+      "country_code": "IT",
+      "lat": null,
+      "lng": null,
+      "geocode_query": null,
+      "geocode_status": "skipped",
+      "timezone": "Europe/Rome"
+    },
+    {
+      "id": "002a6f50-8f48-4a22-bfd5-884ecd1eb814",
+      "name": "Poland",
+      "municipality": null,
+      "country_code": "PL",
+      "lat": null,
+      "lng": null,
+      "geocode_query": null,
+      "geocode_status": "skipped",
+      "timezone": "Europe/Warsaw"
+    },
+    {
+      "id": "164f82a7-b15a-407d-82bd-d7c5d079e394",
+      "name": "Czechia",
+      "municipality": null,
+      "country_code": "CZ",
+      "lat": null,
+      "lng": null,
+      "geocode_query": null,
+      "geocode_status": "skipped",
+      "timezone": "Europe/Prague"
+    }
+  ],
+  "pausedArchives": [
+    {
+      "id": "6f1b9941-5418-40fb-ad24-504ae2aa1b78",
+      "url": "https://www.cykloman.cz/cykloman-archiv/zavody/orient/index.html?2002|0",
+      "status": "active",
+      "upcoming": 0
+    },
+    {
+      "id": "839e0b9b-e037-4b8b-8a33-addbf13d677c",
+      "url": "https://www.cykloman.cz/cykloman-archiv/zavody/casovka/index.html?2002|0",
+      "status": "active",
+      "upcoming": 0
+    },
+    {
+      "id": "64f8fbcb-2be3-4b07-b513-8f0d67dd0a13",
+      "url": "https://www.cykloman.cz/cykloman-archiv/zavody/silnice/index.html?2002|0",
+      "status": "active",
+      "upcoming": 0
+    },
+    {
+      "id": "df210b69-c730-4767-894d-4c8a69f297dc",
+      "url": "https://www.cykloman.cz/cykloman-archiv/zavody/rubena/index.html?2002|0",
+      "status": "active",
+      "upcoming": 0
+    },
+    {
+      "id": "a22f1646-d6a5-401a-892c-abdb63962c1b",
+      "url": "https://www.cykloman.cz/cykloman-archiv/zavody/07vrch/index.html?2002|0",
+      "status": "active",
+      "upcoming": 0
+    },
+    {
+      "id": "394c73fa-93c9-486c-8a43-95e493d8143a",
+      "url": "https://www.cykloman.cz/cykloman-archiv/zavody/bleto/index.html?2002|0",
+      "status": "active",
+      "upcoming": 0
+    }
+  ]
+}

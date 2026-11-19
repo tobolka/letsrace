@@ -1,0 +1,2936 @@
+{
+  "checked_at_utc": "2026-10-22T12:39:20Z",
+  "smoke": [
+    {
+      "path": "/cs",
+      "status": 200,
+      "ms": 722,
+      "bytes": 31509,
+      "cache": "PRERENDER",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs"
+    },
+    {
+      "path": "/cs/seznam",
+      "status": 200,
+      "ms": 1431,
+      "bytes": 18584,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/seznam"
+    },
+    {
+      "path": "/cs/kalendar",
+      "status": 200,
+      "ms": 1364,
+      "bytes": 19183,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/kalendar"
+    },
+    {
+      "path": "/cs/zavody",
+      "status": 200,
+      "ms": 1214,
+      "bytes": 21687,
+      "cache": "PRERENDER",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/zavody"
+    },
+    {
+      "path": "/cs/zavody/tento-vikend",
+      "status": 200,
+      "ms": 1339,
+      "bytes": 49910,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/zavody/tento-vikend"
+    },
+    {
+      "path": "/en",
+      "status": 200,
+      "ms": 521,
+      "bytes": 30166,
+      "cache": "PRERENDER",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/en"
+    },
+    {
+      "path": "/de",
+      "status": 200,
+      "ms": 234,
+      "bytes": 31021,
+      "cache": "PRERENDER",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/de"
+    },
+    {
+      "path": "/pl",
+      "status": 200,
+      "ms": 352,
+      "bytes": 31265,
+      "cache": "PRERENDER",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/pl"
+    },
+    {
+      "path": "/sk",
+      "status": 200,
+      "ms": 498,
+      "bytes": 31534,
+      "cache": "PRERENDER",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/sk"
+    },
+    {
+      "path": "/cs/zavod/podzimni-bahno-2026",
+      "status": 200,
+      "ms": 353,
+      "bytes": 21815,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/zavod/podzimni-bahno-2026"
+    },
+    {
+      "path": "/cs/serie/janev-cup",
+      "status": 200,
+      "ms": 572,
+      "bytes": 27139,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/serie/janev-cup"
+    },
+    {
+      "path": "/api/events?catalogue=1",
+      "status": 200,
+      "ms": 214,
+      "bytes": 135918,
+      "cache": "MISS",
+      "type": "application/json",
+      "url": "https://letsrace.cz/api/events?catalogue=1"
+    },
+    {
+      "path": "/api/events?country=CZ",
+      "status": 200,
+      "ms": 547,
+      "bytes": 10920,
+      "cache": "MISS",
+      "type": "application/json",
+      "url": "https://letsrace.cz/api/events?country=CZ"
+    },
+    {
+      "path": "/api/series",
+      "status": 200,
+      "ms": 476,
+      "bytes": 20266,
+      "cache": "MISS",
+      "type": "application/json",
+      "url": "https://letsrace.cz/api/series"
+    },
+    {
+      "path": "/api/series/janev-cup",
+      "status": 200,
+      "ms": 319,
+      "bytes": 2051,
+      "cache": "MISS",
+      "type": "application/json",
+      "url": "https://letsrace.cz/api/series/janev-cup"
+    },
+    {
+      "path": "/api/races.ics?country=CZ",
+      "status": 200,
+      "ms": 932,
+      "bytes": 83670,
+      "cache": "MISS",
+      "type": "text/calendar; charset=utf-8",
+      "url": "https://letsrace.cz/api/races.ics?lang=cs&country=CZ"
+    },
+    {
+      "path": "/api/places?q=Praha",
+      "status": 200,
+      "ms": 117,
+      "bytes": 175,
+      "cache": "MISS",
+      "type": "application/json",
+      "url": "https://letsrace.cz/api/places?q=Praha"
+    },
+    {
+      "path": "/robots.txt",
+      "status": 200,
+      "ms": 182,
+      "bytes": 288,
+      "cache": "MISS",
+      "type": "text/plain; charset=utf-8",
+      "url": "https://letsrace.cz/robots.txt"
+    },
+    {
+      "path": "/sitemap.xml",
+      "status": 200,
+      "ms": 488,
+      "bytes": 177660,
+      "cache": "MISS",
+      "type": "application/xml",
+      "url": "https://letsrace.cz/sitemap.xml"
+    },
+    {
+      "path": "/maps/light-v1/cities.json",
+      "status": 200,
+      "ms": 204,
+      "bytes": 137723,
+      "cache": "MISS",
+      "type": "application/json; charset=utf-8",
+      "url": "https://letsrace.cz/maps/light-v1/cities.json"
+    },
+    {
+      "path": "/cs/muj-plan",
+      "status": 200,
+      "ms": 222,
+      "bytes": 13563,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/muj-plan"
+    }
+  ],
+  "burst": {
+    "requests": 300,
+    "concurrency": 15,
+    "seconds": 6.82,
+    "statuses": {
+      "200": 293,
+      "429": 7
+    },
+    "cache": {
+      "HIT": 153,
+      "MISS": 140,
+      "None": 7
+    },
+    "median_ms": 188,
+    "p95_ms": 1160,
+    "max_ms": 2229,
+    "errors": [
+      {
+        "path": "/api/events?catalogue=1",
+        "status": 429,
+        "ms": 83,
+        "error": "HTTP Error 429: Too Many Requests"
+      },
+      {
+        "path": "/api/events?catalogue=1",
+        "status": 429,
+        "ms": 78,
+        "error": "HTTP Error 429: Too Many Requests"
+      },
+      {
+        "path": "/api/events?catalogue=1",
+        "status": 429,
+        "ms": 84,
+        "error": "HTTP Error 429: Too Many Requests"
+      },
+      {
+        "path": "/api/events?catalogue=1",
+        "status": 429,
+        "ms": 65,
+        "error": "HTTP Error 429: Too Many Requests"
+      },
+      {
+        "path": "/api/events?catalogue=1",
+        "status": 429,
+        "ms": 66,
+        "error": "HTTP Error 429: Too Many Requests"
+      },
+      {
+        "path": "/api/events?catalogue=1",
+        "status": 429,
+        "ms": 65,
+        "error": "HTTP Error 429: Too Many Requests"
+      },
+      {
+        "path": "/api/events?catalogue=1",
+        "status": 429,
+        "ms": 76,
+        "error": "HTTP Error 429: Too Many Requests"
+      }
+    ]
+  },
+  "requests": [
+    {
+      "path": "/cs",
+      "status": 200,
+      "ms": 139,
+      "bytes": 31509,
+      "cache": "HIT",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs"
+    },
+    {
+      "path": "/cs/kalendar",
+      "status": 200,
+      "ms": 211,
+      "bytes": 19183,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/kalendar"
+    },
+    {
+      "path": "/api/events?catalogue=1",
+      "status": 200,
+      "ms": 147,
+      "bytes": 135602,
+      "cache": "HIT",
+      "type": "application/json",
+      "url": "https://letsrace.cz/api/events?catalogue=1"
+    },
+    {
+      "path": "/api/events?catalogue=1",
+      "status": 200,
+      "ms": 136,
+      "bytes": 135602,
+      "cache": "HIT",
+      "type": "application/json",
+      "url": "https://letsrace.cz/api/events?catalogue=1"
+    },
+    {
+      "path": "/api/events?catalogue=1",
+      "status": 200,
+      "ms": 170,
+      "bytes": 135602,
+      "cache": "HIT",
+      "type": "application/json",
+      "url": "https://letsrace.cz/api/events?catalogue=1"
+    },
+    {
+      "path": "/cs/zavod/podzimni-bahno-2026",
+      "status": 200,
+      "ms": 217,
+      "bytes": 21815,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/zavod/podzimni-bahno-2026"
+    },
+    {
+      "path": "/cs/seznam",
+      "status": 200,
+      "ms": 211,
+      "bytes": 18492,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/seznam"
+    },
+    {
+      "path": "/cs",
+      "status": 200,
+      "ms": 154,
+      "bytes": 31509,
+      "cache": "HIT",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs"
+    },
+    {
+      "path": "/api/events?catalogue=1",
+      "status": 200,
+      "ms": 144,
+      "bytes": 135602,
+      "cache": "HIT",
+      "type": "application/json",
+      "url": "https://letsrace.cz/api/events?catalogue=1"
+    },
+    {
+      "path": "/cs/kalendar",
+      "status": 200,
+      "ms": 540,
+      "bytes": 19183,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/kalendar"
+    },
+    {
+      "path": "/api/events?catalogue=1",
+      "status": 200,
+      "ms": 154,
+      "bytes": 135602,
+      "cache": "HIT",
+      "type": "application/json",
+      "url": "https://letsrace.cz/api/events?catalogue=1"
+    },
+    {
+      "path": "/cs/zavod/slovensky-pohar-na-drahe-praha-2026",
+      "status": 200,
+      "ms": 950,
+      "bytes": 26062,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/zavod/slovensky-pohar-na-drahe-praha-2026"
+    },
+    {
+      "path": "/cs",
+      "status": 200,
+      "ms": 606,
+      "bytes": 31509,
+      "cache": "HIT",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs"
+    },
+    {
+      "path": "/cs/kalendar",
+      "status": 200,
+      "ms": 743,
+      "bytes": 19183,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/kalendar"
+    },
+    {
+      "path": "/cs/kalendar",
+      "status": 200,
+      "ms": 536,
+      "bytes": 19183,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/kalendar"
+    },
+    {
+      "path": "/cs/zavod/odersky-pohar-zlate-hory-ii-2026",
+      "status": 200,
+      "ms": 252,
+      "bytes": 23606,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/zavod/odersky-pohar-zlate-hory-ii-2026"
+    },
+    {
+      "path": "/cs/zavod/janev-cup-uci-c1-rymarov-2026-10-24",
+      "status": 200,
+      "ms": 359,
+      "bytes": 24733,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/zavod/janev-cup-uci-c1-rymarov-2026-10-24"
+    },
+    {
+      "path": "/api/events?catalogue=1",
+      "status": 200,
+      "ms": 186,
+      "bytes": 135602,
+      "cache": "HIT",
+      "type": "application/json",
+      "url": "https://letsrace.cz/api/events?catalogue=1"
+    },
+    {
+      "path": "/cs",
+      "status": 200,
+      "ms": 185,
+      "bytes": 31509,
+      "cache": "HIT",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs"
+    },
+    {
+      "path": "/cs/seznam",
+      "status": 200,
+      "ms": 188,
+      "bytes": 18584,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/seznam"
+    },
+    {
+      "path": "/cs/zavod/slovensky-pohar-na-drahe-praha-2026",
+      "status": 200,
+      "ms": 1520,
+      "bytes": 26021,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/zavod/slovensky-pohar-na-drahe-praha-2026"
+    },
+    {
+      "path": "/api/events?catalogue=1",
+      "status": 200,
+      "ms": 439,
+      "bytes": 135602,
+      "cache": "HIT",
+      "type": "application/json",
+      "url": "https://letsrace.cz/api/events?catalogue=1"
+    },
+    {
+      "path": "/cs/kalendar",
+      "status": 200,
+      "ms": 417,
+      "bytes": 19183,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/kalendar"
+    },
+    {
+      "path": "/cs/zavod/janev-cup-uci-c1-rymarov-2026-10-24",
+      "status": 200,
+      "ms": 425,
+      "bytes": 24640,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/zavod/janev-cup-uci-c1-rymarov-2026-10-24"
+    },
+    {
+      "path": "/cs",
+      "status": 200,
+      "ms": 397,
+      "bytes": 31509,
+      "cache": "HIT",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs"
+    },
+    {
+      "path": "/cs",
+      "status": 200,
+      "ms": 125,
+      "bytes": 31509,
+      "cache": "HIT",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs"
+    },
+    {
+      "path": "/cs/zavod/odersky-pohar-zlate-hory-i-2026",
+      "status": 200,
+      "ms": 183,
+      "bytes": 23580,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/zavod/odersky-pohar-zlate-hory-i-2026"
+    },
+    {
+      "path": "/cs/kalendar",
+      "status": 200,
+      "ms": 142,
+      "bytes": 19183,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/kalendar"
+    },
+    {
+      "path": "/api/events?catalogue=1",
+      "status": 200,
+      "ms": 109,
+      "bytes": 135602,
+      "cache": "HIT",
+      "type": "application/json",
+      "url": "https://letsrace.cz/api/events?catalogue=1"
+    },
+    {
+      "path": "/api/events?catalogue=1",
+      "status": 200,
+      "ms": 106,
+      "bytes": 135602,
+      "cache": "HIT",
+      "type": "application/json",
+      "url": "https://letsrace.cz/api/events?catalogue=1"
+    },
+    {
+      "path": "/cs/zavod/odersky-pohar-krnov-cvilin-2026",
+      "status": 200,
+      "ms": 254,
+      "bytes": 23505,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/zavod/odersky-pohar-krnov-cvilin-2026"
+    },
+    {
+      "path": "/cs",
+      "status": 200,
+      "ms": 103,
+      "bytes": 31509,
+      "cache": "HIT",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs"
+    },
+    {
+      "path": "/cs/seznam",
+      "status": 200,
+      "ms": 139,
+      "bytes": 18584,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/seznam"
+    },
+    {
+      "path": "/api/events?catalogue=1",
+      "status": 200,
+      "ms": 112,
+      "bytes": 135602,
+      "cache": "HIT",
+      "type": "application/json",
+      "url": "https://letsrace.cz/api/events?catalogue=1"
+    },
+    {
+      "path": "/cs/kalendar",
+      "status": 200,
+      "ms": 140,
+      "bytes": 19183,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/kalendar"
+    },
+    {
+      "path": "/cs/seznam",
+      "status": 200,
+      "ms": 158,
+      "bytes": 18584,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/seznam"
+    },
+    {
+      "path": "/cs/zavod/stredocesky-pohar-v-cyklokrosu-3-2026",
+      "status": 200,
+      "ms": 861,
+      "bytes": 23248,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/zavod/stredocesky-pohar-v-cyklokrosu-3-2026"
+    },
+    {
+      "path": "/cs",
+      "status": 200,
+      "ms": 105,
+      "bytes": 31509,
+      "cache": "HIT",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs"
+    },
+    {
+      "path": "/cs",
+      "status": 200,
+      "ms": 106,
+      "bytes": 31509,
+      "cache": "HIT",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs"
+    },
+    {
+      "path": "/api/events?catalogue=1",
+      "status": 200,
+      "ms": 105,
+      "bytes": 135602,
+      "cache": "HIT",
+      "type": "application/json",
+      "url": "https://letsrace.cz/api/events?catalogue=1"
+    },
+    {
+      "path": "/cs/zavod/odersky-pohar-krnov-cvilin-2026",
+      "status": 200,
+      "ms": 1106,
+      "bytes": 23682,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/zavod/odersky-pohar-krnov-cvilin-2026"
+    },
+    {
+      "path": "/cs/zavod/stredocesky-pohar-v-cyklokrosu-3-2026",
+      "status": 200,
+      "ms": 1160,
+      "bytes": 23297,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/zavod/stredocesky-pohar-v-cyklokrosu-3-2026"
+    },
+    {
+      "path": "/cs/zavod/odersky-pohar-zlate-hory-i-2026",
+      "status": 200,
+      "ms": 425,
+      "bytes": 23598,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/zavod/odersky-pohar-zlate-hory-i-2026"
+    },
+    {
+      "path": "/api/events?catalogue=1",
+      "status": 200,
+      "ms": 136,
+      "bytes": 135602,
+      "cache": "HIT",
+      "type": "application/json",
+      "url": "https://letsrace.cz/api/events?catalogue=1"
+    },
+    {
+      "path": "/cs/zavod/mistrovstvi-olomouckeho-kraje-v-cyklokrosu-2026",
+      "status": 200,
+      "ms": 235,
+      "bytes": 22037,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/zavod/mistrovstvi-olomouckeho-kraje-v-cyklokrosu-2026"
+    },
+    {
+      "path": "/cs",
+      "status": 200,
+      "ms": 180,
+      "bytes": 31509,
+      "cache": "HIT",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs"
+    },
+    {
+      "path": "/cs/zavod/janev-cup-uci-c1-rymarov-2026-10-24",
+      "status": 200,
+      "ms": 226,
+      "bytes": 24613,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/zavod/janev-cup-uci-c1-rymarov-2026-10-24"
+    },
+    {
+      "path": "/cs",
+      "status": 200,
+      "ms": 371,
+      "bytes": 31509,
+      "cache": "HIT",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs"
+    },
+    {
+      "path": "/cs/kalendar",
+      "status": 200,
+      "ms": 159,
+      "bytes": 19183,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/kalendar"
+    },
+    {
+      "path": "/api/events?catalogue=1",
+      "status": 200,
+      "ms": 427,
+      "bytes": 135602,
+      "cache": "HIT",
+      "type": "application/json",
+      "url": "https://letsrace.cz/api/events?catalogue=1"
+    },
+    {
+      "path": "/api/events?catalogue=1",
+      "status": 200,
+      "ms": 407,
+      "bytes": 135602,
+      "cache": "HIT",
+      "type": "application/json",
+      "url": "https://letsrace.cz/api/events?catalogue=1"
+    },
+    {
+      "path": "/cs/zavod/tbc-tabor-2026",
+      "status": 200,
+      "ms": 969,
+      "bytes": 24242,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/zavod/tbc-tabor-2026"
+    },
+    {
+      "path": "/api/events?catalogue=1",
+      "status": 200,
+      "ms": 206,
+      "bytes": 135602,
+      "cache": "HIT",
+      "type": "application/json",
+      "url": "https://letsrace.cz/api/events?catalogue=1"
+    },
+    {
+      "path": "/cs/kalendar",
+      "status": 200,
+      "ms": 153,
+      "bytes": 19183,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/kalendar"
+    },
+    {
+      "path": "/cs",
+      "status": 200,
+      "ms": 120,
+      "bytes": 31509,
+      "cache": "HIT",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs"
+    },
+    {
+      "path": "/cs",
+      "status": 200,
+      "ms": 105,
+      "bytes": 31509,
+      "cache": "HIT",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs"
+    },
+    {
+      "path": "/cs",
+      "status": 200,
+      "ms": 107,
+      "bytes": 31509,
+      "cache": "HIT",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs"
+    },
+    {
+      "path": "/cs",
+      "status": 200,
+      "ms": 94,
+      "bytes": 31509,
+      "cache": "HIT",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs"
+    },
+    {
+      "path": "/cs/zavod/janev-cup-uci-c2-hlinsko-2026",
+      "status": 200,
+      "ms": 279,
+      "bytes": 24635,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/zavod/janev-cup-uci-c2-hlinsko-2026"
+    },
+    {
+      "path": "/cs/seznam",
+      "status": 200,
+      "ms": 274,
+      "bytes": 18584,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/seznam"
+    },
+    {
+      "path": "/cs/kalendar",
+      "status": 200,
+      "ms": 170,
+      "bytes": 19183,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/kalendar"
+    },
+    {
+      "path": "/cs/zavod/odersky-pohar-krnov-cvilin-2026",
+      "status": 200,
+      "ms": 187,
+      "bytes": 23538,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/zavod/odersky-pohar-krnov-cvilin-2026"
+    },
+    {
+      "path": "/api/events?catalogue=1",
+      "status": 200,
+      "ms": 107,
+      "bytes": 135602,
+      "cache": "HIT",
+      "type": "application/json",
+      "url": "https://letsrace.cz/api/events?catalogue=1"
+    },
+    {
+      "path": "/cs/zavod/odersky-pohar-zlate-hory-i-2026",
+      "status": 200,
+      "ms": 173,
+      "bytes": 23590,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/zavod/odersky-pohar-zlate-hory-i-2026"
+    },
+    {
+      "path": "/cs/kalendar",
+      "status": 200,
+      "ms": 1187,
+      "bytes": 19183,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/kalendar"
+    },
+    {
+      "path": "/cs/kalendar",
+      "status": 200,
+      "ms": 176,
+      "bytes": 19183,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/kalendar"
+    },
+    {
+      "path": "/cs/kalendar",
+      "status": 200,
+      "ms": 117,
+      "bytes": 19183,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/kalendar"
+    },
+    {
+      "path": "/cs",
+      "status": 200,
+      "ms": 93,
+      "bytes": 31509,
+      "cache": "HIT",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs"
+    },
+    {
+      "path": "/api/events?catalogue=1",
+      "status": 200,
+      "ms": 96,
+      "bytes": 135602,
+      "cache": "HIT",
+      "type": "application/json",
+      "url": "https://letsrace.cz/api/events?catalogue=1"
+    },
+    {
+      "path": "/cs/kalendar",
+      "status": 200,
+      "ms": 441,
+      "bytes": 19183,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/kalendar"
+    },
+    {
+      "path": "/api/events?catalogue=1",
+      "status": 200,
+      "ms": 214,
+      "bytes": 135602,
+      "cache": "HIT",
+      "type": "application/json",
+      "url": "https://letsrace.cz/api/events?catalogue=1"
+    },
+    {
+      "path": "/cs",
+      "status": 200,
+      "ms": 377,
+      "bytes": 31509,
+      "cache": "HIT",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs"
+    },
+    {
+      "path": "/cs/zavod/podzimni-bahno-2026",
+      "status": 200,
+      "ms": 430,
+      "bytes": 21800,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/zavod/podzimni-bahno-2026"
+    },
+    {
+      "path": "/cs/zavod/janev-cup-uci-c1-rymarov-2026-10-24",
+      "status": 200,
+      "ms": 162,
+      "bytes": 24661,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/zavod/janev-cup-uci-c1-rymarov-2026-10-24"
+    },
+    {
+      "path": "/cs/kalendar",
+      "status": 200,
+      "ms": 296,
+      "bytes": 19183,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/kalendar"
+    },
+    {
+      "path": "/api/events?catalogue=1",
+      "status": 200,
+      "ms": 226,
+      "bytes": 135602,
+      "cache": "HIT",
+      "type": "application/json",
+      "url": "https://letsrace.cz/api/events?catalogue=1"
+    },
+    {
+      "path": "/cs",
+      "status": 200,
+      "ms": 367,
+      "bytes": 31509,
+      "cache": "HIT",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs"
+    },
+    {
+      "path": "/api/events?catalogue=1",
+      "status": 200,
+      "ms": 395,
+      "bytes": 135602,
+      "cache": "HIT",
+      "type": "application/json",
+      "url": "https://letsrace.cz/api/events?catalogue=1"
+    },
+    {
+      "path": "/cs/zavod/slovensky-pohar-na-drahe-praha-2026",
+      "status": 200,
+      "ms": 345,
+      "bytes": 25970,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/zavod/slovensky-pohar-na-drahe-praha-2026"
+    },
+    {
+      "path": "/cs",
+      "status": 200,
+      "ms": 107,
+      "bytes": 31509,
+      "cache": "HIT",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs"
+    },
+    {
+      "path": "/cs/zavod/odersky-pohar-zlate-hory-i-2026",
+      "status": 200,
+      "ms": 140,
+      "bytes": 23559,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/zavod/odersky-pohar-zlate-hory-i-2026"
+    },
+    {
+      "path": "/cs",
+      "status": 200,
+      "ms": 94,
+      "bytes": 31509,
+      "cache": "HIT",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs"
+    },
+    {
+      "path": "/cs",
+      "status": 200,
+      "ms": 106,
+      "bytes": 31509,
+      "cache": "HIT",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs"
+    },
+    {
+      "path": "/cs/kalendar",
+      "status": 200,
+      "ms": 556,
+      "bytes": 19183,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/kalendar"
+    },
+    {
+      "path": "/cs",
+      "status": 200,
+      "ms": 88,
+      "bytes": 31509,
+      "cache": "HIT",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs"
+    },
+    {
+      "path": "/cs/kalendar",
+      "status": 200,
+      "ms": 153,
+      "bytes": 19183,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/kalendar"
+    },
+    {
+      "path": "/api/events?catalogue=1",
+      "status": 200,
+      "ms": 110,
+      "bytes": 135602,
+      "cache": "HIT",
+      "type": "application/json",
+      "url": "https://letsrace.cz/api/events?catalogue=1"
+    },
+    {
+      "path": "/cs/zavod/mistrovstvi-olomouckeho-kraje-v-cyklokrosu-2026",
+      "status": 200,
+      "ms": 188,
+      "bytes": 21536,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/zavod/mistrovstvi-olomouckeho-kraje-v-cyklokrosu-2026"
+    },
+    {
+      "path": "/cs/zavod/tbc-tabor-2026",
+      "status": 200,
+      "ms": 179,
+      "bytes": 24124,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/zavod/tbc-tabor-2026"
+    },
+    {
+      "path": "/api/events?catalogue=1",
+      "status": 200,
+      "ms": 168,
+      "bytes": 135602,
+      "cache": "HIT",
+      "type": "application/json",
+      "url": "https://letsrace.cz/api/events?catalogue=1"
+    },
+    {
+      "path": "/cs/seznam",
+      "status": 200,
+      "ms": 155,
+      "bytes": 18584,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/seznam"
+    },
+    {
+      "path": "/cs/zavod/odersky-pohar-zlate-hory-ii-2026",
+      "status": 200,
+      "ms": 156,
+      "bytes": 23592,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/zavod/odersky-pohar-zlate-hory-ii-2026"
+    },
+    {
+      "path": "/cs/kalendar",
+      "status": 200,
+      "ms": 453,
+      "bytes": 19183,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/kalendar"
+    },
+    {
+      "path": "/api/events?catalogue=1",
+      "status": 200,
+      "ms": 123,
+      "bytes": 135602,
+      "cache": "HIT",
+      "type": "application/json",
+      "url": "https://letsrace.cz/api/events?catalogue=1"
+    },
+    {
+      "path": "/api/events?catalogue=1",
+      "status": 200,
+      "ms": 203,
+      "bytes": 135602,
+      "cache": "HIT",
+      "type": "application/json",
+      "url": "https://letsrace.cz/api/events?catalogue=1"
+    },
+    {
+      "path": "/cs",
+      "status": 200,
+      "ms": 368,
+      "bytes": 31509,
+      "cache": "HIT",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs"
+    },
+    {
+      "path": "/api/events?catalogue=1",
+      "status": 200,
+      "ms": 455,
+      "bytes": 135602,
+      "cache": "HIT",
+      "type": "application/json",
+      "url": "https://letsrace.cz/api/events?catalogue=1"
+    },
+    {
+      "path": "/cs/zavod/janev-cup-uci-c1-rymarov-2026-10-24",
+      "status": 200,
+      "ms": 225,
+      "bytes": 24661,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/zavod/janev-cup-uci-c1-rymarov-2026-10-24"
+    },
+    {
+      "path": "/api/events?catalogue=1",
+      "status": 200,
+      "ms": 454,
+      "bytes": 135602,
+      "cache": "HIT",
+      "type": "application/json",
+      "url": "https://letsrace.cz/api/events?catalogue=1"
+    },
+    {
+      "path": "/cs/seznam",
+      "status": 200,
+      "ms": 288,
+      "bytes": 18584,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/seznam"
+    },
+    {
+      "path": "/api/events?catalogue=1",
+      "status": 200,
+      "ms": 245,
+      "bytes": 135602,
+      "cache": "HIT",
+      "type": "application/json",
+      "url": "https://letsrace.cz/api/events?catalogue=1"
+    },
+    {
+      "path": "/cs/kalendar",
+      "status": 200,
+      "ms": 278,
+      "bytes": 19183,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/kalendar"
+    },
+    {
+      "path": "/cs/kalendar",
+      "status": 200,
+      "ms": 266,
+      "bytes": 19184,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/kalendar"
+    },
+    {
+      "path": "/cs/seznam",
+      "status": 200,
+      "ms": 425,
+      "bytes": 18584,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/seznam"
+    },
+    {
+      "path": "/api/events?catalogue=1",
+      "status": 200,
+      "ms": 243,
+      "bytes": 135602,
+      "cache": "HIT",
+      "type": "application/json",
+      "url": "https://letsrace.cz/api/events?catalogue=1"
+    },
+    {
+      "path": "/cs",
+      "status": 200,
+      "ms": 199,
+      "bytes": 31509,
+      "cache": "HIT",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs"
+    },
+    {
+      "path": "/api/events?catalogue=1",
+      "status": 200,
+      "ms": 130,
+      "bytes": 135602,
+      "cache": "HIT",
+      "type": "application/json",
+      "url": "https://letsrace.cz/api/events?catalogue=1"
+    },
+    {
+      "path": "/api/events?catalogue=1",
+      "status": 200,
+      "ms": 113,
+      "bytes": 135602,
+      "cache": "HIT",
+      "type": "application/json",
+      "url": "https://letsrace.cz/api/events?catalogue=1"
+    },
+    {
+      "path": "/api/events?catalogue=1",
+      "status": 200,
+      "ms": 118,
+      "bytes": 135602,
+      "cache": "HIT",
+      "type": "application/json",
+      "url": "https://letsrace.cz/api/events?catalogue=1"
+    },
+    {
+      "path": "/api/events?catalogue=1",
+      "status": 200,
+      "ms": 121,
+      "bytes": 135602,
+      "cache": "HIT",
+      "type": "application/json",
+      "url": "https://letsrace.cz/api/events?catalogue=1"
+    },
+    {
+      "path": "/api/events?catalogue=1",
+      "status": 200,
+      "ms": 133,
+      "bytes": 135602,
+      "cache": "HIT",
+      "type": "application/json",
+      "url": "https://letsrace.cz/api/events?catalogue=1"
+    },
+    {
+      "path": "/cs",
+      "status": 200,
+      "ms": 121,
+      "bytes": 31509,
+      "cache": "HIT",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs"
+    },
+    {
+      "path": "/cs/kalendar",
+      "status": 200,
+      "ms": 155,
+      "bytes": 19135,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/kalendar"
+    },
+    {
+      "path": "/cs/seznam",
+      "status": 200,
+      "ms": 133,
+      "bytes": 18584,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/seznam"
+    },
+    {
+      "path": "/cs",
+      "status": 200,
+      "ms": 94,
+      "bytes": 31509,
+      "cache": "HIT",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs"
+    },
+    {
+      "path": "/cs/zavod/podzimni-bahno-2026",
+      "status": 200,
+      "ms": 196,
+      "bytes": 21781,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/zavod/podzimni-bahno-2026"
+    },
+    {
+      "path": "/cs/kalendar",
+      "status": 200,
+      "ms": 188,
+      "bytes": 19183,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/kalendar"
+    },
+    {
+      "path": "/cs",
+      "status": 200,
+      "ms": 113,
+      "bytes": 31509,
+      "cache": "HIT",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs"
+    },
+    {
+      "path": "/cs/kalendar",
+      "status": 200,
+      "ms": 153,
+      "bytes": 19183,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/kalendar"
+    },
+    {
+      "path": "/cs/zavod/podzimni-bahno-2026",
+      "status": 200,
+      "ms": 158,
+      "bytes": 21762,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/zavod/podzimni-bahno-2026"
+    },
+    {
+      "path": "/cs",
+      "status": 200,
+      "ms": 107,
+      "bytes": 31509,
+      "cache": "HIT",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs"
+    },
+    {
+      "path": "/api/events?catalogue=1",
+      "status": 200,
+      "ms": 147,
+      "bytes": 135602,
+      "cache": "HIT",
+      "type": "application/json",
+      "url": "https://letsrace.cz/api/events?catalogue=1"
+    },
+    {
+      "path": "/cs",
+      "status": 200,
+      "ms": 128,
+      "bytes": 31509,
+      "cache": "HIT",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs"
+    },
+    {
+      "path": "/api/events?catalogue=1",
+      "status": 200,
+      "ms": 119,
+      "bytes": 135602,
+      "cache": "HIT",
+      "type": "application/json",
+      "url": "https://letsrace.cz/api/events?catalogue=1"
+    },
+    {
+      "path": "/cs/zavod/janev-cup-uci-c1-rymarov-2026-10-24",
+      "status": 200,
+      "ms": 452,
+      "bytes": 24690,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/zavod/janev-cup-uci-c1-rymarov-2026-10-24"
+    },
+    {
+      "path": "/api/events?catalogue=1",
+      "status": 200,
+      "ms": 122,
+      "bytes": 135602,
+      "cache": "HIT",
+      "type": "application/json",
+      "url": "https://letsrace.cz/api/events?catalogue=1"
+    },
+    {
+      "path": "/api/events?catalogue=1",
+      "status": 200,
+      "ms": 296,
+      "bytes": 135602,
+      "cache": "HIT",
+      "type": "application/json",
+      "url": "https://letsrace.cz/api/events?catalogue=1"
+    },
+    {
+      "path": "/api/events?catalogue=1",
+      "status": 200,
+      "ms": 400,
+      "bytes": 135602,
+      "cache": "HIT",
+      "type": "application/json",
+      "url": "https://letsrace.cz/api/events?catalogue=1"
+    },
+    {
+      "path": "/api/events?catalogue=1",
+      "status": 200,
+      "ms": 212,
+      "bytes": 135602,
+      "cache": "HIT",
+      "type": "application/json",
+      "url": "https://letsrace.cz/api/events?catalogue=1"
+    },
+    {
+      "path": "/cs/seznam",
+      "status": 200,
+      "ms": 423,
+      "bytes": 18584,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/seznam"
+    },
+    {
+      "path": "/cs/kalendar",
+      "status": 200,
+      "ms": 431,
+      "bytes": 19183,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/kalendar"
+    },
+    {
+      "path": "/api/events?catalogue=1",
+      "status": 200,
+      "ms": 465,
+      "bytes": 135602,
+      "cache": "HIT",
+      "type": "application/json",
+      "url": "https://letsrace.cz/api/events?catalogue=1"
+    },
+    {
+      "path": "/cs/zavod/odersky-pohar-zlate-hory-i-2026",
+      "status": 200,
+      "ms": 206,
+      "bytes": 23590,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/zavod/odersky-pohar-zlate-hory-i-2026"
+    },
+    {
+      "path": "/api/events?catalogue=1",
+      "status": 200,
+      "ms": 435,
+      "bytes": 135602,
+      "cache": "HIT",
+      "type": "application/json",
+      "url": "https://letsrace.cz/api/events?catalogue=1"
+    },
+    {
+      "path": "/cs/zavod/janev-cup-uci-c2-hlinsko-2026",
+      "status": 200,
+      "ms": 229,
+      "bytes": 24635,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/zavod/janev-cup-uci-c2-hlinsko-2026"
+    },
+    {
+      "path": "/cs/zavod/tbc-tabor-2026",
+      "status": 200,
+      "ms": 250,
+      "bytes": 24112,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/zavod/tbc-tabor-2026"
+    },
+    {
+      "path": "/cs/zavod/janev-cup-uci-c2-hlinsko-2026",
+      "status": 200,
+      "ms": 496,
+      "bytes": 24629,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/zavod/janev-cup-uci-c2-hlinsko-2026"
+    },
+    {
+      "path": "/api/events?catalogue=1",
+      "status": 200,
+      "ms": 501,
+      "bytes": 135602,
+      "cache": "HIT",
+      "type": "application/json",
+      "url": "https://letsrace.cz/api/events?catalogue=1"
+    },
+    {
+      "path": "/cs/seznam",
+      "status": 200,
+      "ms": 541,
+      "bytes": 18584,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/seznam"
+    },
+    {
+      "path": "/api/events?catalogue=1",
+      "status": 200,
+      "ms": 196,
+      "bytes": 135602,
+      "cache": "HIT",
+      "type": "application/json",
+      "url": "https://letsrace.cz/api/events?catalogue=1"
+    },
+    {
+      "path": "/cs/zavod/slovensky-pohar-na-drahe-praha-2026",
+      "status": 200,
+      "ms": 187,
+      "bytes": 26007,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/zavod/slovensky-pohar-na-drahe-praha-2026"
+    },
+    {
+      "path": "/api/events?catalogue=1",
+      "status": 200,
+      "ms": 109,
+      "bytes": 135602,
+      "cache": "HIT",
+      "type": "application/json",
+      "url": "https://letsrace.cz/api/events?catalogue=1"
+    },
+    {
+      "path": "/api/events?catalogue=1",
+      "status": 200,
+      "ms": 124,
+      "bytes": 135602,
+      "cache": "HIT",
+      "type": "application/json",
+      "url": "https://letsrace.cz/api/events?catalogue=1"
+    },
+    {
+      "path": "/cs",
+      "status": 200,
+      "ms": 101,
+      "bytes": 31509,
+      "cache": "HIT",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs"
+    },
+    {
+      "path": "/api/events?catalogue=1",
+      "status": 200,
+      "ms": 124,
+      "bytes": 135602,
+      "cache": "HIT",
+      "type": "application/json",
+      "url": "https://letsrace.cz/api/events?catalogue=1"
+    },
+    {
+      "path": "/cs",
+      "status": 200,
+      "ms": 92,
+      "bytes": 31509,
+      "cache": "HIT",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs"
+    },
+    {
+      "path": "/cs/zavod/odersky-pohar-zlate-hory-ii-2026",
+      "status": 200,
+      "ms": 177,
+      "bytes": 23598,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/zavod/odersky-pohar-zlate-hory-ii-2026"
+    },
+    {
+      "path": "/api/events?catalogue=1",
+      "status": 200,
+      "ms": 98,
+      "bytes": 135602,
+      "cache": "HIT",
+      "type": "application/json",
+      "url": "https://letsrace.cz/api/events?catalogue=1"
+    },
+    {
+      "path": "/cs/kalendar",
+      "status": 200,
+      "ms": 145,
+      "bytes": 19183,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/kalendar"
+    },
+    {
+      "path": "/cs/seznam",
+      "status": 200,
+      "ms": 146,
+      "bytes": 18584,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/seznam"
+    },
+    {
+      "path": "/cs/zavod/odersky-pohar-zlate-hory-i-2026",
+      "status": 200,
+      "ms": 154,
+      "bytes": 23582,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/zavod/odersky-pohar-zlate-hory-i-2026"
+    },
+    {
+      "path": "/api/events?catalogue=1",
+      "status": 200,
+      "ms": 103,
+      "bytes": 135602,
+      "cache": "HIT",
+      "type": "application/json",
+      "url": "https://letsrace.cz/api/events?catalogue=1"
+    },
+    {
+      "path": "/cs/kalendar",
+      "status": 200,
+      "ms": 556,
+      "bytes": 19183,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/kalendar"
+    },
+    {
+      "path": "/api/events?catalogue=1",
+      "status": 200,
+      "ms": 115,
+      "bytes": 135602,
+      "cache": "HIT",
+      "type": "application/json",
+      "url": "https://letsrace.cz/api/events?catalogue=1"
+    },
+    {
+      "path": "/cs/kalendar",
+      "status": 200,
+      "ms": 204,
+      "bytes": 19183,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/kalendar"
+    },
+    {
+      "path": "/cs/seznam",
+      "status": 200,
+      "ms": 181,
+      "bytes": 18584,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/seznam"
+    },
+    {
+      "path": "/api/events?catalogue=1",
+      "status": 200,
+      "ms": 121,
+      "bytes": 135602,
+      "cache": "HIT",
+      "type": "application/json",
+      "url": "https://letsrace.cz/api/events?catalogue=1"
+    },
+    {
+      "path": "/api/events?catalogue=1",
+      "status": 200,
+      "ms": 147,
+      "bytes": 135602,
+      "cache": "HIT",
+      "type": "application/json",
+      "url": "https://letsrace.cz/api/events?catalogue=1"
+    },
+    {
+      "path": "/cs",
+      "status": 200,
+      "ms": 98,
+      "bytes": 31509,
+      "cache": "HIT",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs"
+    },
+    {
+      "path": "/api/events?catalogue=1",
+      "status": 200,
+      "ms": 317,
+      "bytes": 135602,
+      "cache": "HIT",
+      "type": "application/json",
+      "url": "https://letsrace.cz/api/events?catalogue=1"
+    },
+    {
+      "path": "/cs/zavod/stredocesky-pohar-v-cyklokrosu-3-2026",
+      "status": 200,
+      "ms": 509,
+      "bytes": 23246,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/zavod/stredocesky-pohar-v-cyklokrosu-3-2026"
+    },
+    {
+      "path": "/cs/zavod/slovensky-pohar-na-drahe-praha-2026",
+      "status": 200,
+      "ms": 460,
+      "bytes": 25917,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/zavod/slovensky-pohar-na-drahe-praha-2026"
+    },
+    {
+      "path": "/cs/seznam",
+      "status": 200,
+      "ms": 203,
+      "bytes": 18584,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/seznam"
+    },
+    {
+      "path": "/cs/zavod/janev-cup-uci-c2-hlinsko-2026",
+      "status": 200,
+      "ms": 453,
+      "bytes": 24585,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/zavod/janev-cup-uci-c2-hlinsko-2026"
+    },
+    {
+      "path": "/api/events?catalogue=1",
+      "status": 200,
+      "ms": 383,
+      "bytes": 135602,
+      "cache": "HIT",
+      "type": "application/json",
+      "url": "https://letsrace.cz/api/events?catalogue=1"
+    },
+    {
+      "path": "/cs/kalendar",
+      "status": 200,
+      "ms": 322,
+      "bytes": 19183,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/kalendar"
+    },
+    {
+      "path": "/cs",
+      "status": 200,
+      "ms": 425,
+      "bytes": 31509,
+      "cache": "HIT",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs"
+    },
+    {
+      "path": "/cs",
+      "status": 200,
+      "ms": 438,
+      "bytes": 31509,
+      "cache": "HIT",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs"
+    },
+    {
+      "path": "/cs/zavod/odersky-pohar-zlate-hory-ii-2026",
+      "status": 200,
+      "ms": 491,
+      "bytes": 23614,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/zavod/odersky-pohar-zlate-hory-ii-2026"
+    },
+    {
+      "path": "/cs/seznam",
+      "status": 200,
+      "ms": 264,
+      "bytes": 18584,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/seznam"
+    },
+    {
+      "path": "/api/events?catalogue=1",
+      "status": 200,
+      "ms": 232,
+      "bytes": 135602,
+      "cache": "HIT",
+      "type": "application/json",
+      "url": "https://letsrace.cz/api/events?catalogue=1"
+    },
+    {
+      "path": "/api/events?catalogue=1",
+      "status": 200,
+      "ms": 252,
+      "bytes": 135602,
+      "cache": "HIT",
+      "type": "application/json",
+      "url": "https://letsrace.cz/api/events?catalogue=1"
+    },
+    {
+      "path": "/cs/zavod/mistrovstvi-olomouckeho-kraje-v-cyklokrosu-2026",
+      "status": 200,
+      "ms": 270,
+      "bytes": 21525,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/zavod/mistrovstvi-olomouckeho-kraje-v-cyklokrosu-2026"
+    },
+    {
+      "path": "/api/events?catalogue=1",
+      "status": 200,
+      "ms": 161,
+      "bytes": 135602,
+      "cache": "HIT",
+      "type": "application/json",
+      "url": "https://letsrace.cz/api/events?catalogue=1"
+    },
+    {
+      "path": "/cs",
+      "status": 200,
+      "ms": 119,
+      "bytes": 31509,
+      "cache": "HIT",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs"
+    },
+    {
+      "path": "/cs",
+      "status": 200,
+      "ms": 136,
+      "bytes": 31509,
+      "cache": "HIT",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs"
+    },
+    {
+      "path": "/cs/seznam",
+      "status": 200,
+      "ms": 212,
+      "bytes": 18584,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/seznam"
+    },
+    {
+      "path": "/cs/kalendar",
+      "status": 200,
+      "ms": 278,
+      "bytes": 19183,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/kalendar"
+    },
+    {
+      "path": "/api/events?catalogue=1",
+      "status": 200,
+      "ms": 146,
+      "bytes": 135602,
+      "cache": "HIT",
+      "type": "application/json",
+      "url": "https://letsrace.cz/api/events?catalogue=1"
+    },
+    {
+      "path": "/cs/kalendar",
+      "status": 200,
+      "ms": 144,
+      "bytes": 19183,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/kalendar"
+    },
+    {
+      "path": "/cs/seznam",
+      "status": 200,
+      "ms": 136,
+      "bytes": 18584,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/seznam"
+    },
+    {
+      "path": "/cs",
+      "status": 200,
+      "ms": 192,
+      "bytes": 31509,
+      "cache": "HIT",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs"
+    },
+    {
+      "path": "/cs",
+      "status": 200,
+      "ms": 169,
+      "bytes": 31509,
+      "cache": "HIT",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs"
+    },
+    {
+      "path": "/cs/seznam",
+      "status": 200,
+      "ms": 203,
+      "bytes": 18584,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/seznam"
+    },
+    {
+      "path": "/cs",
+      "status": 200,
+      "ms": 95,
+      "bytes": 31509,
+      "cache": "HIT",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs"
+    },
+    {
+      "path": "/cs",
+      "status": 200,
+      "ms": 113,
+      "bytes": 31509,
+      "cache": "HIT",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs"
+    },
+    {
+      "path": "/cs/zavod/tbc-tabor-2026",
+      "status": 200,
+      "ms": 437,
+      "bytes": 24175,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/zavod/tbc-tabor-2026"
+    },
+    {
+      "path": "/api/events?catalogue=1",
+      "status": 200,
+      "ms": 105,
+      "bytes": 135602,
+      "cache": "HIT",
+      "type": "application/json",
+      "url": "https://letsrace.cz/api/events?catalogue=1"
+    },
+    {
+      "path": "/api/events?catalogue=1",
+      "status": 200,
+      "ms": 461,
+      "bytes": 135602,
+      "cache": "HIT",
+      "type": "application/json",
+      "url": "https://letsrace.cz/api/events?catalogue=1"
+    },
+    {
+      "path": "/api/events?catalogue=1",
+      "status": 200,
+      "ms": 122,
+      "bytes": 135602,
+      "cache": "HIT",
+      "type": "application/json",
+      "url": "https://letsrace.cz/api/events?catalogue=1"
+    },
+    {
+      "path": "/cs",
+      "status": 200,
+      "ms": 291,
+      "bytes": 31509,
+      "cache": "HIT",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs"
+    },
+    {
+      "path": "/cs/seznam",
+      "status": 200,
+      "ms": 423,
+      "bytes": 18584,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/seznam"
+    },
+    {
+      "path": "/cs/zavod/stredocesky-pohar-v-cyklokrosu-3-2026",
+      "status": 200,
+      "ms": 266,
+      "bytes": 23213,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/zavod/stredocesky-pohar-v-cyklokrosu-3-2026"
+    },
+    {
+      "path": "/cs",
+      "status": 200,
+      "ms": 438,
+      "bytes": 31509,
+      "cache": "HIT",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs"
+    },
+    {
+      "path": "/cs/seznam",
+      "status": 200,
+      "ms": 453,
+      "bytes": 18584,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/seznam"
+    },
+    {
+      "path": "/cs/seznam",
+      "status": 200,
+      "ms": 453,
+      "bytes": 18584,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/seznam"
+    },
+    {
+      "path": "/cs/kalendar",
+      "status": 200,
+      "ms": 422,
+      "bytes": 19183,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/kalendar"
+    },
+    {
+      "path": "/cs/zavod/janev-cup-uci-c2-hlinsko-2026",
+      "status": 200,
+      "ms": 194,
+      "bytes": 24640,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/zavod/janev-cup-uci-c2-hlinsko-2026"
+    },
+    {
+      "path": "/cs",
+      "status": 200,
+      "ms": 195,
+      "bytes": 31509,
+      "cache": "HIT",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs"
+    },
+    {
+      "path": "/api/events?catalogue=1",
+      "status": 200,
+      "ms": 423,
+      "bytes": 135602,
+      "cache": "HIT",
+      "type": "application/json",
+      "url": "https://letsrace.cz/api/events?catalogue=1"
+    },
+    {
+      "path": "/cs/zavod/tbc-tabor-2026",
+      "status": 200,
+      "ms": 225,
+      "bytes": 24141,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/zavod/tbc-tabor-2026"
+    },
+    {
+      "path": "/cs/zavod/mistrovstvi-olomouckeho-kraje-v-cyklokrosu-2026",
+      "status": 200,
+      "ms": 222,
+      "bytes": 21525,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/zavod/mistrovstvi-olomouckeho-kraje-v-cyklokrosu-2026"
+    },
+    {
+      "path": "/cs",
+      "status": 200,
+      "ms": 180,
+      "bytes": 31509,
+      "cache": "HIT",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs"
+    },
+    {
+      "path": "/api/events?catalogue=1",
+      "status": 200,
+      "ms": 131,
+      "bytes": 135602,
+      "cache": "HIT",
+      "type": "application/json",
+      "url": "https://letsrace.cz/api/events?catalogue=1"
+    },
+    {
+      "path": "/api/events?catalogue=1",
+      "status": 200,
+      "ms": 112,
+      "bytes": 135602,
+      "cache": "HIT",
+      "type": "application/json",
+      "url": "https://letsrace.cz/api/events?catalogue=1"
+    },
+    {
+      "path": "/cs/zavod/mistrovstvi-olomouckeho-kraje-v-cyklokrosu-2026",
+      "status": 200,
+      "ms": 126,
+      "bytes": 21525,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/zavod/mistrovstvi-olomouckeho-kraje-v-cyklokrosu-2026"
+    },
+    {
+      "path": "/api/events?catalogue=1",
+      "status": 200,
+      "ms": 125,
+      "bytes": 135602,
+      "cache": "HIT",
+      "type": "application/json",
+      "url": "https://letsrace.cz/api/events?catalogue=1"
+    },
+    {
+      "path": "/cs/seznam",
+      "status": 200,
+      "ms": 119,
+      "bytes": 18584,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/seznam"
+    },
+    {
+      "path": "/cs/seznam",
+      "status": 200,
+      "ms": 132,
+      "bytes": 18584,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/seznam"
+    },
+    {
+      "path": "/api/events?catalogue=1",
+      "status": 200,
+      "ms": 111,
+      "bytes": 135602,
+      "cache": "HIT",
+      "type": "application/json",
+      "url": "https://letsrace.cz/api/events?catalogue=1"
+    },
+    {
+      "path": "/cs/seznam",
+      "status": 200,
+      "ms": 136,
+      "bytes": 18584,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/seznam"
+    },
+    {
+      "path": "/api/events?catalogue=1",
+      "status": 200,
+      "ms": 114,
+      "bytes": 135602,
+      "cache": "HIT",
+      "type": "application/json",
+      "url": "https://letsrace.cz/api/events?catalogue=1"
+    },
+    {
+      "path": "/cs/zavod/stredocesky-pohar-v-cyklokrosu-3-2026",
+      "status": 200,
+      "ms": 163,
+      "bytes": 23171,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/zavod/stredocesky-pohar-v-cyklokrosu-3-2026"
+    },
+    {
+      "path": "/cs/zavod/odersky-pohar-krnov-cvilin-2026",
+      "status": 200,
+      "ms": 210,
+      "bytes": 23577,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/zavod/odersky-pohar-krnov-cvilin-2026"
+    },
+    {
+      "path": "/cs/seznam",
+      "status": 200,
+      "ms": 140,
+      "bytes": 18584,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/seznam"
+    },
+    {
+      "path": "/api/events?catalogue=1",
+      "status": 200,
+      "ms": 118,
+      "bytes": 135602,
+      "cache": "HIT",
+      "type": "application/json",
+      "url": "https://letsrace.cz/api/events?catalogue=1"
+    },
+    {
+      "path": "/cs/zavod/podzimni-bahno-2026",
+      "status": 200,
+      "ms": 485,
+      "bytes": 21815,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/zavod/podzimni-bahno-2026"
+    },
+    {
+      "path": "/cs",
+      "status": 200,
+      "ms": 109,
+      "bytes": 31509,
+      "cache": "HIT",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs"
+    },
+    {
+      "path": "/cs/kalendar",
+      "status": 200,
+      "ms": 135,
+      "bytes": 19183,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/kalendar"
+    },
+    {
+      "path": "/api/events?catalogue=1",
+      "status": 200,
+      "ms": 140,
+      "bytes": 135602,
+      "cache": "HIT",
+      "type": "application/json",
+      "url": "https://letsrace.cz/api/events?catalogue=1"
+    },
+    {
+      "path": "/cs/seznam",
+      "status": 200,
+      "ms": 157,
+      "bytes": 18584,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/seznam"
+    },
+    {
+      "path": "/cs",
+      "status": 200,
+      "ms": 107,
+      "bytes": 31509,
+      "cache": "HIT",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs"
+    },
+    {
+      "path": "/api/events?catalogue=1",
+      "status": 200,
+      "ms": 118,
+      "bytes": 135602,
+      "cache": "HIT",
+      "type": "application/json",
+      "url": "https://letsrace.cz/api/events?catalogue=1"
+    },
+    {
+      "path": "/cs/kalendar",
+      "status": 200,
+      "ms": 131,
+      "bytes": 19183,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/kalendar"
+    },
+    {
+      "path": "/cs",
+      "status": 200,
+      "ms": 115,
+      "bytes": 31509,
+      "cache": "HIT",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs"
+    },
+    {
+      "path": "/api/events?catalogue=1",
+      "status": 200,
+      "ms": 124,
+      "bytes": 135602,
+      "cache": "HIT",
+      "type": "application/json",
+      "url": "https://letsrace.cz/api/events?catalogue=1"
+    },
+    {
+      "path": "/cs/seznam",
+      "status": 200,
+      "ms": 404,
+      "bytes": 18584,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/seznam"
+    },
+    {
+      "path": "/cs/zavod/odersky-pohar-krnov-cvilin-2026",
+      "status": 200,
+      "ms": 542,
+      "bytes": 23551,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/zavod/odersky-pohar-krnov-cvilin-2026"
+    },
+    {
+      "path": "/cs/seznam",
+      "status": 200,
+      "ms": 443,
+      "bytes": 18584,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/seznam"
+    },
+    {
+      "path": "/api/events?catalogue=1",
+      "status": 200,
+      "ms": 271,
+      "bytes": 135602,
+      "cache": "HIT",
+      "type": "application/json",
+      "url": "https://letsrace.cz/api/events?catalogue=1"
+    },
+    {
+      "path": "/cs/seznam",
+      "status": 200,
+      "ms": 431,
+      "bytes": 18584,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/seznam"
+    },
+    {
+      "path": "/api/events?catalogue=1",
+      "status": 200,
+      "ms": 460,
+      "bytes": 135602,
+      "cache": "HIT",
+      "type": "application/json",
+      "url": "https://letsrace.cz/api/events?catalogue=1"
+    },
+    {
+      "path": "/api/events?catalogue=1",
+      "status": 200,
+      "ms": 470,
+      "bytes": 135602,
+      "cache": "HIT",
+      "type": "application/json",
+      "url": "https://letsrace.cz/api/events?catalogue=1"
+    },
+    {
+      "path": "/api/events?catalogue=1",
+      "status": 200,
+      "ms": 292,
+      "bytes": 135602,
+      "cache": "HIT",
+      "type": "application/json",
+      "url": "https://letsrace.cz/api/events?catalogue=1"
+    },
+    {
+      "path": "/api/events?catalogue=1",
+      "status": 200,
+      "ms": 399,
+      "bytes": 135602,
+      "cache": "HIT",
+      "type": "application/json",
+      "url": "https://letsrace.cz/api/events?catalogue=1"
+    },
+    {
+      "path": "/api/events?catalogue=1",
+      "status": 200,
+      "ms": 413,
+      "bytes": 135602,
+      "cache": "HIT",
+      "type": "application/json",
+      "url": "https://letsrace.cz/api/events?catalogue=1"
+    },
+    {
+      "path": "/cs/kalendar",
+      "status": 200,
+      "ms": 1923,
+      "bytes": 19183,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/kalendar"
+    },
+    {
+      "path": "/cs/seznam",
+      "status": 200,
+      "ms": 223,
+      "bytes": 18584,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/seznam"
+    },
+    {
+      "path": "/cs",
+      "status": 200,
+      "ms": 842,
+      "bytes": 31509,
+      "cache": "HIT",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs"
+    },
+    {
+      "path": "/cs/zavod/janev-cup-uci-c2-hlinsko-2026",
+      "status": 200,
+      "ms": 2229,
+      "bytes": 24744,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/zavod/janev-cup-uci-c2-hlinsko-2026"
+    },
+    {
+      "path": "/api/events?catalogue=1",
+      "status": 200,
+      "ms": 103,
+      "bytes": 135602,
+      "cache": "HIT",
+      "type": "application/json",
+      "url": "https://letsrace.cz/api/events?catalogue=1"
+    },
+    {
+      "path": "/api/events?catalogue=1",
+      "status": 200,
+      "ms": 114,
+      "bytes": 135602,
+      "cache": "HIT",
+      "type": "application/json",
+      "url": "https://letsrace.cz/api/events?catalogue=1"
+    },
+    {
+      "path": "/cs/kalendar",
+      "status": 200,
+      "ms": 1730,
+      "bytes": 19183,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/kalendar"
+    },
+    {
+      "path": "/api/events?catalogue=1",
+      "status": 200,
+      "ms": 119,
+      "bytes": 135602,
+      "cache": "HIT",
+      "type": "application/json",
+      "url": "https://letsrace.cz/api/events?catalogue=1"
+    },
+    {
+      "path": "/cs/kalendar",
+      "status": 200,
+      "ms": 1707,
+      "bytes": 19183,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/kalendar"
+    },
+    {
+      "path": "/api/events?catalogue=1",
+      "status": 200,
+      "ms": 123,
+      "bytes": 135602,
+      "cache": "HIT",
+      "type": "application/json",
+      "url": "https://letsrace.cz/api/events?catalogue=1"
+    },
+    {
+      "path": "/api/events?catalogue=1",
+      "status": 200,
+      "ms": 111,
+      "bytes": 135602,
+      "cache": "HIT",
+      "type": "application/json",
+      "url": "https://letsrace.cz/api/events?catalogue=1"
+    },
+    {
+      "path": "/cs/seznam",
+      "status": 200,
+      "ms": 2053,
+      "bytes": 18584,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/seznam"
+    },
+    {
+      "path": "/api/events?catalogue=1",
+      "status": 200,
+      "ms": 124,
+      "bytes": 135602,
+      "cache": "HIT",
+      "type": "application/json",
+      "url": "https://letsrace.cz/api/events?catalogue=1"
+    },
+    {
+      "path": "/cs/seznam",
+      "status": 200,
+      "ms": 1729,
+      "bytes": 18584,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/seznam"
+    },
+    {
+      "path": "/api/events?catalogue=1",
+      "status": 200,
+      "ms": 111,
+      "bytes": 135602,
+      "cache": "HIT",
+      "type": "application/json",
+      "url": "https://letsrace.cz/api/events?catalogue=1"
+    },
+    {
+      "path": "/api/events?catalogue=1",
+      "status": 200,
+      "ms": 120,
+      "bytes": 135602,
+      "cache": "HIT",
+      "type": "application/json",
+      "url": "https://letsrace.cz/api/events?catalogue=1"
+    },
+    {
+      "path": "/cs/seznam",
+      "status": 200,
+      "ms": 1843,
+      "bytes": 18584,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/seznam"
+    },
+    {
+      "path": "/cs/zavod/slovensky-pohar-na-drahe-praha-2026",
+      "status": 200,
+      "ms": 2153,
+      "bytes": 26013,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/zavod/slovensky-pohar-na-drahe-praha-2026"
+    },
+    {
+      "path": "/cs",
+      "status": 200,
+      "ms": 723,
+      "bytes": 31509,
+      "cache": "HIT",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs"
+    },
+    {
+      "path": "/cs/seznam",
+      "status": 200,
+      "ms": 1902,
+      "bytes": 18584,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/seznam"
+    },
+    {
+      "path": "/cs",
+      "status": 200,
+      "ms": 717,
+      "bytes": 31509,
+      "cache": "HIT",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs"
+    },
+    {
+      "path": "/api/events?catalogue=1",
+      "status": 200,
+      "ms": 163,
+      "bytes": 135602,
+      "cache": "HIT",
+      "type": "application/json",
+      "url": "https://letsrace.cz/api/events?catalogue=1"
+    },
+    {
+      "path": "/cs/seznam",
+      "status": 200,
+      "ms": 1426,
+      "bytes": 18584,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/seznam"
+    },
+    {
+      "path": "/api/events?catalogue=1",
+      "status": 200,
+      "ms": 186,
+      "bytes": 135602,
+      "cache": "HIT",
+      "type": "application/json",
+      "url": "https://letsrace.cz/api/events?catalogue=1"
+    },
+    {
+      "path": "/cs/kalendar",
+      "status": 200,
+      "ms": 1250,
+      "bytes": 19183,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/kalendar"
+    },
+    {
+      "path": "/api/events?catalogue=1",
+      "status": 200,
+      "ms": 94,
+      "bytes": 135602,
+      "cache": "HIT",
+      "type": "application/json",
+      "url": "https://letsrace.cz/api/events?catalogue=1"
+    },
+    {
+      "path": "/cs",
+      "status": 200,
+      "ms": 89,
+      "bytes": 31509,
+      "cache": "HIT",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs"
+    },
+    {
+      "path": "/cs/seznam",
+      "status": 200,
+      "ms": 1242,
+      "bytes": 18584,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/seznam"
+    },
+    {
+      "path": "/cs/seznam",
+      "status": 200,
+      "ms": 1120,
+      "bytes": 18492,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/seznam"
+    },
+    {
+      "path": "/api/events?catalogue=1",
+      "status": 200,
+      "ms": 141,
+      "bytes": 135602,
+      "cache": "HIT",
+      "type": "application/json",
+      "url": "https://letsrace.cz/api/events?catalogue=1"
+    },
+    {
+      "path": "/cs/seznam",
+      "status": 200,
+      "ms": 1127,
+      "bytes": 18492,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/seznam"
+    },
+    {
+      "path": "/cs/zavod/odersky-pohar-zlate-hory-ii-2026",
+      "status": 200,
+      "ms": 1448,
+      "bytes": 23756,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/zavod/odersky-pohar-zlate-hory-ii-2026"
+    },
+    {
+      "path": "/cs/zavod/odersky-pohar-krnov-cvilin-2026",
+      "status": 200,
+      "ms": 430,
+      "bytes": 23597,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/zavod/odersky-pohar-krnov-cvilin-2026"
+    },
+    {
+      "path": "/cs/seznam",
+      "status": 200,
+      "ms": 183,
+      "bytes": 18584,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/seznam"
+    },
+    {
+      "path": "/cs",
+      "status": 200,
+      "ms": 99,
+      "bytes": 31509,
+      "cache": "HIT",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs"
+    },
+    {
+      "path": "/api/events?catalogue=1",
+      "status": 200,
+      "ms": 210,
+      "bytes": 135602,
+      "cache": "HIT",
+      "type": "application/json",
+      "url": "https://letsrace.cz/api/events?catalogue=1"
+    },
+    {
+      "path": "/cs/zavod/odersky-pohar-zlate-hory-ii-2026",
+      "status": 200,
+      "ms": 373,
+      "bytes": 23712,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/zavod/odersky-pohar-zlate-hory-ii-2026"
+    },
+    {
+      "path": "/cs/seznam",
+      "status": 200,
+      "ms": 438,
+      "bytes": 18584,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/seznam"
+    },
+    {
+      "path": "/cs/zavod/podzimni-bahno-2026",
+      "status": 200,
+      "ms": 338,
+      "bytes": 22397,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/zavod/podzimni-bahno-2026"
+    },
+    {
+      "path": "/api/events?catalogue=1",
+      "status": 200,
+      "ms": 209,
+      "bytes": 135602,
+      "cache": "HIT",
+      "type": "application/json",
+      "url": "https://letsrace.cz/api/events?catalogue=1"
+    },
+    {
+      "path": "/api/events?catalogue=1",
+      "status": 200,
+      "ms": 214,
+      "bytes": 135602,
+      "cache": "HIT",
+      "type": "application/json",
+      "url": "https://letsrace.cz/api/events?catalogue=1"
+    },
+    {
+      "path": "/cs",
+      "status": 200,
+      "ms": 188,
+      "bytes": 31509,
+      "cache": "HIT",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs"
+    },
+    {
+      "path": "/cs/kalendar",
+      "status": 200,
+      "ms": 317,
+      "bytes": 19183,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/kalendar"
+    },
+    {
+      "path": "/cs",
+      "status": 200,
+      "ms": 122,
+      "bytes": 31509,
+      "cache": "HIT",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs"
+    },
+    {
+      "path": "/cs/kalendar",
+      "status": 200,
+      "ms": 200,
+      "bytes": 19183,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/kalendar"
+    },
+    {
+      "path": "/cs/zavod/stredocesky-pohar-v-cyklokrosu-3-2026",
+      "status": 200,
+      "ms": 204,
+      "bytes": 23165,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/zavod/stredocesky-pohar-v-cyklokrosu-3-2026"
+    },
+    {
+      "path": "/cs",
+      "status": 200,
+      "ms": 119,
+      "bytes": 31509,
+      "cache": "HIT",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs"
+    },
+    {
+      "path": "/api/events?catalogue=1",
+      "status": 200,
+      "ms": 101,
+      "bytes": 135602,
+      "cache": "HIT",
+      "type": "application/json",
+      "url": "https://letsrace.cz/api/events?catalogue=1"
+    },
+    {
+      "path": "/cs/zavod/mistrovstvi-olomouckeho-kraje-v-cyklokrosu-2026",
+      "status": 200,
+      "ms": 558,
+      "bytes": 21602,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/zavod/mistrovstvi-olomouckeho-kraje-v-cyklokrosu-2026"
+    },
+    {
+      "path": "/cs",
+      "status": 200,
+      "ms": 93,
+      "bytes": 31509,
+      "cache": "HIT",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs"
+    },
+    {
+      "path": "/cs",
+      "status": 200,
+      "ms": 104,
+      "bytes": 31509,
+      "cache": "HIT",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs"
+    },
+    {
+      "path": "/api/events?catalogue=1",
+      "status": 200,
+      "ms": 142,
+      "bytes": 135602,
+      "cache": "HIT",
+      "type": "application/json",
+      "url": "https://letsrace.cz/api/events?catalogue=1"
+    },
+    {
+      "path": "/api/events?catalogue=1",
+      "status": 429,
+      "ms": 83,
+      "error": "HTTP Error 429: Too Many Requests"
+    },
+    {
+      "path": "/api/events?catalogue=1",
+      "status": 429,
+      "ms": 78,
+      "error": "HTTP Error 429: Too Many Requests"
+    },
+    {
+      "path": "/cs/kalendar",
+      "status": 200,
+      "ms": 178,
+      "bytes": 19183,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/kalendar"
+    },
+    {
+      "path": "/api/events?catalogue=1",
+      "status": 429,
+      "ms": 84,
+      "error": "HTTP Error 429: Too Many Requests"
+    },
+    {
+      "path": "/cs/zavod/tbc-tabor-2026",
+      "status": 200,
+      "ms": 502,
+      "bytes": 24236,
+      "cache": "MISS",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs/zavod/tbc-tabor-2026"
+    },
+    {
+      "path": "/api/events?catalogue=1",
+      "status": 429,
+      "ms": 65,
+      "error": "HTTP Error 429: Too Many Requests"
+    },
+    {
+      "path": "/api/events?catalogue=1",
+      "status": 429,
+      "ms": 66,
+      "error": "HTTP Error 429: Too Many Requests"
+    },
+    {
+      "path": "/cs",
+      "status": 200,
+      "ms": 85,
+      "bytes": 31509,
+      "cache": "HIT",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs"
+    },
+    {
+      "path": "/cs",
+      "status": 200,
+      "ms": 113,
+      "bytes": 31509,
+      "cache": "HIT",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs"
+    },
+    {
+      "path": "/cs",
+      "status": 200,
+      "ms": 109,
+      "bytes": 31509,
+      "cache": "HIT",
+      "type": "text/html; charset=utf-8",
+      "url": "https://letsrace.cz/cs"
+    },
+    {
+      "path": "/api/events?catalogue=1",
+      "status": 429,
+      "ms": 65,
+      "error": "HTTP Error 429: Too Many Requests"
+    },
+    {
+      "path": "/api/events?catalogue=1",
+      "status": 429,
+      "ms": 76,
+      "error": "HTTP Error 429: Too Many Requests"
+    }
+  ]
+}

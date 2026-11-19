@@ -1,0 +1,147 @@
+[
+  {
+    "url": "https://www.bikepoint.sk/maraton/zakladne-informacie/",
+    "finalUrl": "https://www.bikepoint.sk/maraton/zakladne-informacie/",
+    "status": 200,
+    "key": "79b04c942ddc55d4",
+    "bytes": 21326,
+    "sha256": "736888f3c398a5bb20ee5b857e5d15b83bcb6fbee934f5a3d3c305425e452c21",
+    "at": "2026-10-29T15:09:51.245180+00:00"
+  },
+  {
+    "url": "https://www.sneznickymaraton.sk/",
+    "finalUrl": "https://www.sneznickymaraton.sk/",
+    "status": 200,
+    "key": "a7b9b2652915e784",
+    "bytes": 40081,
+    "sha256": "d15e348eac60c85e5266480a18a354a7ceff1b67bac4161ddf40fa85ed4724ca",
+    "at": "2026-10-29T15:09:50.239715+00:00"
+  },
+  {
+    "url": "https://www.uci.org/competition-details/2027/MTB/80358",
+    "finalUrl": "https://www.uci.org/competition-details/2027/MTB/80358",
+    "status": 200,
+    "key": "5633ff12e7a86fb3",
+    "bytes": 42335,
+    "sha256": "86fa31207576a9371ccebb38da02a31cf527cbe4eda38dac0006579d43e8492f",
+    "at": "2026-10-29T15:09:51.285315+00:00"
+  },
+  {
+    "url": "https://www.uci.org/competition-details/2027/MTB/80359",
+    "finalUrl": "https://www.uci.org/competition-details/2027/MTB/80359",
+    "status": 200,
+    "key": "dfdd5049995348fb",
+    "bytes": 41755,
+    "sha256": "6e5f0ca10ed0cb99bebdb404481ecbcad86b429626e21e5ef15550f8ad4fc864",
+    "at": "2026-10-29T15:09:51.292217+00:00"
+  },
+  {
+    "url": "https://www.horal.sk/",
+    "finalUrl": "https://horal.sk/",
+    "status": 200,
+    "key": "e61b8244a34e8f0b",
+    "bytes": 275619,
+    "sha256": "1c5cb136cbf277f5498bce940ee1d5c6492d232fc9d714d4010baf27e2dc81bd",
+    "at": "2026-10-29T15:09:53.225892+00:00"
+  },
+  {
+    "url": "https://www.maratonslovenskyraj.sk/",
+    "finalUrl": "https://www.maratonslovenskyraj.sk/",
+    "status": 200,
+    "key": "edf932648bf42851",
+    "bytes": 151607,
+    "sha256": "29331a247ee245fdbff6a9c95bede4e3235cf885fb124b620dedb5e3cf5d2406",
+    "at": "2026-10-29T15:09:50.568124+00:00"
+  },
+  {
+    "url": "https://cyklotopolcianky.sk/cyklomaraton/",
+    "finalUrl": "https://cyklotopolcianky.sk/cyklomaraton/",
+    "status": 200,
+    "key": "c4fbe51cad2534f6",
+    "bytes": 88449,
+    "sha256": "a63150398b0699d0d76f7404643d4bc98660d397c2ac2db5b7a9901a063c77fb",
+    "at": "2026-10-29T15:09:50.461257+00:00"
+  },
+  {
+    "url": "https://www.maratonhlohovec.sk/",
+    "finalUrl": "https://www.maratonhlohovec.sk/",
+    "status": 200,
+    "key": "fc053f63c2e9ea39",
+    "bytes": 229185,
+    "sha256": "ac5bfd6ff99c5ee010c63fc373e1c41359fa177fabd79f255e0e5303fa7fde9a",
+    "at": "2026-10-29T15:09:51.576531+00:00"
+  },
+  {
+    "url": "https://www.vysledkovyservis.sk/brezniansky-mtb-maraton/brezniansky-mtb-maraton",
+    "finalUrl": "https://www.vysledkovyservis.sk/brezniansky-mtb-maraton/brezniansky-mtb-maraton",
+    "status": 200,
+    "key": "b08e8f0c01dc1746",
+    "bytes": 21170,
+    "sha256": "f5fea3614d87045f13311ea7c71360424ae1e3f396095428edd01ad4d8c3a301",
+    "at": "2026-10-29T15:09:51.292449+00:00"
+  },
+  {
+    "url": "https://www.activeprocess.sk/",
+    "finalUrl": "https://www.activeprocess.sk/",
+    "status": 200,
+    "key": "326f9d0f390d5c43",
+    "bytes": 87000,
+    "sha256": "89c4f909d4bc3bdf039ece57d0a31d68827f3645941417d3411effc16ae067dd",
+    "at": "2026-10-29T15:09:51.586635+00:00"
+  },
+  {
+    "url": "https://fandimecyklistike.sk/",
+    "finalUrl": "https://fandimecyklistike.sk/",
+    "status": 200,
+    "key": "def6ab7a272ed019",
+    "bytes": 52541,
+    "sha256": "3fc92684a635428790683e47bd8848f644c8f438baf2cff09aabbb7d059f14e6",
+    "at": "2026-10-29T15:09:52.919628+00:00"
+  },
+  {
+    "url": "https://kral-zahoria-mtb-maraton.webnode.sk/",
+    "finalUrl": "https://kral-zahoria-mtb-maraton.webnode.sk/",
+    "status": 200,
+    "key": "1251fd13b9d6b380",
+    "bytes": 51586,
+    "sha256": "86fd6349fd1b1979892cd54c640e1d75d7217594c1be2c78a8eac05adb2c2f2b",
+    "at": "2026-10-29T15:09:51.479865+00:00"
+  },
+  {
+    "url": "https://www.jarnysprint.sk/casovka/",
+    "finalUrl": "https://www.jarnysprint.sk/casovka/",
+    "status": 200,
+    "key": "195cacab5e02bfe0",
+    "bytes": 19115,
+    "sha256": "f65765c03c82734425cb55af537c9895fbbbc64b4bbbd717b6e0deeeea130393",
+    "at": "2026-10-29T15:09:51.469333+00:00"
+  },
+  {
+    "url": "https://www.bikefest.sk/",
+    "finalUrl": "https://bikefest.biker.sk/",
+    "status": 200,
+    "key": "4aae4cb59b5c5497",
+    "bytes": 189611,
+    "sha256": "3bc550e34fd2ad434c4371a274b57b9e3830bb07d2aa8c5fed47a9676c1225f9",
+    "at": "2026-10-29T15:09:52.032506+00:00"
+  },
+  {
+    "url": "https://e3nexus.eu/mtb-special-marathon",
+    "finalUrl": "https://e3nexus.eu/mtb-special-marathon",
+    "status": 200,
+    "key": "d4d226a88d088e28",
+    "bytes": 41131,
+    "sha256": "4a18c46a8baf4f42fe6591034e803e27b508f934e383f038d495d2b7c0227af1",
+    "at": "2026-10-29T15:09:51.874801+00:00"
+  },
+  {
+    "url": "https://www.essener-radsport.de/",
+    "key": "5053448e531111b9",
+    "error": "<urlopen error [Errno 8] nodename nor servname provided, or not known>"
+  },
+  {
+    "url": "https://www.bike-erg1900.de/",
+    "key": "42cf7b8dc3d18082",
+    "error": "<urlopen error [Errno 8] nodename nor servname provided, or not known>"
+  }
+]

@@ -1,0 +1,25 @@
+PART Swiss Cyclo-cross Cup #4 - Radquer Hittnau: u7,u9,u11,u13,u15,u17,kids,youth,junior,elite,masters → u7,u9,u11,u13,u15,u17,kids,youth,junior,elite,masters
+OK   Krapf Bike Cup #6: u9,u11,u13,u15,u17,kids,youth,junior,amateur,masters → u9,u11,u13,u15,u17,kids,youth,junior,elite,amateur,masters
+PART ProTour Cyclocross Cup — Wyścig 6: u11,u13,u15,u17,kids,youth,junior,elite,amateur,masters → u11,u13,u15,u17,kids,youth,junior,elite,amateur,masters
+OK   NRW Cross Cup Frank Oxenfart Campus Cross LVM NRW — Campus: u11,u13,u15,u17,kids,youth,junior,elite,amateur,masters → u7,u9,u11,u13,u15,u17,kids,youth,junior,elite,amateur,masters
+OK   GaloppCross / Hauptausschreibung zu LV-Meisterschaften der Nordverbände: u11,u13,u15,u17,kids,youth,junior,elite,amateur,masters → u7,u9,u11,u13,u15,u17,kids,youth,junior,elite,amateur,masters
+OK   27. Weser-Ems-Cup 26/27 powered by Decathlon - Osnabrück/Schinkel LVM Niedersachsen: u11,u13,u15,u17,kids,youth,junior,elite,amateur,masters → u7,u9,u11,u13,u15,u17,kids,youth,junior,elite,amateur,masters
+PART Niederrhein Gravel Race 2026: junior,elite,amateur → junior,elite,amateur
+PART CycloCross im STEVENS-Cup 2026/2027 Harburger-RG - 47. Harburger Weihnachtscross: u7,u9,u11,u13,u15,u17,kids,youth,junior,elite,amateur,masters → u7,u9,u11,u13,u15,u17,kids,youth,junior,elite,amateur,masters
+PART ProTour Cyclocross Cup — Wyścig 7: u11,u13,u15,u17,kids,youth,junior,elite,amateur,masters → u11,u13,u15,u17,kids,youth,junior,elite,amateur,masters
+OK   MČR cyklokros mládež — Veselí nad Lužnicí: u11,u13,u15,u17,kids,youth,junior,elite → u13,u15,u17,youth,junior,elite
+PART ProTour Cyclocross Cup — Wyścig 9 - Sylwester Cross: u11,u13,u15,u17,kids,youth,junior,elite,amateur,masters → u11,u13,u15,u17,kids,youth,junior,elite,amateur,masters
+PART Granfondo Colnago: u17,youth,junior,amateur,masters → u17,youth,junior,amateur,masters
+PART HarzGravel 2027: u17,youth,junior,amateur,masters → u17,youth,junior,amateur,masters
+PART Rostocker Jedermann Radrennen: u17,youth,junior,u23,elite,amateur,masters → u17,youth,junior,u23,elite,amateur,masters
+OK   BAJKSERVIS Stupava Road Sprint: u17,youth,junior,amateur,masters → u17,youth,junior,elite,amateur,masters
+OK   Jurace Classique: amateur,masters → elite,amateur,masters
+PART 12h Mountainbike Rennen Radclub Schnaittachtal: junior,elite,amateur,masters → junior,elite,amateur,masters
+PART Rohanské stezky: u7,u9,u11,u13,u15,u17,kids,youth,junior,amateur,masters → u7,u9,u11,u13,u15,u17,kids,youth,junior,elite,amateur,masters
+PART Mondsee 5 Seen Radmarathon: u17,youth,junior,amateur,masters → u17,youth,junior,amateur,masters
+PART Ultra Race 900: junior,elite,amateur → junior,elite,amateur
+PART Sparkassen-HeideGravel 2027: u17,youth,junior,amateur,masters → u17,youth,junior,amateur,masters
+PART Road Stage Grande Finale: u15,u17,youth,junior,elite,amateur,masters → u15,u17,youth,junior,elite,amateur,masters
+OK   Sparkassen Münsterland Giro: u17,youth,junior,amateur,masters → u17,youth,junior,elite,amateur,masters
+PART Ochsenkopf Gravel: u17,youth,junior,amateur,masters → u17,youth,junior,amateur,masters
+{ read: 209, updated: 24 }

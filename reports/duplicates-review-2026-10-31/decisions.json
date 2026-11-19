@@ -1,0 +1,138 @@
+[
+  {
+    "pair": 0,
+    "key": "01269cd3-3147-4ce6-b47f-cff6535e50e1:4bbcdb31-0dbf-4abe-8159-cd5c56370dde",
+    "action": "waiting",
+    "reason": "Stejné datum, město a shodný pořadatel nestačí k prokázání, že krajské mistrovství a Oderský pohár jsou totožné starty. Portál ČSC nyní nezobrazil obsah; ani web pořadatele výslovně nepropojuje obě označení. Zachovat obě položky do získání rozpisu.",
+    "sources": [
+      "https://www.kolarna.eu/kolarna-cba-odersky-pohar-2026/",
+      "https://kalendar.winspace.cz/kalendar/2026-mistrovstvi-olomouckeho-kraje-v-cyklokrosu-b4a30fdf",
+      "https://portal.czechcyclingfederation.com/RaceDetail/Race/1515",
+      "https://biketeam.estranky.cz/clanky/kalendar-zavodu-2026.html"
+    ]
+  },
+  {
+    "pair": 1,
+    "key": "61089325-6107-46af-b96a-43006c420464:983b2309-de7d-43f7-96a2-dd1cff9fcebb",
+    "action": "repair_and_merge",
+    "reason": "Původní záznam 10. kola přepsalo 11. kolo v jiném místě. Vrátit zdroj Magstadtu k existujícímu Magstadter Radcross, obnovit Vaihingen 7.11. a sloučit jeho dvě kopie. Magstadt 8.11. zachovat samostatně.",
+    "sources": [
+      "https://rsv-vaihingen.de/rennsport/radcross/",
+      "https://www.rv-pfeil-magstadt.de/radcross/",
+      "https://static.rad-net.de/html/bdr/generalausschreibungen/2026/ga-bl-cyclo-cross_26-27.pdf"
+    ]
+  },
+  {
+    "pair": 2,
+    "key": "09e14a6c-8fac-442b-a4db-4d1c57608922:d44ac77d-9c09-4606-8eae-15f3a1b74e18",
+    "action": "merge",
+    "reason": "Stejný DWH Cross Wels 8.11.2026 ve Freizeitanlage Wels/Wimpassing, stejný pořadatel RC Ovilava. Ponechat podrobnější záznam federace.",
+    "sources": [
+      "https://www.rc-ovilava-wels.at/",
+      "https://www.cyclingaustria.at/index.php?option=com_events&view=event&id=D59A1F1CEF05413A9755FD4000066BB2&filter=page=2"
+    ]
+  },
+  {
+    "pair": 3,
+    "key": "af445dda-c4b0-436a-b382-402c17498b39:f88dce95-ef66-4992-bedd-3e7a0dcd8d12",
+    "action": "repair_and_merge",
+    "reason": "Sloučit kopii soboty s dosavadním víkendovým záznamem a zúžit jej na 14.11.; nedělní 13. kolo 15.11. zachovat samostatně a přesunout k němu jeho zdroj.",
+    "sources": [
+      "https://static.rad-net.de/html/bdr/generalausschreibungen/2026/ga-bl-cyclo-cross_26-27.pdf",
+      "https://www.dsergebnis.de/"
+    ]
+  },
+  {
+    "pair": 4,
+    "key": "d0a91d4f-022c-4836-8296-f381d66ca44a:e7bbd201-69b1-4bd0-9df2-a3c609e4b2f6",
+    "action": "merge",
+    "reason": "Antverpy a Antwerpen jsou stejné 4. kolo SP; pořadatel potvrzuje pouze 19.12., nikoli 19.–20.12. Zachovat existující ruční věkové zámky.",
+    "sources": [
+      "https://www.ucicyclocrossworldcup.com/en/calendar/2026-2027/antwerpen-2",
+      "https://www.cyklokros.cz/kalendar"
+    ]
+  },
+  {
+    "pair": 5,
+    "key": "d3a64374-8a91-472d-b91e-a39da78aec87:eea36490-37d8-4f3f-aa50-9f62d0d1a3cd",
+    "action": "merge",
+    "reason": "Zonhoven 3.1.2027 je totožné 9. kolo SP v českém i oficiálním kalendáři. Ponechat oficiální záznam a jeho věkové zámky.",
+    "sources": [
+      "https://www.cyklokros.cz/kalendar",
+      "https://www.ucicyclocrossworldcup.com/en/calendar/2026-2027/zonhoven-4"
+    ]
+  },
+  {
+    "pair": 6,
+    "key": "539dcd7c-a7a9-4d78-8a06-fd8149b2c57f:d9b7abd5-ad01-4e30-9574-75bf407c51b0",
+    "action": "merge",
+    "reason": "Mannheim je stručné označení finále stejného Cyclocross Cupu 16.1.2027; pořadatel seriálu uvádí RRC Endspurt Mannheim a závod Rund um die Radrennbahn.",
+    "sources": [
+      "https://www.rrc-endspurt-mannheim.de/",
+      "https://cyclocrosscup.de/rennen/",
+      "https://cyclocrosscup.de/2026/08/der-cyclocross-cup-steht-fuer-2026-in-den-startloechern/"
+    ]
+  },
+  {
+    "pair": 7,
+    "key": "bc995997-ac54-442d-af22-f4d5c7fb31af:d9d9b533-53c8-4ab4-a57e-bceef9da760c",
+    "action": "separate_and_repair",
+    "reason": "GLPK Gravel je v Rudě u Górzna v Kujavsko-pomořském kraji; Grevet je v Tychách ve Slezsku. Dvojici způsobil chybný bod v Rudě Śląské. Opravit pouze polohu GLPK, závody neslučovat.",
+    "sources": [
+      "https://odjazd.pl/wydarzenie/84dd99b6-bf69-4231-96ed-b5429fdab0eb",
+      "https://odjazd.pl/wydarzenie/67eaf4d6-5799-4f0d-b798-5d69c58680c7",
+      "https://www.glpkgravel.pl/"
+    ]
+  },
+  {
+    "pair": 8,
+    "key": "97e62bd3-84ab-4037-861e-889749a61325:c11f48cf-529d-4b00-96c6-58ef8677a5ca",
+    "action": "separate",
+    "reason": "Tentýž den a pořadatel, ale různé formáty: Volksradfahren a Odenwald Marathon mají oddělené trasy a registrace.",
+    "sources": [
+      "https://rtf.sportfreunde-rodgau.de/",
+      "https://rtf.sportfreunde-rodgau.de/"
+    ]
+  },
+  {
+    "pair": 9,
+    "key": "05a28ad3-3fde-4996-a663-c4f19b59e03e:ca8c9779-f418-4dd0-9325-f0087c148ef6",
+    "action": "separate",
+    "reason": "BONNET Radmarathon je 214km maraton se startem 6–7 h; Volksradfahren je rodinná cca 20km jízda se startem 8–11 h. Jsou samostatné položky.",
+    "sources": [
+      "https://rsv-wenigumstadt.de/radsportwochenende/radmarathoncup",
+      "https://rsv-wenigumstadt.de/radsportwochenende/volksradfahren"
+    ]
+  },
+  {
+    "pair": 10,
+    "key": "26c164f6-fd6a-4be5-83ca-fa7ed9f4ce3b:7977de31-976a-4e5c-983e-556265197b75",
+    "action": "separate",
+    "reason": "Profesionální GP Czech Republic UCI 1.2 startuje 11:00, amatérské Road Stage formáty později ve vlastních vlnách. Nejsou to kopie jednoho závodu.",
+    "sources": [
+      "https://www.roadstage.cz/orlicke-hory/vikend-na-road-stage",
+      "https://kalendar.winspace.cz/kalendar/2027-grand-prix-czech-republic-uci-12-d2e33684"
+    ]
+  },
+  {
+    "pair": 12,
+    "key": "9d94b81f-5fe8-4bf3-b992-112e560f99fa:d9277559-9378-4344-b0c7-973fb29b5314",
+    "action": "separate",
+    "reason": "Federace potvrzuje samostatné Short-Track a Kids & Juniors Trophy se dvěma různými identitami a kategoriemi, obě 6.8.2027. Short-Track je XCC, nikoli dráha.",
+    "sources": [
+      "https://www.ischglironbike.com/",
+      "https://www.ischglironbike.com/"
+    ]
+  },
+  {
+    "pair": 11,
+    "key": "9292d95c-a282-478d-aab8-5c77107512b4:a2e2a48d-52ed-417a-b915-ed654cdbb24e",
+    "action": "merge_and_recover_previous_edition",
+    "reason": "Totožný vytrvalostní závod v Oybinu 10.–11.7.2027. Sloučit dvě kopie; časomíru rr-357112 z 11.–12.7.2026 vrátit do samostatného ročníku 2026, který byl chybně posunut do 2027. Nepřebírat tvrzení XCO.",
+    "sources": [
+      "https://my.raceresult.com/426327/",
+      "https://baer-service.de/veranstaltung/TMY",
+      "https://my.raceresult.com/357112/"
+    ]
+  }
+]

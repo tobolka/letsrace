@@ -1,0 +1,92 @@
+[
+  {
+    "place": "Klecany",
+    "result": {
+      "lat": 50.1756713,
+      "lng": 14.4117052,
+      "displayName": "Klecany, okres Praha-východ, Středočeský kraj, 250 67, Česko",
+      "countryCode": "CZ"
+    }
+  },
+  {
+    "place": "Luka nad Jihlavou",
+    "result": {
+      "lat": 49.3786743,
+      "lng": 15.7073293,
+      "displayName": "Luka nad Jihlavou, okres Jihlava, Kraj Vysočina, Česko",
+      "countryCode": "CZ"
+    }
+  },
+  {
+    "place": "Velké Losiny",
+    "result": {
+      "lat": 50.0315957,
+      "lng": 17.039832,
+      "displayName": "Velké Losiny, okres Šumperk, Olomoucký kraj, 788 15, Česko",
+      "countryCode": "CZ"
+    }
+  },
+  {
+    "place": "Dolní Bušínov",
+    "result": {
+      "lat": 49.8327944,
+      "lng": 16.8283445,
+      "displayName": "Dolní Bušínov, Zábřeh, okres Šumperk, Olomoucký kraj, Česko",
+      "countryCode": "CZ"
+    }
+  },
+  {
+    "place": "Benešovice, okres Tachov",
+    "result": {
+      "lat": 49.728649,
+      "lng": 12.8997329,
+      "displayName": "Benešovice, okres Tachov, Plzeňský kraj, Jihozápad, Česko",
+      "countryCode": "CZ"
+    }
+  },
+  {
+    "place": "Střílky",
+    "result": {
+      "lat": 49.1438406,
+      "lng": 17.2086205,
+      "displayName": "Střílky, okres Kroměříž, Zlínský kraj, 768 04, Česko",
+      "countryCode": "CZ"
+    }
+  },
+  {
+    "place": "Chlum, Všestary, okres Hradec Králové",
+    "result": {
+      "lat": 50.2104,
+      "lng": 15.8252,
+      "countryCode": "CZ",
+      "displayName": "Chlum, Všestary, okres Hradec Králové"
+    }
+  },
+  {
+    "place": "Milovy, Sněžné",
+    "result": {
+      "lat": 49.6666512,
+      "lng": 16.0943361,
+      "displayName": "Milovy, Sněžné, okres Žďár nad Sázavou, Kraj Vysočina, 592 03, Česko",
+      "countryCode": "CZ"
+    }
+  },
+  {
+    "place": "Střehom",
+    "result": {
+      "lat": 50.4731573,
+      "lng": 15.135213,
+      "displayName": "Střehom, Horní Bousov, Dolní Bousov, okres Mladá Boleslav, Středočeský kraj, 507 44, Česko",
+      "countryCode": "CZ"
+    }
+  },
+  {
+    "place": "Zahorčice, Strážov, okres Klatovy",
+    "result": {
+      "lat": 49.3955,
+      "lng": 13.2951,
+      "countryCode": "CZ",
+      "displayName": "Zahorčice, Strážov, okres Klatovy"
+    }
+  }
+]
