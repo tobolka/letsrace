@@ -54,7 +54,7 @@ function dependencies(ai: boolean): DiscoveryDependencies {
 }
 
 export async function runDiscovery(store: DiscoveryStore, options: {
-  directory: string; mode: "search" | "read"; max: number; concurrency?: number; deadline: number;
+  directory: string; mode: "search" | "read"; max: number; maxSearchResults?: number; concurrency?: number; deadline: number;
   ai: boolean; log?: (line: string) => void; deps?: DiscoveryDependencies;
   lane?: "blind" | "benchmark";
 }) {
@@ -75,7 +75,7 @@ export async function runDiscovery(store: DiscoveryStore, options: {
           const artifact = join(options.directory, "searches", `${task.id}-${task.attempts}.json`);
           await writeFile(artifact, JSON.stringify({ at: new Date().toISOString(), spec: task.spec, ...result }, null, 2));
           await store.finish(task, { searches: result.searches, modelCostUsd: result.costUsd, results: result.urls.length,
-            groundedHints: result.hints.length, artifact, providerCost: task.spec.provider === "brave" ? "Not included; search API billing is separate" : "Included in model cost" }, result);
+            groundedHints: result.hints.length, artifact, providerCost: task.spec.provider === "brave" ? "Not included; search API billing is separate" : "Included in model cost" }, { ...result, urls: result.urls.slice(0, options.maxSearchResults) });
         } else {
           // Serialize the whole read per host, including local rendering, not just HTTP starts.
           await withHostGate(`discovery:${new URL(task.url).hostname}`, 300, async () => {

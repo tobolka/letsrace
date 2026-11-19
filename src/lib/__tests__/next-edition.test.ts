@@ -55,6 +55,16 @@ describe("next edition decision", () => {
     expect(decide({}, { page: { ...page, url: "https://jiny-web.cz/celadna" } })).toEqual({ state: "wait", reason: "page_outside_race_website" });
   });
 
+  it("accepts independently reviewed evidence on Východ Road Liga’s new official domain", () => {
+    const moved = {
+      race: { ...race, website_url: "https://vychodroadliga.eu/" },
+      page: { ...page, url: "https://www.vychodroadliga.sk/preteky-detail/mtb-svidnicak" },
+    };
+    expect(decide({}, moved)).toEqual({ state: "wait", reason: "page_outside_race_website" });
+    expect(decide({}, { ...moved, readerSettled: true }).state).toBe("publish");
+    expect(decide({}, { ...moved, page: { ...moved.page, url: "https://unrelated.sk/mtb" }, readerSettled: true })).toEqual({ state: "wait", reason: "page_outside_race_website" });
+  });
+
   it("requires the race name on an organiser site with several races", () => {
     expect(decide({}, { sharedHost: true, page: { ...page, url: "https://bikeceladna.cz/novinky", title: "Novinky" }, race: { ...race, name: "Beskydský okruh 2026" } })).toEqual({ state: "wait", reason: "shared_site_name_not_confirmed" });
     expect(decide({}, { sharedHost: true, page: { ...page, title: "HSF System Bike Čeladná 2027" } }).state).toBe("publish");

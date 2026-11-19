@@ -117,6 +117,7 @@ export class DiscoveryStore {
       // Finish independent search hits before descending into their link trees.
       // Keep global/.net sources eligible; geography is a preference, not a ban.
       const priority = (t: Task) => t.kind === "read" ? (t.lane === "benchmark" && t.depth === 0 ? 1000 : 0)
+        + Number(t.origins.some(origin => origin.startsWith("agent-discovery:"))) * 100
         + (t.depth === 0 ? 100 : t.depth === 1 ? 20 : 0) + Number(hinted.has(t.url)) * 40
         + Number(new URL(t.url).hostname.endsWith(`.${(state.country ?? "CZ").toLowerCase()}`)) * 15 + Number(t.url.includes(String(t.season))) * 2 : 0;
       const task = Object.values(state.tasks).sort((a, b) => priority(b) - priority(a)).find(t => kinds.includes(t.kind) && (!lane || t.kind !== "read" || t.lane === lane) && (

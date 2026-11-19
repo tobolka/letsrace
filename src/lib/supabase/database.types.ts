@@ -42,7 +42,7 @@ export type Database = {
       pipeline_candidates: {
         Row: { id: string; candidate_key: string; evidence_hash: string; source_url: string; watched_url_id: string | null; country: string | null; season: number; payload: Json; evidence: Json; reason: string; status: string; decision: Json | null; event_id: string | null; publish_token?: string | null; publish_lease_until?: string | null; publish_error?: string | null; publication_result?: Json | null; created_at: string; updated_at: string }
         Insert: { id?: string; candidate_key: string; evidence_hash: string; source_url: string; watched_url_id?: string | null; country?: string | null; season: number; payload: Json; evidence: Json; reason: string; status?: string; decision?: Json | null; event_id?: string | null; created_at?: string; updated_at?: string }
-        Update: { status?: string; decision?: Json | null; event_id?: string | null; updated_at?: string; watched_url_id?: string | null }
+        Update: { status?: string; decision?: Json | null; event_id?: string | null; updated_at?: string; watched_url_id?: string | null; publish_token?: string | null; publish_lease_until?: string | null; publish_error?: string | null }
         Relationships: []
       }
       admin_notifications: {

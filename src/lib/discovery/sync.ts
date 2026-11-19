@@ -11,16 +11,24 @@ import { saveCandidate } from "./review";
 /** Publish assertions into the shared review inbox, preserving terminal decisions. */
 export async function queueDiscoveryCandidates(db: SupabaseClient<Database>, state: DiscoveryState) {
   let submitted = 0;
+  const agentKeys = new Set<string>();
+  const fromAgent = new Set(Object.values(state.tasks).filter(task =>
+    task.origins.some(origin => origin.startsWith("agent-discovery:"))).map(task => task.id));
+  // Child pages retain the origin of the source that led to them.
+  for (let depth = 0; depth < 2; depth++) for (const task of Object.values(state.tasks)) {
+    if (task.origins.some(origin => fromAgent.has(origin))) fromAgent.add(task.id);
+  }
   for (const candidate of Object.values(state.candidates)) {
     if (!candidate.origins.some(id => state.tasks[id]?.kind === "read" && (state.tasks[id] as { lane?: string }).lane === "blind")) continue;
     if (assessCandidate(candidate.event, state.country).state === "out_of_scope") continue;
     const snapshot = JSON.parse(await readFile(candidate.snapshot, "utf8")) as { html: string; hash: string; status: number };
     if (snapshot.status !== 200 || createHash("sha256").update(snapshot.html).digest("hex") !== snapshot.hash) throw new Error(`Invalid candidate snapshot: ${candidate.id}`);
-    await saveCandidate(db, candidate.event, { sourceUrl: candidate.sourceUrl, documentHash: snapshot.hash, textHash: candidate.event.evidence?.method === "structured_calendar" ? undefined : createHash("sha256").update(pageAsText(snapshot.html, candidate.sourceUrl).text).digest("hex"),
+    const saved = await saveCandidate(db, candidate.event, { sourceUrl: candidate.sourceUrl, documentHash: snapshot.hash, textHash: candidate.event.evidence?.method === "structured_calendar" ? undefined : createHash("sha256").update(pageAsText(snapshot.html, candidate.sourceUrl).text).digest("hex"),
       country: state.country ?? "CZ", reason: "independent_discovery_requires_identity_and_authority_review" });
+    if (candidate.origins.some(origin => fromAgent.has(origin))) agentKeys.add(saved.candidate_key);
     submitted++;
   }
-  return { submittedAssertions: submitted, eventWrites: 0, note: "Idempotent evidence handoff; existing decisions retained. Not a count of new races or inserted rows." };
+  return { submittedAssertions: submitted, agentCandidateKeys: [...agentKeys], eventWrites: 0, note: "Idempotent evidence handoff; existing decisions retained. Not a count of new races or inserted rows." };
 }
 
 /** Optional bridge into the existing URL review queue; never activates sources or writes events. */

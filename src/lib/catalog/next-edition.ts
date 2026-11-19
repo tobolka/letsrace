@@ -121,7 +121,10 @@ export function decideEdition(input: { race: EditionRace; page: EditionPage; ans
 
   const pageHost = hostOf(page.url), raceHost = hostOf(race.website_url);
   if (!pageHost || isDumpListingUrl(page.url) || isRegistrationPlatformUrl(page.url) || SHARED_SITES.test(pageHost)) return wait("shared_site");
-  if (pageHost !== raceHost) return wait("page_outside_race_website");
+  // The league's former official domain sends a permanent redirect to its new site.
+  // Only an independently reviewed race may use evidence across this move.
+  const leagueMoved = input.readerSettled && raceHost === "vychodroadliga.eu" && pageHost === "vychodroadliga.sk";
+  if (pageHost !== raceHost && !leagueMoved) return wait("page_outside_race_website");
   if (input.sharedHost) {
     // The organiser's own name and the town also fit every other race on that site.
     const generic = fold(`${pageHost} ${race.municipality ?? ""}`);
