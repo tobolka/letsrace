@@ -51,5 +51,15 @@
   },
   "observability": {
     "enabled": true
-  }
+  },
+  "routes": [
+    {
+      "pattern": "letsrace.cz",
+      "custom_domain": true
+    },
+    {
+      "pattern": "www.letsrace.cz",
+      "custom_domain": true
+    }
+  ]
 }
