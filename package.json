@@ -16,9 +16,13 @@
     "discovery": "node scripts/with-node.cjs ./node_modules/tsx/dist/cli.mjs scripts/discover-races.ts",
     "dedup": "tsx scripts/merge-duplicates.ts",
     "dedup:dry": "tsx scripts/merge-duplicates.ts --dry",
-    "pipeline:status": "node scripts/with-node.cjs tsx scripts/pipeline-status.ts"
+    "pipeline:status": "node scripts/with-node.cjs tsx scripts/pipeline-status.ts",
+    "build:cloudflare": "node scripts/build-cloudflare.mjs",
+    "deploy:cloudflare": "opennextjs-cloudflare deploy",
+    "preview:cloudflare": "opennextjs-cloudflare preview"
   },
   "dependencies": {
+    "@opennextjs/cloudflare": "^1.20.17",
     "@sparticuz/chromium": "^153.0.0",
     "@supabase/ssr": "^0.12.7",
     "@supabase/supabase-js": "^2.117.3",
@@ -59,6 +63,7 @@
     "tailwindcss": "^4",
     "tsx": "^4.23.15",
     "typescript": "~6.0.3",
-    "vitest": "^5.0.3"
+    "vitest": "^5.0.3",
+    "wrangler": "^4.165.0"
   }
 }

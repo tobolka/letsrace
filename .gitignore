@@ -53,3 +53,7 @@ scripts/.tmp/
 /tmp/
 /reports/*/sources/
 /reports/*/pages/
+
+# Cloudflare / OpenNext build output
+.open-next/
+.wrangler/

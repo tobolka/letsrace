@@ -1,0 +1,55 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "letsrace",
+  "account_id": "07e101e861f26e3c395b4cc44e96a526",
+  "main": "cloudflare-worker.ts",
+  "compatibility_date": "2026-10-08",
+  "compatibility_flags": [
+    "nodejs_compat",
+    "global_fetch_strictly_public"
+  ],
+  "workers_dev": true,
+  "preview_urls": true,
+  "keep_vars": true,
+  "assets": {
+    "directory": ".open-next/assets",
+    "binding": "ASSETS"
+  },
+  "services": [
+    {
+      "binding": "WORKER_SELF_REFERENCE",
+      "service": "letsrace"
+    }
+  ],
+  "vars": {
+    "NEXT_PUBLIC_SITE_URL": "https://letsrace.cz",
+    "NEXT_PUBLIC_SUPABASE_URL": "https://xlomrxswdcekarazaahx.supabase.co",
+    "NEXT_PUBLIC_SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inhsb21yeHN3ZGNla2FyYXphYWh4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY2MzU4MjIsImV4cCI6MjEwMjIxMTgyMn0.5C71UWpl0v_r0gKt8pwU-zMCkcuB5vJUeN4I7Htju-w",
+    "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY": "sb_publishable_I1sdZK2irmZKVRSHnBMuSw_LLyDqiTf",
+    "NEXT_PUBLIC_UMAMI_WEBSITE_ID": "21150631-b65b-4b9e-966e-c87fb90e14e2",
+    "NEXT_PUBLIC_CARTO_API_KEY": "cb1_2bvo_1_c785dfd2552a773644984598",
+    "SUPABASE_URL": "https://xlomrxswdcekarazaahx.supabase.co",
+    "SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inhsb21yeHN3ZGNla2FyYXphYWh4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY2MzU4MjIsImV4cCI6MjEwMjIxMTgyMn0.5C71UWpl0v_r0gKt8pwU-zMCkcuB5vJUeN4I7Htju-w",
+    "SUPABASE_PUBLISHABLE_KEY": "sb_publishable_I1sdZK2irmZKVRSHnBMuSw_LLyDqiTf",
+    "PIPELINE_REVIEW_QUEUE": "1",
+    "CATALOG_OVERVIEW_ONLY": "1",
+    "BRAVE_SEARCH_LIMIT": "0",
+    "LLM_BUDGET_USD": "0",
+    "LLM_CALENDAR_BUDGET_USD": "0",
+    "LLM_CALENDARS": "0",
+    "RESEND_FROM": "Let's Race <zavody@letsrace.cz>"
+  },
+  "triggers": {
+    "crons": [
+      "10 4 * * *",
+      "0 4 * * 3",
+      "15 5 * * *",
+      "30 5 * * *",
+      "40 5 * * *",
+      "45 5 * * *"
+    ]
+  },
+  "observability": {
+    "enabled": true
+  }
+}
