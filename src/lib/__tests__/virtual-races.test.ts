@@ -32,3 +32,27 @@ describe("isVirtualRace", () => {
     expect(isVirtualRace("Bike Maraton Jelenia Góra", "Jelenia Góra")).toBe(false);
   });
 });
+
+describe("multisport events are not bike races", () => {
+  it("rejects triathlon-family names, including compounds", async () => {
+    const { isNonCyclingEventName, isMultisportEvent } = await import("@/lib/sport-gate");
+    for (const name of [
+      "Eifeler Sparkassen Crossduathlon",
+      "Hugenotten Duathlon",
+      "Frankfurt Citytriathlon",
+      "Wintertriathlon Tabor",
+      "Aquathlon Brno",
+      "Cross Triathlon MTB Challenge",
+    ]) {
+      expect(isMultisportEvent(name), name).toBe(true);
+      expect(isNonCyclingEventName(name), name).toBe(true);
+    }
+  });
+  it("keeps real bike races", async () => {
+    const { isNonCyclingEventName, isMultisportEvent } = await import("@/lib/sport-gate");
+    for (const name of ["Vulkan Race Gedern", "Magstadter Radcross", "MTB biatlon Cup", "Gravelowa Korona"]) {
+      expect(isMultisportEvent(name), name).toBe(false);
+      expect(isNonCyclingEventName(name), name).toBe(false);
+    }
+  });
+});

@@ -38,6 +38,19 @@ const CYCLING_TOKENS = ["bmx", "xc", "cx", "tt", "gf", "mtb", "vtt", "btt"] as c
 const OTHER_SPORT =
   /\b(triatlon|triathlon|duatlon|duathlon|aquathlon|aquabike|swimrun|swim ?& ?run|plavani|swimming|halfmarathon|halbmarathon|polmaraton|pulmaraton|maratonsky beh|city ?run|fun ?run|park ?run|parkrun|crosslauf|waldlauf|volkslauf|stadtlauf|strassenlauf|berglauf|silvesterlauf|spendenlauf|charity ?run|nachtlauf|firmenlauf|staffellauf|hindernislauf|trailrun|trail ?running|ultratrail|ultra ?trail|skyrace|skyrunning|nordic ?walking|walking|langlauf|skilanglauf|skitour|skialp|skiroll|rollski|bezky|bezecke|bezecky|behu|behem|lyzarsky|lyzarska|biathlon|biatlon|biatlonovy|orienteering|orientacni beh|rogaining|kajak|kanoe|canoe|kayak|rowing|veslovani|inline|skateboard|motocross|enduro moto|supermoto|quad|hokej|fotbal|volejbal)\b/;
 
+/**
+ * Triathlon family, matched inside compounds too: "Crossduathlon",
+ * "Wintertriathlon", "Citytriathlon" have no word boundary before the sport.
+ * Judged on the event's own name only, never on category text, so a bike race
+ * whose side programme mentions a duathlon stays a bike race.
+ */
+const MULTISPORT = /(triatlon|triathlon|duatlon|duathlon|aquathlon|aquatlon|aquabike)/;
+
+/** True when the name is a triathlon, duathlon, aquathlon or aquabike event. */
+export function isMultisportEvent(name: string | null | undefined): boolean {
+  return Boolean(name) && MULTISPORT.test(fold(name));
+}
+
 /** Running-only markers that survive the "Lauf = series round" ambiguity. */
 const RUNNING_COMPOUND =
   /\b(\d+\s?(km|k)\s?-?\s?lauf|\d+\s?(km|k)\s?-?\s?run|halbmarathon|marathonlauf|laufveranstaltung|laufserie|laufcup|beh na|behu na)\b/;
@@ -98,6 +111,9 @@ export function isNonCyclingEventName(
   const blob = `${name} ${extraText ?? ""}`;
   // A hall discipline is out whatever else the name says.
   if (isIndoorCycling(blob)) return true;
+  // A triathlon, duathlon or aquathlon is out whatever else the name says: its
+  // bike leg ("Run - MTB - Run") is not a bike race anyone enters on its own.
+  if (isMultisportEvent(name)) return true;
   if (hasCyclingSignal(blob)) return false;
   const t = fold(blob);
   if (OTHER_SPORT.test(t)) return true;
