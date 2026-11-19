@@ -9,6 +9,7 @@ import { findRegulationsUrl, isRegulationsUrl } from "@/lib/watcher/regulations-
 import { linkLabel } from "@/lib/watcher/link-label";
 import { isOwnDocument, isSeriesDocumentOfRound } from "@/lib/catalog/practical-extraction";
 import { fetchBot } from "@/lib/http/fetch";
+import { regulationAges } from "@/lib/catalog/practical-ages";
 
 const PAGE = 1000;
 const MAX_BYTES = 8 * 1024 * 1024;
@@ -426,7 +427,7 @@ export async function fillRegulationAgeCategories(opts?: {
   for (let from = 0; targets.length < max; from += PAGE) {
     let query = supabase
       .from("events")
-      .select("id, public_revision, name, start_date, regulations_url, website_url, age_categories, location:locations!inner(country_code, municipality)")
+      .select("id, public_revision, name, start_date, regulations_url, website_url, age_categories, practical_details, location:locations!inner(country_code, municipality)")
       .eq("visibility", "public")
       .is("merged_into_id", null)
       .in("status", [...ACTIVE_EVENT_STATUSES])
@@ -446,6 +447,9 @@ export async function fillRegulationAgeCategories(opts?: {
       // A national championship runs the federation's classes, not the ones
       // on the club page it shares a site with.
       if (CHAMPIONSHIP.test(row.name)) continue;
+      // The race's own category list is already read for this edition (propozice): it is final, and a
+      // generic text of the series or the cup must not put classes beside it that it does not name.
+      if (regulationAges(row.practical_details as never, Number(row.start_date.slice(0, 4)))?.ownList) continue;
       targets.push({
         id: row.id,
         revision: row.public_revision,

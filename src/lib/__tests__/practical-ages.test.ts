@@ -13,8 +13,24 @@ describe("age classes from the regulations", () => {
     expect(patch?.age_confidence).toBe("explicit");
   });
 
-  it("keeps the elite a youth-only list does not mention, and does not confirm it", () => {
+  it("takes a race's own category list as final: no guessed elite beside it, confirmed (Mem. Cyrila Schejbala)", () => {
+    const read = regulationAges(list("categories", ["Junioři a Juniorky U19/WU19", "Kadeti a Kadetky U17/WU17", "Žáci st. U15", "Žákyně WU15/WU13", "Žáci ml. U13"]), 2026);
+    expect(read?.ownList).toBe(true);
+    const patch = regulationAgePatch({ age_categories: ["kids", "youth", "junior", "u23", "elite"], age_confidence: "default" }, read);
+    expect(patch?.age_categories).toEqual(["u13", "u15", "u17", "youth", "junior"]);
+    expect(patch?.age_confidence).toBe("explicit");
+  });
+
+  it("does not flip back: an own write with extra classes is corrected to the list, and the list then stays", () => {
     const read = regulationAges(list("categories", ["Junioři a Juniorky U19/WU19", "Kadeti a Kadetky U17/WU17", "Žáci st. U15", "Žáci ml. U13"]), 2026);
+    const first = regulationAgePatch({ age_categories: ["u13", "u15", "u17", "youth", "junior", "u23", "elite"], age_confidence: "explicit" }, read, true)!;
+    expect(first.age_categories).toEqual(["u13", "u15", "u17", "youth", "junior"]);
+    expect(regulationAgePatch({ age_categories: first.age_categories, age_confidence: first.age_confidence }, read, true)).toBeNull();
+  });
+
+  it("keeps the elite when only the timetable names the youth classes, and does not confirm it", () => {
+    const read = regulationAges(list("schedule", ["Junioři", "Kadeti", "Žáci st. U15", "Žáci ml. U13"]), 2026);
+    expect(read?.ownList).toBe(false);
     const patch = regulationAgePatch({ age_categories: ["kids", "youth", "junior", "u23", "elite"], age_confidence: "default" }, read);
     expect(patch?.age_categories).toEqual(["u13", "u15", "u17", "youth", "junior", "u23", "elite"]);
     expect(patch?.age_confidence).toBe("default");
@@ -27,17 +43,18 @@ describe("age classes from the regulations", () => {
     expect(patch?.age_categories).toEqual(["u13", "u15", "kids", "youth", "amateur", "masters"]);
   });
 
-  it("keeps guessed open classes beside a list of licensed ones", () => {
+  it("drops a guessed open class a race's own list does not name", () => {
     const ladder = regulationAges(list("categories", ["Junioři", "Muži Elite", "Ženy Elite"]), 2026);
-    expect(regulationAgePatch({ age_categories: ["junior", "elite", "amateur"], age_confidence: "default" }, ladder)).toBeNull();
+    const patch = regulationAgePatch({ age_categories: ["junior", "elite", "amateur"], age_confidence: "default" }, ladder);
+    expect(patch?.age_categories).toEqual(["junior", "elite"]);
+    expect(patch?.age_confidence).toBe("explicit");
   });
 
-  it("never narrows a set another source confirmed, but corrects its own earlier write", () => {
+  it("puts the race's own list above a set another source confirmed", () => {
     const read = regulationAges(list("categories", ["Junioři", "Muži Elite"]), 2026);
-    const confirmed = { age_categories: ["kids", "junior", "elite", "amateur"], age_confidence: "explicit" };
-    expect(regulationAgePatch(confirmed, read)).toBeNull();
-    // Its own write is open to correction, though here nothing it may drop is ruled out.
-    expect(regulationAgePatch(confirmed, read, true)?.age_confidence).toBe("default");
+    const patch = regulationAgePatch({ age_categories: ["kids", "junior", "elite", "amateur"], age_confidence: "explicit" }, read);
+    expect(patch?.age_categories).toEqual(["junior", "elite"]);
+    expect(regulationAgePatch({ age_categories: ["junior", "elite"], age_confidence: "explicit" }, read)).toBeNull();
   });
 
   it("places a class by its name before the birth years read beside it (Janev Cup)", () => {

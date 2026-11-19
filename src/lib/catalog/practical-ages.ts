@@ -22,7 +22,14 @@ function agesOf(item: Item, refYear: number): AgeCategory[] {
   return withYears.length ? withYears : parseContestCategories([name], { refYear });
 }
 
-export type RegulationAges = { ages: AgeCategory[]; byCourse: boolean; labels: string[]; sourceUrl: string | null };
+export type RegulationAges = {
+  ages: AgeCategory[];
+  byCourse: boolean;
+  /** The race's own category list (propozice) is read for this edition: what it names is the whole field. */
+  ownList: boolean;
+  labels: string[];
+  sourceUrl: string | null;
+};
 
 /**
  * The age classes this edition's regulations name, on our own fixed list.
@@ -48,6 +55,7 @@ export function regulationAges(details: Record<string, Field> | null, refYear: n
   return {
     ages: AGE_CATEGORIES.filter((age) => found.has(age)),
     byCourse: current("fees").some((item) => !agesOf(item, refYear).length),
+    ownList: current("categories").some((item) => agesOf(item, refYear).length > 0),
     labels: [...new Set(all.map((item) => item.label!))],
     sourceUrl: all.find((item) => item.sourceUrl)?.sourceUrl ?? null,
   };
@@ -60,11 +68,14 @@ const YOUNG_YOUTH: AgeCategory[] = ["u13", "u15"];
 /**
  * What a race's age classes become once its regulations are read; null when nothing changes.
  *
- * Every class the regulations name is added. A guessed class goes only where the regulations show
- * that end of the field and leave it out: children, when the youth ladder starts at U13 or U15
- * with no children's race. Open adult classes stay: a list of licensed classes says nothing about the
- * amateur race beside them. A set another source confirmed loses nothing. The set is
- * confirmed when the regulations account for every class in it (U23 rides with the elite).
+ * A race's own category list (propozice for this edition) is final: the set becomes exactly the
+ * classes it names and is confirmed, whatever was guessed or another source said. A later read does
+ * not demote it again.
+ *
+ * Without such a list (classes read from fees or the timetable only, or a race priced by course) every class named is added, a
+ * guessed class goes only where the regulations show that end of the field and leave it out
+ * (children, when the youth ladder starts at U13 or U15), and the set is confirmed when the
+ * regulations account for every class in it. A set another source confirmed loses nothing.
  */
 export function regulationAgePatch(
   row: { age_categories: string[] | null; age_confidence: string | null },
@@ -82,22 +93,31 @@ export function regulationAgePatch(
     if (KIDS.includes(age)) return !childrenRuledOut;
     return true;
   };
-  const ages = AGE_CATEGORIES.filter((age) => named.has(age) || (previous.includes(age) && keep(age)));
+  // The race's own category list (propozice) is final: what it names is the whole field. Nothing guessed or
+  // inherited stays beside it, and no other source's confirmed set outranks it. U23 rides with the elite
+  // (kept if it was there), "youth" with the U13–U17 classes. Only a race priced by course names no one.
+  const final = read.ownList && !read.byCourse;
+  const implied = (age: AgeCategory) =>
+    (age === "youth" && YOUNG_YOUTH.concat("u17").some((a) => named.has(a))) || (age === "u23" && named.has("elite") && previous.includes("u23"));
+  const ages = AGE_CATEGORIES.filter((age) =>
+    named.has(age) || (final ? implied(age) : previous.includes(age) && keep(age)));
   const accounted = ages.every((age) => named.has(age) || (age === "u23" && named.has("elite")) || (age === "youth" && YOUNG_YOUTH.concat("u17").some((a) => named.has(a))));
-  const confidence = accounted || confirmedElsewhere ? "explicit" : ownPrevious ? "default" : (row.age_confidence ?? "default");
+  const confidence = final || accounted || confirmedElsewhere ? "explicit" : ownPrevious ? "default" : (row.age_confidence ?? "default");
   if (ages.length === previous.length && ages.every((age) => previous.includes(age)) && confidence === row.age_confidence) return null;
   return { age_categories: ages, age_confidence: confidence, audience: audienceFromAgeCategories(ages) };
 }
 
 /** How this reader's writes are recorded, so its next read may correct them. */
 const OWN_QUOTE = /^(Complete|Partial) list of classes in the regulations|^Categories named in the regulations/;
+/** The text scanner (regulation-ages.ts) and this reader both read propozice; neither is "another source". */
+const OWN_METHODS = new Set(["regulation_categories", "regulation_ages"]);
 
 export async function fillAgesFromRegulations(opts?: { dryRun?: boolean; log?: (line: string) => void }) {
   const db = createServerSupabase();
   const result = { read: 0, updated: 0 };
   for (let from = 0; ; from += 1000) {
     const { data, error } = await db.from("events")
-      .select("id,public_revision,name,start_date,age_categories,age_confidence,practical_details,overrides:event_overrides(locked_fields),facts:event_facts(field,quote,created_at)")
+      .select("id,public_revision,name,start_date,age_categories,age_confidence,practical_details,overrides:event_overrides(locked_fields),facts:event_facts(field,quote,method,created_at)")
       .eq("facts.field", "age_categories")
       .eq("visibility", "public").is("merged_into_id", null).in("status", [...ACTIVE_EVENT_STATUSES])
       .gte("start_date", new Date().toISOString().slice(0, 10)).neq("practical_details", "{}")
@@ -110,9 +130,10 @@ export async function fillAgesFromRegulations(opts?: { dryRun?: boolean; log?: (
       const read = regulationAges(row.practical_details as never, Number(row.start_date.slice(0, 4)));
       if (!read?.ages.length) continue;
       result.read++;
-      const facts = (row.facts as { quote: string | null; created_at: string }[] | null) ?? [];
-      const last = facts.reduce<{ quote: string | null; created_at: string } | null>((a, b) => (!a || b.created_at > a.created_at ? b : a), null);
-      const patch = regulationAgePatch(row, read, OWN_QUOTE.test(last?.quote ?? ""));
+      type Fact = { quote: string | null; method: string | null; created_at: string };
+      const facts = (row.facts as Fact[] | null) ?? [];
+      const last = facts.reduce<Fact | null>((a, b) => (!a || b.created_at > a.created_at ? b : a), null);
+      const patch = regulationAgePatch(row, read, OWN_QUOTE.test(last?.quote ?? "") || OWN_METHODS.has(last?.method ?? ""));
       if (!patch) continue;
       opts?.log?.(`${opts.dryRun ? "DRY " : ""}${patch.age_confidence === "explicit" ? "OK  " : "PART"} ${row.name}: ${(row.age_categories ?? []).join(",")} → ${patch.age_categories.join(",")}`);
       if (opts?.dryRun) { result.updated++; continue; }
