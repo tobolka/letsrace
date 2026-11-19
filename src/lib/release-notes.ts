@@ -19,6 +19,13 @@ export type ReleaseNote = {
 
 export const RELEASE_NOTES: ReleaseNote[] = [
   {
+    date: "2026-11-19",
+    items: {
+      cs: ["Odkazy u seriálu vypadají stejně jako u závodu: šedé řádky s ikonou a šipkou pod nadpisem Odkazy."],
+      en: ["Links on a series look the same as on a race: grey rows with an icon and an arrow under a Links heading."],
+    },
+  },
+  {
     date: "2026-11-18",
     items: {
       cs: [

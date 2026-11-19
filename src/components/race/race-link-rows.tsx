@@ -37,7 +37,7 @@ export function RaceLinkRows({
   links: RaceLink[];
   onLink?: (kind: string) => void;
   /** For a page that cannot hand down a handler: what to report on a click. */
-  analytics?: { raceId: string; slug: string; location: string; presentation: string };
+  analytics?: { raceId?: string; slug: string; seriesSlug?: string; location: string; presentation: string };
   /** Kept so callers need not change: the rows are buttons inside the gutter now. */
   bleed?: boolean;
   className?: string;
@@ -47,8 +47,7 @@ export function RaceLinkRows({
     onLink?.(kind);
     if (analytics) {
       track(kind === "register" ? "race_registration_start" : "outbound_click", {
-        race_id: analytics.raceId,
-        slug: analytics.slug,
+        ...(analytics.raceId ? { race_id: analytics.raceId, slug: analytics.slug } : { series_slug: analytics.seriesSlug ?? analytics.slug }),
         kind,
         location: analytics.location,
         presentation: analytics.presentation,

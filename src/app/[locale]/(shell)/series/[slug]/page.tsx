@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import Link from "next/link";
-import { Bike, ChartNoAxesColumnIncreasing, ExternalLink, MapPinned, Trophy, UserRound } from "lucide-react";
+import { Bike, ChartNoAxesColumnIncreasing, MapPinned, Trophy, UserRound } from "lucide-react";
 import { notFound } from "next/navigation";
 import { getPublicSeriesRow, getSeriesBySlug } from "@/lib/events";
 import { BadgeCheck } from "lucide-react";
@@ -18,7 +18,8 @@ import { HubJsonLd } from "@/components/seo/hub-json-ld";
 import { RaceDetailMap } from "@/components/race/race-detail-map";
 import { todayIso } from "@/lib/date-presets";
 import { Button } from "@/components/ui/button";
-import { OutboundTrackLink } from "@/components/seo/outbound-track-link";
+import { RaceLinkRows, type RaceLink } from "@/components/race/race-link-rows";
+import { FACT_COPY } from "@/lib/race-fact-copy";
 import { SeriesSkeleton } from "./series-skeleton";
 import { Badge } from "@/components/ui/badge";
 import { ExplainedBadge } from "@/components/explore/explained-badge";
@@ -26,7 +27,7 @@ import { MetaRow } from "@/components/explore/meta-row";
 import { AGE_CATEGORIES, formatEventCategoryLabel } from "@/lib/taxonomy";
 import { ageCategoryHelp, ageCategoryLabel, disciplineLabel, raceLevelLabel } from "@/lib/i18n/taxonomy";
 import { lastCheckedLabel } from "@/lib/trust";
-import { competitionTypeLabel, seriesLabels, seriesSourceKindLabel, seriesTypeLabel } from "@/lib/series-copy";
+import { competitionTypeLabel, seriesLabels, seriesTypeLabel } from "@/lib/series-copy";
 
 /** Same as race details: CDN for a week; admin edits refresh the tag. */
 export const revalidate = 604800;
@@ -111,6 +112,22 @@ async function Series({ locale, slug }: { locale: Locale; slug: string }) {
   const copy = hubCopy[locale];
   const words = seriesWords(data, locale);
   const heading = words.title;
+  // The series' own pages, in the same rows a race page uses: its website, then where the data came from.
+  const seriesHost = (url: string) => {
+    try {
+      return new URL(url).hostname.replace(/^www\./, "");
+    } catch {
+      return url;
+    }
+  };
+  const seriesLinks: RaceLink[] = [
+    data.series.websiteUrl ? { href: data.series.websiteUrl, label: t.seriesWebsite, kind: "website", external: true } : null,
+    data.series.sourceUrl
+      ? { href: data.series.sourceUrl, label: `${seriesLabels(locale).source}: ${seriesHost(data.series.sourceUrl)}`, kind: "listing", external: true }
+      : null,
+  ]
+    .filter((l): l is RaceLink => Boolean(l))
+    .filter((l, i, all) => all.findIndex((x) => x.href === l.href) === i);
 
   return (
     <article className="min-h-full bg-background">
@@ -139,18 +156,6 @@ async function Series({ locale, slug }: { locale: Locale; slug: string }) {
               {t.viewOnMap}
             </Link>
           </Button>
-          {/* The organiser's own page for the series: its rules, standings and news. */}
-          {data.series.websiteUrl ? (
-            <OutboundTrackLink
-              href={data.series.websiteUrl}
-              eventName="outbound_click"
-              eventProps={{ series_slug: slug, kind: "series_website", location: "series_page", presentation: "page" }}
-              size="default"
-            >
-              <ExternalLink data-icon="inline-start" />
-              {t.seriesWebsite}
-            </OutboundTrackLink>
-          ) : null}
           </div>
         </BrowseIntro>
         {data.series.organizerVerified ? (
@@ -162,6 +167,8 @@ async function Series({ locale, slug }: { locale: Locale; slug: string }) {
           </p>
         ) : null}
         <SeriesFacts series={data.series} season={words.season} locale={locale} />
+        {seriesLinks.length ? <h2 className="mt-6 mb-2 text-[13px] font-semibold">{FACT_COPY[locale].links}</h2> : null}
+        <RaceLinkRows links={seriesLinks} analytics={{ slug, seriesSlug: slug, location: "series_page", presentation: "page" }} />
         {words.own ? (
           <p className="mt-6 text-pretty text-muted-foreground">{words.generated}</p>
         ) : null}
@@ -228,11 +235,6 @@ function SeriesFacts({
     (v): v is string => Boolean(v),
   );
   const checked = lastCheckedLabel(series.lastSeenAt, locale, t.trustChecked);
-  let host: string | null = null;
-  try {
-    host = series.sourceUrl ? new URL(series.sourceUrl).hostname.replace(/^www\./, "") : null;
-  } catch {}
-  const sourceKind = seriesSourceKindLabel(series.sourceKind, locale);
 
   return (
     <div className="mt-6 flex flex-col gap-2">
@@ -270,19 +272,9 @@ function SeriesFacts({
           {season ? <span className="text-sm text-muted-foreground">{labels.season.replace("{season}", season)}</span> : null}
         </MetaRow>
       ) : null}
-      {host || checked ? (
+      {checked ? (
         <p className="mt-1 text-xs text-muted-foreground">
-          {host && series.sourceUrl ? (
-            <>
-              {labels.source}:{" "}
-              <a href={series.sourceUrl} target="_blank" rel="nofollow noopener noreferrer" className="underline underline-offset-4">
-                {host}
-              </a>
-              {sourceKind ? ` (${sourceKind})` : null}
-            </>
-          ) : null}
-          {host && checked ? <span aria-hidden> · </span> : null}
-          {checked ? <time dateTime={series.lastSeenAt ?? undefined}>{checked}</time> : null}
+          <time dateTime={series.lastSeenAt ?? undefined}>{checked}</time>
         </p>
       ) : null}
     </div>
