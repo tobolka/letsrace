@@ -23,6 +23,8 @@ Důležitost: **Vysoká** = přímo zlepšuje to, co vidí rodiče a jezdci, neb
 
 | # | Úkol | Proč na tom záleží (lidskou řečí) | Důležitost | Kdo / kdy |
 | --- | --- | --- | --- | --- |
+| A21 | Dokončit případy agenta (Codex je bez kreditu): zbývá 22. 16 jsou podrobnosti z propozic (program, startovné, místo; část je na rad-netu nebo ve velkých PDF) a 6 duplicit z `radsport-events.de` | Stránky `radsport-events.de` se čtou jen skriptem, Mac je znovu přečte bez skriptu a citaci nenajde, takže odpověď zahodí. Potřebují čtečku nebo vykreslení stránek | **Střední** | já, případně nový kredit Codexu |
+| A22 | Projít 73 skrytých závodů, u nichž se nepodařilo zjistit důvod (25 do 60 dnů) | 308 skrytých má od 20. 11. zapsaný důvod, 21 měla ruční. Zbylých 73 neumím bez čtení každého zdroje zařadit | **Střední** | já |
 | A3 | Posílat na web opravy data a zrušení závodu | Když pořadatel posune závod nebo ho zruší, web by to měl vědět sám. Dnes se takové opravy na web neposílají, jen zůstanou v Macu. Brána v databázi je připravená, chybí odesílač | **Vysoká** | já, až bude A2 |
 | A2 | Změřit, kolik oprav dat má citaci ze stránky | Bez citace se oprava data nepustí. Zrychleno 20. 11.: náhled bere důkaz i z čerstvých čtení (z 1 na 4 hned) a 11 zdrojů za 24 dalšími změnami je splatných hned. Víc než 28 z 69 automaticky nebude, zbytek jsou přejmenování, stavy a minulá data, ty rozhoduje člověk | **Vysoká** (blokuje A3) | čas, příští průchod |
 | A6 | Rozhodnout, kdy jsou „50 km a 100 km“ nebo „hlavní a dětský závod“ jeden závod a kdy dva | Teď se u jedné akce občas objeví dva záznamy a občas jeden. Rodič pak nenajde správnou kategorii. Je to tvoje rozhodnutí | **Vysoká** | ty, po dvojicích |
