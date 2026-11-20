@@ -51,6 +51,8 @@ function page() {
   const decisions = readJson(FILE, {});
   const held = (found?.plan.newRaces.held ?? []).slice().sort((a, b) => a.date.localeCompare(b.date));
   const rows = held.map(race => {
+    // Plans written before the Mac knew the ids have none; they get buttons after the next cycle.
+    if (!race.id) return `<tr><td>${esc(race.date)}</td><td>${esc(race.name)}</td><td>${race.because.map(reason => esc(REASONS[reason] ?? reason)).join(', ')}</td><td>–</td><td class="muted">po příštím průchodu</td></tr>`;
     const mine = decisions[race.id]?.action;
     const soft = race.because.every(reason => SOFT.has(reason));
     const buttons = `<form method="post" action="/decide" style="display:inline"><input type="hidden" name="id" value="${esc(race.id)}">
@@ -70,7 +72,7 @@ ${found ? `Plán z průchodu ${esc(found.run)}.` : 'Zatím žádný plán.'}</p>
 </body></html>`;
 }
 
-http.createServer((request, response) => {
+const server = http.createServer((request, response) => {
   try {
     if (request.method === 'POST' && request.url === '/decide') {
       let body = '';
@@ -91,6 +93,7 @@ http.createServer((request, response) => {
     response.writeHead(500, { 'content-type': 'text/plain; charset=utf-8' });
     response.end(`Stránku se nepodařilo načíst: ${error.message}`);
   }
-}).listen(54341, '127.0.0.1', () => console.log('http://127.0.0.1:54341'));
+});
+if (require.main === module) server.listen(54341, '127.0.0.1', () => console.log('http://127.0.0.1:54341'));
 
 module.exports = { decide, SOFT };

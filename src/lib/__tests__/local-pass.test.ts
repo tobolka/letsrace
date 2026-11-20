@@ -165,6 +165,32 @@ describe("date proposals preview", () => {
   });
 });
 
+describe("held decisions page", () => {
+  it("stores drop, release and undo in one local file and refuses anything else", async () => {
+    const { mkdtempSync, readFileSync, rmSync } = await import("node:fs");
+    const { tmpdir } = await import("node:os");
+    const { join } = await import("node:path");
+    const dir = mkdtempSync(join(tmpdir(), "held-decisions-"));
+    process.env.LETSRACE_DATA_DIR = dir;
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      const { decide } = require("../../../scripts/held-decisions.cjs");
+      const id = "11111111-1111-1111-1111-111111111111";
+      decide(id, "release");
+      decide("22222222-2222-2222-2222-222222222222", "drop");
+      const read = () => JSON.parse(readFileSync(join(dir, "held-decisions.json"), "utf8"));
+      expect(read()[id].action).toBe("release");
+      decide(id, "undo");
+      expect(Object.keys(read())).toEqual(["22222222-2222-2222-2222-222222222222"]);
+      expect(() => decide("not-an-id", "drop")).toThrow();
+      expect(() => decide(id, "publish")).toThrow();
+    } finally {
+      delete process.env.LETSRACE_DATA_DIR;
+      rmSync(dir, { recursive: true, force: true });
+    }
+  });
+});
+
 describe("held backlog", () => {
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   const { summarizeHeld } = require("../../../scripts/held-backlog.cjs");

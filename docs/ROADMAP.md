@@ -23,7 +23,6 @@ Stav k 20. 11. 2026. Tohle je jediné místo pro rozpracované a zapomenuté úk
 | --- | --- | --- | --- | --- |
 | A2 | Změřit, kolik změn data dostalo citaci | Dnes 1 z 69 (`date-proposals`), čtečka `pipeline-v9` se šíří postupně | čas, pár dní | žádná |
 | A3 | Odesílání změn data a zrušení přes bránu | Migrace `20261120120000_date_and_cancellation_proposals.sql` je napsaná a vyzkoušená na zkušební databázi; chybí odesílač a nasazení migrace. Změny existujících závodů se dnes neposílají (`--only-new-races`) | ty souhlasil s migracemi; závisí na A2 | střední |
-| A4 | Vyzkoušet naživo `scripts/held-decisions.cjs` (Zahodit / Pustit) | Je jen ověřená syntakticky | já | malá |
 | A5 | Pořadí důvěryhodnosti zdrojů dotáhnout u místa, názvu a harmonogramu | V kódu je jen u věku, odkazu na web a data s citací | já, pak ověřit dopady | velká |
 | A6 | Rozhodnout 28 skupin „stejný web a den“ a případy „50 km × 100 km“, „hlavní × dětský“ | Katalog je drží jako samostatné závody, scorer je slučuje (`dedup-golden.test.ts`) | ty, po dvojicích, ne plošně | produktové rozhodnutí |
 | A7 | Sjednotit zapisovače slučování | Slučování volá 9 souborů, 435 ze 456 sloučení nemá záznam pro vrácení | ty, později | velká |
