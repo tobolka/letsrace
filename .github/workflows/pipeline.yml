@@ -1,11 +1,11 @@
 name: Pipeline (cloud worker)
 
 # The pipeline's work that must go on while the Mac is shut. One job at a time moves here from
-# vercel.json; a job has exactly one scheduler, so its line leaves vercel.json in the same change
+# the Worker's cron triggers (wrangler.jsonc); a job has exactly one scheduler, so its line leaves wrangler.jsonc in the same change
 # that gives it a schedule here. See docs/pipeline-v2.md, part 6.
 #
 # What runs here on a schedule is only what nothing else does while the Mac is shut: reading
-# other people's websites. The five jobs in vercel.json stay there; they already run without the
+# other people's websites. The jobs in the Worker's cron triggers stay there; they already run without the
 # Mac, and moving them would save almost no function CPU (they wait on the network, they do not compute).
 #
 # By hand:  gh workflow run pipeline.yml -f job=find-documents

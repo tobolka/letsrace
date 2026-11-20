@@ -3,7 +3,7 @@ import { agentLinkHeaders } from "@/lib/agent-discovery";
 import { defaultLocale, locales, type Locale } from "@/lib/i18n/messages";
 import { LOCALE_COOKIE, savedLocale } from "@/lib/i18n/locale-preference";
 import { estimateMarkdownTokens, homepageMarkdown } from "@/lib/markdown-pages";
-import { CATALOGUE_CDN_CACHE, PUBLIC_CATALOGUE_VIEWS_TAG, publicEventTag, publicSeriesTag } from "@/lib/catalogue-cache";
+import { CATALOGUE_CDN_CACHE } from "@/lib/catalogue-cache";
 import { routePath, SECTION_SLUGS } from "@/lib/localized-paths";
 
 const LOCALE_PREFIX = new RegExp(`^/(${locales.join("|")})(/|$)`);
@@ -73,19 +73,7 @@ function holdOnCdn(response: NextResponse, request: NextRequest) {
   // Date-based HTML previews refresh daily, rather than remaining behind the
   // general catalogue's week-long CDN lifetime after their ISR has refreshed.
   const cache = isEntry ? "public, s-maxage=86400, stale-while-revalidate=3600" : CATALOGUE_CDN_CACHE;
-  response.headers.set("Vercel-CDN-Cache-Control", cache);
   response.headers.set("CDN-Cache-Control", cache);
-  // Tag shared pages at the CDN too: a data-cache tag alone cannot evict an
-  // independently cached HTTP response. Race and series details stay scoped.
-  const resolved = routePath(pathname);
-  const internal = resolved && "rewrite" in resolved ? resolved.rewrite : pathname;
-  const raceSlug = internal.match(/\/e\/([^/]+)\/?$/)?.[1];
-  const seriesSlug = internal.match(/\/series\/([^/]+)\/?$/)?.[1];
-  if (seriesSlug) response.headers.set("Vercel-Cache-Tag", publicSeriesTag(seriesSlug));
-  if (raceSlug) response.headers.set("Vercel-Cache-Tag", publicEventTag(raceSlug));
-  if (!/\/(e|series)\//.test(internal) && !(resolved && "redirect" in resolved)) {
-    response.headers.set("Vercel-Cache-Tag", PUBLIC_CATALOGUE_VIEWS_TAG);
-  }
   return response;
 }
 
@@ -110,7 +98,6 @@ export function proxy(request: NextRequest) {
     response.headers.set("Vary", "Cookie, Accept-Language, Accept");
     // Neither browsers nor shared caches may retain a previous language choice.
     response.headers.set("Cache-Control", "private, no-store");
-    response.headers.set("Vercel-CDN-Cache-Control", "no-store");
     response.headers.set("CDN-Cache-Control", "no-store");
     return response;
   }

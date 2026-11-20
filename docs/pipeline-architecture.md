@@ -83,7 +83,7 @@ prompt/version, URL and source chunk. All cache hits are verified again, includi
 against today's date. Cache age is seven days. Process memory is bounded to 64
 entries; identical in-flight requests share work.
 
-Local refreshes set `LLM_EXTRACTION_CACHE_DIR=tmp/extraction-cache`. On Vercel the
+Local refreshes set `LLM_EXTRACTION_CACHE_DIR=tmp/extraction-cache`. In a serverless runtime (Cloudflare Workers) the
 default backend is the new service-role-only `pipeline_extraction_cache` table;
 `LLM_EXTRACTION_CACHE_BACKEND=supabase` also selects it explicitly. Expired database
 entries are pruned. The migration must exist before deploying this backend.

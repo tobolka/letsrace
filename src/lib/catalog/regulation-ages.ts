@@ -10,6 +10,7 @@ import { linkLabel } from "@/lib/watcher/link-label";
 import { isOwnDocument, isSeriesDocumentOfRound } from "@/lib/catalog/practical-extraction";
 import { fetchBot } from "@/lib/http/fetch";
 import { regulationAges } from "@/lib/catalog/practical-ages";
+import { isServerless } from "@/lib/runtime";
 
 const PAGE = 1000;
 const MAX_BYTES = 8 * 1024 * 1024;
@@ -276,7 +277,7 @@ function isOfficeDocument(type: string, bytes: Uint8Array, url: string): boolean
  * on a Mac; elsewhere nothing (a garbled byte dump is worse than no text).
  */
 async function officeText(bytes: Uint8Array, url: string): Promise<string | null> {
-  if (process.platform !== "darwin" || process.env.VERCEL) return null;
+  if (process.platform !== "darwin" || isServerless()) return null;
   const { mkdtemp, writeFile, readFile, rm } = await import("node:fs/promises");
   const { tmpdir } = await import("node:os");
   const { join } = await import("node:path");

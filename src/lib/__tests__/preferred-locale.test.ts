@@ -36,7 +36,6 @@ describe("saved language on return visits", () => {
       expect(response.headers.get("location")).toBe(`https://letsrace.cz/${locale}?view=list`);
       expect(response.headers.get("cache-control")).toBe("private, no-store");
       expect(response.headers.get("cdn-cache-control")).toBe("no-store");
-      expect(response.headers.get("vercel-cdn-cache-control")).toBe("no-store");
     }
   });
 

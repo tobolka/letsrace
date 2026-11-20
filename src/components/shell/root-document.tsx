@@ -5,7 +5,6 @@ import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Umami } from "@/components/analytics/umami";
-import { DeferredVitals } from "@/components/perf/deferred-vitals";
 import { WebMcpTools } from "@/components/agent/webmcp-tools";
 import { IPHONE_LAUNCH_SCREENS } from "@/lib/launch-screens";
 import { getSiteUrl, seoCopy, SITE_AUTHOR, SITE_NAME, socialCard } from "@/lib/seo";
@@ -139,7 +138,6 @@ export function RootDocument({ lang, children }: { lang: string; children: React
         <WebMcpTools />
         <Toaster />
         <Suspense fallback={null}><Umami /></Suspense>
-        <DeferredVitals />
       </body>
     </html>
   );

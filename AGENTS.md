@@ -50,15 +50,18 @@ Every change that goes live gets judged for the riders and parents who use Let's
 - **Group by the day it went live** (`YYYY-MM-DD`). Add to today's entry if it exists.
 - Do this in the same change as the work, so the notes and the site go out together.
 
-## Hosting allowance: pushes and crawlers cost CPU
+## Hosting: Cloudflare Workers (since 2026-11-20): pushes and crawlers cost CPU
 
-The hosting plan allows 4 hours of function CPU a month, and every production deployment empties the page cache, so the next visitors and crawlers re-render pages. A commit whose message contains `[no deploy]` does not deploy (`ignoreCommand` in `vercel.json`; git itself is not available there, because `.vercelignore` keeps `.git/` out), and `src/app/robots.txt/route.ts` keeps the costliest crawlers to the pages worth reading.
+The site runs as the Worker `letsrace` (OpenNext) on the owner's Cloudflare account, plan Workers Paid (5 USD a month: 10 million requests and 30 million CPU milliseconds included, then 0.30 USD per million requests and 0.02 USD per million CPU ms). Vercel is no longer used; the old Vercel projects stay paused until deleted.
 
-- Push app changes together, not one commit at a time.
-- Put `[no deploy]` in the message of the last commit of a push only if nothing in that push changes the running site: pipeline scripts, reports and docs. Only that last commit is looked at, so a marked commit on top of an app change would leave the change undeployed.
+- Deploys: every push to `main` is built and deployed by Cloudflare Workers Builds (build `npm run build:cloudflare`, deploy `npm run deploy:cloudflare`). A deploy starts with an empty edge cache, because the cache key carries the deployment id (`cloudflare-worker.ts`); the next visitors and crawlers re-render pages. So push app changes together, not one commit at a time.
+- Docs, reports and pipeline scripts must not rebuild the site: set them as excluded paths under Worker → Settings → Builds → Build watch paths (`docs/**`, `reports/**`, `.agents/**`, `.github/**`). The old `[no deploy]` commit marker only worked on Vercel.
+- Public pages and public API answers are held in the Workers cache for as long as `CDN-Cache-Control: public, s-maxage=N` says, capped at 30 minutes (`cloudflare-worker.ts`). There is no tag purge: a change shows up after at most that time.
+- Configuration lives in `wrangler.jsonc` (public values, cron triggers, `limits`). Secrets are Worker secrets: `npx wrangler secret put NAME`. Never paste a secret into chat. `process.env.VERCEL` is gone; use `isServerless()` from `src/lib/runtime.ts` ("no browser, no disk").
+- `src/app/robots.txt/route.ts` keeps the costliest crawlers to the pages worth reading. Bot Fight Mode is deliberately off (it would block the Mac's calls to `/api/cron/*` and `/api/ops/*`); a rate limit of 100 requests per 10 seconds per IP protects letsrace.cz and www.
 - Never check hundreds of live pages to confirm a change; check a handful.
 - Page refreshes past the daily allowance need the owner's say each time.
-- When CPU rises, look first at Firewall → Traffic (top user agents) and deployments per day.
+- When CPU rises, look first at Cloudflare → Analytics (top user agents) and the Worker's CPU time in Workers & Pages → letsrace → Metrics.
 
 ## Agent for unresolved races: only through the desk
 

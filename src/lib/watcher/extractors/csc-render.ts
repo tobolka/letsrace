@@ -4,6 +4,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { BOT_UA } from "@/lib/watcher/http";
 import { withChromeSlot } from "@/lib/watcher/chrome-slots";
+import { isServerless } from "@/lib/runtime";
 
 const CSC_PUB = "https://portal.czechcyclingfederation.com/Races/Race/Pub";
 // Eighteen pages of twenty-five at a Blazor round trip each; 55 s was ending runs
@@ -31,7 +32,7 @@ const MIN_PLAUSIBLE_ROWS = 100;
 export async function renderCscPublicCalendar(url = CSC_PUB, opts?: { year?: number }): Promise<string> {
   // Never launch Chrome while Next is bundling or on Vercel (NFT traces spawn).
   if (process.env.NEXT_PHASE === "phase-production-build") return "";
-  if (process.env.VERCEL) return "";
+  if (isServerless()) return "";
   const chrome = await resolveChrome();
   if (!chrome) return "";
   // One retry: the portal is a shared Blazor server and a slow minute is
@@ -166,7 +167,7 @@ export async function renderCscRaceDetails(
   const out = new Map<string, CscRaceDetail | null>();
   if (!urls.length) return out;
   if (process.env.NEXT_PHASE === "phase-production-build") return out;
-  if (process.env.VERCEL) return out;
+  if (isServerless()) return out;
   const chrome = await resolveChrome();
   if (!chrome) return out;
   const { spawn } = await import(
@@ -298,7 +299,7 @@ async function renderPages(
   const out = new Map<string, string>();
   if (!urls.length) return out;
   if (process.env.NEXT_PHASE === "phase-production-build") return out;
-  if (process.env.VERCEL) return out;
+  if (isServerless()) return out;
   const chrome = await resolveChrome();
   if (!chrome) return out;
   const { spawn } = await import(

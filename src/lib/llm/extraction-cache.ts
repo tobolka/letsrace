@@ -4,6 +4,7 @@ import { readJson, writeJsonAtomic } from "@/lib/catalog/local-source-cache";
 import { NO_USAGE, LlmResponseError, type LlmUsage } from "@/lib/llm/anthropic";
 import { createServerSupabase } from "@/lib/supabase/server";
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { isServerless } from "@/lib/runtime";
 
 type Reply<T> = { value: T; usage: LlmUsage };
 type Entry = { value: unknown; savedAt: number };
@@ -14,7 +15,7 @@ const MAX_AGE = 7 * 24 * 60 * 60 * 1000;
 let prune: Promise<void> | undefined;
 
 function databaseCache(): SupabaseClient | null {
-  const backend = process.env.LLM_EXTRACTION_CACHE_BACKEND ?? (process.env.VERCEL ? "supabase" : "local");
+  const backend = process.env.LLM_EXTRACTION_CACHE_BACKEND ?? (isServerless() ? "supabase" : "local");
   return backend === "supabase" ? createServerSupabase() : null;
 }
 

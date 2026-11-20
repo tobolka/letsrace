@@ -9,6 +9,7 @@ import { attachRegulationsUrl } from "@/lib/watcher/regulations-url";
 import { scoreDuplicate, datesCompatible, DEDUP_THRESHOLD, hasIdentityConflict } from "@/lib/dedup";
 import type { LlmUsage } from "@/lib/llm/anthropic";
 import { skeleton } from "@/lib/watcher/extractors/llm-calendar";
+import { isServerless } from "@/lib/runtime";
 
 export { fetchPage, type FetchResult } from "@/lib/watcher/http";
 export const WATCH_READER_VERSION = "pipeline-v8";
@@ -105,7 +106,7 @@ export async function extractEvents(url: string, html: string, opts?: { ai?: boo
   const generic = attachRegulationsUrl(url, html, extractGeneric(url, html));
   const thin = !generic.length && stripHtmlToText(html).length < 250 && /<script/i.test(html);
   if (thin) {
-    if (opts?.render !== false && !process.env.VERCEL) {
+    if (opts?.render !== false && !isServerless()) {
       try {
         const { renderPagesHtml } = await import("@/lib/watcher/extractors/csc-render");
         const rendered = (await renderPagesHtml([url], { budgetMs: 30_000 })).get(url);

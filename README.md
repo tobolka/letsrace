@@ -32,7 +32,7 @@ npm run dev
 - Discovery queue (accept/reject found links)
 - **Add event manually** with URL + full field edit
 - **Edit scraped events** and lock fields so the watcher will not overwrite them
-- Run watcher on demand; Vercel Cron hits `/api/cron/watch` twice daily (05:00 & 17:00 UTC)
+- Run watcher on demand; the cron triggers in `wrangler.jsonc` call the `/api/cron/*` jobs daily (Cloudflare Workers)
 
 ## Watcher
 

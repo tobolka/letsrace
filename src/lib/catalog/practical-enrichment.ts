@@ -19,6 +19,7 @@ import { documentDetails, documentKind, onlyInBrowser, posterImages, rankPractic
 import { renderPagesHtml } from "@/lib/watcher/extractors/csc-render";
 import { braveSearch } from "@/lib/catalog/brave";
 import { completionOrder, daysBeforeNextLook, documentIsAboutRace, documentLinks, ownSourcePages, placeAndDayQuery, regulationsAmong, regulationsQuery, resultsLinkIn, takeSearch, usableHits, websiteMayBeReplaced } from "@/lib/catalog/race-completeness";
+import { isServerless } from "@/lib/runtime";
 
 export function practicalWindows(text: string, max = 6000) {
   const spans: [number, number][] = [[0, Math.min(1200, text.length)]];
@@ -162,7 +163,7 @@ export async function enrichPracticalDetails(options: { max?: number; ids?: stri
         if (!doc?.text.trim()) { unreadable++; continue; }
         let source = doc.html ? pageAsText(doc.html, url) : { text: doc.text, links: new Set<string>() };
         // Only on the Mac, and a few per run: starting a browser is the slow way to read a page.
-        if (doc.html && process.platform === "darwin" && !process.env.VERCEL && !options.structuredOnly && renders < MAX_BROWSER_READS_PER_RUN && onlyInBrowser(doc.html, source.text)) {
+        if (doc.html && process.platform === "darwin" && !isServerless() && !options.structuredOnly && renders < MAX_BROWSER_READS_PER_RUN && onlyInBrowser(doc.html, source.text)) {
           renders++;
           const rendered = await renderPagesHtml([url], { settleMs: 2500, budgetMs: 30_000 }).then(pages => pages.get(url)).catch(() => undefined);
           if (rendered) source = pageAsText(rendered, url);

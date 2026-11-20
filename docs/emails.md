@@ -1,6 +1,6 @@
 # E-maily Let's Race — jak je zapnout v produkci
 
-Aplikace posílá dva druhy e-mailů. Ty první odchází z Vercelu přes Resend, ty druhé posílá Supabase Auth.
+Aplikace posílá dva druhy e-mailů. Ty první odchází z Cloudflare Workeru přes Resend, ty druhé posílá Supabase Auth.
 
 | Druh | Kdy odchází | Odkud | Kód |
 |---|---|---|---|
@@ -33,7 +33,7 @@ Odkaz na odhlášení vede na `/api/email/unsubscribe`. Ten podle podepsaného t
    ```
    Po pár týdnech bez problémů ho zpřísněte na `p=quarantine`.
 4. V **API Keys** vytvořte klíč s oprávněním *Sending access* jen pro doménu `letsrace.cz`.
-5. Ve Vercelu (Project → Settings → Environment Variables, prostředí *Production*) nastavte:
+5. V Cloudflare (Workers & Pages → letsrace → Settings → Variables and secrets; tajné hodnoty přes `npx wrangler secret put NAME`) nastavte:
 
    | Proměnná | Hodnota |
    |---|---|
@@ -42,7 +42,7 @@ Odkaz na odhlášení vede na `/api/email/unsubscribe`. Ten podle podepsaného t
    | `RESEND_REPLY_TO` | volitelné, např. `ahoj@letsrace.cz` |
    | `EMAIL_LINK_SECRET` | dlouhý náhodný řetězec, např. `openssl rand -base64 32` |
    | `NEXT_PUBLIC_SITE_URL` | `https://letsrace.cz` (musí sedět, jinak odkazy a logo v e-mailech povedou jinam) |
-   | `CRON_SECRET` | už máte, bez něj Vercel cron neprojde |
+   | `CRON_SECRET` | už máte, bez něj cron neprojde |
 
 6. Proveďte redeploy, aby se proměnné načetly.
 

@@ -123,6 +123,7 @@ const SKIP_HOSTS = [
   "letsrace.cz",
   "www.letsrace.cz",
   "letsrace.vercel.app",
+  "letsrace.tobolka.workers.dev",
   "wixsite.com",
   "sites.google.com",
   "linktr.ee",

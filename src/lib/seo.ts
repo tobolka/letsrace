@@ -23,8 +23,6 @@ export function raceOgImagePath(locale: string, slug: string): string {
 export function getSiteUrl(): string {
   const explicit = process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "");
   if (explicit) return explicit;
-  const vercel = process.env.VERCEL_PROJECT_PRODUCTION_URL?.replace(/\/$/, "");
-  if (vercel) return `https://${vercel}`;
   return "https://letsrace.cz";
 }
 

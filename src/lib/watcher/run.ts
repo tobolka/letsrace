@@ -39,6 +39,7 @@ import { isArchiveDiscoveryUrl, isAuxiliaryDiscoveryUrl } from "@/lib/watcher/di
 import type { Insert, Update } from "@/lib/supabase/tables";
 import type { Json } from "@/lib/supabase/database.types";
 import type { ReviewDecision, ReviewRow } from "@/lib/discovery/review";
+import { isServerless } from "@/lib/runtime";
 
 export type WatchOutcome = {
   watchedUrlId: string;
@@ -132,7 +133,7 @@ export async function runDueWatches(
     // render it; claiming it here only overwrites a successful local scan with
     // a known error and makes the health signal misleading.
     const eligible = (due ?? []).filter((row) =>
-      !(process.env.VERCEL && /portal\.czechcyclingfederation\.com\/Races(?:\/|$)/i.test(row.url as string)) &&
+      !(isServerless() && /portal\.czechcyclingfederation\.com\/Races(?:\/|$)/i.test(row.url as string)) &&
       !(row.added_by === "auto-same-domain" && isAuxiliaryDiscoveryUrl(row.url)) &&
       belongsToThisWorker(hostnameOf(row.url))
     );

@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server";
-import { PUBLIC_CATALOGUE_TAG, publicEventTag } from "@/lib/catalogue-cache";
 import { getPublicEventBySlug } from "@/lib/events";
 
 /**
@@ -20,8 +19,6 @@ export async function GET(
     headers: {
       "Cache-Control": "public, max-age=300, stale-while-revalidate=3600",
       "CDN-Cache-Control": "public, s-maxage=86400, stale-while-revalidate=86400",
-      "Vercel-CDN-Cache-Control": "public, s-maxage=86400, stale-while-revalidate=86400",
-      "Vercel-Cache-Tag": `${PUBLIC_CATALOGUE_TAG},${publicEventTag(slug)}`,
     },
   });
 }

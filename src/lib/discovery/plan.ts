@@ -9,7 +9,7 @@ export const hash = (value: string) => createHash("sha256").update(value).digest
 export function discoveryUrl(raw: string): string | null {
   try {
     const url = checkPublicUrl(raw);
-    if (/(^|\.)letsrace\.(cz|vercel\.app)$/i.test(url.hostname)) return null;
+    if (/(^|\.)letsrace\.(cz|vercel\.app)$|^letsrace\.tobolka\.workers\.dev$/i.test(url.hostname)) return null;
     url.hash = "";
     for (const key of [...url.searchParams.keys()]) {
       if (/^(utm_|fbclid$|gclid$|mc_)/i.test(key)) url.searchParams.delete(key);

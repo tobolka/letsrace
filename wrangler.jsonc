@@ -38,7 +38,8 @@
     "LLM_CALENDAR_BUDGET_USD": "0",
     "LLM_CALENDARS": "0",
     "RESEND_FROM": "Let's Race <zavody@letsrace.cz>",
-    "NEXT_PUBLIC_DEPLOY_ENV": "production"
+    "NEXT_PUBLIC_DEPLOY_ENV": "production",
+    "SERVERLESS_RUNTIME": "1"
   },
   "triggers": {
     "crons": [
@@ -65,5 +66,8 @@
   ],
   "limits": {
     "cpu_ms": 300000
+  },
+  "version_metadata": {
+    "binding": "CF_VERSION_METADATA"
   }
 }

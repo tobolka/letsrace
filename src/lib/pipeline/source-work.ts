@@ -2,6 +2,7 @@ import { createServerSupabase } from "@/lib/supabase/server";
 import type { WatchOutcome } from "@/lib/watcher/run";
 import type { Json } from "@/lib/supabase/database.types";
 import { AsyncLocalStorage } from "node:async_hooks";
+import { isServerless } from "@/lib/runtime";
 
 type SourceReceipt = { runId: string; patch: Json; runResult: Json };
 const sourceLease = new AsyncLocalStorage<{ key: string; token: string; url: string; receipt?: SourceReceipt }>();
@@ -19,7 +20,7 @@ export function stageSourceReceipt(receipt: SourceReceipt) {
 /** Every scheduled, service and browser read uses the same persisted source lease. */
 export async function withSourceWork(row: { id: string; url: string; kind?: string; updated_at?: string }, read: () => Promise<WatchOutcome>, opts?: { dueBefore?: string }): Promise<WatchOutcome> {
   const db = createServerSupabase();
-  const claim = { p_source: row.id, p_capabilities: process.env.VERCEL ? ["http"] : ["http", "browser"] };
+  const claim = { p_source: row.id, p_capabilities: isServerless() ? ["http"] : ["http", "browser"] };
   const { data, error } = opts
     ? await db.rpc("pipeline_claim_source_read", { ...claim, p_due_before: opts.dueBefore, p_expected_revision: opts.dueBefore ? row.updated_at : undefined })
     : await db.rpc("pipeline_claim_source", claim);

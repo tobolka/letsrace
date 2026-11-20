@@ -4,7 +4,7 @@ Aktuální provoz: **2. 11. 2026**. AI zůstává na Macu; její přesun na serv
 
 | Co | Kde | Kdy se spustí samo | Kde to vidíš |
 | --- | --- | --- | --- |
-| Server zdarma | Vercel | Denně podle `vercel.json`, i při vypnutém Macu | Panel „Server zdarma“, poslední skutečný běh |
+| Server zdarma | Cloudflare | Denně podle cron triggerů v `wrangler.jsonc`, i při vypnutém Macu | Panel „Server zdarma“, poslední skutečný běh |
 | Běžný sběr zdarma | Tento Mac | Po přihlášení; další kontrola 2 hodiny po dokončení | Ikona kola → „Mac zdarma“ |
 | Sken federace ČSC | Tento Mac, Chrome | Pondělí při prvním cyklu od 09:00; také tlačítkem | „Federace ČSC“ → **Spustit sken federace** |
 | AI kontrola | Tento Mac | Úterý a pátek, nejvýše jeden automatický pokus za den | „AI kontrola · na Macu“ |

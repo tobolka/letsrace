@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { parseQuery } from "@/lib/api/validate";
 import { eventsQuerySchema } from "@/lib/api/events-query";
-import { PUBLIC_CATALOGUE_VIEWS_TAG } from "@/lib/catalogue-cache";
 import { listEvents } from "@/lib/events";
 import { upcomingCatalogue } from "@/lib/upcoming-catalogue";
 
@@ -12,9 +11,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json(events, {
       headers: {
         "Cache-Control": "public, max-age=60, must-revalidate",
-        "Vercel-Cache-Tag": PUBLIC_CATALOGUE_VIEWS_TAG,
         "CDN-Cache-Control": "public, s-maxage=86400, stale-while-revalidate=86400",
-        "Vercel-CDN-Cache-Control": "public, s-maxage=86400, stale-while-revalidate=86400",
       },
     });
   }
@@ -46,7 +43,6 @@ export async function GET(req: NextRequest) {
     headers: {
       "Cache-Control": "public, max-age=60, stale-while-revalidate=600",
       "CDN-Cache-Control": "public, s-maxage=300, stale-while-revalidate=3600",
-      "Vercel-CDN-Cache-Control": "public, s-maxage=300, stale-while-revalidate=3600",
     },
   });
 }

@@ -35,9 +35,6 @@ yarn-error.log*
 !.env.example
 
 
-# vercel
-.vercel
-
 # supabase CLI scratch
 supabase/.temp/
 
@@ -57,3 +54,6 @@ scripts/.tmp/
 # Cloudflare / OpenNext build output
 .open-next/
 .wrangler/
+
+# local CLI link (the Vercel projects are retired)
+.vercel

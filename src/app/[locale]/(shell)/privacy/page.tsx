@@ -54,13 +54,13 @@ const DOCS: Record<Locale, LegalDocument> = {
         h: "Cookies a úložiště prohlížeče",
         p: [
           "Používáme jen nezbytné cookies, které tě drží přihlášeného. Proto se tě na cookies neptáme. V úložišti prohlížeče si pamatujeme nastavení, jako jsou filtry, sloupce tabulky nebo zavřená upozornění.",
-          "Návštěvnost a vybrané interakce měříme vlastní instalací Umami na Vercelu s databází Neon v EU, bez analytických cookies a bez propojování návštěv mezi weby. Odesíláme veřejné cesty stránek, zdroj návštěvy, označení kampaně a základní informace o zařízení. Měříme také obecné názvy navštívených sekcí, počty výsledků, použité katalogové filtry a potvrzené uložení závodu. Neodesíláme soukromé adresy stránek, obsah vyhledávání, údaje účtu ani formulářů. Rychlost načítání stránek měří anonymně Vercel Speed Insights, také bez cookies. Respektujeme signály Do Not Track a Global Privacy Control.",
+          "Návštěvnost a vybrané interakce měříme vlastní instalací Umami na Cloudflare s databází Neon v EU, bez analytických cookies a bez propojování návštěv mezi weby. Odesíláme veřejné cesty stránek, zdroj návštěvy, označení kampaně a základní informace o zařízení. Měříme také obecné názvy navštívených sekcí, počty výsledků, použité katalogové filtry a potvrzené uložení závodu. Neodesíláme soukromé adresy stránek, obsah vyhledávání, údaje účtu ani formulářů. Rychlost načítání stránek měří anonymně Vercel Speed Insights, také bez cookies. Respektujeme signály Do Not Track a Global Privacy Control.",
         ],
       },
       {
         h: "Kdo s daty pracuje za nás",
         p: [
-          "Supabase (databáze a přihlášení, servery v EU – Frankfurt), Vercel (provoz webu a měření rychlosti), Neon (databáze statistik návštěvnosti, EU), Resend (odesílání e-mailů) a Google (jen pokud se přihlásíš přes Google).",
+          "Supabase (databáze a přihlášení, servery v EU – Frankfurt), Cloudflare (provoz webu, doručování a ochrana před zneužitím), Neon (databáze statistik návštěvnosti, EU), Resend (odesílání e-mailů) a Google (jen pokud se přihlásíš přes Google).",
           "Mapové podklady načítá tvůj prohlížeč přímo od CARTO, které tak vidí tvou IP adresu a která část mapy se zobrazuje. Počasí a vyhledávání míst (Open-Meteo, OpenStreetMap) volá náš server, ne tvůj prohlížeč, a nepředává jim nic o tobě.",
           "Někteří z nich sídlí v USA. Předání údajů tam je kryté rámcem EU–USA pro ochranu osobních údajů nebo standardními smluvními doložkami Evropské komise.",
         ],
@@ -136,13 +136,13 @@ const DOCS: Record<Locale, LegalDocument> = {
         h: "Cookies and browser storage",
         p: [
           "We use only the cookies needed to keep you signed in, which is why we do not ask you about cookies. Browser storage remembers settings such as filters, table columns or notices you closed.",
-          "Visits and selected interactions are measured with our own Umami installation on Vercel and a Neon database in the EU, without analytics cookies or linking visitors across websites. We send public page paths, referral sources, campaign labels and basic device information. We also measure generic section names, result counts, catalogue filters and confirmed race saves. Private page paths, search text, account details and form contents are excluded. Page speed is measured anonymously by Vercel Speed Insights, also without cookies. We respect Do Not Track and Global Privacy Control.",
+          "Visits and selected interactions are measured with our own Umami installation on Cloudflare and a Neon database in the EU, without analytics cookies or linking visitors across websites. We send public page paths, referral sources, campaign labels and basic device information. We also measure generic section names, result counts, catalogue filters and confirmed race saves. Private page paths, search text, account details and form contents are excluded. Page speed is measured anonymously by Vercel Speed Insights, also without cookies. We respect Do Not Track and Global Privacy Control.",
         ],
       },
       {
         h: "Who processes data for us",
         p: [
-          "Supabase (database and sign-in, servers in the EU – Frankfurt), Vercel (hosting and speed measurement), Neon (visit statistics database, EU), Resend (sending email) and Google (only if you sign in with Google).",
+          "Supabase (database and sign-in, servers in the EU – Frankfurt), Cloudflare (hosting, delivery and abuse protection), Neon (visit statistics database, EU), Resend (sending email) and Google (only if you sign in with Google).",
           "Your browser loads the map tiles directly from CARTO, which therefore sees your IP address and which part of the map is shown. Weather and place search (Open-Meteo, OpenStreetMap) are called by our server, not your browser, and receive nothing about you.",
           "Some of these companies are based in the USA. Transfers there are covered by the EU–US Data Privacy Framework or the European Commission's standard contractual clauses.",
         ],
@@ -218,13 +218,13 @@ const DOCS: Record<Locale, LegalDocument> = {
         h: "Cookies i pamięć przeglądarki",
         p: [
           "Używamy tylko niezbędnych cookies do utrzymania logowania, dlatego nie pytamy o zgodę na cookies. Pamięć przeglądarki zapamiętuje ustawienia, np. filtry, kolumny tabeli lub zamknięte komunikaty.",
-          "Ruch i wybrane interakcje mierzymy we własnej instalacji Umami na Vercel, z bazą Neon w UE, bez analitycznych cookies i łączenia odwiedzin między witrynami. Przesyłamy publiczne ścieżki stron, źródła wizyt, oznaczenia kampanii i podstawowe informacje o urządzeniu. Mierzymy też ogólne nazwy odwiedzanych sekcji, liczbę wyników, filtry katalogu i potwierdzone zapisanie wyścigu. Wykluczamy prywatne ścieżki stron, treść wyszukiwania, dane konta i formularzy. Szybkość ładowania stron anonimowo mierzy Vercel Speed Insights, również bez cookies. Respektujemy Do Not Track i Global Privacy Control.",
+          "Ruch i wybrane interakcje mierzymy we własnej instalacji Umami na Cloudflare, z bazą Neon w UE, bez analitycznych cookies i łączenia odwiedzin między witrynami. Przesyłamy publiczne ścieżki stron, źródła wizyt, oznaczenia kampanii i podstawowe informacje o urządzeniu. Mierzymy też ogólne nazwy odwiedzanych sekcji, liczbę wyników, filtry katalogu i potwierdzone zapisanie wyścigu. Wykluczamy prywatne ścieżki stron, treść wyszukiwania, dane konta i formularzy. Szybkość ładowania stron anonimowo mierzy Vercel Speed Insights, również bez cookies. Respektujemy Do Not Track i Global Privacy Control.",
         ],
       },
       {
         h: "Kto przetwarza dane w naszym imieniu",
         p: [
-          "Supabase (baza danych i logowanie, serwery w UE – Frankfurt), Vercel (hosting i pomiar szybkości), Neon (baza statystyk ruchu, UE), Resend (wysyłka e-maili) i Google (tylko przy logowaniu przez Google).",
+          "Supabase (baza danych i logowanie, serwery w UE – Frankfurt), Cloudflare (hosting, dostarczanie i ochrona przed nadużyciami), Neon (baza statystyk ruchu, UE), Resend (wysyłka e-maili) i Google (tylko przy logowaniu przez Google).",
           "Podkłady mapowe Twoja przeglądarka pobiera bezpośrednio z CARTO, które widzi więc Twój adres IP i wyświetlany fragment mapy. Pogodę i wyszukiwanie miejsc (Open-Meteo, OpenStreetMap) odpytuje nasz serwer, nie Twoja przeglądarka, i nie przekazuje im nic o Tobie.",
           "Niektóre z tych firm mają siedzibę w USA. Przekazanie danych jest objęte Ramami ochrony danych UE–USA lub standardowymi klauzulami umownymi Komisji Europejskiej.",
         ],
@@ -300,13 +300,13 @@ const DOCS: Record<Locale, LegalDocument> = {
         h: "Cookies a úložisko prehliadača",
         p: [
           "Používame len nevyhnutné cookies, ktoré ťa držia prihláseného, preto sa ťa na cookies nepýtame. V úložisku prehliadača si pamätáme nastavenia, napríklad filtre, stĺpce tabuľky alebo zavreté upozornenia.",
-          "Návštevnosť a vybrané interakcie meriame vlastnou inštaláciou Umami na Verceli s databázou Neon v EÚ, bez analytických cookies a prepájania návštev medzi webmi. Posielame verejné cesty stránok, zdroj návštevy, označenia kampaní a základné informácie o zariadení. Meriame aj všeobecné názvy navštívených sekcií, počty výsledkov, katalógové filtre a potvrdené uloženie pretekov. Neposielame súkromné adresy stránok, obsah vyhľadávania, údaje účtu ani formulárov. Rýchlosť načítania stránok meria anonymne Vercel Speed Insights, tiež bez cookies. Rešpektujeme Do Not Track a Global Privacy Control.",
+          "Návštevnosť a vybrané interakcie meriame vlastnou inštaláciou Umami na Cloudflare s databázou Neon v EÚ, bez analytických cookies a prepájania návštev medzi webmi. Posielame verejné cesty stránok, zdroj návštevy, označenia kampaní a základné informácie o zariadení. Meriame aj všeobecné názvy navštívených sekcií, počty výsledkov, katalógové filtre a potvrdené uloženie pretekov. Neposielame súkromné adresy stránok, obsah vyhľadávania, údaje účtu ani formulárov. Rýchlosť načítania stránok meria anonymne Vercel Speed Insights, tiež bez cookies. Rešpektujeme Do Not Track a Global Privacy Control.",
         ],
       },
       {
         h: "Kto s údajmi pracuje za nás",
         p: [
-          "Supabase (databáza a prihlásenie, servery v EÚ – Frankfurt), Vercel (prevádzka webu a meranie rýchlosti), Neon (databáza štatistík návštevnosti, EÚ), Resend (odosielanie e-mailov) a Google (len ak sa prihlásiš cez Google).",
+          "Supabase (databáza a prihlásenie, servery v EÚ – Frankfurt), Cloudflare (prevádzka webu, doručovanie a ochrana pred zneužitím), Neon (databáza štatistík návštevnosti, EÚ), Resend (odosielanie e-mailov) a Google (len ak sa prihlásiš cez Google).",
           "Mapové podklady načítava tvoj prehliadač priamo od CARTO, ktoré tak vidí tvoju IP adresu a ktorá časť mapy sa zobrazuje. Počasie a vyhľadávanie miest (Open-Meteo, OpenStreetMap) volá náš server, nie tvoj prehliadač, a neodovzdáva im nič o tebe.",
           "Niektorí z nich sídlia v USA. Prenos údajov tam je krytý rámcom EÚ – USA pre ochranu osobných údajov alebo štandardnými zmluvnými doložkami Európskej komisie.",
         ],
@@ -382,13 +382,13 @@ const DOCS: Record<Locale, LegalDocument> = {
         h: "Cookies und Browserspeicher",
         p: [
           "Wir nutzen nur die Cookies, die nötig sind, damit du angemeldet bleibst; deshalb fragen wir dich nicht nach Cookies. Der Browserspeicher merkt sich Einstellungen wie Filter, Tabellenspalten oder geschlossene Hinweise.",
-          "Besuche und ausgewählte Interaktionen messen wir mit einer eigenen Umami-Installation auf Vercel und einer Neon-Datenbank in der EU, ohne Analyse-Cookies oder websiteübergreifende Verknüpfung. Erfasst werden öffentliche Seitenpfade, Verweisquellen, Kampagnenkennzeichnungen und grundlegende Geräteinformationen. Wir messen auch allgemeine Bereichsnamen, Ergebniszahlen, Katalogfilter und bestätigte gespeicherte Rennen. Private Seitenpfade, Suchtexte, Kontodaten und Formularinhalte sind ausgeschlossen. Die Ladegeschwindigkeit misst Vercel Speed Insights anonym, ebenfalls ohne Cookies. Do Not Track und Global Privacy Control werden respektiert.",
+          "Besuche und ausgewählte Interaktionen messen wir mit einer eigenen Umami-Installation auf Cloudflare und einer Neon-Datenbank in der EU, ohne Analyse-Cookies oder websiteübergreifende Verknüpfung. Erfasst werden öffentliche Seitenpfade, Verweisquellen, Kampagnenkennzeichnungen und grundlegende Geräteinformationen. Wir messen auch allgemeine Bereichsnamen, Ergebniszahlen, Katalogfilter und bestätigte gespeicherte Rennen. Private Seitenpfade, Suchtexte, Kontodaten und Formularinhalte sind ausgeschlossen. Die Ladegeschwindigkeit misst Vercel Speed Insights anonym, ebenfalls ohne Cookies. Do Not Track und Global Privacy Control werden respektiert.",
         ],
       },
       {
         h: "Wer Daten für uns verarbeitet",
         p: [
-          "Supabase (Datenbank und Anmeldung, Server in der EU – Frankfurt), Vercel (Hosting und Geschwindigkeitsmessung), Neon (Datenbank der Besuchsstatistik, EU), Resend (E-Mail-Versand) und Google (nur wenn du dich mit Google anmeldest).",
+          "Supabase (Datenbank und Anmeldung, Server in der EU – Frankfurt), Cloudflare (Hosting, Auslieferung und Schutz vor Missbrauch), Neon (Datenbank der Besuchsstatistik, EU), Resend (E-Mail-Versand) und Google (nur wenn du dich mit Google anmeldest).",
           "Die Kartenkacheln lädt dein Browser direkt von CARTO, das dadurch deine IP-Adresse und den angezeigten Kartenausschnitt sieht. Wetter und Ortssuche (Open-Meteo, OpenStreetMap) fragt unser Server ab, nicht dein Browser, und gibt dabei nichts über dich weiter.",
           "Einige dieser Anbieter sitzen in den USA. Die Übermittlung ist durch das EU-US Data Privacy Framework oder die Standardvertragsklauseln der Europäischen Kommission abgesichert.",
         ],

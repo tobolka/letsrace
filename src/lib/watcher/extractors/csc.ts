@@ -4,6 +4,7 @@ import type { Discipline, ParsedEvent } from "@/lib/domain";
 import { normalizeName } from "@/lib/domain";
 import { inferDisciplines } from "@/lib/taxonomy";
 import { countryFromVenue } from "@/lib/geo/country-label";
+import { isServerless } from "@/lib/runtime";
 
 const PORTAL_ORIGIN = "https://portal.czechcyclingfederation.com";
 
@@ -59,7 +60,7 @@ export async function parseCscCalendar(url: string, html: string): Promise<Parse
   const events = parseCscPublicGrid(url, pageHtml);
   // The portal opens on the current year, so next season never reaches the default grid.
   // Failing here fails the read: an incomplete pair must not look like races that vanished.
-  if (hasCscPublicGrid(pageHtml) && !hasCscPublicGrid(html) && process.env.NEXT_PHASE !== "phase-production-build" && !process.env.VERCEL) {
+  if (hasCscPublicGrid(pageHtml) && !hasCscPublicGrid(html) && process.env.NEXT_PHASE !== "phase-production-build" && !isServerless()) {
     const { renderCscPublicCalendar } = await import("@/lib/watcher/extractors/csc-render");
     const next = await renderCscPublicCalendar(url, { year: new Date().getFullYear() + 1 });
     const known = new Set(events.map(event => event.externalId));
@@ -76,7 +77,7 @@ export async function parseCscCalendar(url: string, html: string): Promise<Parse
    */
   if (events.length === 0 && !hasCscPublicGrid(pageHtml)) {
     throw new Error(
-      process.env.VERCEL
+      isServerless()
         ? "ČSC portal needs a browser to render; run scripts/ingest-calendars.ts locally"
         : `ČSC portal did not render its calendar grid${renderError ? `: ${renderError}` : ""}`,
     );

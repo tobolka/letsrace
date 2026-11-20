@@ -30,10 +30,10 @@ describe("cached map entry routing", () => {
 
   it("holds public catalogue pages on the CDN while keeping accounts and dynamic race entries private", () => {
     // The date-based entry pages refresh daily; the rest of the catalogue holds for a week.
-    expect(proxy(request("/cs")).headers.get("Vercel-CDN-Cache-Control")).toContain("s-maxage=86400");
-    expect(proxy(request("/cs/zavod/author-cup-2026")).headers.get("Vercel-CDN-Cache-Control")).toContain("s-maxage=604800");
-    expect(proxy(request("/cs/serie/author-cup")).headers.get("Vercel-CDN-Cache-Control")).toContain("s-maxage=604800");
-    expect(proxy(request("/cs/muj-plan")).headers.get("Vercel-CDN-Cache-Control")).toBeNull();
-    expect(proxy(request("/cs?e=author-cup-2026")).headers.get("Vercel-CDN-Cache-Control")).toBeNull();
+    expect(proxy(request("/cs")).headers.get("CDN-Cache-Control")).toContain("s-maxage=86400");
+    expect(proxy(request("/cs/zavod/author-cup-2026")).headers.get("CDN-Cache-Control")).toContain("s-maxage=604800");
+    expect(proxy(request("/cs/serie/author-cup")).headers.get("CDN-Cache-Control")).toContain("s-maxage=604800");
+    expect(proxy(request("/cs/muj-plan")).headers.get("CDN-Cache-Control")).toBeNull();
+    expect(proxy(request("/cs?e=author-cup-2026")).headers.get("CDN-Cache-Control")).toBeNull();
   });
 });

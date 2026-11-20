@@ -36,7 +36,7 @@ This uses `unstable_cache`, matching the existing project without enabling
 Cache Components globally. Next 16 recommends `use cache` for projects that
 opt into Cache Components; changing the whole rendering model is outside this
 targeted fix. Cache small derived data here: large cached HTML/RSC documents
-previously caused excessive Vercel cache writes on long-tail race pages.
+previously caused excessive cache writes on long-tail race pages.
 
 ## Verification
 
