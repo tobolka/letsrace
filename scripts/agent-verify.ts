@@ -12,6 +12,7 @@ import { readdirSync, readFileSync, renameSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { readDocument } from "../src/lib/catalog/regulation-ages";
 import { quoteStatesDate } from "../src/lib/catalog/quoted-date";
+import { readRadsportEvent } from "../src/lib/catalog/radsport-page";
 
 const arg = (key: string) => process.argv.find(value => value.startsWith(`--${key}=`))?.slice(key.length + 3);
 export const folded = (text: string) => text.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
@@ -21,7 +22,8 @@ async function main() {
   const answers = arg("answers"); if (!answers) throw Error("--answers=<dir> is needed");
   const pages = new Map<string, string>();
   const page = async (url: string) => {
-    if (!pages.has(url)) pages.set(url, (await readDocument(url, { maxBytes: 8 * 1024 * 1024 }).catch(() => null))?.text ?? "");
+    // radsport-events.de pages carry no text without a script: its own API holds the words a reader sees there.
+    if (!pages.has(url)) pages.set(url, (await readRadsportEvent(url)) ?? (await readDocument(url, { maxBytes: 8 * 1024 * 1024 }).catch(() => null))?.text ?? "");
     return pages.get(url)!;
   };
   const previous = new Map<string, { case: string; answerAt?: string; verified?: boolean | null }>();
