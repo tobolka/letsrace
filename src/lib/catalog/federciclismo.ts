@@ -6,6 +6,24 @@
 const clean = (text: string) => text.replace(/\s+/g, " ").trim();
 const line = (text: string, label: string) => clean(new RegExp(`^${label}:[ \\t]*(.*)$`, "m").exec(text)?.[1] ?? "");
 
+/**
+ * "Iscrizioni: 28/10/2026 - 11/12/2026": the federation's entry window for a race. The close counts only when it
+ * is before the race day (a window that closes on the day says no more than "enter on the day"), and the open
+ * only when it comes no later than the close. The quote is the line itself, with the full dates.
+ */
+export function federciclismoEntryWindow(text: string, startDate: string): { opensAt: string; closesAt: string; quote: string } | null {
+  const match = /^Iscrizioni:[ \t]*(\d{2})\/(\d{2})\/(\d{4})[ \t]*-[ \t]*(\d{2})\/(\d{2})\/(\d{4})[ \t]*$/m.exec(text);
+  if (!match) return null;
+  const day = (d: string, m: string, y: string) => {
+    const iso = `${y}-${m}-${d}`;
+    const parsed = new Date(`${iso}T00:00:00Z`);
+    return Number.isFinite(parsed.getTime()) && parsed.toISOString().slice(0, 10) === iso ? iso : null;
+  };
+  const opensAt = day(match[1]!, match[2]!, match[3]!), closesAt = day(match[4]!, match[5]!, match[6]!);
+  if (!opensAt || !closesAt || opensAt > closesAt || closesAt >= startDate) return null;
+  return { opensAt, closesAt, quote: clean(match[0]) };
+}
+
 export const isFederciclismoRace = (url: string) => /members\.federciclismo\.it\/race\/detail\/\d+/i.test(url);
 
 export function federciclismoFacts(doc: { url: string; text: string }) {

@@ -11,7 +11,7 @@ async function main() {
   const deadline = Date.now() + Number(arg("seconds") ?? 480) * 1000;
   const { readDocument } = await import("../src/lib/catalog/regulation-ages");
   const { pageAsText } = await import("../src/lib/watcher/extractors/llm-calendar");
-  const { federciclismoFacts, rideAndRestFacts } = await import("../src/lib/catalog/federciclismo");
+  const { federciclismoFacts, federciclismoEntryWindow, rideAndRestFacts } = await import("../src/lib/catalog/federciclismo");
   const { verifyPracticalExtraction } = await import("../src/lib/catalog/practical-extraction");
   const { savePracticalDetails, saveFoundLinks } = await import("../src/lib/catalog/practical-enrichment");
   const { registrationLinkIn } = await import("../src/lib/catalog/race-completeness");
@@ -19,9 +19,9 @@ async function main() {
   const { createServerSupabase } = await import("../src/lib/supabase/server");
   const db = createServerSupabase();
   const today = new Date().toISOString().slice(0, 10), until = new Date(Date.now() + days * 86_400_000).toISOString().slice(0, 10);
-  const { data, error } = await db.from("events").select("id,name,start_date,end_date,public_revision,website_url,regulations_url,registration_url,practical_details,location:locations(venue,municipality),sources:event_sources!inner(source_url)")
+  const { data, error } = await db.from("events").select("id,name,start_date,end_date,public_revision,website_url,regulations_url,registration_url,registration_closes_at,practical_details,location:locations(venue,municipality),sources:event_sources!inner(source_url)")
     .eq("visibility", "public").is("merged_into_id", null).gte("start_date", today).lte("start_date", until).like("sources.source_url", "%members.federciclismo.it/race/detail/%").order("start_date").limit(2000)
-    .returns<{ id: string; name: string; start_date: string; end_date: string | null; public_revision: string; website_url: string | null; regulations_url: string | null; registration_url: string | null; practical_details: { organizer?: { sourceUrl?: string; checkedAt?: string } } | null; location: { venue: string | null; municipality: string | null } | null; sources: { source_url: string }[] }[]>();
+    .returns<{ id: string; name: string; start_date: string; end_date: string | null; public_revision: string; website_url: string | null; regulations_url: string | null; registration_url: string | null; registration_closes_at: string | null; practical_details: { organizer?: { sourceUrl?: string; checkedAt?: string } } | null; location: { venue: string | null; municipality: string | null } | null; sources: { source_url: string }[] }[]>();
   if (error) throw Error(error.message);
   const freshAfter = new Date(Date.now() - 14 * 86_400_000).toISOString();
   const due = (data ?? []).filter(event => process.argv.includes("--force") || !(event.practical_details?.organizer?.sourceUrl?.includes("federciclismo") && (event.practical_details.organizer.checkedAt ?? "") > freshAfter));
@@ -47,6 +47,23 @@ async function main() {
     for (const [key, why] of Object.entries(checked.reasons)) stats.refused[`${key}:${why}`] = (stats.refused[`${key}:${why}`] ?? 0) + 1;
     if (process.argv.includes("--verbose")) console.log(`${event.start_date} ${event.name.slice(0, 40)}: ${Object.keys(checked.details).join(",") || "-"} ${JSON.stringify(checked.reasons)}`);
     if (apply) { const registration = registrationLinkIn(page.text); if (registration) await saveFoundLinks(event, { registration }); }
+    // The entry window goes to the server as proposals; the gate fills only an empty field and checks the race day.
+    const window = !event.registration_closes_at ? federciclismoEntryWindow(page.text, event.start_date) : null;
+    if (window) {
+      stats.fields["entry_window"] = (stats.fields["entry_window"] ?? 0) + 1;
+      if (apply) {
+        const call = (name: string, params: object) => (db as unknown as { rpc(name: string, params: object): PromiseLike<{ data: unknown; error: { message: string } | null }> }).rpc(name, params);
+        for (const [field, value] of [["registration_closes_at", window.closesAt], ["registration_opens_at", window.opensAt]] as const) {
+          const submitted = await call("pipeline_submit_proposal", { p_event: event.id, p_field: field, p_value: value, p_source: url, p_quote: window.quote, p_reader: "federciclismo_entry_window", p_version: "v1" });
+          if (submitted.error) throw Error(submitted.error.message);
+          const decided = await call("pipeline_apply_proposal", { p_key: submitted.data as string });
+          if (decided.error) throw Error(decided.error.message);
+          const decision = decided.data as { status: string; reason: string | null };
+          const label = `entry_${field.slice(13, 19)}_${decision.status}${decision.reason ? `_${decision.reason}` : ""}`;
+          stats.refused[label] = (stats.refused[label] ?? 0) + 1;
+        }
+      }
+    }
     if (apply && Object.keys(checked.details).length) {
       const saved = await savePracticalDetails(event.id, event.public_revision, checked.details) as { changed?: string[] };
       if (saved.changed?.length) stats.saved++;

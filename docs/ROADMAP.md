@@ -17,24 +17,24 @@ Stav k 20. 11. 2026. Tohle je jediné místo pro rozpracované a zapomenuté úk
 | [propagace-2026-11/BEZ-OSLOVOVANI.md](propagace-2026-11/BEZ-OSLOVOVANI.md), [TEXTY.md](propagace-2026-11/TEXTY.md) | Odkazy na web bez oslovování pořadatelů, hotové texty |
 | `quality/`, `fixtures/` | Kontrolní sady a referenční seznam CZ 2027 (používají je skripty) |
 
-## A. Teď rozpracované
+## A. Teď rozpracované (od nejdůležitějšího)
 
-| # | Úkol | Proč (důkaz) | Kdo / závislost | Velikost |
+Důležitost: **Vysoká** = přímo zlepšuje to, co vidí rodiče a jezdci, nebo brání ztrátám. **Střední** = zlepší kvalitu nebo ušetří práci. **Nízká** = úklid nebo pojistka, nespěchá.
+
+| # | Úkol | Proč na tom záleží (lidskou řečí) | Důležitost | Kdo / kdy |
 | --- | --- | --- | --- | --- |
-| A2 | Změřit, kolik změn data dostalo citaci | Dnes 1 z 69 (`date-proposals`), čtečka `pipeline-v9` se šíří postupně | čas, pár dní | žádná |
-| A3 | Odesílání změn data a zrušení přes bránu | Migrace `20261120120000_date_and_cancellation_proposals.sql` je napsaná a vyzkoušená na zkušební databázi; chybí odesílač a nasazení migrace. Změny existujících závodů se dnes neposílají (`--only-new-races`) | ty souhlasil s migracemi; závisí na A2 | střední |
-| A5 | Pořadí zdrojů u místa, názvu a harmonogramu: sledovat rozpory propozice × záznam v `pipeline:status` (dnes místo 29 z 490, země 1, dny programu 0) a opravovat automaticky, až budou skutečné chyby | Většina rozdílů v místě je pravopis nebo začátek × cíl trasy; z propozic se nečte název závodu | já, podle čísel | malá |
-| A6 | Rozhodnout 28 skupin „stejný web a den“ a případy „50 km × 100 km“, „hlavní × dětský“ | Katalog je drží jako samostatné závody, scorer je slučuje (`dedup-golden.test.ts`) | ty, po dvojicích, ne plošně | produktové rozhodnutí |
-| A9 | Referenční kalendáře pro SK, DE, AT, PL (CZ má 51 řádků v `fixtures/`, zmrazená sada v `quality/`) | Chybí ověření, kolik závodů nenacházíme | já nebo ty (výběr zdrojů) | střední |
-| A11 | Itálie: ne adaptér na portál přihlášek a ne hledání webů. Zobrazit okno přihlášek (`Iscrizioni`) a kontakt na pořadatele z detailu FCI | Přihláška u 51 z 215 závodů, roztříštěně. Detail FCI má jen data a e-mail s telefonem. Web pořadatele často neexistuje: z 127 závodů bez webu je 57 jen záznam FCI a na stránkách agregátorů (rideandrest, eventivsport, bikeboard, radsport-events) není odkaz na pořadatele | ty (produkt), pak já | malá až střední |
-| A13 | Denní strop AI odvozovat ze zbytku měsíce (útrata po krocích se zapisuje, vyhodnotit za týden) | Strop 0,50 USD × 30 je víc než měsíční limit | já, za týden | malá |
-| A14 | Tvrdý měsíční limit v Anthropic Console, o něco vyšší než projektový (10 USD) | Projektový limit je jen vlastní pojistka | ty | malá |
-| A15 | rad-net (Německo): uložená stránka jako vstup, nebo se zeptat BDR na export | Od 11. 11. za kontrolou robotem Anubis, kterou obejít nesmím | ty | odloženo |
-| A16 | Smazat kód a tabulky nároku pořadatele (dnes skryté za `ORGANIZER_CLAIMS=1`) | Použito 0× | ty, až budeš chtít | odloženo |
-| A17 | Ověřit, zda server drží stejná čísla jako místní kopie | Všechna měření jsou z kopie | já | malá |
-| A18 | Ověřit `revalidateTag` v `organizer-publish.ts` na Cloudflare | Hosting nemá tag purge (`hosting.md`) | já | malá |
-| A19 | Opravit zbylé staré údaje v dokumentech (interval správce, AI dny) | Rozcházejí se s kódem | já | malá |
-| A20 | Neověřeno: Chrome v krocích GitHub Actions; hranice předpověď × klima u počasí | Nečteno v kódu | já | malá |
+| A3 | Posílat na web opravy data a zrušení závodu | Když pořadatel posune závod nebo ho zruší, web by to měl vědět sám. Dnes se takové opravy na web neposílají, jen zůstanou v Macu. Brána v databázi je připravená, chybí odesílač | **Vysoká** | já, až bude A2 |
+| A2 | Změřit, kolik oprav dat má citaci ze stránky | Bez citace se oprava data nepustí. Dnes 1 z 69. Čtečky se teprve přeučují, proto čekáme pár dní | **Vysoká** (blokuje A3) | čas, pár dní |
+| A6 | Rozhodnout, kdy jsou „50 km a 100 km“ nebo „hlavní a dětský závod“ jeden závod a kdy dva | Teď se u jedné akce občas objeví dva záznamy a občas jeden. Rodič pak nenajde správnou kategorii. Je to tvoje rozhodnutí | **Vysoká** | ty, po dvojicích |
+| A9 | Porovnat katalog s referenčními kalendáři SK, DE, AT, PL | Dnes víme jen, kolik závodů máme, ne kolik jich v zemi je. Bez toho nevíme, kolik nenacházíme | **Střední** | já nebo ty |
+| A13 | Denní strop AI odvozovat ze zbytku měsíce | Dnes se limit AI vyčerpá v polovině měsíce a pak se přestanou číst propozice | **Střední** | já, za týden |
+| A14 | Nastavit tvrdý měsíční limit v Anthropic Console | Pojistka proti chybě: kdyby se spletl náš vlastní hlídač výdajů, zastaví to služba | **Střední** | ty |
+| A15 | rad-net (Německo) | Německé závody z jednoho velkého zdroje se nečtou, protože ho chrání proti robotům. Obejít to nesmíme. Řešením je ruční export nebo dotaz na svaz | **Střední**, odloženo | ty |
+| A17 | Ověřit, že server drží stejná čísla jako Mac | Všechna naše měření jsou z kopie na Macu | **Nízká** | já |
+| A18 | Ověřit, že se po úpravě pořadatelem obnoví stránka | Cloudflare nemá okamžité obnovení stránek. Dnes to nehraje roli, nárok pořadatele je skrytý | **Nízká** | já |
+| A19 | Opravit staré údaje v dokumentech | Staré dokumenty ještě uvádějí interval správce 12 hodin místo 1 hodiny | **Nízká** | já |
+| A20 | Ověřit Chrome v GitHub Actions a hranici předpověď × klima u počasí | Dvě drobnosti, které jsem nečetl v kódu | **Nízká** | já |
+| A16 | Smazat kód a tabulky nároku pořadatele | Dnes skryté a nepoužívané. Mazat až později | **Nízká**, odloženo | ty |
 
 **Vědomě nedělat:** přesun čtení do cloudu (sběrač nemá dostávat produkční klíče, Mac běží přes 90 průchodů denně), e-maily pořadatelům, obcházení kontroly robotem.
 

@@ -1,4 +1,5 @@
--- The gate learns three more fields: start_date, end_date and a cancellation (status = 'cancelled').
+-- The gate learns more fields: start_date, end_date, a cancellation (status = 'cancelled') and the entry window
+-- (registration_opens_at, registration_closes_at; only into an empty field, a deadline only before the race day).
 -- A reader still hands in a proposal with the page and the words on it; this function decides and
 -- writes in one transaction with the history row. The regulations_url rules are unchanged, in the
 -- same order, with the same reasons.
@@ -15,7 +16,7 @@ create or replace function public.pipeline_apply_proposal(p_key text)
 returns jsonb language plpgsql security invoker set search_path = public, pg_temp as $$
 declare p public.pipeline_proposals; e public.events; locked text[]; link text; fact uuid;
   decide text; why text; newd date; oldd date; today date := (now() at time zone 'UTC')::date;
-  previous jsonb;
+  previous jsonb; curts timestamptz;
 begin
   select * into p from public.pipeline_proposals where key = p_key for update;
   if not found then return jsonb_build_object('status', 'missing'); end if;
@@ -28,10 +29,10 @@ begin
   select locked_fields into locked from public.event_overrides where event_id = p.event_id for share;
   link := p.value #>> '{}';
 
-  if p.field not in ('regulations_url', 'start_date', 'end_date', 'status') then decide := 'held'; why := 'unsupported_field';
+  if p.field not in ('regulations_url', 'start_date', 'end_date', 'status', 'registration_opens_at', 'registration_closes_at') then decide := 'held'; why := 'unsupported_field';
   elsif jsonb_typeof(p.value) <> 'string'
     or (p.field = 'regulations_url' and link !~ '^https?://')
-    or (p.field in ('start_date', 'end_date') and link !~ '^\d{4}-\d{2}-\d{2}$')
+    or (p.field in ('start_date', 'end_date', 'registration_opens_at', 'registration_closes_at') and link !~ '^\d{4}-\d{2}-\d{2}$')
     or (p.field = 'status' and link <> 'cancelled') then decide := 'rejected'; why := 'invalid_value';
   elsif e.merged_into_id is not null then decide := 'rejected'; why := 'merged';
   elsif e.start_date < today then decide := 'rejected'; why := 'past_race';
@@ -57,6 +58,26 @@ begin
       update public.events set status = 'cancelled', updated_at = now() where id = e.id;
       insert into public.event_facts(event_id, field, value, previous, source_url, quote, method, version)
         values (e.id, 'status', p.value, previous, p.source_url, p.quote, p.reader, p.version)
+        returning id into fact;
+      decide := 'applied';
+    end if;
+  elsif p.field in ('registration_opens_at', 'registration_closes_at') then
+    begin newd := link::date; exception when others then newd := null; end;
+    curts := case p.field when 'registration_opens_at' then e.registration_opens_at else e.registration_closes_at end;
+    if newd is null then decide := 'rejected'; why := 'invalid_value';
+    elsif curts is not null and (curts at time zone 'UTC')::date = newd then decide := 'superseded'; why := 'already_set';
+    elsif curts is not null then decide := 'superseded'; why := 'field_filled';
+    elsif p.quote !~ to_char(newd, 'YYYY') then decide := 'rejected'; why := 'quote_without_the_year';
+    elsif p.field = 'registration_closes_at' and newd >= e.start_date then decide := 'rejected'; why := 'deadline_not_before_race';
+    elsif p.field = 'registration_opens_at' and newd > coalesce((e.registration_closes_at at time zone 'UTC')::date, e.start_date) then decide := 'rejected'; why := 'opens_after_close';
+    elsif e.visibility is distinct from 'public' then decide := 'held'; why := 'hidden';
+    elsif p.field = any(coalesce(locked, '{}')) then decide := 'held'; why := 'manual_lock';
+    else
+      if p.field = 'registration_opens_at' then update public.events set registration_opens_at = (link || 'T00:00:00Z')::timestamptz, updated_at = now() where id = e.id;
+      else update public.events set registration_closes_at = (link || 'T00:00:00Z')::timestamptz, updated_at = now() where id = e.id;
+      end if;
+      insert into public.event_facts(event_id, field, value, previous, source_url, quote, method, version)
+        values (e.id, p.field, p.value, null, p.source_url, p.quote, p.reader, p.version)
         returning id into fact;
       decide := 'applied';
     end if;
