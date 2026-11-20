@@ -233,6 +233,16 @@ describe("date proof from source reads", () => {
   });
 });
 
+describe("date sender", () => {
+  it("moves the end first when the start moves later, and the start first when it moves earlier", async () => {
+    const { orderColumns } = await import("../../../scripts/pipeline2-date-proposals");
+    expect(orderColumns({ before: { start_date: "2027-06-05", end_date: "2027-06-05" }, after: { start_date: "2027-06-06", end_date: "2027-06-06" } })).toEqual(["end_date", "start_date"]);
+    expect(orderColumns({ before: { start_date: "2027-06-06", end_date: "2027-06-06" }, after: { start_date: "2027-06-05", end_date: "2027-06-05" } })).toEqual(["start_date", "end_date"]);
+    expect(orderColumns({ before: { end_date: "2027-04-11" }, after: { end_date: "2027-04-12" } })).toEqual(["end_date"]);
+    expect(orderColumns({ before: { status: "scheduled" }, after: { status: "cancelled" } })).toEqual(["status"]);
+  });
+});
+
 describe("held backlog", () => {
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   const { summarizeHeld } = require("../../../scripts/held-backlog.cjs");

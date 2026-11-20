@@ -408,6 +408,8 @@ async function main(){
   await upkeep('geocode','geocodedAt',GEOCODE_EVERY_MS,'Doplňuji místa na mapě',['scripts/geocode-pending.ts','120'],300);
   // Which changes of a date or a cancellation have their quote and could go to the server. A look only; nothing is sent.
   await upkeep('dateProposals','dateProposalsAt',6*HOUR,'Hledám změny dat, které by šly odeslat (jen náhled)',['scripts/date-proposals.cjs',`--out=${path.join(data,'date-proposals-latest.json')}`],120,{},true);
+  // The ones with their quote go to the server through the gate, which decides under the race's locks. LETSRACE_DATE_PROPOSALS=0 stops it.
+  await upkeep('dateSend','dateSendAt',6*HOUR,'Posílám doložené změny data a zrušení na server',['scripts/pipeline2-date-proposals.ts','--apply','--max=10',`--in=${path.join(data,'date-proposals-latest.json')}`,`--out=${path.join(data,'date-send-latest.json')}`],300,{},true);
   // Where the regulations of this year's edition and the race's record disagree (place, country, programme days). A look only.
   await upkeep('regulationDisagreements','regulationDisagreementsAt',6*HOUR,'Porovnávám propozice se záznamy závodů (jen náhled)',['scripts/regulation-disagreements.cjs',`--out=${path.join(data,'regulation-disagreements-latest.json')}`],120,{},true);
   // What the calendars offer that the catalogue does not hold, and why (not public yet, or never landed). Read-only.

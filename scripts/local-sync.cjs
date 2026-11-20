@@ -50,17 +50,18 @@ const REVIEW_COLUMNS = ['start_date', 'end_date', 'name', 'status', 'merged_into
  */
 const DATE_COLUMNS = ['start_date', 'end_date'];
 const CANCELLED_WORDING = /cancel|zru[sš]en|odvol[aá]n|abgesagt|entf[aä]llt|annull|odwo[lł]an|storn|annul[eé]/i;
-function provenChange(change, facts) {
-  const proof = (field, value, wording) => facts.some(fact => fact.field === field && String(fact.value) === String(value)
+function proofFor(change, facts) {
+  const proof = (field, value, wording) => facts.find(fact => fact.field === field && String(fact.value) === String(value)
     && typeof fact.quote === 'string' && fact.quote.trim() && typeof fact.source_url === 'string' && fact.source_url.trim()
-    && fact.method !== 'calendar_elapsed' && (!wording || wording.test(fact.quote)));
+    && fact.method !== 'calendar_elapsed' && (!wording || wording.test(fact.quote))) ?? null;
   return column => {
-    if (DATE_COLUMNS.includes(column)) return change.after[column] != null && proof(column, change.after[column]);
+    if (DATE_COLUMNS.includes(column)) return change.after[column] != null ? proof(column, change.after[column]) : null;
     // A race's quote may name only its date; a cancellation needs words that say the race is off.
-    if (column === 'status') return change.after.status === 'cancelled' && proof('status', 'cancelled', CANCELLED_WORDING);
-    return false;
+    if (column === 'status') return change.after.status === 'cancelled' ? proof('status', 'cancelled', CANCELLED_WORDING) : null;
+    return null;
   };
 }
+const provenChange = (change, facts) => { const find = proofFor(change, facts); return column => Boolean(find(column)); };
 
 function separateForReview(changes) {
   const isEvent = change => change.tab === 'public.events' && change.op === 'update';
@@ -287,4 +288,4 @@ function assertReviewed(file) {
   return sha;
 }
 
-module.exports = { plan, apply, assertReviewed, journalFromTarget, separateForReview, provenChange, TABLES, psql };
+module.exports = { plan, apply, assertReviewed, journalFromTarget, separateForReview, provenChange, proofFor, TABLES, psql };

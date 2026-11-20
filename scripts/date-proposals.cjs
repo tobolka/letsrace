@@ -10,7 +10,7 @@
  * are what a sender would really get: a date no more than a year from the old one, never into the past.
  */
 const { writeFileSync, renameSync } = require('node:fs');
-const { psql, provenChange } = require('./local-sync.cjs');
+const { psql, proofFor } = require('./local-sync.cjs');
 
 const DECISIVE = ['start_date', 'end_date', 'status'];
 const OTHER = ['name', 'merged_into_id'];
@@ -43,10 +43,11 @@ function classify(work, base, facts, today = new Date().toISOString().slice(0, 1
     const far = ['start_date', 'end_date'].find(column => changed.includes(column) && prior[column] && Math.abs(Date.parse(after[column]) - Date.parse(prior[column])) > MAX_SHIFT_DAYS * DAY);
     if (far) { why(race, 'moved_more_than_a_year', { after, before: prior }); continue; }
     // A moved end date with no end before it is a date filled in, not moved; it still needs its quote.
-    const proven = provenChange({ after }, (factsOf.get(race.id) ?? []).map(fact => ({ ...fact, value: typeof fact.value === 'string' ? fact.value : fact.value })));
-    const missing = changed.filter(column => !proven(column));
+    const find = proofFor({ after }, factsOf.get(race.id) ?? []);
+    const proofs = Object.fromEntries(changed.map(column => [column, find(column)]));
+    const missing = changed.filter(column => !proofs[column]);
     if (missing.length) { why(race, 'no_quote_for_' + missing.join('_'), { after, before: prior }); continue; }
-    ready.push({ id: race.id, name: race.name, before: prior, after });
+    ready.push({ id: race.id, name: race.name, before: prior, after, proofs: Object.fromEntries(changed.map(column => [column, { quote: proofs[column].quote, source_url: proofs[column].source_url, method: proofs[column].method }])) });
   }
   return { ready, waiting, reasons };
 }

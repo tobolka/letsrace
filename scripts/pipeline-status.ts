@@ -80,6 +80,8 @@ async function main(){
   }
   const dates=await read(join(data,'date-proposals-latest.json'));
   if(dates)console.log(`Změny data a zrušení (${String(dates.at).slice(0,16).replace('T',' ')}): ${dates.changed} v kopii, ${dates.ready} s citací by šlo odeslat (zatím jen náhled), ${dates.waiting} čeká${Object.keys(dates.reasons??{}).length?` (${Object.entries(dates.reasons as Record<string,number>).sort((a,b)=>b[1]-a[1]).slice(0,3).map(([k,v])=>`${k} ${v}`).join(', ')})`:''}.`);
+  const sent=await read(join(data,'date-send-latest.json'));
+  if(sent){const {at,apply,considered,log,...counts}=sent;console.log(`Změny data odeslané na server (${String(at).slice(0,16).replace('T',' ')}, ${considered} závodů${apply?'':', jen náhled'}): ${Object.entries(counts).map(([k,v])=>`${k} ${v}`).join(', ')||'nic'}.`);}
   const rd=await read(join(data,'regulation-disagreements-latest.json'));
   if(rd)console.log(`Propozice × záznam (${String(rd.at).slice(0,16).replace('T',' ')}, ${rd.checked} závodů): rozpor v místě ${rd.place}, v zemi ${rd.country}, ve dnech programu ${rd.dates}.`);
   const ai=await read(join(data,'llm-budget.json'));
