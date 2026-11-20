@@ -44,9 +44,9 @@ Důležitost: **Vysoká** = přímo zlepšuje to, co vidí rodiče a jezdci, neb
 
 | Důležitost | Nápad | Proč |
 | --- | --- | --- |
-| **Vysoká** | Zdroje pro ručně přidané seriály (`prahamtb.cz` se nečte) | Bez toho může zmizet příští sezóna Pražského MTB poháru z katalogu. Malá práce |
+| **Střední** | Zdroje pro ručně přidané seriály (`prahamtb.cz` se nečte) | Přidat web jako sledovaný zdroj je neškodné (když na něm kalendář ještě není, nic se nezmění). Řada organizátorů ale dává termíny jen na Facebook, který číst nesmíme: takové závody se dostanou dovnitř jen přes kalendáře svazů a pohárů, nebo ručně z plakátu |
 | **Vysoká** | Supabase Security Advisor: ochrana proti uniklým heslům, PostGIS ve veřejném schématu | Bezpečnost přihlašování. Je to nastavení v Supabase, aktuální stav jsem neověřil |
-| **Vysoká** | Detail závodu: kam přijet, kdy být na místě, kolik zaplatím a do kdy, která varianta | Přesně to, co rodič potřebuje. Řada údajů už je uložená (program, poplatky, tratě), chybí je přehledně ukázat |
+| **Střední** | Detail závodu: doplnit údaje (zobrazení už je hotové: místo, program, startovné, kategorie, tratě, pořadatel, parkování) | Chybí jen údaje, ne zobrazení: startovné je u 309, program u 418 a místo z propozic u 573 závodů. Doplňuje to čtení propozic, které stojí, dokud nedoběhne AI limit |
 | **Střední** | Kategorie z jednoho kola seriálu na všechna kola | Rychle doplní chybějící kategorie. Část už dělá denní úklid, ověřit, co chybí |
 | **Střední** | Uzávěrky přihlášek z platforem (RaceResult, Sportsoft, dostartu) | „Stihnu se ještě přihlásit?“ je častá otázka |
 | **Střední** | Hledání nových závodů po zemi, sezóně a disciplíně | Víc nových závodů, ale bez Brave to chce jiný zdroj dotazů |
