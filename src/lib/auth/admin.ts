@@ -7,7 +7,8 @@ import { requireSessionUser } from "@/lib/supabase/user-server";
  * an address on this list or in `admin_users`. The shared password, its cookie
  * and its login endpoint are gone.
  */
-const OWNER_EMAILS = new Set(["tobolka@gmail.com"]);
+export const OWNER_EMAIL = "tobolka@gmail.com";
+const OWNER_EMAILS = new Set([OWNER_EMAIL]);
 
 /** An address only counts once its owner has proved it — Google always has. */
 function confirmedEmail(user: User | null): string | null {

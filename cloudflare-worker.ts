@@ -22,6 +22,7 @@ const CRON_ROUTES: Record<string, string> = {
   "30 5 * * *": "/api/cron/public-refresh",
   "40 5 * * *": "/api/cron/publication",
   "45 5 * * *": "/api/cron/alerts",
+  "0 6 * * *": "/api/cron/owner-mail",
 }
 
 /**

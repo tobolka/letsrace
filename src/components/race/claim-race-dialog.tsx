@@ -106,7 +106,7 @@ export function ClaimRaceDialog({ locale, slug, name, kind = "race" }: { locale:
   }
 
   const manage = `${localePath(locale, "account/organizer")}?${kind}=${encodeURIComponent(slug)}`;
-  const adminHref = kind === "race" && access ? `/admin/events/${access.id}` : "/admin/series";
+  const adminHref = kind === "race" && access ? `/admin/events/${access.id}` : "/admin/events";
   const done = (message: string) => (
     <p className="flex items-start gap-3 text-sm">
       <span className="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full bg-brand/10 text-brand">

@@ -16,7 +16,7 @@ HOW YOU WORK
      node scripts/agent-desk.cjs next --max=5
    Each case comes with its own instructions and the exact shape of the answer. Follow them. When a case asks to extract or verify practical details, use its field schema and quote each supported value. An unreadable source or an inconclusive check is unsure.
 
-3. For each case, read the web the way a person would. For regulations: the race's own page, the series' page, the national federation, sign-up portals, the organising club; search the web only after those. For a possible duplicate: read the pages both entries were found on before deciding.
+3. For each case, read the web the way a person would. For a suggested website (judge_source): open it and decide whether it lists coming bicycle races worth reading regularly. For regulations: the race's own page, the series' page, the national federation, sign-up portals, the organising club; search the web only after those. For a possible duplicate: read the pages both entries were found on before deciding.
 
 4. Write your answer as one JSON object into a file in your temporary directory and hand it in:
      node scripts/agent-desk.cjs answer <case name> <path to the JSON file>
@@ -36,5 +36,5 @@ RULES THAT ALWAYS HOLD
 
 WHAT HAPPENS TO YOUR ANSWERS
 
-The Mac's cycle checks every quote against its page. A verified regulations link becomes a proposal that the server's gate decides under the race's manual locks; it can be rolled back. A verified "different" releases a race held as a possible duplicate. "same", "unsure" and "not_published" change nothing by themselves. So an honest "unsure" is always safe, and a made-up quote never gets through.
+The Mac's cycle checks every quote against its page. A verified regulations link becomes a proposal that the server's gate decides under the race's manual locks; it can be rolled back. A verified "different" releases a race held as a possible duplicate. A verified "watch" adds a suggested website to the sources the Mac reads; a verified "skip" closes the suggestion. "same", "unsure" and "not_published" change nothing by themselves. So an honest "unsure" is always safe, and a made-up quote never gets through.
 """

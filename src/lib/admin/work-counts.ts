@@ -1,55 +1,20 @@
 /**
- * What is waiting for a person, in numbers small enough to sit in a sidebar.
- *
- * Deliberately cheap — head counts and one stored-record pass, no page-through
- * of the catalogue — so the shell can ask for it on every load and again while
- * you work, and the badges are never one navigation out of date.
+ * The two numbers the admin shell shows: things that need the owner, and
+ * messages from riders. Machine queues (website suggestions, sources waiting to
+ * be read, possible duplicates) are not counted here: they are the agent's and
+ * the Mac's work, and a badge on them only read as an alarm.
  */
-import { createServerSupabase } from "@/lib/supabase/server";
-import { getSourceHealth } from "@/lib/admin/source-health";
+import { getOwnerTasks } from "@/lib/admin/owner-tasks";
 
 export type AdminWorkCounts = {
-  discovery: number;
+  /** Things on the owner's list (see owner-tasks.ts). */
+  tasks: number;
+  /** Messages from riders still open. */
   inbox: number;
-  stalled: number;
-  /** Upcoming public races with nowhere to send a rider. */
-  unlinked: number;
   checkedAt: string;
 };
 
 export async function getAdminWorkCounts(): Promise<AdminWorkCounts> {
-  const supabase = createServerSupabase();
-  const today = new Date().toISOString().slice(0, 10);
-
-  const [health, discovery, candidates, feedback, submissions, unlinked] = await Promise.all([
-    getSourceHealth(),
-    supabase
-      .from("discovered_links")
-      .select("*", { count: "exact", head: true })
-      .eq("status", "pending"),
-    supabase.from("pipeline_candidates").select("id", { count: "exact", head: true }).in("status", ["pending", "waiting", "conflict", "publishing"]),
-    // The inbox lists what riders sent: feedback and race URLs, open while
-    // pending. This used to count a `feedback` table that does not exist, so
-    // the badge read 0 whatever was waiting.
-    supabase.from("feedback_requests").select("*", { count: "exact", head: true }).eq("status", "pending"),
-    supabase.from("race_submissions").select("*", { count: "exact", head: true }).eq("status", "pending"),
-    supabase
-      .from("events")
-      .select("*", { count: "exact", head: true })
-      .eq("visibility", "public")
-      .gte("start_date", today)
-      .is("website_url", null)
-      .is("registration_url", null),
-  ]);
-
-  for (const result of [discovery, candidates, feedback, submissions, unlinked]) {
-    if (result.error) throw new Error(result.error.message);
-  }
-  return {
-    discovery: (discovery.count ?? 0) + (candidates.count ?? 0),
-    inbox: (feedback.count ?? 0) + (submissions.count ?? 0),
-    stalled: health.stalled.length,
-    unlinked: unlinked.count ?? 0,
-    checkedAt: new Date().toISOString(),
-  };
+  const { input, tasks } = await getOwnerTasks();
+  return { tasks: tasks.length, inbox: input.messages, checkedAt: new Date().toISOString() };
 }

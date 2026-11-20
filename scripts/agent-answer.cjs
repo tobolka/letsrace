@@ -85,9 +85,24 @@ Answer:
    "discipline": one of mtb, xco, xcc, xce, xcm, mtbo, four_cross, dh, enduro, gravel, road, road_race, tt, criterium, hill_climb, gran_fondo, cx, track, bmx if the page says which, else null,
    "url": the page that states it (the calendar page or the race's own page linked from it), "quote": the words there that state this race's name and its date with the year}, ...],
  "note": one sentence}`,
+  judge_source: `You are helping a cycling race calendar for Czechia, Slovakia, Germany, Austria, Switzerland, Italy and Poland. A search found the web address below. Decide whether we should read it regularly to learn about races.
+
+Watch it only if it is a page that lists coming bicycle races with their dates: a race's own site, a series, a club or federation calendar, or a sign-up portal's list of events. Then say which: "race" (one event), "series" (several rounds of one cup), "calendar" (many unrelated races) or "federation" (a national or regional federation's calendar).
+Let it go if it is not about bicycle racing, is a news article or a blog post written once, is a shop, a ride or tour without results, or has no races coming. Let it go as "already_watched" if one of "we_already_watch_on_this_site" already covers the same list.
+
+${RULES}
+
+Answer:
+{"verdict":"watch"|"skip"|"unsure",
+ "kind": "race"|"series"|"calendar"|"federation" (only with "watch"),
+ "reason": "not_cycling"|"article"|"no_coming_races"|"ride_or_tour"|"already_watched"|"other" (only with "skip"),
+ "evidence":[{"url": address, "quote": words from it}, ...] at least one: for "watch" the words that name a coming race and its date, for "skip" the words that show what the page is,
+ "note": one sentence}`,
 };
 
 const LINK = /^https?:\/\/[^\s]+$/;
+const SOURCE_KINDS = ['race', 'series', 'calendar', 'federation'];
+const SKIP_REASONS = ['not_cycling', 'article', 'no_coming_races', 'ride_or_tour', 'already_watched', 'other'];
 // The same list as src/lib/taxonomy.ts, without "other": a guess is not a discipline.
 const DISCIPLINES = ['mtb', 'xco', 'xcc', 'xce', 'xcm', 'mtbo', 'four_cross', 'dh', 'enduro', 'gravel', 'road', 'road_race', 'tt', 'criterium', 'hill_climb', 'gran_fondo', 'cx', 'track', 'bmx'];
 const text = (value, max) => typeof value === 'string' && value.trim().length > 0 && value.length <= max;
@@ -179,6 +194,18 @@ function checkAnswerShape(kind, body, reply) {
     }
     if (data.verdict === 'found' && !races.length) return { ok: false, why: 'found, but no races given' };
     return { ok: true, answer: { source: body.source.url, verdict: data.verdict, races: data.verdict === 'found' ? races : [], note } };
+  }
+  if (kind === 'judge_source') {
+    if (!['watch', 'skip', 'unsure'].includes(data.verdict)) return { ok: false, why: 'unknown verdict' };
+    const evidence = (Array.isArray(data.evidence) ? data.evidence : []).filter(item => item && typeof item.url === 'string' && LINK.test(item.url) && quote(item.quote)).slice(0, 4).map(item => ({ url: item.url, quote: item.quote.trim().slice(0, 300) }));
+    if (data.verdict === 'unsure') return { ok: true, answer: { url: body.link.url, verdict: 'unsure', evidence, note } };
+    if (!evidence.length) return { ok: false, why: 'a decision without a quoted page' };
+    if (data.verdict === 'watch') {
+      if (!SOURCE_KINDS.includes(data.kind)) return { ok: false, why: 'watch, but without a kind of page' };
+      return { ok: true, answer: { url: body.link.url, verdict: 'watch', kind: data.kind, evidence, note } };
+    }
+    if (!SKIP_REASONS.includes(data.reason)) return { ok: false, why: 'skip, but without a known reason' };
+    return { ok: true, answer: { url: body.link.url, verdict: 'skip', reason: data.reason, evidence, note } };
   }
   return { ok: false, why: 'unknown kind of case' };
 }

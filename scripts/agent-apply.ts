@@ -161,11 +161,32 @@ async function main() {
     }
     for (const row of calendars) { const { saved, published } = tally.get(row.case)!; note(row.case, apply ? "candidates_saved" : "would_save_candidates", `${saved} saved, ${published} published`); }
   }
+  // Websites the explorer suggested: the agent's verified verdict decides, so no suggestion waits for a person.
+  const sites = verified.filter(row => row.kind === "judge_source" && row.verified === true && ["watch", "skip"].includes(row.verdict) && needsHandoff(row));
+  if (sites.length) {
+    for (const [key, value] of Object.entries(parse(readFileSync(resolve(__dirname, "..", ".env.local"), "utf8")))) process.env[key] ??= value;
+    const { createServerSupabase } = await import("../src/lib/supabase/server");
+    const db = createServerSupabase();
+    for (const row of sites) {
+      const answer = JSON.parse(readFileSync(join(answers, `${row.case}.json`), "utf8")).answer as { url: string; verdict: "watch" | "skip"; kind?: string; reason?: string; note: string | null };
+      const { data: link, error } = await db.from("discovered_links").select("id,status,from_watched_url_id").eq("url", answer.url).maybeSingle();
+      if (error) throw Error(error.message);
+      if (!link || link.status !== "pending") { note(row.case, "skipped", "no_longer_pending"); continue; }
+      if (!apply) { note(row.case, answer.verdict === "watch" ? "would_watch" : "would_let_go", answer.reason ?? answer.kind); continue; }
+      if (answer.verdict === "watch") {
+        const added = await db.from("watched_urls").upsert({ url: answer.url, kind: answer.kind ?? "race", status: "active", added_by: "agent", parent_id: link.from_watched_url_id, notes: answer.note?.slice(0, 300) ?? null, next_poll_at: new Date().toISOString() }, { onConflict: "url", ignoreDuplicates: true });
+        if (added.error) throw Error(added.error.message);
+      }
+      const updated = await db.from("discovered_links").update({ status: answer.verdict === "watch" ? "accepted" : "rejected" }).eq("id", link.id).eq("status", "pending");
+      if (updated.error) throw Error(updated.error.message);
+      note(row.case, answer.verdict === "watch" ? "watching" : "let_go", answer.reason ?? answer.kind);
+    }
+  }
   if (apply) {
     const temporary = doneFile + "." + process.pid + ".tmp";
     writeFileSync(temporary, JSON.stringify(done, null, 1));
     renameSync(temporary, doneFile);
   }
-  console.log("agent_apply " + JSON.stringify({ apply, considered: todo.length + pairs.length + calendars.length, ...totals }));
+  console.log("agent_apply " + JSON.stringify({ apply, considered: todo.length + pairs.length + calendars.length + sites.length, ...totals }));
 }
 main().catch(error => { console.error(error instanceof Error ? error.message : error); process.exitCode = 1; });

@@ -6,17 +6,10 @@ import { usePathname } from "next/navigation";
 import {
   Command as CommandIcon,
   Flag,
-  Globe,
-  CopyCheck,
   Inbox,
   LayoutDashboard,
-  Link2Off,
   Map,
   Plus,
-  Radar,
-  TriangleAlert,
-  Users,
-  Wrench,
 } from "lucide-react";
 import { AdminCommand } from "@/components/admin/admin-command";
 import { Badge } from "@/components/ui/badge";
@@ -28,7 +21,6 @@ import {
   SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
-  SidebarGroupLabel,
   SidebarHeader,
   SidebarInset,
   SidebarMenu,
@@ -39,14 +31,12 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { Toaster } from "@/components/ui/sonner";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { TooltipProvider } from "@/components/ui/tooltip";
 import { SITE_NAME } from "@/lib/seo";
 
 type WorkCounts = {
-  discovery: number;
+  tasks: number;
   inbox: number;
-  stalled: number;
-  unlinked: number;
 };
 
 type NavItem = {
@@ -54,70 +44,34 @@ type NavItem = {
   label: string;
   icon: typeof LayoutDashboard;
   exact: boolean;
-  /** Which waiting-work number belongs on this row, if any. */
+  /** Which number belongs on this row, if any. */
   count?: keyof WorkCounts;
-  /** Waiting work is amber; a broken source is not the same as a full inbox. */
-  urgent?: boolean;
 };
 
 /**
- * Two groups, because there are two jobs here.
- *
- * "Waiting" is everything that needs a person and can be finished: links to
- * judge, riders to answer, duplicates to call, races with a hole in them. Each
- * carries its own number, so the sidebar is the queue and the overview is not
- * the only place that knows whether anything is outstanding.
- *
- * "Catalogue" is what you browse rather than clear — the races and the sources
- * they come from. It has no counts because a count of everything is not work.
+ * Three places, all of them the owner's: the list of what needs them, the
+ * riders who wrote in, and the races to look up or fix by hand. The machines'
+ * queues have no page here; the agent and the Mac clear them.
  */
-const WAITING: NavItem[] = [
-  { href: "/admin/discovery", label: "Discovery", icon: Radar, exact: false, count: "discovery" },
-  { href: "/admin/inbox", label: "Inbox", icon: Inbox, exact: false, count: "inbox" },
-  { href: "/admin/duplicates", label: "Duplicates", icon: CopyCheck, exact: false },
-  { href: "/admin/series", label: "Series categories", icon: Users, exact: false },
-  {
-    href: "/admin/events?missing=website",
-    label: "Missing a link",
-    icon: Link2Off,
-    exact: false,
-    count: "unlinked",
-  },
-];
-
-const CATALOGUE: NavItem[] = [
-  { href: "/admin/events", label: "Races", icon: Flag, exact: false },
-  { href: "/admin/sources", label: "Sources", icon: Globe, exact: false, count: "stalled", urgent: true },
-];
-
 const NAV: NavItem[] = [
-  { href: "/admin", label: "Stav LetsRace", icon: LayoutDashboard, exact: true },
-  { href: "/admin/tools", label: "Servisní nástroje", icon: Wrench, exact: true },
-  ...WAITING,
-  ...CATALOGUE,
+  { href: "/admin", label: "Co potřebuje tebe", icon: LayoutDashboard, exact: true, count: "tasks" },
+  { href: "/admin/inbox", label: "Zprávy od uživatelů", icon: Inbox, exact: false, count: "inbox" },
+  { href: "/admin/events", label: "Závody", icon: Flag, exact: false },
+  { href: "/admin/events/new", label: "Přidat závod", icon: Plus, exact: true },
 ];
 
 function isActive(pathname: string, href: string, exact: boolean) {
-  // Some rows are a filtered view of a page rather than a page: "Missing a
-  // link" is /admin/events with a query on it. Highlight the page it lives in
-  // rather than nothing at all.
-  const path = href.split("?")[0] ?? href;
-  if (exact) return pathname === path;
-  if (path !== href) return false;
+  if (exact) return pathname === href;
   if (href === "/admin/events") {
-    return (
-      pathname === "/admin/events" ||
-      (pathname.startsWith("/admin/events/") && pathname !== "/admin/events/new")
-    );
+    return pathname === "/admin/events" || (pathname.startsWith("/admin/events/") && pathname !== "/admin/events/new");
   }
-  return pathname === path || pathname.startsWith(`${path}/`);
+  return pathname === href || pathname.startsWith(`${href}/`);
 }
 
 function crumbFor(pathname: string): string {
-  const item = NAV.find((n) => isActive(pathname, n.href, n.exact));
-  if (pathname === "/admin/events/new") return "Add a race";
-  if (pathname.startsWith("/admin/events/")) return "Race";
-  return item?.label ?? "Admin";
+  if (pathname === "/admin/events/new") return "Přidat závod";
+  if (pathname.startsWith("/admin/events/")) return "Závod";
+  return NAV.find((n) => isActive(pathname, n.href, n.exact))?.label ?? "Admin";
 }
 
 /** One row of the sidebar, with its number when it has work on it. */
@@ -144,7 +98,7 @@ function NavRow({
         </Link>
       </SidebarMenuButton>
       {n > 0 ? (
-        <SidebarMenuBadge className={item.urgent ? "text-amber-600" : undefined}>
+        <SidebarMenuBadge>
           {n > 999 ? "999+" : n}
         </SidebarMenuBadge>
       ) : null}
@@ -155,14 +109,11 @@ function NavRow({
 export function AdminShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const onLogin = pathname === "/admin/login";
-  const isService = !onLogin && pathname !== "/admin";
   const [counts, setCounts] = useState<WorkCounts | null>(null);
   const [paletteOpen, setPaletteOpen] = useState(false);
 
-  // The badges are the reason to open the admin at all, so they are refreshed
-  // while you work rather than frozen at the moment the page was rendered.
   useEffect(() => {
-    if (onLogin || !isService) return;
+    if (onLogin) return;
     let alive = true;
     const load = async () => {
       try {
@@ -180,8 +131,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
       alive = false;
       window.clearInterval(id);
     };
-  }, [onLogin, isService, pathname]);
-
+  }, [onLogin, pathname]);
 
   useEffect(() => {
     if (onLogin) return;
@@ -204,8 +154,6 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
     );
   }
 
-  const waiting = counts ? counts.discovery + counts.inbox : 0;
-
   return (
     <SidebarProvider>
       <Sidebar>
@@ -225,57 +173,17 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
           <SidebarGroup>
             <SidebarGroupContent>
               <SidebarMenu>
-                <SidebarMenuItem>
-                  <SidebarMenuButton
-                    asChild
-                    isActive={isActive(pathname, "/admin", true)}
-                    tooltip="Stav LetsRace"
-                  >
-                    <Link href="/admin">
-                      <LayoutDashboard />
-                      <span>Stav LetsRace</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-                <NavRow item={NAV[1]} pathname={pathname} counts={null}/>
-              </SidebarMenu>
-            </SidebarGroupContent>
-          </SidebarGroup>
-
-          {isService && <><SidebarGroup>
-            <SidebarGroupLabel>Čekající podklady a zprávy</SidebarGroupLabel>
-            <SidebarGroupContent>
-              <SidebarMenu>
-                {WAITING.map((item) => (
+                {NAV.map((item) => (
                   <NavRow key={item.href} item={item} pathname={pathname} counts={counts} />
                 ))}
               </SidebarMenu>
             </SidebarGroupContent>
           </SidebarGroup>
-
-          <SidebarGroup>
-            <SidebarGroupLabel>Servis katalogu</SidebarGroupLabel>
-            <SidebarGroupContent>
-              <SidebarMenu>
-                {CATALOGUE.map((item) => (
-                  <NavRow key={item.href} item={item} pathname={pathname} counts={counts} />
-                ))}
-                <SidebarMenuItem>
-                  <SidebarMenuButton asChild tooltip="Add a race by hand">
-                    <Link href="/admin/events/new">
-                      <Plus />
-                      <span>Add a race</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              </SidebarMenu>
-            </SidebarGroupContent>
-          </SidebarGroup></>}
         </SidebarContent>
         <SidebarFooter>
           <SidebarMenu>
             <SidebarMenuItem>
-              <SidebarMenuButton asChild tooltip="Map">
+              <SidebarMenuButton asChild tooltip="Mapa">
                 <Link href="/cs">
                   <Map />
                   <span>Zpět na mapu</span>
@@ -291,38 +199,23 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
             <SidebarTrigger />
             <Separator orientation="vertical" className="h-4" />
             <span className="truncate text-sm font-medium">{crumbFor(pathname)}</span>
-            {isService && waiting > 0 ? (
-              <Badge variant="secondary" className="tabular-nums">
-                {waiting} čeká na zpracování
-              </Badge>
+            {counts && counts.tasks > 0 && pathname !== "/admin" ? (
+              <Link href="/admin" className="shrink-0">
+                <Badge variant="secondary" className="tabular-nums">
+                  Potřebuju tě: {counts.tasks}
+                </Badge>
+              </Link>
             ) : null}
-            {isService && counts && counts.stalled > 0 ? (
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Link href="/admin" className="shrink-0">
-                    <Badge variant="outline" className="gap-1 tabular-nums">
-                      <TriangleAlert className="size-3 text-amber-600 dark:text-amber-500" />
-                      {counts.stalled}
-                    </Badge>
-                  </Link>
-                </TooltipTrigger>
-                <TooltipContent>Sources that look stalled</TooltipContent>
-              </Tooltip>
-            ) : null}
-
             <div className="ml-auto flex items-center gap-1">
-              {isService && <Button
+              <Button
                 variant="outline"
                 size="sm"
                 className="gap-2 text-muted-foreground"
                 onClick={() => setPaletteOpen(true)}
               >
                 <CommandIcon className="size-3.5" />
-                <span className="hidden sm:inline">Search</span>
+                <span className="hidden sm:inline">Hledat závod</span>
                 <kbd className="hidden rounded border bg-muted px-1 text-[10px] sm:inline">⌘K</kbd>
-              </Button>}
-              <Button variant="ghost" size="sm" asChild>
-                <Link href="/cs">Mapa</Link>
               </Button>
             </div>
           </header>

@@ -226,6 +226,24 @@ function main() {
     }
   }
 
+  // New websites the explorer suggested: watch them or let them go. This used to wait for the owner's click in the admin.
+  const wantSites = Number(arg("sites") ?? 10);
+  if (wantSites) {
+    const sites = sql<{ url: string; hint_kind: string | null; linked_from: string | null; same_site: string[] | null }[]>(`select coalesce(json_agg(t),'[]') from (
+      select d.url, d.hint_kind, w.url linked_from,
+        (select json_agg(x.url) from (select o.url from public.watched_urls o where o.url ilike '%' || split_part(regexp_replace(d.url, '^https?://(www\\.)?', ''), '/', 1) || '%' limit 10) x) same_site
+      from public.discovered_links d left join public.watched_urls w on w.id=d.from_watched_url_id
+      where d.status='pending' order by d.created_at, d.url) t`);
+    let asked = 0;
+    for (const site of sites) {
+      if (asked >= wantSites) break;
+      const name = `site-${short(site.url)}`;
+      if (answered(name)) continue;
+      cases.push({ case: name, kind: "judge_source", link: { url: site.url, found_as: site.hint_kind, linked_from: site.linked_from }, we_already_watch_on_this_site: site.same_site ?? [] });
+      asked++;
+    }
+  }
+
   const previousIndex = existsSync(join(out, "index.json"))
     ? new Set((JSON.parse(readFileSync(join(out, "index.json"), "utf8")) as { case: string }[]).map(row => row.case))
     : new Set<string>();
@@ -239,7 +257,7 @@ function main() {
   // Two regulations to one pair, so neither kind waits behind the whole of the other.
   // Round the kinds in turn, so none waits behind the whole of another.
   const all = cases as { case: string; kind: string }[], order: typeof all = [];
-  const lanes = ["regulations", "nextdate", "duplicate", "ride", "regulations", "nextdate", "pair", "calendar", "details", "detailcheck"].map(prefix => ({ prefix }));
+  const lanes = ["regulations", "nextdate", "duplicate", "ride", "regulations", "nextdate", "pair", "calendar", "site", "details", "detailcheck"].map(prefix => ({ prefix }));
   const byPrefix = new Map<string, typeof all>(); for (const item of all) { const prefix = item.case.split("-")[0]!; byPrefix.set(prefix, [...(byPrefix.get(prefix) ?? []), item]); }
   for (const prefix of byPrefix.keys()) if (!lanes.some(lane => lane.prefix === prefix)) lanes.push({ prefix });
   while ([...byPrefix.values()].some(list => list.length)) for (const lane of lanes) { const next = byPrefix.get(lane.prefix)?.shift(); if (next) order.push(next); }

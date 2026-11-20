@@ -124,6 +124,15 @@ function main() {
  }
  let pagesRefreshing=false;
  const PAGES_REFRESH_EVERY_MS=60*60_000;
+ // What waits at the agent's desk and when it last answered: the admin tells the owner when the agent stops working.
+ function agentDesk() {
+  try {
+   const index=json(path.join(data,'agent','cases','index.json'),[]);
+   const answered=new Set(fs.readdirSync(path.join(data,'agent','answers')).filter(name=>/^[a-z]+-[0-9a-f]{8}\.json$/.test(name)).map(name=>name.slice(0,-5)));
+   const last=latestAgentAnswer(data);
+   return {open:index.filter(item=>item?.case&&!answered.has(item.case)).length,lastAnswerAt:last>0?last:null};
+  }catch{return null;}
+ }
  async function checkServer() {
   if(process.env.LETSRACE_NO_SERVER_CHECK === "1" || serverChecking)return;
   const paused=json(controlFile).paused===true, now=Date.now();
@@ -138,7 +147,7 @@ function main() {
     const last=normalizeResult(state.lastResult);
     const lastResult=last?Object.fromEntries(['at','reads','created','updated','failed','deferred','unreadable'].filter(key=>typeof last[key]==='number').map(key=>[key,last[key]])):null;
     const response=await fetch('https://letsrace.cz/api/ops/pipeline-status',{method:'POST',headers:{Authorization:`Bearer ${env.CRON_SECRET}`,'Content-Type':'application/json'},
-     body:JSON.stringify({status:health({active:!!child,paused,lastOutputAt:state.lastOutputAt||now,now,lastExitCode:state.lastExitCode,deferredOnly:state.deferredOnly}),paused,nextRunAt:state.nextRunAt||null,lastResult}),signal:AbortSignal.timeout(15000)});
+     body:JSON.stringify({status:health({active:!!child,paused,lastOutputAt:state.lastOutputAt||now,now,lastExitCode:state.lastExitCode,deferredOnly:state.deferredOnly}),paused,nextRunAt:state.nextRunAt||null,lastResult,agent:agentDesk()}),signal:AbortSignal.timeout(15000)});
     if(response.status===429){
      const retryAfter=response.headers.get('retry-after');
      const delay=retryAfter&&/^\d+$/.test(retryAfter)?Number(retryAfter)*1000:Date.parse(retryAfter??'')-now;

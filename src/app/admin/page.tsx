@@ -1,61 +1,169 @@
 import Link from "next/link";
+import { z } from "zod";
+import { CircleCheck } from "lucide-react";
 import { requireAdminPage } from "@/lib/auth/require-admin-page";
-import { getOwnerOverview } from "@/lib/admin/owner-overview";
+import { formatPrague, getOwnerTasks } from "@/lib/admin/owner-tasks";
+import { createServerSupabase } from "@/lib/supabase/server";
+import { discoveryUrl } from "@/lib/discovery/plan";
 import { OwnerRefresh, OwnerRefreshButton } from "@/components/admin/owner-refresh";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { z } from "zod";
-import { discoveryUrl } from "@/lib/discovery/plan";
 
 export const dynamic = "force-dynamic";
-function time(value: string | null) {
-  return value ? new Intl.DateTimeFormat("cs-CZ", { timeZone: "Europe/Prague", day: "numeric", month: "numeric", hour: "numeric", minute: "2-digit" }).format(new Date(value)) : "Není potvrzený";
-}
-const optionsSchema=z.array(z.object({value:z.string().min(1).max(100),label:z.string().min(1).max(160)})).min(2).max(4);
-const evidenceSchema=z.object({sources:z.array(z.object({url:z.string().max(2000),quote:z.string().max(800).optional()})).max(5).optional()});
-export default async function AdminHomePage({searchParams}: {searchParams:Promise<{decision?:string;decisions?:string}>}) {
+
+const optionsSchema = z.array(z.object({ value: z.string().min(1).max(100), label: z.string().min(1).max(160) })).min(2).max(4);
+const evidenceSchema = z.object({ sources: z.array(z.object({ url: z.string().max(2000), quote: z.string().max(800).optional() })).max(5).optional() });
+
+/**
+ * The admin is the owner's to-do list and nothing more.
+ *
+ * Website suggestions, sources that cannot be read yet and possible duplicates
+ * are the Mac's and the agent's work; they are not shown, because a long queue
+ * nobody has to clear only reads as an alarm. What remains is what a machine
+ * cannot do, each with the one thing to do about it. The same list goes out by
+ * e-mail, so an empty page is the normal state.
+ */
+export default async function AdminHomePage({ searchParams }: { searchParams: Promise<{ decision?: string }> }) {
   await requireAdminPage();
-  const params=await searchParams;
-  const offset=Math.max(0,Math.min(10000,Number.parseInt(params.decisions??'0',10)||0));
-  let o: Awaited<ReturnType<typeof getOwnerOverview>>;
-  try { o = await getOwnerOverview(offset); }
-  catch {
-    return <section className="mx-auto flex w-full max-w-4xl flex-col gap-5"><OwnerRefresh/><h1 className="text-2xl font-semibold">Stav LetsRace není dostupný</h1><p>Přehled se nepodařilo načíst. Chybějící údaje nejsou nulová fronta ani potvrzení, že vše funguje.</p><OwnerRefreshButton/></section>;
-  }
-  const streams = [
-    { title: "Hledání nových webů", mode: "Hledání automaticky", value: `Návrhy k prověření: ${o.newSourcesWaiting}`, text: "Hledá nové pořadatele a kalendáře. Návrh webu ještě není nový závod; samostatné přijetí všech návrhů není dokončené." },
-    { title: "Nové závody ze známých webů", mode: "Pravidelný sběr", value: `Sledované zdroje: ${o.activeSources}`, text: "Čte známé weby a porovnává nálezy s katalogem. Nejasnou totožnost odkládá, aby nevytvářel další závod naslepo." },
-    { title: "Doplňování existujících závodů", mode: "Část automaticky", value: "Weby, přihlášky a další dostupné údaje", text: "Doplňuje známé závody. AI má omezený režim a rozpočet; uložený údaj není automaticky nově ověřený údaj." },
-    { title: "Ověřování sporných nálezů", mode: "Opakované čtení automaticky", value: `Podklady k posouzení: ${o.candidates}`, text: `Naplánované další kontroly: ${o.candidatesScheduled}. Samostatné posuzování a zveřejňování ještě není dokončené.` },
-  ];
-  return (
-    <div className="mx-auto flex w-full max-w-4xl flex-col gap-8">
-      <OwnerRefresh />
-      {params.decision && <p role="status" className="rounded-lg border p-4 text-sm">{params.decision==='saved'?'Rozhodnutí je uložené.':params.decision==='changed'?'Podklad se mezitím změnil nebo už má odpověď. Zkontroluj aktuální otázku.':'Odpověď se nepodařilo uložit. Vyber jednu z nabídnutých možností.'}</p>}
-      <header className="flex flex-wrap items-start justify-between gap-4"><div><p className="text-sm text-muted-foreground">LetsRace</p><h1 className="mt-1 text-3xl font-semibold tracking-tight">Stav a další práce</h1></div><Button asChild variant="outline"><Link href="/cs">Otevřít LetsRace</Link></Button></header>
-      <Card><CardHeader><Badge variant={o.state.tone === "good" ? "secondary" : "outline"} className="mb-2">{o.state.tone === "good" ? "Provoz potvrzený" : o.state.tone === "muted" ? "Pozastaveno na Macu" : "Provoz s omezením"}</Badge><CardTitle className="text-2xl">{o.state.title}</CardTitle><CardDescription className="max-w-2xl text-sm leading-relaxed">{o.state.detail}</CardDescription></CardHeader><CardContent><dl className="grid gap-4 text-sm sm:grid-cols-2"><div><dt className="text-muted-foreground">Poslední hlášení Macu</dt><dd className="mt-1 font-medium">{time(o.macAt)}</dd></div><div><dt className="text-muted-foreground">Dokončená serverová kontrola</dt><dd className="mt-1 font-medium">{time(o.serverAt)}</dd></div></dl></CardContent></Card>
-      <section aria-labelledby="owner-decisions" className="space-y-4">
-        <h2 id="owner-decisions" className="text-lg font-semibold">Potřebuje něco tebe?</h2>
-        {o.questionCount===0 ? <><p>Teď není připravená žádná konkrétní otázka k rozhodnutí.</p><p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">Čekající podklady jsou práce systému. Nemusíš spouštět sběrače ani schvalovat každý nález.</p></> : <>
-          <p className="text-sm text-muted-foreground">Konkrétní rozhodnutí: {o.questionCount}. Technické fronty do tohoto počtu nepatří.</p>
-          {o.questions.map(question=>{
-            const options=optionsSchema.safeParse(question.options),evidence=evidenceSchema.safeParse(question.evidence);
-            return <Card key={question.key}><CardHeader><CardTitle className="text-lg">{question.question}</CardTitle><CardDescription className="leading-relaxed">{question.reason}</CardDescription></CardHeader><CardContent className="space-y-4 text-sm">
-              <p><strong>Doporučení:</strong> {question.recommendation}</p><p><strong>Když neodpovíš:</strong> {question.default_action}</p>
-              {evidence.success && evidence.data.sources?.map(source=>{const url=discoveryUrl(source.url);return url?<div key={url} className="space-y-1"><a href={url} target="_blank" rel="noopener noreferrer" className="break-all underline underline-offset-4">Otevřít podklad: {new URL(url).hostname}</a>{source.quote&&<p className="text-muted-foreground">{source.quote}</p>}</div>:null;})}
-              {options.success?<form action="/api/admin/owner-decision" method="post" className="flex flex-wrap gap-3"><input type="hidden" name="key" value={question.key}/><input type="hidden" name="updatedAt" value={question.updated_at}/>{options.data.map(option=><Button key={option.value} name="answer" value={option.value} type="submit" variant="outline">{option.label}</Button>)}</form>:<p>Možnosti odpovědi zatím nejsou platné. Podklad potřebuje opravu; nejde o úkol pro tebe.</p>}
-            </CardContent></Card>;
-          })}
-          <nav aria-label="Další rozhodnutí" className="flex flex-wrap gap-4">{offset>0&&<Link className="underline" href={`/admin?decisions=${Math.max(0,offset-20)}`}>Předchozí otázky</Link>}{offset+20<o.questionCount&&<Link className="underline" href={`/admin?decisions=${offset+20}`}>Další otázky</Link>}</nav>
-        </>}
-        {o.answersWaiting>0&&<p className="text-sm text-muted-foreground">Uložená rozhodnutí čekající na provedení: {o.answersWaiting}. Uložená odpověď ještě neznamená provedenou změnu.</p>}
+  const params = await searchParams;
+
+  let loaded: Awaited<ReturnType<typeof getOwnerTasks>>;
+  try {
+    loaded = await getOwnerTasks();
+  } catch {
+    return (
+      <section className="mx-auto flex w-full max-w-2xl flex-col gap-4">
+        <OwnerRefresh />
+        <h1 className="text-2xl font-semibold">Přehled se nepodařilo načíst</h1>
+        <p className="text-muted-foreground">Zkus to za chvíli znovu. Když to nepůjde ani potom, napiš Claude Code: „Admin LetsRace se nenačítá.“</p>
+        <OwnerRefreshButton />
       </section>
-      <section aria-labelledby="system-work"><h2 id="system-work" className="text-lg font-semibold">Co systém dělá</h2><p className="mb-4 mt-1 text-sm text-muted-foreground">Čtyři činnosti nad jedním katalogem. Počty zdrojů a podkladů nejsou počty ověřených závodů.</p><div className="grid gap-4 md:grid-cols-2">{streams.map(stream => <Card key={stream.title}><CardHeader className="gap-2"><p className="text-xs text-muted-foreground">{stream.mode}</p><CardTitle className="text-base">{stream.title}</CardTitle><p className="text-sm font-medium tabular-nums">{stream.value}</p></CardHeader><CardContent className="text-sm leading-relaxed text-muted-foreground">{stream.text}</CardContent></Card>)}</div></section>
-      <section aria-labelledby="public-results"><h2 id="public-results" className="text-lg font-semibold">Co se skutečně dostalo na web</h2><p className="mt-3 text-sm">{o.catalogueCheck ? `Poslední kontrola společného seznamu pro mapu a kalendář: ${time(o.catalogueCheck.verifiedAt)} · ${o.catalogueCheck.races} závodů odpovídá uloženým údajům.` : "Společný seznam pro mapu a kalendář zatím nemá dokončenou kontrolu."}</p><dl className="mt-3 grid gap-4 text-sm sm:grid-cols-2"><div><dt className="text-muted-foreground">Kontroly jednotlivých detailů za 24 hodin</dt><dd className="mt-1 text-2xl font-semibold tabular-nums">{o.publicChecks24h}</dd></div><div><dt className="text-muted-foreground">Detaily čekající na kontrolu</dt><dd className="mt-1 text-2xl font-semibold tabular-nums">{o.publicationCounts.awaitingCheck}</dd></div></dl><p className="mt-3 text-sm">Seriály čekající na kontrolu: {o.publicationCounts.seriesAwaitingCheck} (z toho {o.publicationCounts.seriesAwaitingRequest} čeká na vyžádání aktualizace). Aktualizace závodů ještě není vyžádaná: {o.publicationCounts.awaitingRequest}. Aktualizace vyžádaná, čeká kontrola: {o.publicationCounts.requestedAwaitingCheck}.</p><p className="mt-3 text-sm leading-relaxed text-muted-foreground">Důležité změny kontrolujeme na veřejné stránce. U běžných doplnění kontrolujeme vzorek. Počítáme jen stránky, u kterých jsme ověřili shodu s uloženou změnou.</p></section>
-      <section aria-labelledby="edition-status"><h2 id="edition-status" className="text-lg font-semibold">Nové ročníky v Česku</h2>{o.editions ? <><p className="mt-1 text-sm text-muted-foreground">Ročník {o.editions.season} · {o.editions.races} závodů z minulé sezóny · kontrola {time(o.editions.at)} · AI {o.editions.aiUsd.toFixed(2)} USD. Nenalezený termín neznamená, že pořadatel nic neoznámil.</p><dl className="mt-3 grid grid-cols-2 gap-4 text-sm sm:grid-cols-3">{[["V katalogu", o.editions.counts.found], ["Nově zveřejněno", o.editions.counts.published], ["Čeká na jistotu", o.editions.counts.waiting], ["Zatím neoznámeno", (o.editions.counts.not_announced ?? 0) + (o.editions.counts.year_only ?? 0)], ["Nečitelný web", o.editions.counts.unreadable], ["Bez webu", o.editions.counts.no_website]].map(([label, value]) => <div key={label}><dt className="text-muted-foreground">{label}</dt><dd className="mt-1 text-2xl font-semibold tabular-nums">{value ?? 0}</dd></div>)}</dl></> : <p className="mt-3 text-sm">Kontrola zatím nemá dokončený běh.</p>}<p className="mt-3 text-sm">Sloučené duplicity za 7 dní: <strong className="tabular-nums">{o.merges7d}</strong>.</p></section>
-      <details className="rounded-lg border p-4 text-sm"><summary className="cursor-pointer font-medium">Omezení a podrobnosti</summary><div className="mt-4 space-y-3 leading-relaxed text-muted-foreground"><p>Skutečné chyby spojení nebo zpracování: <strong className="text-foreground">{o.broken}</strong>. Stránky čekající na jiný způsob čtení: <strong className="text-foreground">{o.unreadable}</strong>.</p><p>Další posouzení zdrojů: {o.sourceReview}. Čtení odložená kvůli omezením: {o.sourceDeferred}. Plánované kontroly se zpožděním přes 36 hodin: {o.overdueSources}.</p><p>Nejstarší neuzavřený podklad: {time(o.oldestCandidate)}. Historické pokusy nejsou počet aktuálních poruch.</p><p>Limit AI zůstává 0,50 USD za den a 5 USD za měsíc. Placené hledání je vypnuté. Při vypnutém Macu pokračují serverové kontroly; místní práce čeká.</p><Button asChild variant="outline"><Link href="/admin/tools">Otevřít servisní nástroje</Link></Button></div></details>
-      <p className="text-xs text-muted-foreground">Přehled načten {time(new Date(o.now).toISOString())}; při otevřené stránce se obnovuje automaticky.</p>
+    );
+  }
+  const { input, tasks } = loaded;
+
+  const questions = input.questions > 0
+    ? await createServerSupabase()
+        .from("pipeline_owner_decisions")
+        .select("key,question,reason,recommendation,default_action,options,evidence,updated_at")
+        .eq("status", "open")
+        .order("created_at")
+        .limit(20)
+    : null;
+
+  return (
+    <div className="mx-auto flex w-full max-w-2xl flex-col gap-8">
+      <OwnerRefresh />
+      {params.decision && (
+        <p role="status" className="rounded-lg border p-4 text-sm">
+          {params.decision === "saved"
+            ? "Odpověď je uložená. Systém ji provede sám."
+            : params.decision === "changed"
+              ? "Otázka se mezitím změnila nebo už má odpověď. Podívej se na ni znovu."
+              : "Odpověď se nepodařilo uložit. Vyber jednu z nabídnutých možností."}
+        </p>
+      )}
+
+      <header>
+        <h1 className="text-3xl font-semibold tracking-tight">
+          {tasks.length === 0 ? "Nic po tobě nepotřebuju" : tasks.length === 1 ? "Potřebuju tě na jednu věc" : `Potřebuju tě na ${tasks.length} ${tasks.length < 5 ? "věci" : "věcí"}`}
+        </h1>
+        <p className="mt-2 text-muted-foreground">
+          {tasks.length === 0
+            ? "Weby pořadatelů čte Mac, nové weby a sporné případy posuzuje agent. Když bude potřeba tebe, přijde ti e-mail."
+            : "Každá věc má jeden krok. Nic dalšího hlídat ani schvalovat nemusíš."}
+        </p>
+      </header>
+
+      {tasks.length === 0 ? (
+        <Card>
+          <CardContent className="flex items-center gap-3 py-6">
+            <CircleCheck className="size-6 shrink-0 text-emerald-600" aria-hidden />
+            <p>Všechno běží samo.</p>
+          </CardContent>
+        </Card>
+      ) : (
+        <ol className="flex flex-col gap-4">
+          {tasks.map((task) => (
+            <li key={task.key}>
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg">{task.title}</CardTitle>
+                  <CardDescription className="leading-relaxed">{task.what}</CardDescription>
+                </CardHeader>
+                <CardContent className="flex flex-col gap-3">
+                  <p className="rounded-md bg-muted p-3 leading-relaxed">
+                    <strong>Co udělat:</strong> {task.todo}
+                  </p>
+                  {task.link && (
+                    <Button asChild className="self-start">
+                      <Link href={task.link.href}>{task.link.label}</Link>
+                    </Button>
+                  )}
+                </CardContent>
+              </Card>
+            </li>
+          ))}
+        </ol>
+      )}
+
+      {questions?.data?.length ? (
+        <section id="otazky" aria-labelledby="questions-heading" className="flex flex-col gap-4">
+          <h2 id="questions-heading" className="text-lg font-semibold">Otázky</h2>
+          {questions.data.map((question) => {
+            const options = optionsSchema.safeParse(question.options);
+            const evidence = evidenceSchema.safeParse(question.evidence);
+            return (
+              <Card key={question.key}>
+                <CardHeader>
+                  <CardTitle className="text-lg">{question.question}</CardTitle>
+                  <CardDescription className="leading-relaxed">{question.reason}</CardDescription>
+                </CardHeader>
+                <CardContent className="flex flex-col gap-3 text-sm">
+                  <p><strong>Doporučuju:</strong> {question.recommendation}</p>
+                  <p><strong>Když neodpovíš:</strong> {question.default_action}</p>
+                  {evidence.success &&
+                    evidence.data.sources?.map((source) => {
+                      const url = discoveryUrl(source.url);
+                      return url ? (
+                        <div key={url} className="flex flex-col gap-1">
+                          <a href={url} target="_blank" rel="noopener noreferrer" className="break-all underline underline-offset-4">
+                            Podklad: {new URL(url).hostname}
+                          </a>
+                          {source.quote && <p className="text-muted-foreground">„{source.quote}“</p>}
+                        </div>
+                      ) : null;
+                    })}
+                  {options.success ? (
+                    <form action="/api/admin/owner-decision" method="post" className="flex flex-wrap gap-3">
+                      <input type="hidden" name="key" value={question.key} />
+                      <input type="hidden" name="updatedAt" value={question.updated_at} />
+                      {options.data.map((option) => (
+                        <Button key={option.value} name="answer" value={option.value} type="submit" variant="outline">
+                          {option.label}
+                        </Button>
+                      ))}
+                    </form>
+                  ) : (
+                    <p className="text-muted-foreground">Tahle otázka je chybně položená; opraví se sama, nic nedělej.</p>
+                  )}
+                </CardContent>
+              </Card>
+            );
+          })}
+        </section>
+      ) : null}
+
+      <footer className="flex flex-col gap-1 border-t pt-4 text-sm text-muted-foreground">
+        <p>Mac se naposledy ozval {input.macAt ? formatPrague(input.macAt) : "— zatím nikdy"}.</p>
+        {input.agent && (
+          <p>
+            Agent má ve frontě {input.agent.open} úkolů
+            {input.agent.lastAnswerAt ? `, naposledy odpověděl ${formatPrague(input.agent.lastAnswerAt)}` : ""}.
+          </p>
+        )}
+        <p>Načteno {formatPrague(input.now)}; stránka se obnovuje sama.</p>
+      </footer>
     </div>
   );
 }

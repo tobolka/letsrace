@@ -44,6 +44,8 @@ Stav k 11. 11. 2026 večer. ✅ je a běží · 🔶 je zčásti · ⬜ není.
 | | Denní příprava případů, opakování nevyřešených po týdnu | ✅ | krok cyklu po 6 hodinách |
 | | Ověření citací kódem | ✅ | `scripts/agent-verify.ts` |
 | | Ověřené nálezy jdou bráně; ověřené „různé závody“ uvolní zadržený závod | ✅ | první nález agenta je v katalogu od 11. 11. |
+| | Návrhy nových webů posuzuje agent (`judge_source`) | ✅ | od 20. 11. 2026: ověřené „watch“ přidá zdroj ke čtení, „skip“ návrh zavře; dřív čekaly na kliknutí v adminu |
+| **Admin** | Jen to, co potřebuje majitele (`src/lib/admin/owner-tasks.ts`) | ✅ | od 20. 11. 2026: Mac mlčí, sběr pozastavený, denní úlohy serveru neběží, agent 3 dny neodpověděl, zprávy od uživatelů, otázky. Každá věc má jeden krok. Ráno v 7 e-mail (`/api/cron/owner-mail`), stejnou věc nejdřív po 3 dnech. Stránky Discovery, Sources, Duplicates, Series a Servisní nástroje jsou zrušené |
 | | Další druhy případů: vyjížďka nebo závod, termín dalšího ročníku, chybějící závody v kalendáři, duplicity uvnitř katalogu | 🔶 | napsáno, testy tvaru a ověření; první odpovědi Codexu na ně teprve přijdou |
 | | Agent pro opravu čteček | 🔶 | `.codex/agents/reader-repair.toml`, seznam 238 zdrojů přes `agent-desk.cjs repairs`; neběžel |
 | | Vyhodnocení správnosti na vzorku | 🔶 | Claude 5 případů bez chyby; Codex 20 odpovědí: 15 ověřených citací, 2 neověřené, 3 „nevím“. Ruční čtení vzorku Codexu ještě ne |
