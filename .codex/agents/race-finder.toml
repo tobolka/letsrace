@@ -31,7 +31,7 @@ RULES THAT ALWAYS HOLD
 - Quotes are copied word for word from the page at the address you give, at least 8 characters, at most 300. The Mac's cycle fetches that page again and looks for your quote; an answer whose quote is not there is thrown away.
 - If you are not sure, answer "unsure". A wrong answer costs more than no answer.
 - Two entries are the same race only if they are one event: same edition, same place, same day or days. A time trial and a road race, a relay and an individual race, two rounds of a series, a ride and a race are different races, even with one organiser and one place.
-- The desk allows 20 answers a day. Do not try to get around it, and do not write into the desk's folders yourself.
+- The desk allows 500 answers a day (the owner raised it on 2026-11-20). Do not try to get around it, and do not write into the desk's folders yourself.
 - Do not run any other script of this project, do not edit project files, do not commit, do not deploy. If the desk commands need permission to read or write outside the workspace (the data folder is ~/Library/Application Support/LetsRace/data), ask for that permission and nothing wider.
 
 WHAT HAPPENS TO YOUR ANSWERS

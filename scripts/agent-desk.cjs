@@ -8,7 +8,7 @@
  *   node scripts/agent-desk.cjs status                  what is open, answered today, and left of today's allowance
  *   node scripts/agent-desk.cjs repairs [--max=15]      sources no reader fits any more, for the reader-repair agent
  *
- * At most AGENT_DAILY_CASES (20) answers a day, Prague time. An answer out of shape is refused
+ * At most AGENT_DAILY_CASES (500 since 20 Nov 2026, the owner's order: the whole waiting queue; it was 20) answers a day, Prague time. An answer out of shape is refused
  * with the reason, and nothing is saved. A case already answered cannot be answered again.
  */
 const fs = require('node:fs'); const os = require('node:os'); const path = require('node:path');
@@ -18,7 +18,7 @@ const { checkAnswer, PROMPTS } = require('./agent-answer.cjs');
 
 const data = process.env.LETSRACE_DATA_DIR || path.join(os.homedir(), 'Library/Application Support/LetsRace/data');
 const cases = path.join(data, 'agent', 'cases'), answers = path.join(data, 'agent', 'answers');
-const DAILY = Number(process.env.AGENT_DAILY_CASES) > 0 ? Number(process.env.AGENT_DAILY_CASES) : 20;
+const DAILY = Number(process.env.AGENT_DAILY_CASES) > 0 ? Number(process.env.AGENT_DAILY_CASES) : 500;
 const pragueDay = (at = new Date()) => new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Prague', year: 'numeric', month: '2-digit', day: '2-digit' }).format(at);
 const json = (file, fallback = null) => { try { return JSON.parse(fs.readFileSync(file, 'utf8')); } catch { return fallback; } };
 

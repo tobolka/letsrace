@@ -39,7 +39,7 @@ Stav k 11. 11. 2026 večer. ✅ je a běží · 🔶 je zčásti · ⬜ není.
 | | Roztřídění čekajících kontrol stránek | ✅ | běžná doplnění mimo vzorek se uzavřou po zapsání žádosti o obnovu aktuální revize; výsledek je označený jako neověřený |
 | **Pracovníci** | Mac se správcem a panelem v liště | ✅ | z verze 1 |
 | | Cloudový pracovník | ✅ | GitHub Actions každé 3 hodiny hledá propozice, jen když Mac 30 minut mlčí. Úlohy z Vercelu se nepřesouvají: běží i bez Macu a CPU neberou |
-| **Agent** | Agent je Codex, pracuje přes přepážku (`scripts/agent-desk.cjs`) | ✅ | definice `.codex/agents/race-finder.toml`; strop 20 odpovědí denně; Claude v cyklu vypnutý |
+| **Agent** | Agent je Codex, pracuje přes přepážku (`scripts/agent-desk.cjs`) | ✅ | definice `.codex/agents/race-finder.toml`; strop 500 odpovědí denně (od 20. 11. 2026, dřív 20); Claude v cyklu vypnutý |
 | | Spouštění přímo z cyklu (Claude nebo jiný příkaz) | 🔶 | napsáno a vyzkoušeno na 5 případech, **vypnuto** (`AGENT_IN_CYCLE=1` ho zapne) |
 | | Denní příprava případů, opakování nevyřešených po týdnu | ✅ | krok cyklu po 6 hodinách |
 | | Ověření citací kódem | ✅ | `scripts/agent-verify.ts` |

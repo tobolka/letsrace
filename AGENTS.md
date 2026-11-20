@@ -70,7 +70,7 @@ The site runs as the Worker `letsrace` (OpenNext) on the owner's Cloudflare acco
 An AI agent looks for missing regulations and judges possible duplicates the readers could not settle. Its definition for Codex is `.codex/agents/race-finder.toml`; the design is in `docs/pipeline-v2.md`, part 7.
 
 - The agent works only through `scripts/agent-desk.cjs` (`status`, `next`, `answer`, `discovery`). It never writes to the catalogue, the database or project files.
-- The desk allows 20 answers a day and checks each answer's shape. The Mac's cycle then fetches each quoted page again (`scripts/agent-verify.ts`); only an answer whose quote is found there goes on, as a proposal to the gate (`scripts/agent-apply.ts`, `pipeline_apply_proposal`).
+- The desk allows 500 answers a day (raised from 20 on 2026-11-20 by the owner, so the whole waiting queue can be answered) and checks each answer's shape. The Mac's cycle then fetches each quoted page again (`scripts/agent-verify.ts`); only an answer whose quote is found there goes on, as a proposal to the gate (`scripts/agent-apply.ts`, `pipeline_apply_proposal`).
 - The daily discovery batch accepts up to five public source URLs. The Mac reads them through the independent discovery queue, which hands verified source evidence to review.
 - A page with a robot check or a sign-in is never read, by any means.
 - A second agent, `.codex/agents/reader-repair.toml`, repairs one reader a run in a branch `agent/reader-<site>`. Nobody reviews it by hand: `scripts/reader-accept.cjs` merges the branch only if it touches readers, their tests and saved pages alone, deletes no test, and types and the whole suite pass on the merged result. Otherwise the branch stays unmerged with the reason.
