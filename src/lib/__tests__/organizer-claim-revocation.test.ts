@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { NextRequest } from "next/server";
 const state = vi.hoisted(() => ({ status: "revoked", insert: vi.fn() }));
 vi.mock("@/lib/supabase/user-server", () => ({ requireSessionUser: async () => ({ id: "user", email: "info@race.test", email_confirmed_at: "2026-01-01" }) }));
@@ -12,7 +12,8 @@ vi.mock("@/lib/organizer", () => ({ emailMatchesSite: () => true, syncBadge: vi.
 } }) }));
 vi.mock("@/lib/organizer-publish", () => ({ refreshOrganizerPages: vi.fn() }));
 import { POST } from "@/app/api/organizer/claims/route";
-afterEach(() => vi.clearAllMocks());
+beforeEach(() => vi.stubEnv("ORGANIZER_CLAIMS", "1"));
+afterEach(() => { vi.clearAllMocks(); vi.unstubAllEnvs(); });
 describe("previous organiser decisions", () => {
   it.each(["rejected", "revoked"])("does not restore %s access even when the email domain matches", async status => {
     state.status = status;

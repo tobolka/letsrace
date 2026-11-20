@@ -81,7 +81,7 @@ Pro technickou kontrolu: `npm run pipeline:status` nebo `npm run pipeline:status
 
 ## Co je ve frontách administrace
 
-Aktuální stav přestavby a podmínky obnovení scanů jsou ve [společném seznamu priorit](operations-progress.md).
+Rozpracované úkoly a zapomenuté nápady jsou v [ROADMAP.md](ROADMAP.md).
 
 „Discovery queue“ ukazuje zvlášť návrhy nových webů a podklady ke konkrétním závodům, které čekají na ověření termínu či identity. Počet práce zahrnuje obě skupiny. Navržený termín ve frontě není potvrzený den závodu. Přehled zdrojů neoznačuje čerstvé nepodporované čtení za poruchu; skutečné chyby spojení a zápisu zůstávají viditelné.
 

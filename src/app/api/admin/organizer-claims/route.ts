@@ -6,6 +6,7 @@ import { parseJson } from "@/lib/api/validate";
 import { createServerSupabase } from "@/lib/supabase/server";
 import { organizerDb, syncBadge } from "@/lib/organizer";
 import { refreshOrganizerPages } from "@/lib/organizer-publish";
+import { organizerClaimsEnabled } from "@/lib/organizer-flag";
 
 const bodySchema = z.object({
   id: z.string().uuid(),
@@ -14,6 +15,7 @@ const bodySchema = z.object({
 
 /** Approves, rejects or withdraws an organiser's claim; the badge follows. */
 export const PATCH = withAdmin(async (req: NextRequest) => {
+  if (!organizerClaimsEnabled()) return NextResponse.json({ error: "Not found" }, { status: 404 });
   const parsed = await parseJson(req, bodySchema);
   if (!parsed.ok) return parsed.response;
   const { id, status } = parsed.data;

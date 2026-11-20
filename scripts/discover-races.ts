@@ -1,4 +1,4 @@
-/** Independent season discovery, durable local outbox, no event writes. See docs/parallel-race-discovery.md. */
+/** Independent season discovery, durable local outbox, no event writes. Ideas for more discovery inputs: docs/ROADMAP.md (B1). */
 import { readFile, readdir, mkdir, writeFile } from "node:fs/promises";
 import { resolve, join } from "node:path";
 import { parse as loadEnv } from "dotenv";

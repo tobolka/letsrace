@@ -4,7 +4,7 @@
 
 Stav k 11. 11. 2026: návrh, nic z toho neběží. Druhé znění, po připomínkách Codexu z téhož dne; co se jimi změnilo, je na konci. Vychází z měření verze 1 a z odpovědí vlastníka: celý provoz do 10 USD měsíčně, Mac běží přes den i v noci (ale je to notebook), agent může být Claude i Codex, o komerčním využití zatím není rozhodnuto.
 
-Navazuje na [systém doplňování závodů](race-completion-system.md), [pravidla ročníků](annual-editions.md) a [návrh agenta](race-agent.md). Ty zůstávají v platnosti. Tento dokument mění **jak se práce plánuje, doručuje a hlídá**, ne jak se čtou stránky.
+Navazuje na [systém doplňování závodů](race-completion-system.md), [pravidla ročníků](annual-editions.md) a návrh agenta (v části 7 níže). Ty zůstávají v platnosti. Tento dokument mění **jak se práce plánuje, doručuje a hlídá**, ne jak se čtou stránky.
 
 ## Co už je a co ne
 
@@ -191,7 +191,7 @@ GitHub spouští plánované běhy z výchozí větve (`main`) a může je zpozd
 
 ### 7. Agent
 
-Rozšiřuje [návrh z 10. 11.](race-agent.md). Začíná v režimu návrhů: nic z jeho výstupu se nepoužije, dokud daný druh práce neprojde vlastním vzorkem.
+Rozšiřuje návrh z 10. 11. (smazaný dokument `race-agent.md`, v historii gitu). Začíná v režimu návrhů: nic z jeho výstupu se nepoužije, dokud daný druh práce neprojde vlastním vzorkem.
 
 | Druh případu | Výstup | Ručně ověřený vzorek měří |
 | --- | --- | --- |

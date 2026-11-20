@@ -3,6 +3,7 @@ import { SubmissionsInbox } from "@/components/admin/submissions-inbox";
 import { OrganizerClaimsInbox, type PendingClaim } from "@/components/admin/organizer-claims-inbox";
 import { requireAdminPage } from "@/lib/auth/require-admin-page";
 import { organizerDb } from "@/lib/organizer";
+import { organizerClaimsEnabled } from "@/lib/organizer-flag";
 import { ProposalsInbox, type PendingProposal } from "@/components/admin/proposals-inbox";
 
 const PROPOSAL_FIELDS: [string, string, string][] = [
@@ -128,7 +129,7 @@ export default async function AdminInboxPage() {
         </p>
       </div>
       <ProposalsInbox proposals={proposals} />
-      <OrganizerClaimsInbox claims={claims} />
+      {organizerClaimsEnabled() || claims.length > 0 ? <OrganizerClaimsInbox claims={claims} /> : null}
       <SubmissionsInbox
         notifications={notes ?? []}
         submissions={subs ?? []}

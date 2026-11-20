@@ -5,6 +5,7 @@ import { parseJson } from "@/lib/api/validate";
 import { createServerSupabase } from "@/lib/supabase/server";
 import { requireSessionUser } from "@/lib/supabase/user-server";
 import { clientIp, rateLimit } from "@/lib/security";
+import { organizerClaimsEnabled } from "@/lib/organizer-flag";
 
 const bodySchema = z.object({
   kind: z.enum(["race", "series"]),
@@ -14,6 +15,7 @@ const bodySchema = z.object({
 
 /** A reader's correction to a race or series, for the admin to check and apply. */
 export async function POST(req: NextRequest) {
+  if (!organizerClaimsEnabled()) return apiError(404, "Not found");
   if (!rateLimit(`correction:${clientIp(req)}`, 10, 60_000)) return apiError(429, "Too many requests");
   const parsed = await parseJson(req, bodySchema);
   if (!parsed.ok) return parsed.response;

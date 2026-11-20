@@ -7,6 +7,7 @@ import { requireSessionUser } from "@/lib/supabase/user-server";
 import { clientIp, rateLimit } from "@/lib/security";
 import { emailMatchesSite, organizerDb, syncBadge, type OrganizerClaim } from "@/lib/organizer";
 import { refreshOrganizerPages } from "@/lib/organizer-publish";
+import { organizerClaimsEnabled } from "@/lib/organizer-flag";
 
 const bodySchema = z.object({
   kind: z.enum(["race", "series"]),
@@ -21,6 +22,7 @@ type Target = { id: string; name: string; slug: string; website_url: string | nu
 
 /** This account's claims, each with the race or series it is for. */
 export async function GET() {
+  if (!organizerClaimsEnabled()) return apiError(404, "Not found");
   const user = await requireSessionUser();
   if (!user) return apiError(401, "Sign in first");
   const { data: claims, error } = await organizerDb()
@@ -69,6 +71,7 @@ export async function GET() {
 
 /** Claims a race or series: verified at once on the race website's own domain, otherwise sent for approval. */
 export async function POST(req: NextRequest) {
+  if (!organizerClaimsEnabled()) return apiError(404, "Not found");
   if (!rateLimit(`organizer-claim:${clientIp(req)}`, 10, 60_000)) return apiError(429, "Too many requests");
   const parsed = await parseJson(req, bodySchema);
   if (!parsed.ok) return parsed.response;

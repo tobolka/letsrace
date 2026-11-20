@@ -6,11 +6,13 @@ import { requireSessionUser } from "@/lib/supabase/user-server";
 import { clientIp, rateLimit } from "@/lib/security";
 import { editingClaim } from "@/lib/organizer";
 import { applyOrganizerEdit, organizerEditSchema } from "@/lib/organizer-edit";
+import { organizerClaimsEnabled } from "@/lib/organizer-flag";
 
 type Ctx = { params: Promise<{ id: string }> };
 
 /** The race as its organiser edits it: only for the holder of a verified claim. */
 export async function GET(_req: NextRequest, { params }: Ctx) {
+  if (!organizerClaimsEnabled()) return apiError(404, "Not found");
   const { id } = await params;
   const user = await requireSessionUser();
   if (!user) return apiError(401, "Sign in first");
@@ -44,6 +46,7 @@ export async function GET(_req: NextRequest, { params }: Ctx) {
 
 /** Saves an organiser's change to their race. */
 export async function PATCH(req: NextRequest, { params }: Ctx) {
+  if (!organizerClaimsEnabled()) return apiError(404, "Not found");
   if (!rateLimit(`organizer-edit:${clientIp(req)}`, 30, 60_000)) return apiError(429, "Too many requests");
   const { id } = await params;
   const user = await requireSessionUser();

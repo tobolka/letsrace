@@ -1,6 +1,6 @@
 # Odkazy na Let's Race bez oslovování pořadatelů
 
-Stav k 16. 11. 2026. Nahrazuje e-mailovou část [PLAN.md](PLAN.md): pořadatelům nikdo nepíše. Hotové texty jsou v [TEXTY.md](TEXTY.md).
+Stav k 16. 11. 2026. Nahrazuje dřívější plán s e-maily (smazaný `PLAN.md`, v historii gitu): pořadatelům nikdo nepíše. Hotové texty jsou v [TEXTY.md](TEXTY.md).
 
 ## Proč Google zatím neindexuje
 
@@ -131,5 +131,5 @@ Jednou týdně, do jednoduché tabulky:
 | 16. 11. | doplnit | doplnit | doplnit | 0 |
 
 - **Po 2 týdnech** (profily, katalogy, příběh): mají být vidět návštěvy z LinkedInu, Redditu nebo Stravy. Pokud žádné nejsou, chyba je v textu, ne v kanálu.
-- **Po 4–6 týdnech**: počet procházených a indexovaných stránek by měl růst. Pokud neroste, další krok je zmenšit sitemapu jen na přehledy a české závody (návrh v [PLAN.md](PLAN.md)).
+- **Po 4–6 týdnech**: počet procházených a indexovaných stránek by měl růst. Pokud neroste, další krok je zmenšit sitemapu jen na přehledy a české závody (návrh je v [ROADMAP.md](../ROADMAP.md), B3).
 - Nejdůležitější číslo není počet odkazů, ale jestli lidé, kteří přijdou, si uloží závod nebo kliknou na přihlášku.

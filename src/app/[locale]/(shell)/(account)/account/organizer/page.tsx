@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
+import { organizerClaimsEnabled } from "@/lib/organizer-flag";
 import { OrganizerPanel } from "@/components/account/organizer-panel";
 import { asLocale } from "@/lib/i18n/messages";
 import { organizerCopy } from "@/lib/i18n/organizer-copy";
@@ -22,6 +24,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
  * every claim and its state, and edit what is verified.
  */
 export default async function OrganizerPage({ params, searchParams }: Props) {
+  if (!organizerClaimsEnabled()) notFound();
   const { locale } = await params;
   const { race, series } = await searchParams;
   const kind = race ? "race" : series ? "series" : null;

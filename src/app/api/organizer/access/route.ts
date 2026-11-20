@@ -7,6 +7,7 @@ import { isAdminEmail } from "@/lib/auth/admin";
 import { editingClaim, organizerDb } from "@/lib/organizer";
 import { createServerSupabase } from "@/lib/supabase/server";
 import { requireSessionUser } from "@/lib/supabase/user-server";
+import { organizerClaimsEnabled } from "@/lib/organizer-flag";
 
 const querySchema = z.object({
   kind: first.pipe(z.enum(["race", "series"])),
@@ -19,6 +20,7 @@ const querySchema = z.object({
  * The "Edit details" dialog asks this before it offers anything.
  */
 export async function GET(req: NextRequest) {
+  if (!organizerClaimsEnabled()) return apiError(404, "Not found");
   const user = await requireSessionUser();
   if (!user) return apiError(401, "Sign in first");
   const parsed = parseQuery(req.nextUrl.searchParams, querySchema);
