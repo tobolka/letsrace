@@ -75,6 +75,9 @@ logs; check the effect in the database (for example `weather_history_attempts.st
   0.30 USD per million requests and 0.02 USD per million CPU ms. Watch Workers & Pages → `letsrace` → Metrics.
 - Rate limit rule on the zone (Security → Security rules): 100 requests per 10 seconds per IP on
   `letsrace.cz` and `www`, then block for 10 seconds. `stats.` is excluded.
+- Custom rule "Challenge scanner countries (SG HK CN MX)" (set 2026-11-20): Managed Challenge on letsrace.cz and www for
+  visitors from Singapore, Hong Kong, China and Mexico, except verified bots. Scanners from there (headless Chrome)
+  made about half of the Umami visits. The USA stays open. Edit the country list in Security → Security rules.
 - Bot Fight Mode is off on purpose: it cannot be bypassed and would block the Mac's calls to the
   Worker. `robots.txt` (`src/app/robots.txt/route.ts`) keeps heavy crawlers to useful pages.
 
