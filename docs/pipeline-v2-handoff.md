@@ -1,5 +1,7 @@
 # Pipeline verze 2: stav a co zbývá
 
+> **Hosting moved from Vercel to Cloudflare Workers on 2026-11-20.** Mentions of Vercel, `vercel.json`, Vercel limits or Vercel Cron in this note describe the past. Current setup: [hosting.md](hosting.md).
+
 Stav k 11. 11. 2026 večer. Co běží, co má Codex nastavit a co má dokončit. Podrobný návrh je v [pipeline-v2.md](pipeline-v2.md), tabulka „Co už je a co ne“ tamtéž.
 
 ## Co běží

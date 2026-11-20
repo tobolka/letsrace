@@ -79,7 +79,7 @@ export const rootMetadata: Metadata = {
   // "noindex" Next adds there — two contradicting tags on one page.
   /**
    * Search-console ownership, supplied by env so a code can be pasted into
-   * Vercel without a deploy of its own. Seznam is not optional here: it carries
+   * the Cloudflare dashboard without a deploy of its own. Seznam is not optional here: it carries
    * a tenth of Czech search, and Czechia is the home market.
    */
   verification: {

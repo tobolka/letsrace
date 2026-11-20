@@ -67,7 +67,7 @@ export async function parseCscCalendar(url: string, html: string): Promise<Parse
     for (const event of parseCscPublicGrid(url, next)) if (!known.has(event.externalId)) events.push(event);
   }
   /*
-   * The grid needs a browser to exist, and on Vercel there is none — the
+   * The grid needs a browser to exist, and in the Worker there is none — the
    * renderer returns nothing there by design. An empty result used to come
    * back as a successful read of zero races, which the watcher took for the
    * season ending and parked the federation calendar for three weeks, every

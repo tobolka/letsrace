@@ -4,11 +4,15 @@ Map-first cycling race finder for kids and adults across Central Europe (CZ, DE,
 
 ## Stack
 
-- Next.js (App Router) + TypeScript
+- Next.js (App Router) + TypeScript on Cloudflare Workers
 - Supabase (Postgres + PostGIS)
 - Leaflet raster map (Carto Voyager tiles, a small custom runtime in `public/maps/light-v1`)
 - Watcher with layered extraction (JSON-LD → host adapters → generic)
 - Admin for sources, discovery queue, **manual event create/edit with field locks**
+
+## Hosting
+
+Cloudflare Workers (OpenNext), not Vercel. Pushes to `main` deploy automatically; cron triggers run the daily jobs; secrets are Worker secrets. Read [docs/hosting.md](docs/hosting.md) for where things run, how to deploy, roll back and read logs.
 
 ## Setup
 

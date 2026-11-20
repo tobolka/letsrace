@@ -1,5 +1,7 @@
 # Supabase transfer reduction — 2026-10-19
 
+> **Hosting moved from Vercel to Cloudflare Workers on 2026-11-20.** Mentions of Vercel, `vercel.json`, Vercel limits or Vercel Cron in this note describe the past. Current setup: [hosting.md](hosting.md).
+
 The supplied Free-plan usage screenshot showed 5.765 GB of uncached egress
 against the 5 GB allowance. Already transferred bytes cannot be removed from
 the current billing cycle. No plan or billing settings were changed.

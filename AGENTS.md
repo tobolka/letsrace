@@ -52,6 +52,8 @@ Every change that goes live gets judged for the riders and parents who use Let's
 
 ## Hosting: Cloudflare Workers (since 2026-11-20): pushes and crawlers cost CPU
 
+Full description in `docs/hosting.md`; this section keeps the rules agents must follow.
+
 The site runs as the Worker `letsrace` (OpenNext) on the owner's Cloudflare account, plan Workers Paid (5 USD a month: 10 million requests and 30 million CPU milliseconds included, then 0.30 USD per million requests and 0.02 USD per million CPU ms). Vercel is no longer used; the old Vercel projects stay paused until deleted.
 
 - Deploys: every push to `main` is built and deployed by Cloudflare Workers Builds (build `npm run build:cloudflare`, deploy `npm run deploy:cloudflare`). A deploy starts with an empty edge cache, because the cache key carries the deployment id (`cloudflare-worker.ts`); the next visitors and crawlers re-render pages. So push app changes together, not one commit at a time.

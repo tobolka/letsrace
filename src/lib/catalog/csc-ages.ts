@@ -43,7 +43,7 @@ const CSC_RACE = /portal\.czechcyclingfederation\.com\/RaceDetail\/Race\/\d+/i;
  * is stored as stated.
  *
  * The page is a Blazor app, so this needs a local Chrome and does nothing on
- * Vercel. A page that lists no classes is remembered and asked again later.
+ * the Worker. A page that lists no classes is remembered and asked again later.
  */
 export async function fillCscAgeCategories(opts?: {
   max?: number;

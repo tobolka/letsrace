@@ -1,5 +1,7 @@
 # LetsRace: samostatný provoz a minimum ruční správy
 
+> **Hosting moved from Vercel to Cloudflare Workers on 2026-11-20.** Mentions of Vercel, `vercel.json`, Vercel limits or Vercel Cron in this note describe the past. Current setup: [hosting.md](hosting.md).
+
 **Historický návrh z 1. listopadu. Nejde o aktuální stav nasazení.** Dokončené a otevřené úkoly jsou ve [společném seznamu priorit](operations-progress.md).
 
 Stav ověřený 1. listopadu 2026 přibližně ve 23:29–23:33 Europe/Prague. Toto je **návrh budoucího řešení a plán realizace**, nikoliv oznámení jeho nasazení. Při přípravě se neměnila data závodů, nastavení služeb ani rozpočet a nespouštěla placená AI.

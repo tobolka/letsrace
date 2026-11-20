@@ -1,5 +1,7 @@
 # LetsRace product analytics
 
+> **Hosting moved from Vercel to Cloudflare Workers on 2026-11-20.** Mentions of Vercel, `vercel.json`, Vercel limits or Vercel Cron in this note describe the past. Current setup: [hosting.md](hosting.md).
+
 Implemented against the existing Umami 3.4.1 integration. No tracker migration,
 new database, public sharing, replay, user identification or paid service.
 

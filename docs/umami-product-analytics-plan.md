@@ -1,5 +1,7 @@
 # LetsRace: plán produktového měření v Umami
 
+> **Hosting moved from Vercel to Cloudflare Workers on 2026-11-20.** Mentions of Vercel, `vercel.json`, Vercel limits or Vercel Cron in this note describe the past. Current setup: [hosting.md](hosting.md).
+
 Datum auditu: 26. 10. 2026. Stav: návrh, bez implementace a bez změn v produkci.
 
 **Oprava po ověření živého webu:** Umami už je nasazené. Prohlížeč na `https://letsrace.cz/cs` načítá `https://stats.letsrace.cz/s.js` (`id=umami-analytics`), website ID `21150631-b65b-4b9e-966e-c87fb90e14e2`, `data-host-url=https://stats.letsrace.cz`, `data-domains=letsrace.cz`, `data-do-not-track=true`, `data-exclude-hash=true` a `data-before-send=letsraceAnalyticsBeforeSend`, strategie `afterInteractive`. Skript vrací HTTP 200 a vystavuje Umami API `track`, `identify`, `getSession`. Produkční bundle obsahuje komponentu `Umami`, kontrolu hostname a GPC/DNT; jeho `DeferredVitals` načítá pouze Speed Insights. Místní pracovní strom obsahuje starší odlišnou integraci s Vercel Analytics. První verze plánu chybně zobecnila lokální nález na produkci. Další práci je nutné založit na nasazené integraci a nejdřív dohledat její zdrojový commit/checkout. Není důvod zakládat druhou instanci ani přidávat další tracker. Načtení skriptu a konfigurace je ověřené; doručení konkrétních událostí v dashboardu a úplnost sanitizace zatím ověřené nejsou.

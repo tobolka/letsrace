@@ -1,7 +1,7 @@
 #!/bin/zsh
 # Refresh the Czech federation calendar from this Mac.
 #
-# The portal is a Blazor app and needs a browser to render; Vercel has none,
+# The portal is a Blazor app and needs a browser to render; the Worker has none,
 # so it runs weekly inside keep-fresh. This file remains a manual shortcut.
 set -u
 cd "$(dirname "$0")/.." || exit 1

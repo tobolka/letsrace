@@ -30,7 +30,7 @@ const MIN_PLAUSIBLE_ROWS = 100;
  * is a valid result, so the plausibility floor below applies only to the default.
  */
 export async function renderCscPublicCalendar(url = CSC_PUB, opts?: { year?: number }): Promise<string> {
-  // Never launch Chrome while Next is bundling or on Vercel (NFT traces spawn).
+  // Never launch Chrome while Next is bundling or in a serverless runtime (NFT traces spawn).
   if (process.env.NEXT_PHASE === "phase-production-build") return "";
   if (isServerless()) return "";
   const chrome = await resolveChrome();

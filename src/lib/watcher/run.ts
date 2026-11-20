@@ -129,7 +129,7 @@ export async function runDueWatches(
       if (postponeError) console.error("Could not postpone helper pages", postponeError);
     }
     const dumpHost = /federciclismo\.it|eventivsport\.com|ffc\.fr|ffvelo\.fr/i;
-    // The ČSC Blazor grid is rendered by a local Chrome scan. Vercel cannot
+    // The ČSC Blazor grid is rendered by a local Chrome scan. The Worker cannot
     // render it; claiming it here only overwrites a successful local scan with
     // a known error and makes the health signal misleading.
     const eligible = (due ?? []).filter((row) =>

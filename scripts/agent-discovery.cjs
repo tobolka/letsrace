@@ -23,7 +23,7 @@ function sourceUrls(input) {
     const host = url.hostname.replace(/\.$/, '');
     if (!['http:', 'https:'].includes(url.protocol) || url.username || url.password || url.port
       || !host.includes('.') || isIP(host) || host.startsWith('[')
-      || /(^|\.)(local|localhost|internal|lan|home\.arpa|letsrace\.cz|letsrace\.vercel\.app)$/i.test(host)) {
+      || /(^|\.)(local|localhost|internal|lan|home\.arpa|letsrace\.cz|letsrace\.vercel\.app|tobolka\.workers\.dev)$/i.test(host)) {
       throw Error('Expected a public organiser, registration or calendar URL');
     }
     url.hash = '';

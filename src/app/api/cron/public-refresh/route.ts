@@ -7,6 +7,6 @@ const handler = withCron(async () => {
   return NextResponse.json(result, { status: result.status === "deferred" ? 503 : 200 });
 }, "publication");
 
-// Vercel Cron calls with GET; the GitHub workflow (blocked by bot protection) used POST.
+// The Cloudflare cron trigger calls with GET; the GitHub workflow (blocked by bot protection) used POST.
 export const GET = handler;
 export const POST = handler;

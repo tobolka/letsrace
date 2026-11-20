@@ -1,5 +1,7 @@
 # Prompt pro projekt Albrechta
 
+> **Hosting moved from Vercel to Cloudflare Workers on 2026-11-20.** Mentions of Vercel, `vercel.json`, Vercel limits or Vercel Cron in this note describe the past. Current setup: [hosting.md](hosting.md).
+
 Implementuj a otestuj přechod z Vercel Analytics na existující vlastní Umami. Pracuj v `/Users/radektobolka/Documents/GitHub/albrechta-dve`, respektuj aktuální AGENTS.md a docs/staging.md. Přečti aktuální Next.js dokumentaci v node_modules/next/dist/docs před změnami. Větev staging je test, master produkce. Změny nejprve commitni a pushni na staging. Produkční release až po ověření; nikdy neposílej testovací poptávky do produkce.
 
 ## Existující infrastruktura — nevytvářej druhou instalaci

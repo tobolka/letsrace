@@ -87,5 +87,5 @@ Lokálně (`supabase start`) se šablony načítají samy z `supabase/config.tom
   ```
   curl -H "Authorization: Bearer $CRON_SECRET" https://letsrace.cz/api/cron/alerts
   ```
-  Odpověď vypíše, kolik e-mailů odešlo (`emailed`). Pokud je `0`, zkontrolujte, že je v oblasti nějaký nový závod z posledních 14 dní a že jsou nastavené `RESEND_*` proměnné. Chyby Resendu jsou v runtime logu Vercelu (`resend send failed`).
+  Odpověď vypíše, kolik e-mailů odešlo (`emailed`). Pokud je `0`, zkontrolujte, že je v oblasti nějaký nový závod z posledních 14 dní a že jsou nastavené `RESEND_*` proměnné. Chyby Resendu jsou v logu Workeru (`npx wrangler tail letsrace`) (`resend send failed`).
 - **Doručitelnost:** pošlete si e-mail na <https://www.mail-tester.com>. Cíl je 9/10 a víc.

@@ -9,7 +9,7 @@ const http = require('node:http');
 const https = require('node:https');
 const { promisify } = require('node:util');
 
-const FORBIDDEN = /(?:^|\.)(?:supabase\.co|supabase\.com|letsrace\.cz|vercel\.app|vercel\.com|resend\.com|sendgrid\.net|slack\.com)$/i;
+const FORBIDDEN = /(?:^|\.)(?:supabase\.co|supabase\.com|letsrace\.cz|vercel\.app|vercel\.com|workers\.dev|dash\.cloudflare\.com|resend\.com|sendgrid\.net|slack\.com)$/i;
 const AI = /(?:^|\.)(?:anthropic\.com|openai\.com)$/i;
 const LOCAL = /^https?:\/\/(?:127\.0\.0\.1|localhost)(?::\d+)?(?:\/|$)/;
 
@@ -28,8 +28,8 @@ function refused(raw) {
 }
 
 // External tools take their target as an argument, so that is where to look for it.
-const FORBIDDEN_IN_ARGUMENT = /(?:^|[/@.])(?:[a-z0-9-]+\.)*(?:supabase\.co|supabase\.com|letsrace\.cz|vercel\.app|vercel\.com|resend\.com|sendgrid\.net|slack\.com)(?:[:/?#]|$)/i;
-const CHROME_BLOCK = '--host-resolver-rules=' + ['*.supabase.co', '*.supabase.com', 'letsrace.cz', '*.letsrace.cz', '*.vercel.app', '*.vercel.com', '*.resend.com', 'resend.com', '*.slack.com', 'slack.com']
+const FORBIDDEN_IN_ARGUMENT = /(?:^|[/@.])(?:[a-z0-9-]+\.)*(?:supabase\.co|supabase\.com|letsrace\.cz|vercel\.app|vercel\.com|workers\.dev|dash\.cloudflare\.com|resend\.com|sendgrid\.net|slack\.com)(?:[:/?#]|$)/i;
+const CHROME_BLOCK = '--host-resolver-rules=' + ['*.supabase.co', '*.supabase.com', 'letsrace.cz', '*.letsrace.cz', '*.vercel.app', '*.vercel.com', '*.workers.dev', 'dash.cloudflare.com', '*.resend.com', 'resend.com', '*.slack.com', 'slack.com']
   .map(host => `MAP ${host} ~NOTFOUND`).join(', ');
 
 function checkedArguments(command, args) {
