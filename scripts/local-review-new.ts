@@ -28,11 +28,6 @@ const directory: string = given;
 type Change = { tab: string; op: string; pk: { id?: string }; owner?: string; after?: Record<string, unknown>; before?: Record<string, unknown>; heldBecause?: string[] };
 const parse = (file: string) => readFileSync(file, "utf8").split("\n").filter(Boolean).map(line => JSON.parse(line) as Change);
 const changes = parse(join(directory, "changes.ndjson"));
-// What the owner decided about held races (scripts/held-decisions.cjs): "drop" for good, or "release" past a soft hold.
-const decisionsFile = process.argv.find(value => value.startsWith("--decisions="))?.slice(12);
-const decisions: Record<string, { action: "drop" | "release" }> = (() => { try { return decisionsFile ? JSON.parse(readFileSync(decisionsFile, "utf8")) : {}; } catch { return {}; } })();
-// Holds a person may lift. A past day, a missing source and a record already on the server are facts, not opinions.
-const SOFT_HOLDS = new Set(["may_already_be_listed", "listed_as_a_ride", "name_says_too_little"]);
 
 const PSQL = `${process.env.LOCAL_PG_BIN ?? "/opt/homebrew/opt/postgresql@17/bin"}/psql`;
 const catalogue = JSON.parse(execFileSync(PSQL, ["-h", "127.0.0.1", "-p", "54329", "-U", "postgres", "-d", process.argv.find(value => value.startsWith("--work="))?.slice(7) ?? "letsrace", "-qAt", "-c",
@@ -170,14 +165,6 @@ for (const { race, place, problems } of checked) {
   if(rideSources.has(sourceUrls.get(race.id) ?? ""))problems.push("listed_as_a_ride");
   // Judged a race with a ranking, from its own pages: the source's "ride" label no longer holds it.
   if(confirmedRaces.has(race.id) || race.event_type==="ride" && settledRideSources.has(sourceUrls.get(race.id) ?? ""))for(let i=problems.length-1;i>=0;i--)if(problems[i]==="listed_as_a_ride")problems.splice(i,1);
-  const decision = decisions[race.id]?.action;
-  if (decision === "release") for (let i = problems.length - 1; i >= 0; i--) if (SOFT_HOLDS.has(problems[i]!)) problems.splice(i, 1);
-  if (decision === "drop") {
-    reasons.set(race.id, ["owner_dropped"]);
-    droppedIds.add(race.id);
-    dropped.push({ name: race.name, date: race.start_date, because: ["owner_dropped"], source: sourceUrls.get(race.id) ?? null, id: race.id });
-    continue;
-  }
   if (problems.length) {
     reasons.set(race.id, problems);
     // Nothing for a person to decide: the day is over, or the source itself calls it a ride. Not sent, not held,

@@ -406,6 +406,8 @@ async function main(){
   await upkeep('geocode','geocodedAt',GEOCODE_EVERY_MS,'Doplňuji místa na mapě',['scripts/geocode-pending.ts','120'],300);
   // Which changes of a date or a cancellation have their quote and could go to the server. A look only; nothing is sent.
   await upkeep('dateProposals','dateProposalsAt',6*HOUR,'Hledám změny dat, které by šly odeslat (jen náhled)',['scripts/date-proposals.cjs',`--out=${path.join(data,'date-proposals-latest.json')}`],120,{},true);
+  // Where the regulations of this year's edition and the race's record disagree (place, country, programme days). A look only.
+  await upkeep('regulationDisagreements','regulationDisagreementsAt',6*HOUR,'Porovnávám propozice se záznamy závodů (jen náhled)',['scripts/regulation-disagreements.cjs',`--out=${path.join(data,'regulation-disagreements-latest.json')}`],120,{},true);
   // What the calendars offer that the catalogue does not hold, and why (not public yet, or never landed). Read-only.
   await upkeep('sourceYield','sourceYieldAt',7*24*HOUR,'Měřím, kolik z nabídky kalendářů v katalogu chybí',['scripts/audit-source-yield.ts','--limit=120','--rotate',`--out=${path.join(data,'source-yield-latest.json')}`],1200,{},true);
   await upkeep('sourceHealth','sourceHealthAt',SOURCE_HEALTH_EVERY_MS,'Kontroluji zdroje, které zmlkly',['scripts/local-source-health.ts',`--out=${path.join(data,'source-health-latest.json')}`],480);
@@ -427,7 +429,7 @@ async function main(){
     state.pausesSyncedAt=new Date().toISOString();
     stage('Kontroluji nové závody proti aktuálnímu katalogu');
     const planDir=path.join(directory,'plan');plan(planDir,'letsrace',remote,{onlyFactsOfNewRaces:true});
-    await node('./node_modules/tsx/dist/cli.mjs',['scripts/local-review-new.ts',`--plan=${planDir}`,`--catalogue=${remote}`,'--only-new-races',`--max-new=${NEW_RACES_PER_SEND}`,`--separate=${path.join(data,'agent','separate.json')}`,`--races=${path.join(data,'agent','races.json')}`,`--decisions=${path.join(data,'held-decisions.json')}`],{timeout:12*60_000});
+    await node('./node_modules/tsx/dist/cli.mjs',['scripts/local-review-new.ts',`--plan=${planDir}`,`--catalogue=${remote}`,'--only-new-races',`--max-new=${NEW_RACES_PER_SEND}`,`--separate=${path.join(data,'agent','separate.json')}`,`--races=${path.join(data,'agent','races.json')}`],{timeout:12*60_000});
     const reviewed=json(path.join(planDir,'plan.json'));
     report.heldRaces=reviewed.newRaces.held.length;report.droppedRaces=reviewed.newRaces.dropped??0;report.deferredNewRaces=reviewed.newRaces.deferredByBatchLimit;
     // What a person has to look at, and how long the oldest of it has waited; races whose day is over need nobody.

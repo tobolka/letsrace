@@ -23,7 +23,7 @@ Stav k 20. 11. 2026. Tohle je jediné místo pro rozpracované a zapomenuté úk
 | --- | --- | --- | --- | --- |
 | A2 | Změřit, kolik změn data dostalo citaci | Dnes 1 z 69 (`date-proposals`), čtečka `pipeline-v9` se šíří postupně | čas, pár dní | žádná |
 | A3 | Odesílání změn data a zrušení přes bránu | Migrace `20261120120000_date_and_cancellation_proposals.sql` je napsaná a vyzkoušená na zkušební databázi; chybí odesílač a nasazení migrace. Změny existujících závodů se dnes neposílají (`--only-new-races`) | ty souhlasil s migracemi; závisí na A2 | střední |
-| A5 | Pořadí důvěryhodnosti zdrojů dotáhnout u místa, názvu a harmonogramu | V kódu je jen u věku, odkazu na web a data s citací | já, pak ověřit dopady | velká |
+| A5 | Pořadí zdrojů u místa, názvu a harmonogramu: sledovat rozpory propozice × záznam v `pipeline:status` (dnes místo 29 z 490, země 1, dny programu 0) a opravovat automaticky, až budou skutečné chyby | Většina rozdílů v místě je pravopis nebo začátek × cíl trasy; z propozic se nečte název závodu | já, podle čísel | malá |
 | A6 | Rozhodnout 28 skupin „stejný web a den“ a případy „50 km × 100 km“, „hlavní × dětský“ | Katalog je drží jako samostatné závody, scorer je slučuje (`dedup-golden.test.ts`) | ty, po dvojicích, ne plošně | produktové rozhodnutí |
 | A7 | Sjednotit zapisovače slučování | Slučování volá 9 souborů, 435 ze 456 sloučení nemá záznam pro vrácení | ty, později | velká |
 | A8 | První běh `audit-source-yield` a napojení mezer na discovery (`discover-races.ts --sources`) | Měření poroste od prvního týdenního běhu | čas, pak já | střední |

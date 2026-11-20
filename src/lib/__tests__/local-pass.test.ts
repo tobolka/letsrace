@@ -165,29 +165,27 @@ describe("date proposals preview", () => {
   });
 });
 
-describe("held decisions page", () => {
-  it("stores drop, release and undo in one local file and refuses anything else", async () => {
-    const { mkdtempSync, readFileSync, rmSync } = await import("node:fs");
-    const { tmpdir } = await import("node:os");
-    const { join } = await import("node:path");
-    const dir = mkdtempSync(join(tmpdir(), "held-decisions-"));
-    process.env.LETSRACE_DATA_DIR = dir;
-    try {
-      // eslint-disable-next-line @typescript-eslint/no-require-imports
-      const { decide } = require("../../../scripts/held-decisions.cjs");
-      const id = "11111111-1111-1111-1111-111111111111";
-      decide(id, "release");
-      decide("22222222-2222-2222-2222-222222222222", "drop");
-      const read = () => JSON.parse(readFileSync(join(dir, "held-decisions.json"), "utf8"));
-      expect(read()[id].action).toBe("release");
-      decide(id, "undo");
-      expect(Object.keys(read())).toEqual(["22222222-2222-2222-2222-222222222222"]);
-      expect(() => decide("not-an-id", "drop")).toThrow();
-      expect(() => decide(id, "publish")).toThrow();
-    } finally {
-      delete process.env.LETSRACE_DATA_DIR;
-      rmSync(dir, { recursive: true, force: true });
-    }
+describe("regulation disagreements preview", () => {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const { classify, sameTown } = require("../../../scripts/regulation-disagreements.cjs");
+  const row = (over: Record<string, unknown> = {}) => ({ id: "r", name: "Race", start_date: "2027-06-12", end_date: null, municipality: "Brno", place: "Brno", country: "CZ", venue_town: "Brno", venue_name: null, venue_country: "CZ", schedule_from: "2027-06-12", schedule_to: "2027-06-12", ...over });
+
+  it("treats spelling and grain as the same town, a different town as a difference", () => {
+    expect(sameTown("Warszawa", "Warsaw")).toBe(true);
+    expect(sameTown("Praha 5 Motol", "Praha Motol")).toBe(true);
+    expect(sameTown("Šternberk", "Dalov")).toBe(false);
+  });
+
+  it("lists a different town, another country and a programme day outside the race", () => {
+    const found = classify([row(), row({ id: "a", venue_town: "Praha", municipality: "Brno", place: "Brno" }), row({ id: "b", venue_country: "DE" }), row({ id: "c", schedule_to: "2027-06-14" })]);
+    expect(found.place.map((r: { id: string }) => r.id)).toEqual(["a"]);
+    expect(found.country.map((r: { id: string }) => r.id)).toEqual(["b"]);
+    expect(found.dates.map((r: { id: string }) => r.id)).toEqual(["c"]);
+  });
+
+  it("says nothing about a race without a town or programme in its regulations", () => {
+    const found = classify([row({ venue_town: null, venue_country: null, schedule_from: null, schedule_to: null })]);
+    expect(found).toEqual({ place: [], country: [], dates: [] });
   });
 });
 
