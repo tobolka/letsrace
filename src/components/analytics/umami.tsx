@@ -12,10 +12,8 @@ export function Umami() {
   const [ready, setReady] = useState(false);
   const websiteId = process.env.NEXT_PUBLIC_UMAMI_WEBSITE_ID;
   const testId = process.env.NEXT_PUBLIC_UMAMI_TEST_WEBSITE_ID;
-  // NEXT_PUBLIC_DEPLOY_ENV is set to "production" by the Cloudflare config (wrangler.jsonc);
-  // NEXT_PUBLIC_VERCEL_ENV is only set on Vercel.
-  const production = process.env.NEXT_PUBLIC_VERCEL_ENV === "production" ||
-    process.env.NEXT_PUBLIC_DEPLOY_ENV === "production";
+  // NEXT_PUBLIC_DEPLOY_ENV is set to "production" by the Cloudflare config (wrangler.jsonc).
+  const production = process.env.NEXT_PUBLIC_DEPLOY_ENV === "production";
   const testing = process.env.NEXT_PUBLIC_UMAMI_TEST_ENABLED === "true" && !production;
   const id = testing ? testId : production ? websiteId : undefined;
 
