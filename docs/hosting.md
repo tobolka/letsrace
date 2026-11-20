@@ -24,9 +24,9 @@ This is the one page to read for "where does it run and how do I change it".
 - Roll back: Cloudflare → `letsrace` → Deployments → pick an earlier version → Rollback, or
   `npx wrangler rollback`.
 - Each deploy starts with an empty page cache (the cache key includes the deployment id), so
-  group app changes into one push. Docs, `reports/` and pipeline scripts should not rebuild the
-  site: exclude `docs/**`, `reports/**`, `.agents/**`, `.github/**` under Worker → Settings →
-  Builds → Build watch paths.
+  group app changes into one push. Docs, reports and agent/CI files do not rebuild the site:
+  `docs/**`, `reports/**`, `.agents/**` and `.github/**` are excluded under Worker → Settings → Builds →
+  Build watch paths (set 2026-11-20). `scripts/**` is not excluded: the build uses it.
 - The bundle is about 7.3 MB gzipped; the Workers Paid limit is 10 MB. If a deploy fails with
   a size error, look at what was newly imported into server code.
 
