@@ -1,6 +1,6 @@
 # Let's Race: co zbývá udělat (hlavní seznam)
 
-Stav k 20. 11. 2026. Tohle je jediné místo pro rozpracované a zapomenuté úkoly. Starší dokumenty, ze kterých se úkoly sebraly, jsou smazané a zůstávají v historii gitu (`git log --stat -- docs/<soubor>.md`). Čísla jsou z místní kopie katalogu na Macu, pokud není uvedeno jinak.
+Stav k 20. 11. 2026. Tohle je jediné místo pro rozpracované a zapomenuté úkoly. Jen to, co teprve přijde; hotové věci se odsud mažou. Dokumenty, ze kterých se úkoly sebraly, jsou smazané a zůstávají v historii gitu (`git log --stat -- docs/<soubor>.md`). Čísla jsou z místní kopie katalogu na Macu, pokud není uvedeno jinak.
 
 ## Kde co najít
 
@@ -33,10 +33,10 @@ Stav k 20. 11. 2026. Tohle je jediné místo pro rozpracované a zapomenuté úk
 | A10 | Hledání nových webů bez Brave: čtečka odkazů z kalendářů, sérií a portálů | Brave: 977 dotazů dalo 64 odkazů, je vypnutý | já | střední |
 | A11 | Itálie: ne adaptér na portál, ale zobrazit okno přihlášek a kontakt na pořadatele z detailu FCI | Přihláška u 51 z 215 závodů, roztříštěně (`endu.net` asi 10). Detail FCI má „Iscrizioni“ jen jako data a e-mail s telefonem | ty (produkt) | malá až střední |
 | A12 | Itálie: web pořadatele chybí u 130 z 215 (80 bez webu, 50 jen `rideandrest.net`) | Bez webu není propozice ani přihláška | závisí na A10 | střední |
-| A13 | Denní strop AI odvozovat ze zbytku měsíce | Útrata po krocích se už zapisuje (`pipeline:status`) | já, za týden | malá |
+| A13 | Denní strop AI odvozovat ze zbytku měsíce (útrata po krocích se zapisuje, vyhodnotit za týden) | Strop 0,50 USD × 30 je víc než měsíční limit | já, za týden | malá |
 | A14 | Tvrdý měsíční limit v Anthropic Console, o něco vyšší než projektový (10 USD) | Projektový limit je jen vlastní pojistka | ty | malá |
 | A15 | rad-net (Německo): uložená stránka jako vstup, nebo se zeptat BDR na export | Od 11. 11. za kontrolou robotem Anubis, kterou obejít nesmím | ty | odloženo |
-| A16 | Smazat kód a tabulky nároku pořadatele | Skryto za `ORGANIZER_CLAIMS=1` (výchozí vypnuto), použito 0× | ty, až budeš chtít | odloženo |
+| A16 | Smazat kód a tabulky nároku pořadatele (dnes skryté za `ORGANIZER_CLAIMS=1`) | Použito 0× | ty, až budeš chtít | odloženo |
 | A17 | Ověřit, zda server drží stejná čísla jako místní kopie | Všechna měření jsou z kopie | já | malá |
 | A18 | Ověřit `revalidateTag` v `organizer-publish.ts` na Cloudflare | Hosting nemá tag purge (`hosting.md`) | já | malá |
 | A19 | Opravit zbylé staré údaje v dokumentech (interval správce, AI dny) | Rozcházejí se s kódem | já | malá |
@@ -51,10 +51,8 @@ Stav k 20. 11. 2026. Tohle je jediné místo pro rozpracované a zapomenuté úk
 | Nápad | Odkud | Poznámka |
 | --- | --- | --- |
 | Hierarchie důvěryhodnosti zdrojů pro všechna pole, ověřovací sada identit s popisky, trvalé rozhodnutí o každém kandidátovi, vrácení libovolné změny pole (ne jen sloučení) | `pipeline-architecture` (zbývající omezení) | Souvisí s A5 |
-| Report „kde závody vypadávají“ a porovnání parseru s modelem nad stejným dokumentem (shadow), cílený model jako rozhodčí duplicit | `pipeline-improvement-proposal` | Neděláno |
 | Další pole přes bránu: `registration_url`, `website_url`, praktické údaje. Brána je přísnější, proto vrátit se, až budou stránky ročníku 2027 | `pipeline-v2-handoff` | Souvisí s A3 |
 | Kroky cyklu jako úlohy ve frontě (až bude druhý pracovník potřebovat víc než hledání propozic) | `pipeline-v2-handoff` | Odloženo |
-| Závody bez použitelného místa a bez budoucího data (dnes 15 a 61) | `pipeline-v2-handoff` | Zbytek se řeší zahazováním a obrazovkou rozhodnutí |
 | Kontrola veřejných stránek podle druhu změny a souhrn v administraci | `pipeline-v2-handoff` | Mění web, vyžaduje nasazení |
 | `test-local-sync.cjs` padá na duplicitním klíči ve zdrojích závodů | `pipeline-v2-handoff` | Zkouška celého převozu na živých datech |
 | Nezávislý pilot: kontrolní sada bez ladění na odpovědích, porovnání před/po včetně ceny a tvých minut; cílené zveřejnění změny místo plošného překreslování; schopnost pokračovat po chybě | `operations-autonomy-plan` | Základ pro A8, A9 |
