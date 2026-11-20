@@ -74,6 +74,8 @@ async function main(){
    const rows=yielded.checked as Row[];const sum=(f:(r:Row)=>number)=>rows.reduce((n,r)=>n+f(r),0);
    const offered=sum(r=>r.offered),held=sum(r=>r.matched),notPublic=sum(r=>r.notPublic.length),missing=sum(r=>r.missing.length);
    console.log(`Kalendáře (${String(yielded.checkedAt).slice(0,10)}, ${rows.length} zdrojů): nabízejí ${offered} nadcházejících závodů, v katalogu je ${held}, ${notPublic} čeká na zveřejnění, ${missing} se nikdy nedostalo dovnitř; ${rows.filter(r=>r.note).length} zdrojů nejde přečíst.`);
+   const gaps=await read(join(data,'source-yield-gaps.json'));
+   if(gaps)console.log(`  z toho skutečné mezery: ${gaps.gaps.length} (jinde už držíme ${gaps.dropped.held_nearby}, mimo záběr ${gaps.dropped.not_covered}); adresy jdou do discovery.`);
    for(const r of rows.filter(r=>r.missing.length).sort((a,b)=>b.missing.length-a.missing.length).slice(0,3))console.log(`  chybí ${String(r.missing.length).padStart(3)} z ${r.offered}: ${r.url.slice(0,70)}`);
   }
   const dates=await read(join(data,'date-proposals-latest.json'));

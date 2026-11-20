@@ -189,6 +189,30 @@ describe("regulation disagreements preview", () => {
   });
 });
 
+describe("calendar gaps", () => {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const { gaps, heldNearby } = require("../../../scripts/source-yield-gaps.cjs");
+  const day = new Map([["2027-05-01", ["Brdský Meandr 2027"]], ["2027-06-12", ["Moravia Divide"]]]);
+
+  it("knows a race held under another listing, a day off, with the words in another order", () => {
+    expect(heldNearby("Meandr Brdský", "2027-05-02", day)).toBe(true);
+    expect(heldNearby("Zcela jiný závod", "2027-05-01", day)).toBe(false);
+    expect(heldNearby("Brdský Meandr", "2027-05-05", day)).toBe(false);
+  });
+
+  it("keeps only races held nowhere and inside the catalogue's sports", () => {
+    const checked = [{ url: "https://cal.test/", missing: [
+      { name: "Brdský Meandr", date: "2027-05-01", sourceUrl: "https://cal.test/a" },
+      { name: "Spreewald Triathlon", date: "2027-05-01", sourceUrl: "https://cal.test/b" },
+      { name: "Granfondo Torino", date: "2027-04-18", sourceUrl: "https://cal.test/c", countryHint: "IT" },
+      { name: "Granfondo Torino", date: "2027-04-18", sourceUrl: "https://cal.test/c2" },
+    ] }];
+    const out = gaps(checked, day);
+    expect(out.gaps).toEqual([{ name: "Granfondo Torino", date: "2027-04-18", country: "IT", source: "https://cal.test/", url: "https://cal.test/c" }]);
+    expect(out.dropped).toEqual({ held_nearby: 1, not_covered: 1 });
+  });
+});
+
 describe("held backlog", () => {
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   const { summarizeHeld } = require("../../../scripts/held-backlog.cjs");

@@ -329,7 +329,9 @@ async function main(){
   const discoveryDay=new Intl.DateTimeFormat('en-CA',{timeZone:'Europe/Prague',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
   const target=discoveryTarget(discoveryDay);
   const discoveryName=`${target.country}-${target.season}`;
-  const discoveryArgs=['scripts/discover-races.ts',`--country=${target.country}`,`--season=${target.season}`,`--out=${path.join(data,'discovery',discoveryName)}`];
+  // Race pages the weekly calendar audit found in no catalogue copy (scripts/source-yield-gaps.cjs) are looked at as sources.
+  const gapUrls=path.join(data,'source-yield-urls.json');
+  const discoveryArgs=['scripts/discover-races.ts',`--country=${target.country}`,`--season=${target.season}`,`--out=${path.join(data,'discovery',discoveryName)}`,...(fs.existsSync(gapUrls)?[`--sources=${gapUrls}`]:[])];
   const agentBatch=fs.existsSync(submissionPath(data,discoveryDay,target));
   const discoveryDue=state.discoveryDay!==discoveryDay||(agentBatch&&state.discoveryAgentDay!==discoveryDay);
   if(discoveryDue){
@@ -410,6 +412,7 @@ async function main(){
   await upkeep('regulationDisagreements','regulationDisagreementsAt',6*HOUR,'Porovnávám propozice se záznamy závodů (jen náhled)',['scripts/regulation-disagreements.cjs',`--out=${path.join(data,'regulation-disagreements-latest.json')}`],120,{},true);
   // What the calendars offer that the catalogue does not hold, and why (not public yet, or never landed). Read-only.
   await upkeep('sourceYield','sourceYieldAt',7*24*HOUR,'Měřím, kolik z nabídky kalendářů v katalogu chybí',['scripts/audit-source-yield.ts','--limit=120','--rotate',`--out=${path.join(data,'source-yield-latest.json')}`],1200,{},true);
+  await upkeep('sourceYieldGaps','sourceYieldGapsAt',7*24*HOUR,'Vybírám z nabídky kalendářů závody, které nikde nemáme',['scripts/source-yield-gaps.cjs',`--yield=${path.join(data,'source-yield-latest.json')}`,`--out=${path.join(data,'source-yield-gaps.json')}`,`--urls=${gapUrls}`],120,{},true);
   await upkeep('sourceHealth','sourceHealthAt',SOURCE_HEALTH_EVERY_MS,'Kontroluji zdroje, které zmlkly',['scripts/local-source-health.ts',`--out=${path.join(data,'source-health-latest.json')}`],480);
   save();
 
