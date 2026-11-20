@@ -21,7 +21,6 @@ Stav k 20. 11. 2026. Tohle je jediné místo pro rozpracované a zapomenuté úk
 
 | # | Úkol | Proč (důkaz) | Kdo / závislost | Velikost |
 | --- | --- | --- | --- | --- |
-| A1 | Obnovit kopii správce Macu (`install-local-runner.cjs`), aby nové kroky běžely | Změny kódu se na Macu projeví až po obnově kopie | ty | malá |
 | A2 | Změřit, kolik změn data dostalo citaci | Dnes 1 z 69 (`date-proposals`), čtečka `pipeline-v9` se šíří postupně | čas, pár dní | žádná |
 | A3 | Odesílání změn data a zrušení přes bránu | Migrace `20261120120000_date_and_cancellation_proposals.sql` je napsaná a vyzkoušená na zkušební databázi; chybí odesílač a nasazení migrace. Změny existujících závodů se dnes neposílají (`--only-new-races`) | ty souhlasil s migracemi; závisí na A2 | střední |
 | A4 | Vyzkoušet naživo `scripts/held-decisions.cjs` (Zahodit / Pustit) | Je jen ověřená syntakticky | já | malá |
