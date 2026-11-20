@@ -3,14 +3,14 @@ import { dirname } from "node:path";
 import { randomUUID } from "node:crypto";
 
 type Hold = { amount: number; day: string; month: string; at: number };
-type Ledger = { days: Record<string, number>; months: Record<string, number>; holds: Record<string, Hold> };
+type Ledger = { days: Record<string, number>; months: Record<string, number>; holds: Record<string, Hold>; /** What each step spent each day, by LETSRACE_STEP: the totals above cannot say what paid off. */ steps?: Record<string, Record<string, number>> };
 
 /** Optional shared ledger for CLI jobs: process restarts cannot reset daily/monthly caps. */
 export async function reserveSharedBudget(amount: number): Promise<((actual: number) => Promise<void>) | null> {
   const path = process.env.LLM_LEDGER_PATH;
   if (!path) return null;
   const daily = Number(process.env.LLM_DAILY_BUDGET_USD ?? 0.50);
-  const monthly = Number(process.env.LLM_MONTHLY_BUDGET_USD ?? 5);
+  const monthly = Number(process.env.LLM_MONTHLY_BUDGET_USD ?? 10);
   if (![daily, monthly].every((n) => Number.isFinite(n) && n >= 0)) throw new Error("Shared LLM budgets must be finite and non-negative");
   const day = new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Prague", year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date());
   const month = day.slice(0, 7);
@@ -66,6 +66,11 @@ export async function reserveSharedBudget(amount: number): Promise<((actual: num
       const charged = Math.max(0, actual);
       ledger.days[day] = (ledger.days[day] ?? 0) + charged;
       ledger.months[month] = (ledger.months[month] ?? 0) + charged;
+      const step = process.env.LETSRACE_STEP;
+      if (step && charged > 0) {
+        const today = (ledger.steps ??= {})[day] ??= {};
+        today[step] = Math.round(((today[step] ?? 0) + charged) * 1e6) / 1e6;
+      }
       delete ledger.holds[id];
     });
   };

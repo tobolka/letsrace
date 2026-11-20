@@ -27,6 +27,8 @@ export type CycleResult = {
   publishedNewRaces?: number;
   updatedRaces?: number;
   heldRaces?: number;
+  /** Races waiting for a person (past-day ones excluded) and the age of the oldest. */
+  heldBacklog?: { actionable: number; past: number; oldestSince: string | null; oldestDays: number };
   readSources?: number;
   sourceFailures?: number;
   steps?: Record<string, StepEnd>;
@@ -52,6 +54,7 @@ export type PipelineSummary = {
   mac: { lastReportAt: string | null; reportAgeMinutes: number | null; lastCycleAt: string | null; cycles24h: number };
   delivered: { newRaces24h: number; newRaces7d: number; updatedRaces24h: number; updatedRaces7d: number };
   heldRaces: number | null;
+  heldBacklog: CycleResult["heldBacklog"] | null;
   coverage: CycleResult["coverage"];
   ai: { spentTodayUsd: number | null; spentMonthUsd: number | null };
   steps: StepSummary[];
@@ -168,6 +171,7 @@ export function summarise(input: {
       updatedRaces24h: sum(day, "updatedRaces"), updatedRaces7d: sum(week, "updatedRaces"),
     },
     heldRaces: last?.heldRaces ?? null,
+    heldBacklog: [...cycles].reverse().find(c => c.heldBacklog)?.heldBacklog ?? null,
     coverage: [...cycles].reverse().find(c => c.coverage)?.coverage ?? null,
     ai: {
       spentTodayUsd: input.aiLedger ? input.aiLedger.days?.[aiDay] ?? 0 : null,

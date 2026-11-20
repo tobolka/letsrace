@@ -11,7 +11,7 @@ async function main() {
   const [ownerDay, ownerLimit] = (process.env.OWNER_DAY_LIMIT ?? "").split(":");
   const dayLimit = ownerDay === new Date().toISOString().slice(0, 10) && Number(ownerLimit) > 0 ? Number(ownerLimit) : 0.50;
   if (dayLimit !== 0.50) process.env.LLM_DAILY_BUDGET_USD = String(dayLimit);
-  for (const [key, limit] of [["LLM_BUDGET_USD", 0.40], ["LLM_DAILY_BUDGET_USD", dayLimit], ["LLM_MONTHLY_BUDGET_USD", 5]] as const) {
+  for (const [key, limit] of [["LLM_BUDGET_USD", 0.40], ["LLM_DAILY_BUDGET_USD", dayLimit], ["LLM_MONTHLY_BUDGET_USD", 10]] as const) {
     const value = Number(process.env[key] ?? limit);
     if (!Number.isFinite(value) || value < 0) throw Error(`Invalid ${key}`);
     process.env[key] = String(Math.min(value, limit));

@@ -28,6 +28,11 @@ const directory: string = given;
 type Change = { tab: string; op: string; pk: { id?: string }; owner?: string; after?: Record<string, unknown>; before?: Record<string, unknown>; heldBecause?: string[] };
 const parse = (file: string) => readFileSync(file, "utf8").split("\n").filter(Boolean).map(line => JSON.parse(line) as Change);
 const changes = parse(join(directory, "changes.ndjson"));
+// What the owner decided about held races (scripts/held-decisions.cjs): "drop" for good, or "release" past a soft hold.
+const decisionsFile = process.argv.find(value => value.startsWith("--decisions="))?.slice(12);
+const decisions: Record<string, { action: "drop" | "release" }> = (() => { try { return decisionsFile ? JSON.parse(readFileSync(decisionsFile, "utf8")) : {}; } catch { return {}; } })();
+// Holds a person may lift. A past day, a missing source and a record already on the server are facts, not opinions.
+const SOFT_HOLDS = new Set(["may_already_be_listed", "listed_as_a_ride", "name_says_too_little"]);
 
 const PSQL = `${process.env.LOCAL_PG_BIN ?? "/opt/homebrew/opt/postgresql@17/bin"}/psql`;
 const catalogue = JSON.parse(execFileSync(PSQL, ["-h", "127.0.0.1", "-p", "54329", "-U", "postgres", "-d", process.argv.find(value => value.startsWith("--work="))?.slice(7) ?? "letsrace", "-qAt", "-c",
@@ -126,10 +131,11 @@ const sourceUrls = new Map(changes.filter(change => change.tab === "public.event
 
 async function main() {
 const reasons = new Map<string | undefined, string[]>();
-const summary: Record<string, number> = {}, kept: { name: string; date: string; place: string | null; country: string | null; source: string | null; dateSeenOnSource: boolean | null; id: string; location: string | null }[] = [], heldRaces: { name: string; date: string; because: string[] }[] = [];
+const summary: Record<string, number> = {}, kept: { name: string; date: string; place: string | null; country: string | null; source: string | null; dateSeenOnSource: boolean | null; id: string; location: string | null }[] = [], heldRaces: { name: string; date: string; because: string[]; id: string; source: string | null; place: string | null; country: string | null }[] = [];
 // Everything that needs no network first, so a big calendar's races are not re-read one by one.
 type Checked = { race: NewRace; place: Place | null | undefined; problems: string[] };
 const checked: Checked[] = [];
+const dropped: { name: string; date: string; because: string[]; source: string | null; id: string }[] = [], droppedIds = new Set<string>();
 for (const change of changes) {
   if (change.tab !== "public.events" || change.op !== "insert") continue;
   const race = change.after as unknown as NewRace;
@@ -164,9 +170,24 @@ for (const { race, place, problems } of checked) {
   if(rideSources.has(sourceUrls.get(race.id) ?? ""))problems.push("listed_as_a_ride");
   // Judged a race with a ranking, from its own pages: the source's "ride" label no longer holds it.
   if(confirmedRaces.has(race.id) || race.event_type==="ride" && settledRideSources.has(sourceUrls.get(race.id) ?? ""))for(let i=problems.length-1;i>=0;i--)if(problems[i]==="listed_as_a_ride")problems.splice(i,1);
+  const decision = decisions[race.id]?.action;
+  if (decision === "release") for (let i = problems.length - 1; i >= 0; i--) if (SOFT_HOLDS.has(problems[i]!)) problems.splice(i, 1);
+  if (decision === "drop") {
+    reasons.set(race.id, ["owner_dropped"]);
+    droppedIds.add(race.id);
+    dropped.push({ name: race.name, date: race.start_date, because: ["owner_dropped"], source: sourceUrls.get(race.id) ?? null, id: race.id });
+    continue;
+  }
   if (problems.length) {
     reasons.set(race.id, problems);
-    heldRaces.push({ name: race.name, date: race.start_date, because: problems });
+    // Nothing for a person to decide: the day is over, or the source itself calls it a ride. Not sent, not held,
+    // and written down so it can be looked at and undone.
+    if (problems.every(problem => problem === "no_future_date" || problem === "listed_as_a_ride")) {
+      droppedIds.add(race.id);
+      dropped.push({ name: race.name, date: race.start_date, because: problems, source: sourceUrls.get(race.id) ?? null, id: race.id });
+      continue;
+    }
+    heldRaces.push({ name: race.name, date: race.start_date, because: problems, id: race.id, source: sourceUrls.get(race.id) ?? null, place: place?.municipality ?? place?.name ?? null, country: place?.country_code ?? null });
     for (const problem of problems) summary[problem] = (summary[problem] ?? 0) + 1;
   } else if (race.visibility === "public") {
     kept.push({ name: race.name, date: race.start_date, place: place?.municipality ?? place?.name ?? null, country: place?.country_code ?? null, source: sourceUrls.get(race.id) ?? null, dateSeenOnSource: dateSeen, id: race.id, location: race.location_id ?? null });
@@ -186,7 +207,7 @@ const send: Change[] = [], held: Change[] = [];
 for (const change of changes) {
   const problems = reasons.get(eventOf(change) ?? "");
   if (onlyNew && change.tab === "public.event_series" && change.op === "insert" && primary.get(eventOf(change)) === change.after?.series_id) continue; // Created by the event's own trigger.
-  if (problems) held.push({ ...change, heldBecause: problems });
+  if (problems) { if (!droppedIds.has(eventOf(change) ?? "")) held.push({ ...change, heldBecause: problems }); }
   else if (!onlyNew || readyIds.has(eventOf(change) ?? "") && change.op === "insert" || change.tab === "public.locations" && change.op === "insert" && readyPlaces.has(change.pk.id ?? null) || onlyNew && change.tab === "public.series" && change.op === "insert" && readySeries.has(change.pk.id)) send.push(change);
 }
 // Sources first, so their races find them in the same send.
@@ -202,10 +223,11 @@ const sources: Change[] = [...carried.values()].map(row => ({ tab: "public.watch
 send.unshift(...sources);
 const body = send.map(change => JSON.stringify(change)).join("\n");
 writeFileSync(join(directory, "changes.ndjson"), body);
+if (dropped.length) appendFileSync(join(directory, "dropped-races.ndjson"), `${dropped.map(race => JSON.stringify(race)).join("\n")}\n`);
 if (held.length) appendFileSync(join(directory, "held-for-review.ndjson"), `\n${held.map(change => JSON.stringify(change)).join("\n")}`);
 const planFile = join(directory, "plan.json");
 const plan = JSON.parse(readFileSync(planFile, "utf8")) as Record<string, unknown>;
-writeFileSync(planFile, JSON.stringify({ ...plan, rows: send.length, sha256: createHash("sha256").update(body).digest("hex"), reviewedAt: new Date().toISOString(), evidenceSources: sources.length, newRaces: { ready: selected, held: heldRaces, reasons: summary, deferredByBatchLimit: kept.length-selected.length } }, null, 2));
+writeFileSync(planFile, JSON.stringify({ ...plan, rows: send.length, sha256: createHash("sha256").update(body).digest("hex"), reviewedAt: new Date().toISOString(), evidenceSources: sources.length, newRaces: { ready: selected, held: heldRaces, dropped: dropped.length, reasons: summary, deferredByBatchLimit: kept.length-selected.length } }, null, 2));
 console.log(JSON.stringify({ newRacesReady: selected.length, newRacesHeld: heldRaces.length, reasons: summary, rowsToSend: send.length }));
 }
 main().then(() => process.exit(0)).catch(error => { console.error(error); process.exit(1); });

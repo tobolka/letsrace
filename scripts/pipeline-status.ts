@@ -58,7 +58,34 @@ async function main(){
  else {
   const mark={green:'ZELENÁ',yellow:'ŽLUTÁ',orange:'ORANŽOVÁ',red:'ČERVENÁ'}[summary.tone];
   console.log(`${mark}: ${summary.headline}`);
-  console.log(`Za 24 h: ${summary.delivered.newRaces24h} nových závodů, ${summary.delivered.updatedRaces24h} doplněných, ${summary.mac.cycles24h} průchodů. Za 7 dní: ${summary.delivered.newRaces7d} nových, ${summary.delivered.updatedRaces7d} doplněných. Zadrženo: ${summary.heldRaces??'?'} závodů.`);
+  console.log(`Za 24 h: ${summary.delivered.newRaces24h} nových závodů, ${summary.delivered.updatedRaces24h} doplněných, ${summary.mac.cycles24h} průchodů. Za 7 dní: ${summary.delivered.newRaces7d} nových, ${summary.delivered.updatedRaces7d} doplněných. Zadrženo: ${summary.heldRaces??'?'} nových závodů.`);
+  // How many of last season's races already have their next edition, by country: the closest measure of coverage there is.
+  const editions=await read(join(data,'edition-coverage.json'));
+  if(editions?.byCountry){
+   const pct=(a:number,b:number)=>b?`${Math.round(100*a/b)} %`:'–';
+   const trend=(editions.history??[]).slice(-7);const first=trend[0];
+   console.log(`Ročník ${editions.season} už mají: ${editions.withEdition} z ${editions.races} loňských závodů (${pct(editions.withEdition,editions.races)})${first&&first.day!==trend.at(-1).day?`, za ${trend.length} dní ${editions.withEdition-first.withEdition>=0?'+':''}${editions.withEdition-first.withEdition}`:''}.`);
+   console.log('  '+Object.entries(editions.byCountry as Record<string,{races:number;withEdition:number}>).sort((a,b)=>b[1].races-a[1].races).map(([c,v])=>`${c} ${v.withEdition}/${v.races} (${pct(v.withEdition,v.races)})`).join(' · '));
+  }
+  // What the calendars offer against what the catalogue holds (weekly, a slice of the sources each time).
+  const yielded=await read(join(data,'source-yield-latest.json'));
+  if(yielded?.checked){
+   type Row={url:string;offered:number;matched:number;notPublic:unknown[];missing:unknown[];note:string};
+   const rows=yielded.checked as Row[];const sum=(f:(r:Row)=>number)=>rows.reduce((n,r)=>n+f(r),0);
+   const offered=sum(r=>r.offered),held=sum(r=>r.matched),notPublic=sum(r=>r.notPublic.length),missing=sum(r=>r.missing.length);
+   console.log(`Kalendáře (${String(yielded.checkedAt).slice(0,10)}, ${rows.length} zdrojů): nabízejí ${offered} nadcházejících závodů, v katalogu je ${held}, ${notPublic} čeká na zveřejnění, ${missing} se nikdy nedostalo dovnitř; ${rows.filter(r=>r.note).length} zdrojů nejde přečíst.`);
+   for(const r of rows.filter(r=>r.missing.length).sort((a,b)=>b.missing.length-a.missing.length).slice(0,3))console.log(`  chybí ${String(r.missing.length).padStart(3)} z ${r.offered}: ${r.url.slice(0,70)}`);
+  }
+  const dates=await read(join(data,'date-proposals-latest.json'));
+  if(dates)console.log(`Změny data a zrušení (${String(dates.at).slice(0,16).replace('T',' ')}): ${dates.changed} v kopii, ${dates.ready} s citací by šlo odeslat (zatím jen náhled), ${dates.waiting} čeká${Object.keys(dates.reasons??{}).length?` (${Object.entries(dates.reasons as Record<string,number>).sort((a,b)=>b[1]-a[1]).slice(0,3).map(([k,v])=>`${k} ${v}`).join(', ')})`:''}.`);
+  const ai=await read(join(data,'llm-budget.json'));
+  if(ai?.steps){
+   const month=new Date().toISOString().slice(0,7);const perStep:Record<string,number>={};
+   for(const [day,steps] of Object.entries(ai.steps as Record<string,Record<string,number>>))if(day.startsWith(month))for(const [step,usd] of Object.entries(steps))perStep[step]=(perStep[step]??0)+usd;
+   const spent=Object.values(perStep).reduce((a,b)=>a+b,0);
+   if(spent>0)console.log(`AI po krocích (${month}, ${spent.toFixed(2)} USD z ${(ai.months?.[month]??0).toFixed(2)} celkem): ${Object.entries(perStep).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`${k} ${v.toFixed(2)}`).join(', ')}`);
+  }
+  if(summary.heldBacklog)console.log(`Čeká na člověka: ${summary.heldBacklog.actionable} závodů, nejstarší ${summary.heldBacklog.oldestDays} dní; dalších ${summary.heldBacklog.past} je po termínu a nikdo je nerozhoduje.`);
   for(const s of summary.stuck)console.log(`  ${s.step}: ${s.stopped?'ZASTAVENO, ':''}${s.outcome}${s.reason?` (${s.reason})`:''} od ${s.since.slice(0,16).replace('T',' ')}, za 24 h ${s.attempts24h}×${s.failures?`, ${s.failures}. selhání v řadě`:''}${s.nextTryAt?`, další pokus ${s.nextTryAt.slice(0,16).replace('T',' ')}`:''}`);
   console.log(`Mac zdarma: ${status.runner?'běží':'NEBĚŽÍ'}; panel: ${status.panel?'běží':'zavřený'}; poslední hlášení před ${status.heartbeatAgeSeconds??'?'} s`);
   console.log(`Stav: ${monitor?.status??'neznámý'}; poslední výsledek: ${JSON.stringify(monitor?.lastResult?{at:monitor.lastResult.at,reads:monitor.lastResult.reads,created:monitor.lastResult.created,updated:monitor.lastResult.updated,failed:monitor.lastResult.failed}:null)}`);

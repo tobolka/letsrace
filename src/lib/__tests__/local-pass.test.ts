@@ -100,6 +100,90 @@ it("holds a moved date and everything else written to that race for review", () 
   expect(send).toEqual([seen, fresh, place]);
 });
 
+describe("risk classes for held changes", () => {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const { separateForReview } = require("../../../scripts/local-sync.cjs");
+  const date = { tab: "public.events", op: "update", pk: { id: "r" }, owner: "r", before: { start_date: "2027-03-20" }, after: { start_date: "2027-03-27" } };
+  const fact = (over: Record<string, unknown>) => ({ tab: "public.event_facts", op: "insert", pk: { id: "f" }, owner: "r", after: { event_id: "r", field: "start_date", value: "2027-03-27", quote: "Závod se jede 27. 3. 2027", source_url: "https://organizer.test/", method: "watcher_update_v2", ...over } });
+
+  it("sends a date that arrives with a quote from a named page", () => {
+    const { send, held } = separateForReview([date, fact({})]);
+    expect(held).toEqual([]);
+    expect(send).toHaveLength(2);
+  });
+
+  it("holds a date without a quote, without a page, with another value, or from the calendar clock", () => {
+    for (const over of [{ quote: null }, { quote: "  " }, { source_url: null }, { value: "2027-04-03" }, { method: "calendar_elapsed" }, { field: "end_date" }]) {
+      expect(separateForReview([date, fact(over)]).held).toHaveLength(2);
+    }
+    expect(separateForReview([date]).held).toHaveLength(1);
+  });
+
+  it("sends a quoted cancellation, but no other status and no rename", () => {
+    const cancel = { tab: "public.events", op: "update", pk: { id: "r" }, owner: "r", before: { status: "scheduled" }, after: { status: "cancelled" } };
+    expect(separateForReview([cancel, fact({ field: "status", value: "cancelled", quote: "Závod 27. 3. 2027 se ruší, zrušeno z důvodu povodní" })]).held).toEqual([]);
+    // A quote that only names the date does not say the race is off.
+    expect(separateForReview([cancel, fact({ field: "status", value: "cancelled" })]).held).toHaveLength(2);
+    expect(separateForReview([cancel]).held).toHaveLength(1);
+    const other = { ...cancel, after: { status: "tbc" } };
+    expect(separateForReview([other, fact({ field: "status", value: "tbc" })]).held).toHaveLength(2);
+    const rename = { ...date, before: { name: "A" }, after: { name: "B" } };
+    expect(separateForReview([rename, fact({ field: "name", value: "B" })]).held).toHaveLength(2);
+  });
+
+  it("holds the whole race when a proven date comes with an unproven rename", () => {
+    const both = { ...date, before: { ...date.before, name: "A" }, after: { ...date.after, name: "B" } };
+    expect(separateForReview([both, fact({})]).send).toEqual([]);
+  });
+});
+
+describe("date proposals preview", () => {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const { classify } = require("../../../scripts/date-proposals.cjs");
+  const race = (over: Record<string, unknown> = {}) => ({ id: "r", name: "Race", start_date: "2027-06-12", end_date: "2027-06-12", status: "scheduled", merged_into_id: null, ...over });
+  const fact = (over: Record<string, unknown> = {}) => ({ event_id: "r", field: "start_date", value: "2027-06-12", quote: "Race 12. 6. 2027", source_url: "https://organizer.test/", method: "watcher_update_v2", ...over });
+  const today = "2026-11-20";
+
+  it("lists a moved date that has its quote", () => {
+    const out = classify([race()], [race({ start_date: "2027-06-05", end_date: "2027-06-12" })], [fact()], today);
+    expect(out.ready).toHaveLength(1);
+    expect(out.ready[0]).toMatchObject({ before: { start_date: "2027-06-05" }, after: { start_date: "2027-06-12" } });
+  });
+
+  it("keeps a change without a quote waiting, and says which column lacks it", () => {
+    const out = classify([race()], [race({ start_date: "2027-06-05", end_date: "2027-06-12" })], [fact({ quote: null })], today);
+    expect(out.ready).toEqual([]);
+    expect(out.reasons).toEqual({ no_quote_for_start_date: 1 });
+  });
+
+  it("does not offer a rename, a past date, a change of a year or any status but cancelled", () => {
+    expect(classify([race({ name: "New" })], [race({ start_date: "2027-06-05", name: "Old" })], [fact()], today).reasons).toEqual({ name_or_merge_also_changed: 1 });
+    expect(classify([race({ start_date: "2026-01-02", end_date: "2026-01-02" })], [race({ start_date: "2026-01-01", end_date: "2026-01-02" })], [fact({ value: "2026-01-02" })], today).reasons).toEqual({ date_in_the_past: 1 });
+    expect(classify([race({ start_date: "2028-09-01", end_date: "2028-09-01" })], [race({ start_date: "2027-06-12", end_date: "2028-09-01" })], [fact({ value: "2028-09-01" })], today).reasons).toEqual({ moved_more_than_a_year: 1 });
+    expect(classify([race({ status: "tbc" })], [race()], [fact({ field: "status", value: "tbc" })], today).reasons).toEqual({ status_needs_a_person: 1 });
+    expect(classify([race({ status: "cancelled" })], [race()], [fact({ field: "status", value: "cancelled", quote: "Závod je zrušen" })], today).ready).toHaveLength(1);
+  });
+});
+
+describe("held backlog", () => {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const { summarizeHeld } = require("../../../scripts/held-backlog.cjs");
+  const row = (id: string, because: string[]) => JSON.stringify({ tab: "public.events", op: "update", pk: { id }, heldBecause: because });
+  const day = 86_400_000, now = Date.parse("2026-11-20T10:00:00Z");
+
+  it("counts past-day races apart and keeps the age of the others", () => {
+    const first = summarizeHeld([row("a", ["no_future_date"]), row("b", ["name"]), row("c", ["no_future_date", "may_already_be_listed"])], {}, now - 3 * day);
+    expect(first).toMatchObject({ actionable: 2, past: 1 });
+    const later = summarizeHeld([row("b", ["name"]), row("d", ["end_date"])], first.since, now);
+    expect(later.oldestDays).toBe(3);
+    expect(Object.keys(later.since).sort()).toEqual(["b", "d"]);
+  });
+
+  it("has nothing to report for an empty plan", () => {
+    expect(summarizeHeld([""], {}, now)).toMatchObject({ actionable: 0, past: 0, oldestDays: 0, oldestSince: null });
+  });
+});
+
 it("gives every site to exactly one worker, whatever its www prefix", () => {
   const hosts = ["sumator.cz", "cykloman.cz", "radsport-events.de", "pzkol.pl", "odjazd.pl", "mtbs.cz"];
   for (const host of hosts) {

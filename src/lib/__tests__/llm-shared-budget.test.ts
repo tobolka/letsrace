@@ -26,6 +26,25 @@ it("enforces the monthly cap even when the daily cap has room", async () => {
   await first!(0.04);
   await expect(reserveSharedBudget(0.02)).rejects.toThrow("monthly");
 });
+it("records what each step spent, when the caller names its step", async () => {
+  directory = await mkdtemp(join(tmpdir(), "letsrace-budget-"));
+  const path = join(directory, "budget.json");
+  vi.stubEnv("LLM_LEDGER_PATH", path);
+  vi.stubEnv("LLM_DAILY_BUDGET_USD", "1");
+  vi.stubEnv("LLM_MONTHLY_BUDGET_USD", "10");
+  vi.stubEnv("LETSRACE_STEP", "regulations");
+  await (await reserveSharedBudget(0.1))!(0.03);
+  await (await reserveSharedBudget(0.1))!(0.02);
+  vi.stubEnv("LETSRACE_STEP", "checkDetails");
+  await (await reserveSharedBudget(0.1))!(0.01);
+  vi.stubEnv("LETSRACE_STEP", "");
+  await (await reserveSharedBudget(0.1))!(0.04);
+  const { readFile } = await import("node:fs/promises");
+  const ledger = JSON.parse(await readFile(path, "utf8"));
+  const [today] = Object.values(ledger.steps) as Record<string, number>[];
+  expect(today).toEqual({ regulations: 0.05, checkDetails: 0.01 });
+  expect(Object.values(ledger.days)[0]).toBeCloseTo(0.1);
+});
 it("fails closed on a corrupt ledger", async () => {
   directory = await mkdtemp(join(tmpdir(), "letsrace-budget-"));
   const path = join(directory, "budget.json");

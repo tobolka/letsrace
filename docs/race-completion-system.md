@@ -60,7 +60,14 @@ Co se ještě nedá vyjádřit: délka okruhu u cyklokrosu, kontakt bez uvedené
 1. **Fronta podle chybějících položek.** Závod se vrací podle toho, co mu chybí a jak blízko je. Hotovo: pořadí a intervaly v `race-completeness.ts`.
 2. **Naučené postupy po webech.** Pro každý web se uloží postup bez kódu: jak z kalendáře nebo série najít stránku závodu, kde leží propozice a pod jakými nadpisy jsou údaje. AI ho navrhne jednou z několika ukázek. Systém ho ověří na stránkách, a pokud uspěje, další čtení jsou zdarma. Když úspěšnost spadne, postup se pozastaví a web se naučí znovu. Přidání webu tak znamená jednu cenu, ne cenu za každý závod.
 3. **Paměť pořadatele.** Web, vzor adres propozic a kontakt patří pořadateli, ne jednomu ročníku. Co se jednou najde, platí pro všechny jeho závody a příští ročníky. Datum z toho nikdy nevzniká, platí [pravidla ročníků](annual-editions.md).
-4. **Slučování po polích.** Každé pole má pořadí zdrojů: propozice pořadatele, web pořadatele, série, svaz, časomíra, kalendář. Slabší zdroj silnější hodnotu nepřepíše a rozpor stejně silných zdrojů se zaznamená, nepřepisuje se. U odkazu na web hotové, zbytek ne.
+4. **Slučování po polích.** Každé pole má pořadí zdrojů: ruční zámek, propozice pořadatele pro tento ročník, web pořadatele, registrační portál, série, svaz, časomíra, kalendář, agregátory. Slabší zdroj silnější hodnotu nepřepíše a rozpor stejně silných zdrojů se zaznamená, nepřepisuje se.
+
+   Tři pravidla pro celý systém (zapsáno 20. 11. 2026):
+   - **Propozice tohoto ročníku jsou hlavní zdroj pravdy o tomto ročníku.** Co uvádějí, přebije i hodnotu, kterou už jiný zdroj potvrdil. Ruční zámek přebije i propozice a nikdo ho neruší. Propozice jiného ročníku nikdy nepřebijí údaj tohoto.
+   - **Novější oficiální oznámení pořadatele (změna termínu, zrušení) přebije propozice.** Musí mít doslovnou citaci a adresu stránky.
+   - **Každé přepsání zachová původní hodnotu, zdroj a citaci v `event_facts`**, takže jde vrátit.
+
+   Stav provedení: **věkové kategorie** (`practical-ages.ts`: vlastní seznam kategorií z propozic je konečný a přebije potvrzenou množinu jiného zdroje, ale jen když ho propozice uvádějí a nejde o závod s cenami podle tratě), **odkaz na web** a **změna data a zrušení s citací** (`local-sync.cjs`, projdou bez ručního schválení) jsou hotové. Ostatní pole (místo, název, harmonogram z jiných zdrojů) mají pořadí zatím jen v textu, ne v kódu.
 5. **Kvalita bez ruční kontroly.** Každý údaj má doslovný důkaz. Běží kontrola rozsahů, například startovné nebo čas mimo obvyklé hodnoty. Náhodný vzorek ověřuje druhý model. Zdroj s vysokou chybovostí automaticky ztrácí důvěru. Ručně ověřená sada je test pro změny čtečky, ne způsob provozu.
 
 ## Náklady na 5 000 závodů

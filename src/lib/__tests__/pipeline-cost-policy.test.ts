@@ -15,7 +15,7 @@ DAY=2
 date() { case "$*" in +%u) echo "$DAY" ;; +%G-%V) echo 2026-44 ;; *) command date "$@" ;; esac; }
 export PIPELINE_AI_MODE=auto
 source "$2"
-[ "$PIPELINE_MODE:$LLM_DAILY_BUDGET_USD:$LLM_MONTHLY_BUDGET_USD" = ai:0.50:5.00 ]
+[ "$PIPELINE_MODE:$LLM_DAILY_BUDGET_USD:$LLM_MONTHLY_BUDGET_USD" = ai:0.50:10.00 ]
 source "$2"
 [ "$PIPELINE_MODE:$CALENDAR_AI_BUDGET_USD" = free:0 ]
 DAY=5

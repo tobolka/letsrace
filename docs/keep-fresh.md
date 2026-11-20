@@ -44,7 +44,7 @@ Jednotlivé databázové požadavky mají omezené čekání a zápisy sdílejí
 
 Záznam provedených oprav a živých ověření: `reports/tracker-audit-2026-10-29/REPORT.md`. Opravy údajů mají historii v `event_facts`; ověřené sloučení uchovává úplný snímek v `pipeline_merge_history`. Nejasné termíny se nehádají.
 
-AI má společný limit **0,50 USD za den a 5 USD za měsíc**, placené hledání je vypnuté. Ledger se při restartu nemaže. Říjnová zaznamenaná útrata 7,68 USD vznikla před novým limitem; říjnová AI je proto blokovaná. Bezplatný sběr pokračuje.
+AI má společný limit **0,50 USD za den a 10 USD za měsíc (od 20. 11. 2026, dřív 5 USD)**, placené hledání je vypnuté. Ledger se při restartu nemaže. Říjnová zaznamenaná útrata 7,68 USD vznikla před novým limitem; říjnová AI je proto blokovaná. Bezplatný sběr pokračuje.
 
 Splatnost se respektuje: 1 564 aktivních zdrojů neznamená 1 564 nových závodů při každém cyklu. Pokud se zdroj nezměnil nebo ještě nezveřejnil rok 2027, další kontrola nemusí nic přidat. Nepodporovaná stránka se nezkouší stále dokola po dvou hodinách; čeká na další kontrolu za několik dní. Návrhy neznámých zdrojů a sporné závody zůstávají k ověření.
 
@@ -116,3 +116,14 @@ První zapnutý rozsah jsou **nové závody ze známých zdrojů**. Změny exist
 Stav průchodu: `~/Library/Application Support/LetsRace/data/local-cycle-latest.json`. Jednotlivé výsledky, přesný odeslaný návrh, potvrzení zápisu a důvody držení zůstávají v `data/local-cycles/<čas>/`. Panel ukazuje skutečně uložené nové závody, dobu běhu a odloženou práci. Nezaměňuje místní změny za zveřejněné výsledky.
 
 Instalace: zkompilovat monitor podle `macos/LetsRaceMonitor/README.md`, potom `node scripts/with-node.cjs scripts/install-local-runner.cjs`. Instalace zachová pauzu. Zapnutí: v panelu „Obnovit sběr na Macu“. Ověřit první řízený průchod, jeho výsledek a další naplánovaný čas v `monitor.json`; samotná přítomnost procesu není důkazem úspěšného sběru.
+
+## Změny z 20. 11. 2026: schvalování podle rizika a měření
+
+- **Změny existujících závodů.** Změna data a zrušení závodu jdou na server bez ručního schválení, když je plán nese s důkazem: citace, adresa stránky a hodnota shodná s novou. U zrušení musí citace říkat, že závod odpadá. Přejmenování, sloučení a jiné změny stavu čekají vždy. Pravidla jsou v `separateForReview` (`scripts/local-sync.cjs`).
+- **Citace u data.** Čtečky strukturovaných kalendářů dřív datum bez slov, ze kterých vzniklo, neukládaly. `src/lib/watcher/date-evidence.ts` teď najde v textu stránky okno kolem názvu závodu, kde je datum uvedeno s rokem (i rozsah „12.–13. 6. 2027“), a uloží ho jako citaci. Nenajde-li ho, závod citaci nemá a čeká jako dřív. Verze čtečky je `pipeline-v9`, každý zdroj se přečte znovu při své příští pravidelné kontrole.
+- **Co čeká na člověka.** `npm run pipeline:status` vypíše počet čekajících závodů (bez těch, které jsou po termínu) a stáří nejstaršího.
+- **Pokrytí.** Status ukazuje, kolik loňských závodů už má ročník 2027, po zemích. Týdně běží `audit-source-yield.ts` (120 zdrojů, další úsek každý týden) a výsledek je v `source-yield-latest.json`: co kalendáře nabízejí, co je v katalogu, co čeká na zveřejnění a co se nikdy nedostalo dovnitř.
+- **Duplicity.** `src/lib/__tests__/dedup-golden.test.ts` drží pevnou sadu dvojic se známou odpovědí. Dvojice, u kterých správná odpověď není rozhodnutá (jiná vzdálenost nebo dětský závod téhož pořadatele, místa a dne), jsou zvlášť a jejich dnešní chování (sloučit) je zachycené.
+- **Brave je vypnutý** (20. 11. 2026). 977 dotazů za listopad přineslo 64 odkazů. Cyklus Macu nevolá hledání: discovery jen čte frontu a vstup od agenta (`--mode=read`), `regulations` běží s `BRAVE_SEARCH_LIMIT=0` a krok `websiteSearch` se přeskočí. Zapnutí: `LETSRACE_BRAVE=1` v prostředí správce (`scripts/local-cycle.cjs`).
+- **Změny data a zrušení existujících závodů** se na server zatím neposílají: cyklus pouští `local-review-new.ts --only-new-races` a plán čte fakta jen u nových závodů. Krok `date-proposals.cjs` (každých 6 h) jen spočítá, kolik takových změn má citaci a šlo by je odeslat (budoucí závod, posun do roku, u stavu jen „cancelled“). Výsledek je v `date-proposals-latest.json` a v `pipeline:status`. Odesílání přes bránu (`pipeline_apply_proposal`) čeká na rozhodnutí, až budou čísla.
+- **Zadržené nové závody** jen po termínu nebo jen „jízda“ se zahazují a zapisují do `dropped-races.ndjson`. Zbytek jde rozhodnout v místní stránce `node scripts/held-decisions.cjs` (127.0.0.1:54341, Zahodit / Pustit), rozhodnutí je v `held-decisions.json`.

@@ -48,7 +48,11 @@ async function main() {
     .in("kind", KINDS).order("kind").order("id");
   if (error) throw new Error(error.message);
 
-  const rows = (sources ?? []).slice(0, LIMIT);
+  // A weekly run covers the next slice of the sources, so every calendar is looked at in turn, not the first ones each time.
+  const all = sources ?? [];
+  const week = Math.floor(Date.now() / (7 * 86_400_000));
+  const start = process.argv.includes("--rotate") && all.length > LIMIT ? (week * LIMIT) % all.length : 0;
+  const rows = [...all.slice(start), ...all.slice(0, start)].slice(0, LIMIT);
   console.log(`checking ${rows.length} active calendar sources\n`);
 
   const checked = await mapPool(rows, 4, async (s) => {

@@ -41,12 +41,41 @@ const SERVER = Symbol('server');
  */
 const REVIEW_COLUMNS = ['start_date', 'end_date', 'name', 'status', 'merged_into_id'];
 
+/**
+ * Which decisive changes may go out without a person, because the plan itself carries the proof.
+ * A date counts when a fact written with it quotes the source page and names the page, and the
+ * fact's value is the new date. A cancellation counts the same way. A rename, a merge and any
+ * other status change never do: those wait for a person. Evidence is looked for in the same plan,
+ * so a change that arrives without its fact is held, as before.
+ */
+const DATE_COLUMNS = ['start_date', 'end_date'];
+const CANCELLED_WORDING = /cancel|zru[sš]en|odvol[aá]n|abgesagt|entf[aä]llt|annull|odwo[lł]an|storn|annul[eé]/i;
+function provenChange(change, facts) {
+  const proof = (field, value, wording) => facts.some(fact => fact.field === field && String(fact.value) === String(value)
+    && typeof fact.quote === 'string' && fact.quote.trim() && typeof fact.source_url === 'string' && fact.source_url.trim()
+    && fact.method !== 'calendar_elapsed' && (!wording || wording.test(fact.quote)));
+  return column => {
+    if (DATE_COLUMNS.includes(column)) return change.after[column] != null && proof(column, change.after[column]);
+    // A race's quote may name only its date; a cancellation needs words that say the race is off.
+    if (column === 'status') return change.after.status === 'cancelled' && proof('status', 'cancelled', CANCELLED_WORDING);
+    return false;
+  };
+}
+
 function separateForReview(changes) {
   const isEvent = change => change.tab === 'public.events' && change.op === 'update';
   const reasons = new Map();
+  const factsOf = new Map();
+  for (const change of changes) {
+    if (change.tab !== 'public.event_facts' || change.op !== 'insert' || !change.after) continue;
+    const list = factsOf.get(change.owner ?? change.after.event_id) ?? [];
+    list.push(change.after);
+    factsOf.set(change.owner ?? change.after.event_id, list);
+  }
   for (const change of changes) {
     if (!isEvent(change)) continue;
-    const decisive = REVIEW_COLUMNS.filter(column => column in change.after);
+    const proven = provenChange(change, factsOf.get(change.pk.id) ?? []);
+    const decisive = REVIEW_COLUMNS.filter(column => column in change.after && !proven(column));
     if (decisive.length) reasons.set(change.pk.id, decisive);
   }
   const eventOf = change => change.owner ?? (change.tab === 'public.events' ? change.pk.id : (change.after ?? change.before)?.event_id);
@@ -258,4 +287,4 @@ function assertReviewed(file) {
   return sha;
 }
 
-module.exports = { plan, apply, assertReviewed, journalFromTarget, separateForReview, TABLES, psql };
+module.exports = { plan, apply, assertReviewed, journalFromTarget, separateForReview, provenChange, TABLES, psql };

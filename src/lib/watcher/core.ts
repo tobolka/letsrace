@@ -10,9 +10,11 @@ import { scoreDuplicate, datesCompatible, DEDUP_THRESHOLD, hasIdentityConflict }
 import type { LlmUsage } from "@/lib/llm/anthropic";
 import { skeleton } from "@/lib/watcher/extractors/llm-calendar";
 import { isServerless } from "@/lib/runtime";
+import { attachDateEvidence } from "@/lib/watcher/date-evidence";
 
 export { fetchPage, type FetchResult } from "@/lib/watcher/http";
-export const WATCH_READER_VERSION = "pipeline-v8";
+// v9: races read without a quote now keep the words their date stands in (date-evidence.ts). Each source is read again at its next normal poll.
+export const WATCH_READER_VERSION = "pipeline-v9";
 /** Re-read only sources affected by a reader change, including unchanged documents. */
 export function watchReaderVersion(url: string) {
   const host = new URL(url).hostname;
@@ -77,7 +79,16 @@ export function combineExtractedEvents(parsed: ParsedEvent[], ai: ParsedEvent[])
   return out;
 }
 
-export async function extractEvents(url: string, html: string, opts?: { ai?: boolean; today?: string; maxChunks?: number; render?: boolean; deadline?: number }): Promise<ExtractResult> {
+type ExtractOptions = { ai?: boolean; today?: string; maxChunks?: number; render?: boolean; deadline?: number };
+
+/** Reads the page, then keeps for each race the words its date was read from when the page has them. */
+export async function extractEvents(url: string, html: string, opts?: ExtractOptions): Promise<ExtractResult> {
+  const result = await extractEventsRaw(url, html, opts);
+  if (!result.events.length) return result;
+  return { ...result, events: attachDateEvidence(url, stripHtmlToText(html), result.events) };
+}
+
+async function extractEventsRaw(url: string, html: string, opts?: ExtractOptions): Promise<ExtractResult> {
   const host = new URL(url).hostname.replace(/^www\./, "");
 
   const adapted = await extractWithAdapter(host, url, html);

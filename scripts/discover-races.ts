@@ -44,7 +44,7 @@ async function main() {
   // Same shared ceilings as the existing refresh scripts. Never reset its ledger.
   process.env.LLM_LEDGER_PATH ??= resolve("tmp/llm-budget.json");
   process.env.LLM_DAILY_BUDGET_USD ??= "0.50";
-  process.env.LLM_MONTHLY_BUDGET_USD ??= "5.00";
+  process.env.LLM_MONTHLY_BUDGET_USD ??= "10.00";
   process.env.LLM_EXTRACTION_CACHE_DIR ??= resolve("tmp/extraction-cache");
   process.env.SOURCE_DOCUMENT_CACHE_DIR ??= resolve("tmp/source-documents");
   if (process.argv.includes("--retry-credit")) {

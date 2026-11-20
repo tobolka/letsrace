@@ -8,6 +8,7 @@ const cp=require('node:child_process');
 const {plan,assertReviewed}=require('./local-sync.cjs');
 const {COPY,serverEnvironment}=require('./local-pull.cjs');
 const {fillPlan}=require('./local-fills.cjs');
+const {summarizeHeld}=require('./held-backlog.cjs');
 const {moreWorkLeft,fileTime,latestAgentAnswer}=require('./local-schedule.cjs');
 const BIN=process.env.LOCAL_PG_BIN||'/opt/homebrew/opt/postgresql@17/bin';
 const data=process.env.LETSRACE_DATA_DIR||path.join(os.homedir(),'Library/Application Support/LetsRace/data');
@@ -18,6 +19,8 @@ const { discoveryTarget, submissionPath } = require('./agent-discovery.cjs');
 const HOUR=3_600_000;
 const AGENT_EVERY_MS=6*HOUR;
 const PAID_DETAILS=process.env.LETSRACE_PAID_DETAILS==='1';
+/** Searching with Brave is off since 20 Nov 2026 (977 queries a month found 64 links). LETSRACE_BRAVE=1 turns it back on. */
+const BRAVE_ON=process.env.LETSRACE_BRAVE==='1';
 /** How stale the target copy may get while nothing here needs it: held races and operator locks. */
 const TARGET_MAX_AGE_MS=12*HOUR;
 /** New work may want the target sooner, but never a copy more than this often. */
@@ -45,7 +48,7 @@ const AI_STEP_NEEDS_USD=0.02;
 const pragueDay=(now=new Date())=>new Intl.DateTimeFormat('en-CA',{timeZone:'Europe/Prague',year:'numeric',month:'2-digit',day:'2-digit'}).format(now);
 /** What is left of the shared AI allowance, by the same ledger and limits the readers use. */
 function aiAllowances(ledger,now=new Date(),limits=process.env){
- const daily=Number(limits.LLM_DAILY_BUDGET_USD??0.5),monthly=Number(limits.LLM_MONTHLY_BUDGET_USD??5);
+ const daily=Number(limits.LLM_DAILY_BUDGET_USD??0.5),monthly=Number(limits.LLM_MONTHLY_BUDGET_USD??10);
  const day=pragueDay(now),month=day.slice(0,7);const holds=Object.values(ledger?.holds??{});
  const held=key=>holds.filter(h=>h[key]===(key==='day'?day:month)).reduce((sum,h)=>sum+h.amount,0);
  return {day:daily-(ledger?.days?.[day]??0)-held('day'),month:monthly-(ledger?.months?.[month]??0)-held('month')};
@@ -299,7 +302,7 @@ async function main(){
    if(waitForAi(name,extraEnv))return;
    stage(text);
    try{
-    const done=await launch(['scripts/bounded-pipeline-step.cjs',String(seconds),process.execPath,'scripts/with-node.cjs',tsx,...args],{allowedCodes:[0,2],timeout:(seconds+60)*1000,extraEnv});
+    const done=await launch(['scripts/bounded-pipeline-step.cjs',String(seconds),process.execPath,'scripts/with-node.cjs',tsx,...args],{allowedCodes:[0,2],timeout:(seconds+60)*1000,extraEnv:{...extraEnv,LETSRACE_STEP:name}});
     const ended=remember(stepOutcome(done),sleptThrough(Date.now()-began,seconds*1000));(report.steps??={})[name]=ended;
     state[key]=new Date().toISOString();saveState();(report.upkeep??={})[name]=ended.outcome==='done'?'done':ended.outcome==='partial'?'deferred':ended.outcome;
     if(ended.outcome==='timeout'&&!ended.slept)(report.failedUpkeep??=[]).push(name);
@@ -330,7 +333,7 @@ async function main(){
   const agentBatch=fs.existsSync(submissionPath(data,discoveryDay,target));
   const discoveryDue=state.discoveryDay!==discoveryDay||(agentBatch&&state.discoveryAgentDay!==discoveryDay);
   if(discoveryDue){
-   await upkeep('discovery','discoveryAt',0,`Hledám nové weby pořadatelů (${discoveryName})`,[...discoveryArgs,'--mode=all','--providers=brave','--no-ai','--scheduled','--max=30','--minutes=4',`--cycle=${discoveryDay}`,`--agent-inbox=${path.join(data,'agent','discovery',discoveryName)}`],300,{BRAVE_SEARCH_LIMIT:'16'});
+   await upkeep('discovery','discoveryAt',0,`Hledám nové weby pořadatelů (${discoveryName})`,[...discoveryArgs,`--mode=${BRAVE_ON?'all':'read'}`,'--providers=brave','--no-ai','--scheduled','--max=30','--minutes=4',`--cycle=${discoveryDay}`,`--agent-inbox=${path.join(data,'agent','discovery',discoveryName)}`],300,{BRAVE_SEARCH_LIMIT:BRAVE_ON?'16':'0'});
    if(['done','partial'].includes(report.steps?.discovery?.outcome)){
     state.discoveryDay=discoveryDay;
     if(agentBatch)state.discoveryAgentDay=discoveryDay;
@@ -363,7 +366,7 @@ async function main(){
   // because the copy here holds every merge for review; each merge is audited and can be undone (restore-event-merge.ts).
   await upkeep('movedRaces','movedRacesAt',24*HOUR,'Slučuji rakouské závody přesunuté na jiný den',['scripts/merge-moved-races.ts','--apply',`--out=${path.join(directory,'moved-races.json')}`],300,{},true);
   // The one step allowed the AI key, and only within the shared limits the step itself enforces.
-  await upkeep('regulations','regulationsAt',REGULATIONS_EVERY_MS,'Čtu propozice a doplňuji údaje o závodech',['scripts/enrich-practical-details.ts','--apply','--max=40','--minutes=12','--tolerate-unreadable',`--search-ledger=${path.join(data,'search-budget.json')}`],780,{LOCAL_ALLOW_AI:'1',BRAVE_SEARCH_LIMIT:'60',LLM_LEDGER_PATH:path.join(data,'llm-budget.json'),LLM_EXTRACTION_CACHE_DIR:path.join(data,'extraction-cache')});
+  await upkeep('regulations','regulationsAt',REGULATIONS_EVERY_MS,'Čtu propozice a doplňuji údaje o závodech',['scripts/enrich-practical-details.ts','--apply','--max=40','--minutes=12','--tolerate-unreadable',`--search-ledger=${path.join(data,'search-budget.json')}`],780,{LOCAL_ALLOW_AI:'1',BRAVE_SEARCH_LIMIT:BRAVE_ON?'60':'0',LLM_LEDGER_PATH:path.join(data,'llm-budget.json'),LLM_EXTRACTION_CACHE_DIR:path.join(data,'extraction-cache')});
   // Nothing found above leaves the Mac until this reader has confirmed it against its source.
   await upkeep('checkDetails','checkDetailsAt',HOUR,'Kontroluji nalezené údaje',['scripts/check-details.ts','--max=40','--seconds=420',`--gate=${path.join(data,'details-gate.json')}`],480,{LOCAL_ALLOW_AI:'1',LLM_LEDGER_PATH:path.join(data,'llm-budget.json')});
   // Age classes the regulations name join the guessed set, so the header never shows fewer than the document.
@@ -372,7 +375,7 @@ async function main(){
   await upkeep('internationalKids','internationalKidsAt',24*HOUR,'Hlídám dětské kategorie u mezinárodních závodů',['scripts/fix-international-kids.ts','--apply'],180,{},true);
   // The UCI calendar for our countries: class, website, categories and e-mail; new UCI races through the review gates.
   await upkeep('uciDirectory','uciDirectoryAt',24*HOUR,'Čtu kalendář UCI',['scripts/harvest-uci-directory.ts','--apply',`--out=${path.join(data,'uci-directory-latest.json')}`],900,{},true);
-  await upkeep('websiteSearch','websiteSearchAt',WEBSITE_SEARCH_EVERY_MS,'Hledám weby závodů, které žádný nemají',['scripts/find-websites.ts','--apply','--max=40','--prefer=CZ,SK',`--countries=${COUNTRIES}`,`--from=${season}-01-01`],480,{BRAVE_SEARCH_LIMIT:'40',SEARCH_LEDGER_PATH:path.join(data,'search-budget.json')});
+  if(BRAVE_ON)await upkeep('websiteSearch','websiteSearchAt',WEBSITE_SEARCH_EVERY_MS,'Hledám weby závodů, které žádný nemají',['scripts/find-websites.ts','--apply','--max=40','--prefer=CZ,SK',`--countries=${COUNTRIES}`,`--from=${season}-01-01`],480,{BRAVE_SEARCH_LIMIT:'40',SEARCH_LEDGER_PATH:path.join(data,'search-budget.json')});
   // The agent: looks for regulations and judges possible duplicates the readers could not settle.
   // Its answers stay in the data folder; nothing of them is sent. One run a day, kept by the step itself.
   // Every six hours: prepare cases for the desk and check answers that arrived through it. The agent itself (Codex) works in its own session.
@@ -401,6 +404,10 @@ async function main(){
   // Links the gate accepted on the server are filled into the copy here, so the regulations reader finds them.
   try{report.pulledRegulations=pullAccepted(state);saveState();}catch(e){console.warn(`Přijaté odkazy se nepodařilo převzít: ${String(e.message).split('\n')[0].slice(0,160)}`);}
   await upkeep('geocode','geocodedAt',GEOCODE_EVERY_MS,'Doplňuji místa na mapě',['scripts/geocode-pending.ts','120'],300);
+  // Which changes of a date or a cancellation have their quote and could go to the server. A look only; nothing is sent.
+  await upkeep('dateProposals','dateProposalsAt',6*HOUR,'Hledám změny dat, které by šly odeslat (jen náhled)',['scripts/date-proposals.cjs',`--out=${path.join(data,'date-proposals-latest.json')}`],120,{},true);
+  // What the calendars offer that the catalogue does not hold, and why (not public yet, or never landed). Read-only.
+  await upkeep('sourceYield','sourceYieldAt',7*24*HOUR,'Měřím, kolik z nabídky kalendářů v katalogu chybí',['scripts/audit-source-yield.ts','--limit=120','--rotate',`--out=${path.join(data,'source-yield-latest.json')}`],1200,{},true);
   await upkeep('sourceHealth','sourceHealthAt',SOURCE_HEALTH_EVERY_MS,'Kontroluji zdroje, které zmlkly',['scripts/local-source-health.ts',`--out=${path.join(data,'source-health-latest.json')}`],480);
   save();
 
@@ -420,9 +427,16 @@ async function main(){
     state.pausesSyncedAt=new Date().toISOString();
     stage('Kontroluji nové závody proti aktuálnímu katalogu');
     const planDir=path.join(directory,'plan');plan(planDir,'letsrace',remote,{onlyFactsOfNewRaces:true});
-    await node('./node_modules/tsx/dist/cli.mjs',['scripts/local-review-new.ts',`--plan=${planDir}`,`--catalogue=${remote}`,'--only-new-races',`--max-new=${NEW_RACES_PER_SEND}`,`--separate=${path.join(data,'agent','separate.json')}`,`--races=${path.join(data,'agent','races.json')}`],{timeout:12*60_000});
+    await node('./node_modules/tsx/dist/cli.mjs',['scripts/local-review-new.ts',`--plan=${planDir}`,`--catalogue=${remote}`,'--only-new-races',`--max-new=${NEW_RACES_PER_SEND}`,`--separate=${path.join(data,'agent','separate.json')}`,`--races=${path.join(data,'agent','races.json')}`,`--decisions=${path.join(data,'held-decisions.json')}`],{timeout:12*60_000});
     const reviewed=json(path.join(planDir,'plan.json'));
-    report.heldRaces=reviewed.newRaces.held.length;report.deferredNewRaces=reviewed.newRaces.deferredByBatchLimit;
+    report.heldRaces=reviewed.newRaces.held.length;report.droppedRaces=reviewed.newRaces.dropped??0;report.deferredNewRaces=reviewed.newRaces.deferredByBatchLimit;
+    // What a person has to look at, and how long the oldest of it has waited; races whose day is over need nobody.
+    try{
+     const heldFile=path.join(planDir,'held-for-review.ndjson');
+     const backlog=summarizeHeld(fs.existsSync(heldFile)?fs.readFileSync(heldFile,'utf8').split('\n'):[],state.heldSince,Date.now());
+     state.heldSince=backlog.since;state.heldBacklog={actionable:backlog.actionable,past:backlog.past,oldestSince:backlog.oldestSince,oldestDays:backlog.oldestDays};
+     report.heldBacklog=state.heldBacklog;
+    }catch(e){console.warn(`Zadržené závody nespočítány: ${String(e.message).slice(0,120)}`);}
     // A rehearsal stops here, with the plan on disk and nothing sent.
     if(process.argv.includes('--no-send')){report.rehearsal=true;save();}
     else if(reviewed.rows){
@@ -465,7 +479,7 @@ async function main(){
     }
     if(!report.rehearsal){state.targetCheckedAt=new Date().toISOString();state.eventsAtLastPlan=eventsNow;state.deferredNewRaces=report.deferredNewRaces;state.sendFailed=false;saveState();}
    }catch(e){if(interrupted)throw e;state.sendFailed=true;saveState();note(e);}
-  }else report.heldRaces=state.heldRaces??0;
+  }else{report.heldRaces=state.heldRaces??0;if(state.heldBacklog)report.heldBacklog=state.heldBacklog;}
   if(report.targetRead&&!failed){state.heldRaces=report.heldRaces;saveState();}
 
   // What the runner needs to decide when to come back.
