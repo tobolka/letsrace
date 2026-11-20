@@ -24,7 +24,7 @@ Důležitost: **Vysoká** = přímo zlepšuje to, co vidí rodiče a jezdci, neb
 | # | Úkol | Proč na tom záleží (lidskou řečí) | Důležitost | Kdo / kdy |
 | --- | --- | --- | --- | --- |
 | A3 | Posílat na web opravy data a zrušení závodu | Když pořadatel posune závod nebo ho zruší, web by to měl vědět sám. Dnes se takové opravy na web neposílají, jen zůstanou v Macu. Brána v databázi je připravená, chybí odesílač | **Vysoká** | já, až bude A2 |
-| A2 | Změřit, kolik oprav dat má citaci ze stránky | Bez citace se oprava data nepustí. Dnes 1 z 69. Čtečky se teprve přeučují, proto čekáme pár dní | **Vysoká** (blokuje A3) | čas, pár dní |
+| A2 | Změřit, kolik oprav dat má citaci ze stránky | Bez citace se oprava data nepustí. Zrychleno 20. 11.: náhled bere důkaz i z čerstvých čtení (z 1 na 4 hned) a 11 zdrojů za 24 dalšími změnami je splatných hned. Víc než 28 z 69 automaticky nebude, zbytek jsou přejmenování, stavy a minulá data, ty rozhoduje člověk | **Vysoká** (blokuje A3) | čas, příští průchod |
 | A6 | Rozhodnout, kdy jsou „50 km a 100 km“ nebo „hlavní a dětský závod“ jeden závod a kdy dva | Teď se u jedné akce občas objeví dva záznamy a občas jeden. Rodič pak nenajde správnou kategorii. Je to tvoje rozhodnutí | **Vysoká** | ty, po dvojicích |
 | A9 | Porovnat katalog s referenčními kalendáři SK, DE, AT, PL | Dnes víme jen, kolik závodů máme, ne kolik jich v zemi je. Bez toho nevíme, kolik nenacházíme | **Střední** | já nebo ty |
 | A13 | Denní strop AI odvozovat ze zbytku měsíce | Dnes se limit AI vyčerpá v polovině měsíce a pak se přestanou číst propozice | **Střední** | já, za týden |
@@ -39,6 +39,19 @@ Důležitost: **Vysoká** = přímo zlepšuje to, co vidí rodiče a jezdci, neb
 **Vědomě nedělat:** přesun čtení do cloudu (sběrač nemá dostávat produkční klíče, Mac běží přes 90 průchodů denně), e-maily pořadatelům, obcházení kontroly robotem.
 
 ## B. Zapomenuté nápady ze smazaných dokumentů
+
+**Co z toho je důležité** (zbytek jsou menší nápady, dělat až podle potřeby):
+
+| Důležitost | Nápad | Proč |
+| --- | --- | --- |
+| **Vysoká** | Zdroje pro ručně přidané seriály (`prahamtb.cz` se nečte) | Bez toho může zmizet příští sezóna Pražského MTB poháru z katalogu. Malá práce |
+| **Vysoká** | Supabase Security Advisor: ochrana proti uniklým heslům, PostGIS ve veřejném schématu | Bezpečnost přihlašování. Je to nastavení v Supabase, aktuální stav jsem neověřil |
+| **Vysoká** | Detail závodu: kam přijet, kdy být na místě, kolik zaplatím a do kdy, která varianta | Přesně to, co rodič potřebuje. Řada údajů už je uložená (program, poplatky, tratě), chybí je přehledně ukázat |
+| **Střední** | Kategorie z jednoho kola seriálu na všechna kola | Rychle doplní chybějící kategorie. Část už dělá denní úklid, ověřit, co chybí |
+| **Střední** | Uzávěrky přihlášek z platforem (RaceResult, Sportsoft, dostartu) | „Stihnu se ještě přihlásit?“ je častá otázka |
+| **Střední** | Hledání nových závodů po zemi, sezóně a disciplíně | Víc nových závodů, ale bez Brave to chce jiný zdroj dotazů |
+| **Střední** | SEO sezónní stránky | Dává smysl až poté, co Google začne web indexovat |
+| **Nízká** | Widget „Termíny seriálu“, zmenšení sitemapy, trasa s GPX, potvrzování kategorií návštěvníky | Velká práce nebo nejistý přínos |
 
 ### B1. Data a pipeline
 

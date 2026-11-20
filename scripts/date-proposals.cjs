@@ -51,6 +51,20 @@ function classify(work, base, facts, today = new Date().toISOString().slice(0, 1
   return { ready, waiting, reasons };
 }
 
+/** Source-evidence reads as the per-date facts provenChange looks for. */
+function evidenceFacts(reads) {
+  const out = [];
+  for (const { event_id, event } of reads) {
+    const evidence = event?.evidence;
+    if (!evidence?.quote || !event.startDate) continue;
+    const base = { event_id, quote: evidence.quote, source_url: evidence.sourceUrl ?? event.sourceUrl, method: evidence.method ?? 'source_evidence' };
+    out.push({ ...base, field: 'start_date', value: event.startDate });
+    // A single-day race has no end of its own: its end is its start.
+    out.push({ ...base, field: 'end_date', value: event.endDate ?? event.startDate });
+  }
+  return out;
+}
+
 function load(database) {
   const text = psql(database, `select coalesce(json_agg(json_build_object('id', id, 'name', name, 'start_date', start_date, 'end_date', end_date, 'status', status, 'merged_into_id', merged_into_id)), '[]') from public.events where end_date >= current_date - 2 or start_date >= current_date - 2`);
   return JSON.parse(text);
@@ -62,6 +76,12 @@ function main() {
   const baseById = new Map(base.map(row => [row.id, row]));
   const changedIds = work.filter(race => { const old = baseById.get(race.id); return old && (day(race.start_date) !== day(old.start_date) || day(race.end_date) !== day(old.end_date) || race.status !== old.status); }).map(race => race.id);
   const facts = changedIds.length ? JSON.parse(psql('letsrace', `select coalesce(json_agg(json_build_object('event_id', event_id, 'field', field, 'value', value #>> '{}', 'quote', quote, 'source_url', source_url, 'method', method)), '[]') from public.event_facts where field in ('start_date', 'end_date', 'status') and event_id in (${changedIds.map(id => `'${id}'::uuid`).join(',')})`)) : [];
+  // A read that kept the page words its dates stood in (date-evidence.ts) proves them, even when the race changed
+  // earlier and so wrote no fact of its own: its source evidence names the start, and the end when it has one.
+  if (changedIds.length) {
+    const reads = JSON.parse(psql('letsrace', `select coalesce(json_agg(json_build_object('event_id', event_id, 'event', value->'event')), '[]') from public.event_facts where field = 'source_evidence' and value->'event'->'evidence'->>'quote' is not null and event_id in (${changedIds.map(id => `'${id}'::uuid`).join(',')})`));
+    facts.push(...evidenceFacts(reads));
+  }
   const result = classify(work, base, facts);
   const summary = { at: new Date().toISOString(), changed: result.ready.length + result.waiting.length, ready: result.ready.length, waiting: result.waiting.length, reasons: result.reasons, ready_sample: result.ready.slice(0, 20), dry: true };
   if (out) { const tmp = `${out}.${process.pid}.tmp`; writeFileSync(tmp, JSON.stringify({ ...summary, ready_all: result.ready, waiting_all: result.waiting }, null, 2)); renameSync(tmp, out); }
@@ -69,4 +89,4 @@ function main() {
 }
 
 if (require.main === module) main();
-module.exports = { classify };
+module.exports = { classify, evidenceFacts };

@@ -213,6 +213,26 @@ describe("calendar gaps", () => {
   });
 });
 
+describe("date proof from source reads", () => {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const { evidenceFacts, classify } = require("../../../scripts/date-proposals.cjs");
+  const read = (event: Record<string, unknown>) => ({ event_id: "r", event: { startDate: "2027-06-12", sourceUrl: "https://o.test/", evidence: { quote: "Race 12. 6. 2027", sourceUrl: "https://o.test/", method: "page_text_near_name" }, ...event } });
+
+  it("turns a read with a page quote into the start and end date facts, a one-day race ends where it starts", () => {
+    const facts = evidenceFacts([read({}), read({ endDate: "2027-06-13" }), { event_id: "r", event: { startDate: "2027-06-12" } }]);
+    expect(facts.filter((f: { field: string }) => f.field === "start_date")).toHaveLength(2);
+    expect(facts.find((f: { field: string; value: string }) => f.field === "end_date")?.value).toBe("2027-06-12");
+    expect(facts.some((f: { value: string }) => f.value === "2027-06-13")).toBe(true);
+  });
+
+  it("lets a change that wrote no fact of its own go out when a later read proves it", () => {
+    const race = { id: "r", name: "Race", start_date: "2027-06-12", end_date: "2027-06-12", status: "scheduled", merged_into_id: null };
+    const base = { ...race, start_date: "2027-06-05", end_date: "2027-06-05" };
+    expect(classify([race], [base], [], "2026-11-20").ready).toEqual([]);
+    expect(classify([race], [base], evidenceFacts([read({})]), "2026-11-20").ready).toHaveLength(1);
+  });
+});
+
 describe("held backlog", () => {
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   const { summarizeHeld } = require("../../../scripts/held-backlog.cjs");
