@@ -416,6 +416,8 @@ async function main(){
   await upkeep('sourceYield','sourceYieldAt',7*24*HOUR,'Měřím, kolik z nabídky kalendářů v katalogu chybí',['scripts/audit-source-yield.ts','--limit=120','--rotate',`--out=${path.join(data,'source-yield-latest.json')}`],1200,{},true);
   await upkeep('sourceYieldGaps','sourceYieldGapsAt',7*24*HOUR,'Vybírám z nabídky kalendářů závody, které nikde nemáme',['scripts/source-yield-gaps.cjs',`--yield=${path.join(data,'source-yield-latest.json')}`,`--out=${path.join(data,'source-yield-gaps.json')}`,`--urls=${gapUrls}`],120,{},true);
   await upkeep('sourceHealth','sourceHealthAt',SOURCE_HEALTH_EVERY_MS,'Kontroluji zdroje, které zmlkly',['scripts/local-source-health.ts',`--out=${path.join(data,'source-health-latest.json')}`],480);
+  // A readable account of what this Mac did and changed, race by race, for the owner (reports/mac-activity/latest.html). Reads only.
+  await upkeep('activityReport','activityReportAt',30*60_000,'Skládám přehled, co Mac dělal',['scripts/mac-activity-report.ts','--hours=24'],240,{},true);
   save();
 
   // Part 4: the target copy, only when sending could act on it.

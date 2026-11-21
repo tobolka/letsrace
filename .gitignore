@@ -57,3 +57,4 @@ scripts/.tmp/
 
 # local CLI link (the Vercel projects are retired)
 .vercel
+/reports/mac-activity/
