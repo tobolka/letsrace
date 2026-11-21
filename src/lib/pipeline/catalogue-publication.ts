@@ -32,12 +32,12 @@ export async function publishCatalogueBatch() {
     // Read independently of the public cached feed, using the same visibility rules.
     const expected = await listEvents({});
     const refreshed = await fetch(`${getSiteUrl()}/api/ops/publication`, {
-      method: "POST", redirect: "error", headers: { Authorization: `Bearer ${process.env.CRON_SECRET}`, "Content-Type": "application/json" },
+      method: "POST", redirect: "manual", headers: { Authorization: `Bearer ${process.env.CRON_SECRET}`, "Content-Type": "application/json" },
       body: JSON.stringify({ key: task.key, token: task.token, revision: payload.revision }), signal: AbortSignal.timeout(10_000),
     });
     if (!refreshed.ok) throw Error(`Catalogue publication returned HTTP ${refreshed.status}`);
     // This must be the ordinary public URL, without a cache-busting query or auth.
-    const page = await fetch(`${getSiteUrl()}/api/events?catalogue=1`, { redirect: "error", signal: AbortSignal.timeout(25_000) });
+    const page = await fetch(`${getSiteUrl()}/api/events?catalogue=1`, { redirect: "manual", signal: AbortSignal.timeout(25_000) });
     if (!page.ok) throw Error(`Public catalogue returned HTTP ${page.status}`);
     const actual: unknown = JSON.parse(new TextDecoder().decode(await boundedBody(page, 8 * 1024 * 1024)));
     if (!Array.isArray(actual) || actual.some(row => !row || typeof row.id !== "string") || catalogueFingerprint(actual) !== catalogueFingerprint(expected)) throw Error("Public catalogue does not match the saved races");

@@ -20,7 +20,7 @@ it("compares full public content, including places and missing/duplicate races, 
 });
 it("verifies the ordinary public URL before completing the exact claimed batch", async () => {
   expect(await publishCatalogueBatch()).toMatchObject({ status: "ok", verified: true, races: 1, eventWrites: 0 });
-  expect(fetch).toHaveBeenNthCalledWith(2, "https://letsrace.test/api/events?catalogue=1", expect.objectContaining({ redirect: "error" }));
+  expect(fetch).toHaveBeenNthCalledWith(2, "https://letsrace.test/api/events?catalogue=1", expect.objectContaining({ redirect: "manual" }));
   expect(state.rpc).toHaveBeenCalledWith("pipeline_finish_task", expect.objectContaining({ p_key: task.key, p_token: task.token, p_payload: task.payload }));
 });
 it("does no public request when the shared claim budget has no available task", async () => {

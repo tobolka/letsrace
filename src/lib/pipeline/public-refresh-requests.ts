@@ -2,6 +2,8 @@ import { createServerSupabase } from "@/lib/supabase/server";
 import { getSiteUrl } from "@/lib/seo";
 
 /** Request bounded refreshes without fetching HTML or consuming verification slots. */
+// `redirect: "manual"`, not "error": Cloudflare Workers reject "error" outright. A redirect
+// still fails the `ok` check below, so nothing is followed to another host.
 export async function requestPublicRefreshes() {
   if (!process.env.CRON_SECRET) throw Error("Missing publication access");
   const db = createServerSupabase();
@@ -13,7 +15,7 @@ export async function requestPublicRefreshes() {
     const payload = task.payload as { revision?: string };
     if (task.key !== "publication:expire" || typeof payload.revision !== "string") throw Error("Invalid refresh batch");
     const response = await fetch(`${getSiteUrl()}/api/ops/publication`, {
-      method: "POST", redirect: "error", headers: { Authorization: `Bearer ${process.env.CRON_SECRET}`, "Content-Type": "application/json" },
+      method: "POST", redirect: "manual", headers: { Authorization: `Bearer ${process.env.CRON_SECRET}`, "Content-Type": "application/json" },
       body: JSON.stringify({ key: task.key, token: task.token, revision: payload.revision }), signal: AbortSignal.timeout(20_000),
     });
     if (!response.ok) throw Error(`Refresh service returned HTTP ${response.status}`);
@@ -33,7 +35,7 @@ export async function requestPublicRefreshes() {
       // If warming fails, the normal public loader still reads the fresh row.
       try {
         const prepared = await fetch(`${getSiteUrl()}/api/ops/public-race-cache`, {
-          method: "POST", redirect: "error", headers: { Authorization: `Bearer ${process.env.CRON_SECRET}`, "Content-Type": "application/json" },
+          method: "POST", redirect: "manual", headers: { Authorization: `Bearer ${process.env.CRON_SECRET}`, "Content-Type": "application/json" },
           body: JSON.stringify({ slugs: result.raceSlugs }), signal: AbortSignal.timeout(25_000),
         });
         if (!prepared.ok) console.warn("public_race_cache_prepare_failed", { status: prepared.status });
