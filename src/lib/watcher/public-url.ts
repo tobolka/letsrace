@@ -284,3 +284,29 @@ export function resolveEventOutboundUrls(input: {
   if (regulationsUrl && regulationsUrl === listingUrl) regulationsUrl = null;
   return { websiteUrl: websiteClean, registrationUrl, listingUrl, regulationsUrl, resultsUrl };
 }
+
+/**
+ * A Facebook page or post as one tidy address (`https://www.facebook.com/…`),
+ * or null when the value is not one. Mobile and web hosts become www, tracking
+ * parameters go; `profile.php?id=` and the ids of a post or photo stay.
+ */
+export function facebookPageUrl(value: unknown): string | null {
+  if (typeof value !== "string" || !value.trim()) return null;
+  let url: URL;
+  try {
+    url = new URL(value.trim().replace(/^http:\/\//i, "https://"));
+  } catch {
+    return null;
+  }
+  const host = url.hostname.toLowerCase();
+  if (url.protocol !== "https:" || !(host === "facebook.com" || host.endsWith(".facebook.com") || host === "fb.com")) return null;
+  const path = url.pathname.replace(/\/+$/, "");
+  if (!path || path === "/") return null;
+  const keep = new URLSearchParams();
+  for (const key of ["id", "fbid", "set", "story_fbid"]) {
+    const v = url.searchParams.get(key);
+    if (v) keep.set(key, v);
+  }
+  const query = keep.toString();
+  return `https://www.facebook.com${path}${query ? `?${query}` : ""}`;
+}

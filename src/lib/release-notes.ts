@@ -19,6 +19,13 @@ export type ReleaseNote = {
 
 export const RELEASE_NOTES: ReleaseNote[] = [
   {
+    date: "2026-11-21",
+    items: {
+      cs: ["U závodu a seriálu najdeš odkaz na jeho facebookovou stránku, kde pořadatelé často jako první zveřejní termín, plakát a změny."],
+      en: ["Races and series can link to their Facebook page, where organisers often post the date, the poster and changes first."],
+    },
+  },
+  {
     date: "2026-11-19",
     items: {
       cs: ["Odkazy u seriálu vypadají stejně jako u závodu: šedé řádky s ikonou a šipkou pod nadpisem Odkazy."],

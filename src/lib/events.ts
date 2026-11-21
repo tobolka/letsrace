@@ -11,7 +11,7 @@ import {
   type Audience,
   type Discipline,
 } from "@/lib/domain";
-import { publicRaceUrl, resolveEventOutboundUrls } from "@/lib/watcher/public-url";
+import { facebookPageUrl, publicRaceUrl, resolveEventOutboundUrls } from "@/lib/watcher/public-url";
 import {
   ageCategoryMatch,
   ageMatchRank,
@@ -58,6 +58,8 @@ export type EventListItem = {
   registrationUrl: string | null;
   regulationsUrl: string | null;
   resultsUrl: string | null;
+  /** The race's Facebook page, else its series'. Organisers often post dates and posters only there. */
+  facebookUrl?: string | null;
   /** When online entry closes, if the organiser says. */
   registrationClosesAt?: string | null;
   listingUrl: string | null;
@@ -115,7 +117,7 @@ export type EventFilters = {
   polygon?: [number, number][];
 };
 
-const EVENT_LIST_COLUMNS = `id, slug, name, start_date, end_date, disciplines, formats, audience, age_categories, age_confidence, status, visibility, event_type, competition_type, season, website_url, registration_url, regulations_url, results_url, registration_closes_at, source_kind, level, class_label, uci_class, last_seen_at, updated_at`;
+const EVENT_LIST_COLUMNS = `id, slug, name, start_date, end_date, disciplines, formats, audience, age_categories, age_confidence, status, visibility, event_type, competition_type, season, website_url, facebook_url, registration_url, regulations_url, results_url, registration_closes_at, source_kind, level, class_label, uci_class, last_seen_at, updated_at`;
 
 /** `YYYY-MM-DD`, and a real day — the only date shape this catalogue stores. */
 export function isIsoDay(value: string | null | undefined): value is string {
@@ -146,7 +148,7 @@ export async function listEvents(filters: EventFilters = {}): Promise<EventListI
     .select(
       `${EVENT_LIST_COLUMNS}${filters.includeCategories ? ", categories:event_categories(id,name,age_min,age_max,distance_km,audience)" : ""},
        ${locationSelect},
-       series:series!events_series_id_fkey(id, name, slug, visibility, website_url, age_categories)`,
+       series:series!events_series_id_fkey(id, name, slug, visibility, website_url, facebook_url, age_categories)`,
     )
     .order("start_date", { ascending: true })
     .order("id", { ascending: true });
@@ -342,6 +344,7 @@ export type SeriesListItem = {
   shortName: string | null;
   description: string | null;
   websiteUrl: string | null;
+  facebookUrl?: string | null;
   countryCode: string | null;
   disciplines: string[];
   ageCategories: string[];
@@ -370,6 +373,7 @@ function mapSeriesRow(row: Record<string, unknown>, eventCount = 0): SeriesListI
     shortName: (row.short_name as string) ?? null,
     description: (row.description as string) ?? null,
     websiteUrl: publicRaceUrl(row.website_url as string | null),
+    facebookUrl: facebookPageUrl(row.facebook_url),
     countryCode: (row.country_code as string) ?? null,
     disciplines: (row.disciplines as string[]) ?? [],
     ageCategories: (row.age_categories as string[]) ?? [],
@@ -388,7 +392,7 @@ function mapSeriesRow(row: Record<string, unknown>, eventCount = 0): SeriesListI
 }
 
 const SERIES_PUBLIC_COLUMNS =
-  "id, name, slug, short_name, description, website_url, country_code, disciplines, age_categories, age_categories_confirmed_at, audience_hint, series_type, level, competition_type, season, source_url, source_kind, last_seen_at, organizer_verified_at";
+  "id, name, slug, short_name, description, website_url, facebook_url, country_code, disciplines, age_categories, age_categories_confirmed_at, audience_hint, series_type, level, competition_type, season, source_url, source_kind, last_seen_at, organizer_verified_at";
 
 export async function listSeries(filters: EventFilters = {}): Promise<SeriesListItem[]> {
   const supabase = createServerSupabase("public-web");
@@ -503,7 +507,7 @@ export async function readPublicSeries(slug: string, readRow = readPublicSeriesR
     .select(
       `${EVENT_LIST_COLUMNS},
        location:locations(id, name, municipality, country_code, lat, lng),
-       series:series!events_series_id_fkey(id, name, slug, visibility, website_url, age_categories)`,
+       series:series!events_series_id_fkey(id, name, slug, visibility, website_url, facebook_url, age_categories)`,
     )
     .order("start_date", { ascending: true }).order("id");
   if (eventError) throw new Error(eventError.message);
@@ -552,7 +556,7 @@ function publicEventDetailQuery(supabase: ReturnType<typeof createServerSupabase
     .select(
       `${EVENT_LIST_COLUMNS}, description, public_revision, organizer_verified_at, practical_details,
        location:locations(id, name, municipality, country_code, lat, lng, venue, region_code),
-       series:series!events_series_id_fkey(id, name, slug, visibility, website_url, age_categories, organizer_verified_at),
+       series:series!events_series_id_fkey(id, name, slug, visibility, website_url, facebook_url, age_categories, organizer_verified_at),
        sources:event_sources(source_url, kind),
        categories:event_categories(id, name, age_min, age_max, distance_km, audience)`,
     )
@@ -844,6 +848,7 @@ function mapEventRow(row: Record<string, unknown>): EventListItem {
     registrationUrl: outbound.registrationUrl,
     regulationsUrl: outbound.regulationsUrl,
     resultsUrl: outbound.resultsUrl,
+    facebookUrl: facebookPageUrl(row.facebook_url) ?? facebookPageUrl(series?.facebook_url),
     registrationClosesAt: (row.registration_closes_at as string | null) ?? null,
     listingUrl: outbound.listingUrl,
     sourceKind: String(row.source_kind ?? "scraped"),
@@ -909,6 +914,8 @@ export type ManualEventInput = {
   websiteUrl?: string;
   registrationUrl?: string;
   regulationsUrl?: string;
+  /** Empty or absent clears it. */
+  facebookUrl?: string;
   status?: string;
   visibility?: string;
   notes?: string;
@@ -971,6 +978,7 @@ export async function upsertManualEvent(input: ManualEventInput, eventId?: strin
     website_url: input.websiteUrl ?? null,
     registration_url: input.registrationUrl ?? null,
     regulations_url: input.regulationsUrl ?? null,
+    facebook_url: facebookPageUrl(input.facebookUrl),
     fingerprint: fp,
     source_kind: "manual",
     season: input.startDate.slice(0, 4),
@@ -1062,6 +1070,7 @@ export async function updateEventFields(
     websiteUrl: string;
     registrationUrl: string;
     regulationsUrl: string;
+    facebookUrl: string;
     status: string;
     visibility: string;
   }>,
@@ -1080,6 +1089,8 @@ export async function updateEventFields(
   if (fields.websiteUrl != null) payload.website_url = fields.websiteUrl;
   if (fields.registrationUrl != null) payload.registration_url = fields.registrationUrl;
   if (fields.regulationsUrl != null) payload.regulations_url = fields.regulationsUrl;
+  // An empty value clears it; anything that is not a Facebook page is refused by the database.
+  if (fields.facebookUrl != null) payload.facebook_url = facebookPageUrl(fields.facebookUrl);
   if (fields.visibility != null) payload.visibility = fields.visibility;
   if (fields.status != null) {
     // Legacy admin "hidden" status → visibility split
@@ -1194,7 +1205,7 @@ const upcomingRacesByOrganiserHost = unstable_cache(async (today: string) => {
     .select(
       `${EVENT_LIST_COLUMNS},
        location:locations(id, name, municipality, country_code, lat, lng),
-       series:series!events_series_id_fkey(id, name, slug, visibility, website_url, age_categories)`,
+       series:series!events_series_id_fkey(id, name, slug, visibility, website_url, facebook_url, age_categories)`,
     )
     .eq("visibility", PUBLIC_VISIBILITY)
     .is("merged_into_id", null)

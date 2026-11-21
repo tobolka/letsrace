@@ -122,6 +122,7 @@ async function Series({ locale, slug }: { locale: Locale; slug: string }) {
   };
   const seriesLinks: RaceLink[] = [
     data.series.websiteUrl ? { href: data.series.websiteUrl, label: t.seriesWebsite, kind: "website", external: true } : null,
+    data.series.facebookUrl ? { href: data.series.facebookUrl, label: "Facebook", kind: "facebook", external: true } : null,
     data.series.sourceUrl
       ? { href: data.series.sourceUrl, label: `${seriesLabels(locale).source}: ${seriesHost(data.series.sourceUrl)}`, kind: "listing", external: true }
       : null,

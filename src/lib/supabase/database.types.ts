@@ -649,6 +649,7 @@ export type Database = {
           uci_class: string | null
           updated_at: string
           visibility: string
+          facebook_url: string | null
           website_url: string | null
         }
         Insert: {
@@ -689,6 +690,7 @@ export type Database = {
           uci_class?: string | null
           updated_at?: string
           visibility?: string
+          facebook_url?: string | null
           website_url?: string | null
         }
         Update: {
@@ -729,6 +731,7 @@ export type Database = {
           uci_class?: string | null
           updated_at?: string
           visibility?: string
+          facebook_url?: string | null
           website_url?: string | null
         }
         Relationships: [
@@ -1258,6 +1261,7 @@ export type Database = {
           status: string
           updated_at: string
           visibility: string
+          facebook_url: string | null
           website_url: string | null
         }
         Insert: {
@@ -1284,6 +1288,7 @@ export type Database = {
           status?: string
           updated_at?: string
           visibility?: string
+          facebook_url?: string | null
           website_url?: string | null
         }
         Update: {
@@ -1310,6 +1315,7 @@ export type Database = {
           status?: string
           updated_at?: string
           visibility?: string
+          facebook_url?: string | null
           website_url?: string | null
         }
         Relationships: []

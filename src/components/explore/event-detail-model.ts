@@ -126,6 +126,11 @@ export function buildDetailModel(
     });
   }
 
+  // Organisers often announce the date, poster and changes only on Facebook.
+  if (event.facebookUrl && !extraLinks.some((l) => l.href === event.facebookUrl) && event.facebookUrl !== websiteUrl) {
+    extraLinks.push({ href: event.facebookUrl, label: "Facebook", kind: "facebook" });
+  }
+
   const trust = eventTrustLevel(event);
   const trustText = trustLabel(trust, t);
   const checkedText = lastCheckedLabel(event.lastSeenAt, locale, t.trustChecked);

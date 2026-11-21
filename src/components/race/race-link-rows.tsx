@@ -19,7 +19,17 @@ const LINK_ICONS: Record<string, ReactNode> = {
   listing: <CalendarDays />,
   series: <Trophy />,
   weather: <Wind />,
+  facebook: <FacebookGlyph />,
 };
+
+/** Lucide carries no brand marks; the plain "f", drawn like its icons. */
+function FacebookGlyph() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M15 3h-2a4 4 0 0 0-4 4v3H7v4h2v7h4v-7h3l1-4h-4V7a1 1 0 0 1 1-1h2z" />
+    </svg>
+  );
+}
 
 /**
  * Every link of a race as one list in one look: an icon, the name, and an

@@ -45,6 +45,7 @@ export type EventFormValues = {
   websiteUrl?: string;
   registrationUrl?: string;
   regulationsUrl?: string;
+  facebookUrl?: string;
   status: string;
   visibility: string;
   lockFields: boolean;
@@ -64,6 +65,7 @@ const empty: EventFormValues = {
   websiteUrl: "",
   registrationUrl: "",
   regulationsUrl: "",
+  facebookUrl: "",
   status: "scheduled",
   visibility: "public",
   lockFields: true,
@@ -101,6 +103,7 @@ export function EventForm({ initial }: { initial?: Partial<EventFormValues> }) {
         websiteUrl: values.websiteUrl || undefined,
         registrationUrl: values.registrationUrl || undefined,
         regulationsUrl: values.regulationsUrl || undefined,
+        facebookUrl: values.facebookUrl ?? "",
         status: values.status,
         visibility: values.visibility,
         lockFields: values.lockFields,
@@ -256,6 +259,17 @@ export function EventForm({ initial }: { initial?: Partial<EventFormValues> }) {
                   placeholder="https://…/propozice.pdf"
                   openLabel="Open regulations"
                 />
+              </Field>
+              <Field>
+                <FieldLabel htmlFor="facebookUrl">Facebook</FieldLabel>
+                <UrlInput
+                  id="facebookUrl"
+                  value={values.facebookUrl ?? ""}
+                  onChange={(value) => set("facebookUrl", value)}
+                  placeholder="https://www.facebook.com/…"
+                  openLabel="Open Facebook"
+                />
+                <FieldDescription>The race or organiser page; shown on the race card</FieldDescription>
               </Field>
               <Field>
                 <FieldLabel htmlFor="status">Status</FieldLabel>

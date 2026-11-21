@@ -168,6 +168,7 @@ async function Race({ locale, event }: { locale: Locale; event: EventListItem })
     event.registrationUrl ? { href: event.registrationUrl, label: t.register, kind: "register" } : null,
     event.regulationsUrl ? { href: event.regulationsUrl, label: rc.regulations, kind: "regulations" } : null,
     event.resultsUrl ? { href: event.resultsUrl, label: t.results, kind: "results" } : null,
+    event.facebookUrl ? { href: event.facebookUrl, label: "Facebook", kind: "facebook" } : null,
     !event.registrationUrl && !event.websiteUrl && event.listingUrl ? { href: event.listingUrl, label: t.calendarListing, kind: "listing" } : null,
   ].filter((l): l is { href: string; label: string; kind: string } => Boolean(l))
     .filter((l, i, all) => all.findIndex((x) => x.href === l.href) === i);

@@ -1,0 +1,25 @@
+{
+  "source": "https://www.facebook.com/Ustimtbcup",
+  "website": "https://www.ustimtbcup.cz/",
+  "series": "elimon-usti-mtb-cup",
+  "races": [
+    {
+      "start": "2027-04-11",
+      "name": "ELIMON XC Sektorové centrum",
+      "quote": "ELIMON ÚSTÍ MTB CUP 2027: 11. 4. 2027 XC SEKTOROVÉ CENTRUM",
+      "previous": "elimon-sektorove-centrum-short-track-2025",
+      "disciplines": [
+        "xco"
+      ],
+      "update": "elimon-xc-sektorove-centrum-2027"
+    },
+    {
+      "start": "2027-10-03",
+      "name": "ELIMON Maraton Adolfov",
+      "quote": "ELIMON ÚSTÍ MTB CUP 2027: 3. 10. 2027 MARATON ADOLFOV",
+      "previous": "elimon-maraton-adolfov-2025",
+      "update": "elimon-maraton-adolfov-2027"
+    }
+  ],
+  "facebook": "https://www.facebook.com/Ustimtbcup"
+}

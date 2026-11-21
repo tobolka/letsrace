@@ -30,6 +30,7 @@ A race is not done when it has a name, a date and a place. Whenever an agent add
 - Take every detail the regulations give: organiser and contact, venue, timetable, fees, categories with birth years, routes, parking, and the links to regulations, sign-up and results. Quote the document; never guess or carry last year's values over as this year's.
 - If a source has a fixed shape that no reader handles yet, write the reader (`src/lib/catalog/` with a test, a script in `scripts/`, and a daily step in `scripts/local-cycle.cjs`), so the next thousand races from it need no one. Read a few by hand first to learn the shape.
 - If nothing is published yet, say so and leave the race to the daily readers; do not fill gaps with assumptions.
+- Facebook, Instagram and posters the owner sends: never open those pages; read the picture, write `reports/announced/<date>-<name>.json` and run `scripts/add-announced-races.ts` (dry run first). It checks same-day duplicates, carries last year's venue and categories as inherited, stores the quote and sets the race's Facebook link. Step by step in `.claude/skills/add-from-poster/SKILL.md`.
 - Details read from documents follow `docs/race-completion-system.md`.
 
 ## Finish race discovery in the same run

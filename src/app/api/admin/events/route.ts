@@ -7,12 +7,15 @@ import { parseJson, parseQuery, validate } from "@/lib/api/validate";
 import type { Discipline } from "@/lib/domain";
 import { setEventsVisibility, upsertManualEvent, updateEventFields, type ManualEventInput } from "@/lib/events";
 import { createServerSupabase } from "@/lib/supabase/server";
+import { facebookPageUrl } from "@/lib/watcher/public-url";
 
 const AUDIENCES = ["kids", "youth", "adults", "mixed"] as const;
 // "hidden" is the legacy status the form no longer offers; the library maps it to visibility.
 const STATUSES = ["scheduled", "tbc", "postponed", "registration_open", "cancelled", "completed", "hidden"] as const;
 const VISIBILITIES = ["public", "hidden"] as const;
 
+// Empty clears it; the race card shows it as the race's Facebook link.
+const facebookField = z.union([z.literal(""), httpUrl.refine((u) => facebookPageUrl(u) != null, { error: "Not a Facebook page" })]).optional();
 const text = (max: number) => z.string().trim().min(1).max(max);
 const coordinate = (limit: number) =>
   // A blank coordinate field arrives as `null` (Number("") is not sent, NaN is not JSON).
@@ -33,6 +36,7 @@ const manualEventSchema = z.object({
   websiteUrl: optional(httpUrl),
   registrationUrl: optional(httpUrl),
   regulationsUrl: optional(httpUrl),
+  facebookUrl: facebookField,
   status: z.enum(STATUSES).optional(),
   visibility: z.enum(VISIBILITIES).optional(),
   lockFields: z.boolean().optional().default(false),
@@ -48,6 +52,7 @@ const fieldsSchema = z.object({
   websiteUrl: optional(httpUrl),
   registrationUrl: optional(httpUrl),
   regulationsUrl: optional(httpUrl),
+  facebookUrl: facebookField,
   status: optional(z.enum(STATUSES)),
   visibility: optional(z.enum(VISIBILITIES)),
   lockFields: z.boolean().optional().default(false),
