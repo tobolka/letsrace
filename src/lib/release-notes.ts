@@ -21,8 +21,14 @@ export const RELEASE_NOTES: ReleaseNote[] = [
   {
     date: "2026-11-21",
     items: {
-      cs: ["U závodu a seriálu najdeš odkaz na jeho facebookovou stránku, kde pořadatelé často jako první zveřejní termín, plakát a změny."],
-      en: ["Races and series can link to their Facebook page, where organisers often post the date, the poster and changes first."],
+      cs: [
+        "U závodu a seriálu najdeš odkaz na jeho facebookovou stránku, kde pořadatelé často jako první zveřejní termín, plakát a změny.",
+        "Když propozice závodu vypisují všechny kategorie, ukazujeme je jako potvrzené a ne jako odhad, i když se startovné platí podle trati.",
+      ],
+      en: [
+        "Races and series can link to their Facebook page, where organisers often post the date, the poster and changes first.",
+        "When a race's regulations list all its categories, we show them as confirmed instead of an estimate, even if the entry fee is priced by distance.",
+      ],
     },
   },
   {

@@ -27,6 +27,12 @@ export type RegulationAges = {
   byCourse: boolean;
   /** The race's own category list (propozice) is read for this edition: what it names is the whole field. */
   ownList: boolean;
+  /**
+   * The own list is a class table we understand completely and names both ends of the field (a children's or youth
+   * class and an adult one), so a fee table priced by course ("25 km", "50 km") adds no class the list leaves out:
+   * it is the whole field, whatever the fees say.
+   */
+  coversWholeField: boolean;
   labels: string[];
   sourceUrl: string | null;
 };
@@ -52,10 +58,19 @@ export function regulationAges(details: Record<string, Field> | null, refYear: n
   if (!all.length) return null;
   const found = new Set<AgeCategory>();
   for (const item of all) for (const age of agesOf(item, refYear)) found.add(age);
+  const listed = new Set<AgeCategory>();
+  const lines = current("categories");
+  for (const item of lines) for (const age of agesOf(item, refYear)) listed.add(age);
+  const names = (group: AgeCategory[]) => group.some((age) => listed.has(age));
+  // A class table, understood line by line: several lines, every one placed on our list. One or two lines
+  // ("Erwachsene, Jugendliche & Kinder ab 6 Jahre") say who may enter, and a line we cannot place ("R9 ME UCI C2")
+  // may be the very class we would otherwise drop.
+  const understood = lines.length >= 4 && lines.every((item) => agesOf(item, refYear).length > 0);
   return {
     ages: AGE_CATEGORIES.filter((age) => found.has(age)),
     byCourse: current("fees").some((item) => !agesOf(item, refYear).length),
-    ownList: current("categories").some((item) => agesOf(item, refYear).length > 0),
+    ownList: listed.size > 0,
+    coversWholeField: understood && names([...KIDS, ...YOUNG_YOUTH, "u17", "youth"]) && names(ADULT),
     labels: [...new Set(all.map((item) => item.label!))],
     sourceUrl: all.find((item) => item.sourceUrl)?.sourceUrl ?? null,
   };
@@ -95,8 +110,10 @@ export function regulationAgePatch(
   };
   // The race's own category list (propozice) is final: what it names is the whole field. Nothing guessed or
   // inherited stays beside it, and no other source's confirmed set outranks it. U23 rides with the elite
-  // (kept if it was there), "youth" with the U13–U17 classes. Only a race priced by course names no one.
-  const final = read.ownList && !read.byCourse;
+  // (kept if it was there), "youth" with the U13–U17 classes. A list that names only one end of the field
+  // (children only, with adults entering by course) is not the whole field; a list naming both ends is, even
+  // when the fees are priced by course too (Rohanské stezky: 14 classes and "25 km" / "50 km" fees).
+  const final = read.ownList && (!read.byCourse || read.coversWholeField);
   const implied = (age: AgeCategory) =>
     (age === "youth" && YOUNG_YOUTH.concat("u17").some((a) => named.has(a))) || (age === "u23" && named.has("elite") && previous.includes("u23"));
   const ages = AGE_CATEGORIES.filter((age) =>

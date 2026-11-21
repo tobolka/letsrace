@@ -43,6 +43,39 @@ describe("age classes from the regulations", () => {
     expect(patch?.age_categories).toEqual(["u13", "u15", "kids", "youth", "amateur", "masters"]);
   });
 
+  it("takes the own list as final when it names both ends of the field, though the fees are priced by course (Rohanské stezky)", () => {
+    const details = {
+      categories: { status: "current", editionYear: 2027, value: [
+        { label: "Junioři", birthYears: "2009 a mladší" }, { label: "Ženy 19-39", birthYears: "1988-2008" }, { label: "Ženy 40+", birthYears: "1987 a dříve" },
+        { label: "Muži 19-29", birthYears: "1998-2008" }, { label: "Muži 40-49", birthYears: "1978-1987" }, { label: "Muži 60+", birthYears: "1967 a dříve" },
+        { label: "Žáci a žákyně starší", birthYears: "2013–2014" }, { label: "Žáci a žákyně mladší", birthYears: "2015–2016" },
+        { label: "Předžáci a předžákyně", birthYears: "2017–2018" }, { label: "Minižáci a minižákyně", birthYears: "2019–2020" }] },
+      ...list("fees", ["25 km, platba do 31. 3. 2027", "50 km, na místě"], 2027),
+    };
+    const read = regulationAges(details, 2027);
+    expect(read?.byCourse).toBe(true);
+    expect(read?.coversWholeField).toBe(true);
+    const patch = regulationAgePatch({ age_categories: ["u7", "u9", "u11", "u13", "u15", "u17", "kids", "youth", "junior", "elite", "amateur", "masters"], age_confidence: "default" }, read);
+    expect(patch?.age_confidence).toBe("explicit");
+    expect(patch?.age_categories).not.toContain("u17");
+    expect(regulationAgePatch({ age_categories: patch!.age_categories, age_confidence: "explicit" }, read, true)).toBeNull();
+  });
+
+  it("does not take a list as the whole field when a line of it is not understood or it is a two-line description", () => {
+    const fees = list("fees", ["Elite, U23, Amateure, Bike Card", "Master", "Mini"], 2026);
+    const table = regulationAges({ ...list("categories", ["R1 WU17+MU15", "R2 WU15+MU13+WU13", "R3 AM, MA, Fr-Nat, BC", "R4 MU17", "R9 ME UCI C2", "Master", "Mini"]), ...fees }, 2026);
+    expect(table?.coversWholeField).toBe(false);
+    const prose = regulationAges({ ...list("categories", ["Erwachsene, Jugendliche & Kinder ab 6 Jahre", "Volljährige, d.h. Frauen und Männer mit und ohne Rennlizenz (Kategorie: Jedermann)"], 2027), ...list("fees", ["Einzelzeitfahren: 10km"], 2027) }, 2027);
+    expect(prose?.coversWholeField).toBe(false);
+  });
+
+  it("does not take a list of one end as the whole field just because it is long", () => {
+    const read = regulationAges({ ...list("categories", ["Muži 19-39", "Muži 40+", "Ženy"], 2027), ...list("fees", ["90 km MTB", "30 km MTB"], 2027) }, 2027);
+    expect(read?.byCourse).toBe(true);
+    expect(read?.coversWholeField).toBe(false);
+    expect(regulationAgePatch({ age_categories: ["kids", "amateur", "masters"], age_confidence: "default" }, read)?.age_categories).toContain("kids");
+  });
+
   it("drops a guessed open class a race's own list does not name", () => {
     const ladder = regulationAges(list("categories", ["Junioři", "Muži Elite", "Ženy Elite"]), 2026);
     const patch = regulationAgePatch({ age_categories: ["junior", "elite", "amateur"], age_confidence: "default" }, ladder);
