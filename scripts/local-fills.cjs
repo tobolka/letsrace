@@ -13,7 +13,7 @@ const { psql } = require('./local-sync.cjs');
 
 // regulations_url is not carried here any more: it goes to the server as a proposal through the gate
 // (scripts/pipeline2-local-regulations.ts), with the words it rests on. LOCAL_FILL_REGULATIONS=1 brings it back.
-const EVENT_FIELDS = ['website_url', 'registration_url', ...(process.env.LOCAL_FILL_REGULATIONS === '1' ? ['regulations_url'] : []), 'results_url', 'class_label', 'competition_type', 'description', 'level', 'uci_class', 'formats', 'registration_opens_at', 'registration_closes_at', 'disciplines'];
+const EVENT_FIELDS = ['website_url', 'registration_url', ...(process.env.LOCAL_FILL_REGULATIONS === '1' ? ['regulations_url'] : []), 'results_url', 'class_label', 'competition_type', 'description', 'level', 'uci_class', 'formats', 'registration_opens_at', 'registration_closes_at', 'disciplines', 'facebook_url'];
 /** Categories are one fact: their companions move only with them. */
 const AGE_FIELDS = ['age_categories', 'age_confidence', 'audience'];
 const LOCATION_FIELDS = ['lat', 'lng', 'geog', 'geocode_query', 'geocode_status'];

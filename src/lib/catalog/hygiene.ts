@@ -9,6 +9,7 @@ import { fillRideAndRestLinks } from "@/lib/catalog/rideandrest-links";
 import { fillCyclingAustriaDetails } from "@/lib/catalog/cyclingaustria-details";
 import { applySeriesAgesToRounds } from "@/lib/catalog/series-ages";
 import { fillRegistrationLinks } from "@/lib/catalog/registration-links";
+import { fillFacebookLinks } from "@/lib/catalog/facebook-links";
 import { fillDisciplinesFromSeries } from "@/lib/catalog/series-disciplines";
 import { mergeDuplicateLocations, type MergeLocationsResult } from "@/lib/catalog/merge-locations";
 import { completePastEvents, type CompletePastResult } from "@/lib/catalog/complete-past";
@@ -24,6 +25,7 @@ export type CatalogHygieneResult = {
   austria: { attempted: number; places: number; ages: number; websites: number; silent: number; failed: number };
   seriesAges: { series: number; rounds: number };
   registrationLinks: { attempted: number; filled: number; silent: number; failed: number };
+  facebookLinks: { attempted: number; filled: number; silent: number; failed: number; skipped?: string };
   seriesDisciplines: { filled: number };
   duplicates: {
     events: number;
@@ -37,14 +39,14 @@ export type CatalogHygieneResult = {
   completed: CompletePastResult;
 };
 
-export type SiteReadingResult = Pick<CatalogHygieneResult, "fciAges" | "timingAges" | "regulationAges" | "fciWebsites" | "austria" | "registrationLinks">;
+export type SiteReadingResult = Pick<CatalogHygieneResult, "fciAges" | "timingAges" | "regulationAges" | "fciWebsites" | "austria" | "registrationLinks" | "facebookLinks">;
 
 /**
  * The part of catalogue upkeep that reads other people's websites. It belongs where waiting
  * on a slow site costs nothing, so it runs on the Mac against its own copy of the catalogue;
  * what it finds goes back as a checked fill of what is still empty.
  */
-export async function readRaceSitesForDetails(limits?: { fci?: number; timing?: number; regulations?: number; websites?: number; austria?: number; registration?: number }): Promise<SiteReadingResult> {
+export async function readRaceSitesForDetails(limits?: { fci?: number; timing?: number; regulations?: number; websites?: number; austria?: number; registration?: number; facebook?: number }): Promise<SiteReadingResult> {
   // Italian races state their categories on their own page and nowhere else,
   // so a handful are read directly each run rather than guessed at.
   const fciAges = await fillFciAgeCategories({ max: limits?.fci ?? 40 });
@@ -58,7 +60,9 @@ export async function readRaceSitesForDetails(limits?: { fci?: number; timing?: 
   const austria = await fillCyclingAustriaDetails({ max: limits?.austria ?? 30 });
   // Where to enter, from the race's own page.
   const registrationLinks = await fillRegistrationLinks({ max: limits?.registration ?? 30 });
-  return { fciAges, timingAges, regulationAges, fciWebsites, austria, registrationLinks };
+  // The organiser's Facebook page, from the race's own website (Facebook itself is never read).
+  const facebookLinks = await fillFacebookLinks({ max: limits?.facebook ?? 60 });
+  return { fciAges, timingAges, regulationAges, fciWebsites, austria, registrationLinks, facebookLinks };
 }
 
 const READ_ON_THE_MAC = { attempted: 0, filled: 0, silent: 0, failed: 0 };
@@ -78,9 +82,9 @@ export async function runCatalogHygiene(opts?: {
   // Settle common series classes before paying to read individual rounds.
   const seriesAges = await applySeriesAgesToRounds();
   const read: SiteReadingResult = opts?.siteReading === "mac"
-    ? { fciAges: READ_ON_THE_MAC, timingAges: READ_ON_THE_MAC, regulationAges: READ_ON_THE_MAC, fciWebsites: READ_ON_THE_MAC, austria: { attempted: 0, places: 0, ages: 0, websites: 0, silent: 0, failed: 0 }, registrationLinks: READ_ON_THE_MAC }
+    ? { fciAges: READ_ON_THE_MAC, timingAges: READ_ON_THE_MAC, regulationAges: READ_ON_THE_MAC, fciWebsites: READ_ON_THE_MAC, austria: { attempted: 0, places: 0, ages: 0, websites: 0, silent: 0, failed: 0 }, registrationLinks: READ_ON_THE_MAC, facebookLinks: READ_ON_THE_MAC }
     : await readRaceSitesForDetails();
-  const { fciAges, timingAges, regulationAges, fciWebsites, austria, registrationLinks } = read;
+  const { fciAges, timingAges, regulationAges, fciWebsites, austria, registrationLinks, facebookLinks } = read;
   // What last year's edition knew, for this year's that knows less.
   const previousEditions = await carryForwardFromPreviousEditions();
   // Last resort for a race with no site: its page on rideandrest.net.
@@ -96,5 +100,5 @@ export async function runCatalogHygiene(opts?: {
   const locations = await mergeDuplicateLocations({ max: opts?.maxLocationMerges ?? 200 });
   // Yesterday's races stopped being scheduled overnight, so say so.
   const completed = await completePastEvents({ max: opts?.maxCompletions ?? 500 });
-  return { ages, fciAges, timingAges, regulationAges, previousEditions, fciWebsites, rideAndRestLinks, austria, seriesAges, registrationLinks, seriesDisciplines, duplicates, locations, completed };
+  return { ages, fciAges, timingAges, regulationAges, previousEditions, fciWebsites, rideAndRestLinks, austria, seriesAges, registrationLinks, facebookLinks, seriesDisciplines, duplicates, locations, completed };
 }
