@@ -33,6 +33,9 @@ const COMMON_WORDS = new Set([
   "international", "mistrovstvi", "championship", "championships", "mountain", "classic", "trophy", "grand", "kolem",
 ]);
 
+/** National federations' pages: they post about every race, and none of them is a race's own page. */
+const FEDERATION_PAGE = /federa|verband|svazcyklistiky|cyklistickysvaz|zwiazek|pzkol|cyclingaustria|swisscycling|czechcycling|britishcycling|ffcyclisme|knwu|slovakcycling|szcyklistiky/;
+
 const fold = (text: string) => text.toLowerCase().normalize("NFD").replace(/\p{M}/gu, "");
 const compact = (text: string) => fold(text).replace(/[^a-z0-9]/g, "");
 
@@ -88,6 +91,7 @@ export function facebookPageFromHtml(html: string, pageUrl: string, names: strin
   const raceSite = hosts.some((h) => words.some((w) => carries(h, w) || (h.length >= 5 && w.includes(h))));
   const scored = [...found].map((page) => {
     const key = compact(new URL(page).pathname);
+    if (FEDERATION_PAGE.test(key)) return { page, score: 0 };
     if (key.startsWith("profilephp")) return { page, score: found.size === 1 && raceSite ? 1 : 0 };
     let score = words.filter((w) => carries(key, w)).length * 2;
     if (raceSite && hosts.some((h) => key.includes(h) || (key.length >= 5 && h.includes(key)))) score += 3;

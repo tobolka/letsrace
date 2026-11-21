@@ -50,6 +50,8 @@ describe("organiser Facebook page from a race website", () => {
     expect(facebookPageFromHtml(page("https://www.facebook.com/inbici.magazine"), "https://www.inbici.net/beltrami-tsa", ["4° GIMKANA BELTRAMI TSA"])).toBeNull();
     expect(facebookPageFromHtml(page("https://www.facebook.com/Arrigoniarredamenti"), "https://arrigoniarredamenti.it/", ["CICLOCROSS DEL CINQUANTESIMO"])).toBeNull();
     expect(organiserFacebookPage("https://www.facebook.com/2008")).toBeNull();
+    // A cup run by the federation still has no page of its own there.
+    expect(facebookPageFromHtml(page("https://www.facebook.com/federazioneciclisticaitaliana"), "https://www.federciclismo.it/it/italia-bike-cup/", ["Italia Bike Cup"])).toBeNull();
   });
 
   it("knows a page by the start of a long word", () => {
