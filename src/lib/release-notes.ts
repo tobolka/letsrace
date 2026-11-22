@@ -24,10 +24,12 @@ export const RELEASE_NOTES: ReleaseNote[] = [
       cs: [
         "Odkazy u závodu jsou na mapě a na stránce závodu stejné: stejné názvy, pořadí i řádky (včetně seriálu a předpovědi počasí).",
         "Navigace k závodu vede na místo konání z propozic, když pořadatel uvádí jeho souřadnice, ne jen do středu obce.",
+        "Vybraný závod je na mapě vidět hned: pin je větší a má kolem sebe výrazný tmavý prstenec.",
       ],
       en: [
         "A race's links are the same on the map and on its own page: the same names, the same order and the same rows, including the series and the forecast.",
         "Directions to a race lead to the venue named in the regulations when the organiser gives its coordinates, not just to the middle of the town.",
+        "The race you picked stands out on the map: its pin is larger and wears a clear dark ring.",
       ],
     },
   },

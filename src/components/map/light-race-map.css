@@ -19,12 +19,10 @@
   border: 2px solid white;
   box-shadow: 0 1px 3px #1c191738;
 }
-.fast-pin-selected .fast-pin-rosette,
 .fast-marker-highlighted .fast-pin-rosette { outline: 4px solid #1c191724; }
 @media (hover: hover) {
   .fast-marker:hover .fast-pin-rosette { outline: 3px solid #1c191724; }
 }
-.fast-pin-selected .fast-pin-disc { width: 36px; height: 36px; outline: 4px solid color-mix(in srgb, var(--pin-color), transparent 78%); }
 .fast-pin-place {
   position: absolute;
   top: calc(100% + 6px);
@@ -70,6 +68,19 @@
 }
 
 .fast-marker-highlighted .fast-pin-disc { width: 36px; height: 36px; outline: 4px solid color-mix(in srgb, var(--pin-color), transparent 65%); box-shadow: 0 2px 7px #0003; }
+
+/* The chosen race: a slightly larger pin, a thick white edge and one dark ring
+   around it. The ring is ink, not the discipline colour, so it reads the same
+   on every pin and against any map. Kept after the hover rule so it wins. */
+.fast-marker .fast-pin-selected .fast-pin-disc {
+  width: 34px; height: 34px; border-width: 3px; outline: 0;
+  box-shadow: 0 0 0 2px #1c1917, 0 4px 10px #1c191746;
+}
+.fast-marker .fast-pin-selected .fast-pin-disc img { width: 16px; height: 16px; }
+.fast-marker .fast-pin-selected .fast-pin-rosette {
+  outline: 0; background: white;
+  box-shadow: 0 0 0 2px #1c1917, 0 4px 10px #1c191746;
+}
 
 .light-race-map-embedded .fast-map-controls { top: auto; bottom: 28px; right: 10px; gap: 8px; }
 .light-race-map-embedded .fast-map-controls > button { display: none; }
