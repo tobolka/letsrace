@@ -1,0 +1,53 @@
+{
+  "source": "https://www.instagram.com/kids.cup/",
+  "website": "https://www.kidscup.bike/",
+  "series": "vpace-kids-cup",
+  "races": [
+    {
+      "start": "2027-05-22",
+      "end": "2027-05-23",
+      "name": "VPACE Kids Cup #1 - Willingen (GER)",
+      "quote": "#1 WILLINGEN* 22 + 23 MAY — * Pro Tag ein Rennen, Teilnahme nur bei einem möglich",
+      "previous": "vpace-kids-cup-2-willingen-ger-2026",
+      "isNew": true
+    },
+    {
+      "start": "2027-06-12",
+      "name": "VPACE Kids Cup #2 - Oberhof (GER)",
+      "quote": "#2 OBERHOF 12 JUN",
+      "previous": "vpace-kids-cup-3-oberhof-ger-2026"
+    },
+    {
+      "start": "2027-07-03",
+      "name": "VPACE Kids Cup #3 - Ilmenau (GER)",
+      "quote": "#3 ILMENAU 03 JUL",
+      "previous": "vpace-kids-cup-6-ilmenau-ger-2026"
+    },
+    {
+      "start": "2027-07-17",
+      "name": "VPACE Kids Cup #4 - Farchant (GER)",
+      "quote": "#4 FARCHANT 17 JUL",
+      "previous": "vpace-kids-cup-4-farchant-ger-2026"
+    },
+    {
+      "start": "2027-08-07",
+      "name": "VPACE Kids Cup #5 - Kopřivná Bikepark (CZE)",
+      "quote": "#5 KOPRIVNA 07 AUG",
+      "previous": "vpace-kids-cup-5-koprivna-bikepark-cze-2026",
+      "isNew": true
+    },
+    {
+      "start": "2027-09-12",
+      "name": "VPACE Kids Cup #6 - Winterberg (GER)",
+      "quote": "#6 WINTERBERG 12 SEP",
+      "previous": "vpace-kids-cup-1-winterberg-ger-2026"
+    },
+    {
+      "start": "2027-10-02",
+      "name": "VPACE Kids Cup #7 - Leogang (AUT)",
+      "quote": "#7 LEOGANG 02 OCT",
+      "previous": "vpace-kids-cup-7-leogang-aut-2026",
+      "isNew": true
+    }
+  ]
+}
