@@ -268,7 +268,6 @@ export function EventDetailPanel({
           placeLabel={m.placeLabel}
           directionsUrl={m.directionsUrl}
           primary={m.primary}
-          secondaryLinks={m.secondaryLinks}
           whoChips={m.whoChips}
           ageHintFor={m.ageHintFor}
           levelLabel={m.levelLabel}

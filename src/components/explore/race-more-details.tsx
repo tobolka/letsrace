@@ -3,11 +3,13 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { FACT_ICONS, FactList, FactRow, type FactListRow } from "@/components/race/fact-row";
 import { RaceLinkRows, type RaceLink } from "@/components/race/race-link-rows";
+import { windyLabel, windyUrl } from "@/lib/windy";
+import { buildRaceLinks, raceDestination } from "@/lib/race-links";
 import { Skeleton } from "@/components/ui/skeleton";
 import { categoryDetail, distinctCategories } from "@/lib/category-detail";
 import type { EventListItem } from "@/lib/events";
 import { asLocale, messagesFor } from "@/lib/i18n/messages";
-import { DOCUMENT_KINDS, FACT_COPY } from "@/lib/race-fact-copy";
+import { FACT_COPY } from "@/lib/race-fact-copy";
 // Types only: the schemas behind them stay out of the card's download.
 import type { PracticalDetails } from "@/lib/practical-details";
 
@@ -33,27 +35,24 @@ export function CardSection({ children, className }: { children: ReactNode; clas
 export function RaceMoreDetails({
   event,
   locale,
-  links = [],
   onLink,
 }: {
   event: EventListItem;
   locale: string;
-  /** The links the card already knows; the regulations' other documents join them. */
-  links?: CardLink[];
   onLink?: (kind: string) => void;
 }) {
   const full = useFullRace(event.slug);
   const t = messagesFor(locale);
-  const kinds = DOCUMENT_KINDS[asLocale(locale)];
 
-  // Documents the card's links do not already point to, next to the
-  // organiser's other pages; the series and the forecast after them.
-  const known = new Set([event.registrationUrl, event.websiteUrl, event.regulationsUrl, event.resultsUrl, event.listingUrl, ...links.map((l) => l.href)]);
-  const documents: CardLink[] = (full?.practicalDetails?.documents?.value ?? [])
-    .filter((doc) => !known.has(doc.url))
-    .map((doc) => ({ href: doc.url, label: kinds[doc.kind], kind: doc.kind, external: true }));
-  const ours = (link: CardLink) => link.kind === "series" || link.kind === "weather";
-  const allLinks = [...links.filter((l) => !ours(l)), ...documents, ...links.filter(ours)];
+  // The same list, in the same order and under the same names, as on the race's own page: the
+  // organiser's pages, the regulations' other documents, the series and the forecast.
+  const race = full ?? event;
+  const spot = raceDestination(race);
+  const upcoming = event.status !== "cancelled" && (event.endDate ?? event.startDate) >= new Date().toISOString().slice(0, 10);
+  const allLinks: CardLink[] = buildRaceLinks(race, locale, {
+    documents: full?.practicalDetails?.documents,
+    forecast: upcoming && spot ? { href: windyUrl(spot.lat, spot.lng), label: windyLabel(locale) } : null,
+  });
 
   // The framed list, ruled off above and below like every other part of the card.
   const linkSection = allLinks.length ? (
@@ -174,7 +173,10 @@ function raceFactRows(full: EventListItem, event: EventListItem, locale: string)
     const address = venue
       ? [venue.streetAddress, [venue.postalCode, venue.locality].filter(Boolean).join(" ")].filter(Boolean).join(", ")
       : "";
-    const query = [venueName, address || full.location?.municipality, full.location?.countryCode].filter(Boolean).join(", ");
+    // The venue's own coordinates when the regulations give them; else its name and address.
+    const query = venue?.lat != null && venue.lng != null
+      ? `${venue.lat},${venue.lng}`
+      : [venueName, address || full.location?.municipality, full.location?.countryCode].filter(Boolean).join(", ");
     rows.push({
       key: "venue",
       icon: FACT_ICONS.venue,

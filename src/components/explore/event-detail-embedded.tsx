@@ -2,14 +2,14 @@
 
 import { format, parseISO } from "date-fns";
 import { Calendar, ChartNoAxesColumnIncreasing, MapPin, Trophy, UserRound } from "lucide-react";
-import type { DetailLink } from "@/components/explore/event-detail-model";
+import { googleDirectionsUrl, type DetailLink } from "@/components/explore/event-detail-model";
 import { ExplainedBadge } from "@/components/explore/explained-badge";
 import { MetaRow } from "@/components/explore/meta-row";
-import { CardSection, RaceMoreDetails, useFullRace, type CardLink } from "@/components/explore/race-more-details";
+import { CardSection, RaceMoreDetails, useFullRace } from "@/components/explore/race-more-details";
 import { RiderCategoryLine } from "@/components/race/rider-category-line";
 import { SameDayNote, UnverifiedAgesNote } from "@/components/race/same-day-note";
 import { useRiders } from "@/lib/riders";
-import { RaceWeather, RaceWeatherTab, windyLabel, windyUrl } from "@/components/race/race-weather";
+import { RaceWeather, RaceWeatherTab } from "@/components/race/race-weather";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { RaceActions } from "@/components/race/race-actions";
 import { Button } from "@/components/ui/button";
@@ -18,6 +18,7 @@ import { dateFnsLocale } from "@/lib/i18n/dates";
 import { asLocale, messagesFor, type Locale } from "@/lib/i18n/messages";
 import { localePath } from "@/lib/localized-paths";
 import { daysUntilLabel } from "@/lib/race-countdown";
+import { raceDestination } from "@/lib/race-links";
 
 /**
  * The race on a phone, in the order it is read: when and where and what kind
@@ -39,7 +40,6 @@ export function EmbeddedBody({
   placeLabel,
   directionsUrl,
   primary,
-  secondaryLinks,
   whoChips,
   ageHintFor,
   levelLabel,
@@ -61,7 +61,6 @@ export function EmbeddedBody({
   placeLabel: string;
   directionsUrl: string | null;
   primary: DetailLink | null;
-  secondaryLinks: DetailLink[];
   whoChips: string[];
   ageHintFor: (label: string) => string;
   levelLabel: string;
@@ -86,9 +85,11 @@ export function EmbeddedBody({
   const card = variant === "card";
   const countdown = event.status === "cancelled" ? null : daysUntilLabel(event.startDate, locale);
   // The place itself on Google Maps (the Navigate button plans the drive).
-  const lat = event.location?.lat;
-  const lng = event.location?.lng;
-  const placeQuery = lat != null && lng != null ? `${lat},${lng}` : placeLabel.trim();
+  // Where the regulations put the venue, once the whole race has arrived; the race's place until then.
+  const full = useFullRace(event.slug);
+  const spot = raceDestination(full ?? event);
+  const placeQuery = spot ? `${spot.lat},${spot.lng}` : placeLabel.trim();
+  const driveUrl = spot?.fromVenue ? googleDirectionsUrl(spot, placeLabel) : directionsUrl;
   const placeUrl = placeQuery ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(placeQuery)}` : null;
   // The forecast sits with the facts on the desktop card; the phone keeps it
   // for the race page, where it has room for the hour-by-hour chart.
@@ -111,17 +112,6 @@ export function EmbeddedBody({
       ? { lat: event.location.lat, lng: event.location.lng }
       : null;
   const tabs = TAB_LABELS[asLocale(locale)];
-  // Every way off the card, one list, one look: the organiser's pages, the
-  // series' page, the forecast.
-  const links: CardLink[] = [
-    // The way in leads the list: the registration, else the organiser's page.
-    ...(primary ? [{ ...primary, external: true }] : []),
-    ...secondaryLinks.map((link) => ({ ...link, external: true })),
-    ...(event.series
-      ? [{ href: localePath(locale, `series/${event.series.slug}`), label: event.series.name, kind: "series", external: false }]
-      : []),
-    ...(weatherAt ? [{ href: windyUrl(weatherAt.lat, weatherAt.lng), label: windyLabel(locale), kind: "weather", external: true }] : []),
-  ];
   const raceBody = (
     <>
       {/* Who it is for and what kind of race it is. */}
@@ -174,7 +164,7 @@ export function EmbeddedBody({
         ) : null}
       </CardSection>
 
-      <RaceMoreDetails event={event} locale={locale} links={links} onLink={trackEnter} />
+      <RaceMoreDetails event={event} locale={locale} onLink={trackEnter} />
 
       {trustText || checkedText ? (
         <CardSection className="pt-5">
@@ -251,7 +241,7 @@ export function EmbeddedBody({
         location="race_panel"
         show={["directions", "plan", "share", "map", "detail"]}
         primary={primary}
-        directionsUrl={directionsUrl}
+        directionsUrl={driveUrl}
         mapHref={onMap ? mapHref : ""}
         carryFilters
       />

@@ -20,7 +20,10 @@ export function PracticalRaceFacts({ event, locale }: { event: EventListItem; lo
   const venueName = venue?.name || event.location?.venue;
   const location = event.location;
   const hasVenueCoordinates = location?.lat != null && location.lng != null && Number.isFinite(location.lat) && Number.isFinite(location.lng) && (!venue || venue.name === location.venue);
-  const venueQuery = hasVenueCoordinates
+  // The venue's own coordinates from the regulations first, then the place's when it is the venue's.
+  const venueQuery = venue?.lat != null && venue.lng != null
+    ? `${venue.lat},${venue.lng}`
+    : hasVenueCoordinates
     ? `${location.lat},${location.lng}`
     : [venueName, venue?.streetAddress, venue?.postalCode, venue?.locality || location?.municipality, venue?.countryCode || location?.countryCode].filter(Boolean).join(", ");
   const venueMapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(venueQuery)}`;

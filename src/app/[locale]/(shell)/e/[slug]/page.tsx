@@ -12,6 +12,7 @@ import { findRacesForMissingSlug, getPublicEventBySlug, getSeriesBySlug, hostOfU
 import { pickNearbyRaces } from "@/lib/nearby-races";
 import { upcomingCatalogue } from "@/lib/upcoming-catalogue";
 import { RaceWeather, RaceWeatherSection } from "@/components/race/race-weather";
+import { windyLabel, windyUrl } from "@/lib/windy";
 import { categoryDetail, distinctCategories } from "@/lib/category-detail";
 import { roundOf } from "@/lib/series-rounds";
 import { raceHolidays } from "@/lib/holidays";
@@ -34,7 +35,7 @@ import { EventJsonLd } from "@/components/seo/event-json-ld";
 import { PracticalRaceFacts } from "@/components/race/practical-race-facts";
 import { RaceLinkRows, type RaceLink } from "@/components/race/race-link-rows";
 import { FACT_COPY } from "@/lib/race-fact-copy";
-import { DOCUMENT_KINDS } from "@/lib/race-fact-copy";
+import { buildRaceLinks, raceDestination } from "@/lib/race-links";
 import { RacePageView } from "@/components/analytics/race-page-view";
 import { Button } from "@/components/ui/button";
 import { eventMapPath } from "@/lib/event-url";
@@ -162,25 +163,16 @@ async function Race({ locale, event }: { locale: Locale; event: EventListItem })
     return [ageCategoryHelp(id, locale), years ? fill(rc.bornIn, { years }) : null].filter(Boolean).join(" · ");
   };
   const discChips = event.disciplines.slice(0, 4).map((d) => disciplineLabel(d, locale)).filter(Boolean);
-  // The organiser's own page first, then the entry form and the other pages.
-  const actionLinks = [
-    event.websiteUrl && event.websiteUrl !== event.registrationUrl ? { href: event.websiteUrl, label: rc.website, kind: "website" } : null,
-    event.registrationUrl ? { href: event.registrationUrl, label: t.register, kind: "register" } : null,
-    event.regulationsUrl ? { href: event.regulationsUrl, label: rc.regulations, kind: "regulations" } : null,
-    event.resultsUrl ? { href: event.resultsUrl, label: t.results, kind: "results" } : null,
-    event.facebookUrl ? { href: event.facebookUrl, label: "Facebook", kind: "facebook" } : null,
-    !event.registrationUrl && !event.websiteUrl && event.listingUrl ? { href: event.listingUrl, label: t.calendarListing, kind: "listing" } : null,
-  ].filter((l): l is { href: string; label: string; kind: string } => Boolean(l))
-    .filter((l, i, all) => all.findIndex((x) => x.href === l.href) === i);
-  // The first is the big button; the rest, with the regulations' other
-  // documents, are the list of links under it.
-  const documentNames = DOCUMENT_KINDS[locale];
-  const pageLinks: RaceLink[] = [
-    ...actionLinks.map((l) => ({ ...l, external: true })),
-    ...(event.practicalDetails?.documents?.value ?? [])
-      .filter((doc) => !actionLinks.some((l) => l.href === doc.url))
-      .map((doc) => ({ href: doc.url, label: documentNames[doc.kind], kind: doc.kind, external: true })),
-  ].filter((l, i, all) => all.findIndex((x) => x.href === l.href) === i);
+  // The same links, in the same order and under the same names, as the map's race card: the first
+  // is the big button; the rest, with the regulations' other documents, the series and the forecast,
+  // are the list of links under it.
+  const spot = raceDestination(event);
+  const upcoming = !isPast && event.status !== "cancelled";
+  const pageLinks: RaceLink[] = buildRaceLinks(event, locale, {
+    documents: event.practicalDetails?.documents,
+    forecast: upcoming && spot ? { href: windyUrl(spot.lat, spot.lng), label: windyLabel(locale) } : null,
+  });
+  const actionLinks = pageLinks.filter((l) => l.kind !== "series" && l.kind !== "weather");
 
   // What links this page into the rest of the site: its series' other rounds,
   // similar races nearby, and the hub for its kind of racing.
@@ -327,7 +319,7 @@ async function Race({ locale, event }: { locale: Locale; event: EventListItem })
             </MetaRow>
           ) : null}
           {!isPast && event.status !== "cancelled" && here?.lat != null && here.lng != null ? (
-            <RaceWeather lat={here.lat} lng={here.lng} date={event.startDate} locale={locale} />
+            <RaceWeather lat={here.lat} lng={here.lng} date={event.startDate} locale={locale} hideLink />
           ) : null}
           {holidays.length > 0 ? (
             // Public holiday, long weekend, summer holidays: what the date means for a family.
@@ -345,7 +337,7 @@ async function Race({ locale, event }: { locale: Locale; event: EventListItem })
           location="race_page"
           show={isPast ? ["directions", "share", "map"] : ["directions", "plan", "share", "map"]}
           primary={actionLinks[0] ?? null}
-          directionsUrl={googleDirectionsUrl(here, "")}
+          directionsUrl={googleDirectionsUrl(spot, "")}
           mapHref={mapHref}
         />
         {isPast ? null : (
@@ -429,8 +421,8 @@ async function Race({ locale, event }: { locale: Locale; event: EventListItem })
           <RaceDetailMap events={[event]} locale={locale} href={mapHref} label={t.viewOnMap} />
         </section>
 
-        {!isPast && event.status !== "cancelled" && here?.lat != null && here.lng != null ? (
-          <RaceWeatherSection lat={here.lat} lng={here.lng} date={event.startDate} locale={locale} />
+        {!isPast && event.status !== "cancelled" && spot ? (
+          <RaceWeatherSection lat={spot.lat} lng={spot.lng} date={event.startDate} locale={locale} />
         ) : null}
 
         {event.series && rounds.length > 0 ? (

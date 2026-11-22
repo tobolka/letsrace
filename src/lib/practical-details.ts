@@ -6,7 +6,9 @@ export const publicLink = z.url().max(2000).refine(value => { try { const u = ne
 const evidence = { sourceUrl: publicLink, quote: z.string().trim().min(8).max(1500), checkedAt: z.iso.datetime({ offset: true }), editionYear: z.number().int().min(2000).max(2100), status: z.enum(["current", "year_neutral", "inherited"]), originEventId: z.uuid().optional() };
 const itemEvidence = { sourceQuote: z.string().min(5).max(1500).optional(), sourceUrl: publicLink.optional(), checkedAt: z.iso.datetime({ offset: true }).optional() };
 export const practicalValueSchemas = {
-  venue: z.object({ name: text, streetAddress: text.optional(), postalCode: z.string().trim().min(1).max(20).optional(), locality: text.optional(), countryCode: z.string().regex(/^[A-Z]{2}$/).optional(), precision: z.enum(["venue", "start", "municipality"]) }).strict(),
+  venue: z.object({ name: text, streetAddress: text.optional(), postalCode: z.string().trim().min(1).max(20).optional(), locality: text.optional(), countryCode: z.string().regex(/^[A-Z]{2}$/).optional(), precision: z.enum(["venue", "start", "municipality"]),
+    // The venue's own coordinates, only when the quoted line gives them ("GPS: 49.6689N, 14.4300E"); directions lead there.
+    lat: z.number().min(-90).max(90).optional(), lng: z.number().min(-180).max(180).optional() }).strict(),
   organizer: z.object({ name: text, url: publicLink.optional(), contactName: text.optional(), phone: z.string().trim().min(5).max(40).optional(), email: z.string().trim().email().max(200).optional() }).strict(),
   parking: z.object({ note: z.string().trim().min(3).max(400) }).strict(),
   documents: z.array(z.object({ kind: z.enum(["regulations", "instructions", "series_rules"]), url: publicLink }).strict()).min(1),

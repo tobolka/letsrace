@@ -11,6 +11,7 @@ import {
 import { eventTrustLevel, lastCheckedLabel, trustLabel } from "@/lib/trust";
 import { ageCategoryHelp, ageCategoryLabel, disciplineLabel, raceLevelLabel, uciClassHelp } from "@/lib/i18n/taxonomy";
 import { birthYears } from "@/lib/birth-years";
+import { raceDestination } from "@/lib/race-links";
 
 export type DetailLink = { href: string; label: string; kind: string };
 
@@ -140,7 +141,8 @@ export function buildDetailModel(
   ]
     .filter(Boolean)
     .join(" · ");
-  const directionsUrl = googleDirectionsUrl(event.location, placeLabel);
+  // The venue's own coordinates when the regulations give them, else the race's place.
+  const directionsUrl = googleDirectionsUrl(raceDestination(event) ?? event.location, placeLabel);
 
   const primaryHref = primaryEnter || event.regulationsUrl;
   const primaryLabel = primaryEnterLabel ?? (event.regulationsUrl ? t.regulations : null);

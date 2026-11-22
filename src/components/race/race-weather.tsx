@@ -6,6 +6,7 @@ import { MetaRow } from "@/components/explore/meta-row";
 import { ExplainedHint } from "@/components/explore/explained-badge";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { asLocale, type Locale } from "@/lib/i18n/messages";
+import { windyUrl } from "@/lib/windy";
 import type { Climate, ClimateYear, ForecastHour, RaceWeather as Weather, Sky } from "@/lib/weather-model";
 import { createWeatherLoader, currentWeather } from "@/lib/weather-cache";
 import { wantsForecast } from "@/lib/weather-model";
@@ -187,16 +188,6 @@ const SKY_ICON: Record<Sky, React.ReactNode> = {
 const fill = (s: string, values: Record<string, number | string>) =>
   s.replace(/\{(\w+)\}/g, (_, k: string) => String(values[k] ?? ""));
 
-/**
- * Windy opened on the race's spot with its hour-by-hour forecast for that
- * point. The path names the point; `?lat,lng,zoom` alone only moves the map,
- * and Windy dropped it for its home page.
- */
-export function windyUrl(lat: number, lng: number): string {
-  const at = `${lat.toFixed(3)}/${lng.toFixed(3)}`;
-  return `https://www.windy.com/${at}?${lat.toFixed(3)},${lng.toFixed(3)},11`;
-}
-
 // The line and the chart on one page ask the same question once.
 const loadWeather = createWeatherLoader();
 
@@ -223,20 +214,6 @@ function useWeather(lat: number, lng: number, date: string) {
 
 type Props = { lat: number; lng: number; date: string; locale: string };
 
-/**
- * The forecast link's name on the race card, which lists its links together:
- * what it is for, not whose site it opens.
- */
-export function windyLabel(locale: string): string {
-  return FORECAST_LINK[asLocale(locale)];
-}
-const FORECAST_LINK: Record<Locale, string> = {
-  cs: "Předpověď počasí",
-  sk: "Predpoveď počasia",
-  pl: "Prognoza pogody",
-  de: "Wettervorhersage",
-  en: "Weather forecast",
-};
 const WEATHER_SOURCES = {
   "open-meteo": { name: "Open-Meteo", url: "https://open-meteo.com/" },
   "visual-crossing": { name: "Visual Crossing Weather", url: "https://www.visualcrossing.com/" },

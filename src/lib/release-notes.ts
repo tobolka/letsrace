@@ -19,6 +19,19 @@ export type ReleaseNote = {
 
 export const RELEASE_NOTES: ReleaseNote[] = [
   {
+    date: "2026-11-22",
+    items: {
+      cs: [
+        "Odkazy u závodu jsou na mapě a na stránce závodu stejné: stejné názvy, pořadí i řádky (včetně seriálu a předpovědi počasí).",
+        "Navigace k závodu vede na místo konání z propozic, když pořadatel uvádí jeho souřadnice, ne jen do středu obce.",
+      ],
+      en: [
+        "A race's links are the same on the map and on its own page: the same names, the same order and the same rows, including the series and the forecast.",
+        "Directions to a race lead to the venue named in the regulations when the organiser gives its coordinates, not just to the middle of the town.",
+      ],
+    },
+  },
+  {
     date: "2026-11-21",
     items: {
       cs: [
