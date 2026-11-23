@@ -3,9 +3,9 @@ import { messagesFor } from "@/lib/i18n/messages";
 import { useEffect, useRef, useState } from "react";
 import { track } from "@/lib/analytics";
 import type { EventListItem } from "@/lib/events";
-import { eventMapPath } from "@/lib/event-url";
+import { eventPagePath } from "@/lib/event-url";
 
-/** Share the race's map link: the native sheet where there is one, else the clipboard (and say so for 1.8 s). */
+/** Share the race's canonical page link: the native sheet where there is one, else the clipboard (and say so for 1.8 s). */
 export function useShareLink(event: EventListItem, locale: string) {
   const [linkCopied, setLinkCopied] = useState(false);
   const copyTimerRef = useRef<number | null>(null);
@@ -15,7 +15,7 @@ export function useShareLink(event: EventListItem, locale: string) {
     };
   }, []);
 
-  const sharePath = eventMapPath(locale, event);
+  const sharePath = eventPagePath(locale, event.slug);
 
   async function copyShareLink() {
     const url =

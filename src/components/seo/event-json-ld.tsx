@@ -97,7 +97,13 @@ export function EventJsonLd({
   const closes = event.registrationClosesAt?.slice(0, 10);
   if (event.registrationUrl && (event.endDate ?? event.startDate) >= today &&
       (!closes || closes >= today) && !["cancelled", "postponed"].includes(event.status)) {
-    data.offers = { "@type": "Offer", url: event.registrationUrl };
+    const fees = event.practicalDetails?.fees?.value;
+    const lowestFee = fees?.length ? fees.reduce((a, b) => (b.amount < a.amount ? b : a)) : null;
+    data.offers = {
+      "@type": "Offer",
+      url: event.registrationUrl,
+      ...(lowestFee ? { price: lowestFee.amount, priceCurrency: lowestFee.currency } : {}),
+    };
   }
   if (placeLabel || event.location?.lat != null) {
     const location: Record<string, unknown> = {

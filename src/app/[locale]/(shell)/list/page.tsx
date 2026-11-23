@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { ListView } from "@/components/shell/list-view";
 import { CataloguePreview } from "@/components/seo/catalogue-preview";
 import { locales, type Locale } from "@/lib/i18n/messages";
-import { absoluteUrl, localeAlternates, SITE_NAME } from "@/lib/seo";
+import { absoluteUrl, localeAlternates, localeOgImagePath, SITE_NAME, socialCard } from "@/lib/seo";
 import { localePath } from "@/lib/localized-paths";
 import { catalogueViewSeo } from "@/lib/catalogue-view-seo";
 
@@ -27,10 +27,20 @@ export async function generateMetadata({
   const { locale } = await params;
   // The locale layout sets a plain title, which drops the root template.
   const l = locales.includes(locale as Locale) ? locale as Locale : "en";
+  const url = absoluteUrl(localePath(l, "list"));
+  const { title, description } = catalogueViewSeo[l].list;
   return {
-    title: { absolute: `${catalogueViewSeo[l].list.title} · ${SITE_NAME}` },
-    description: catalogueViewSeo[l].list.description,
-    alternates: { canonical: absoluteUrl(localePath(l, "list")), languages: localeAlternates("list") },
+    title: { absolute: `${title} · ${SITE_NAME}` },
+    description,
+    alternates: { canonical: url, languages: localeAlternates("list") },
+    ...socialCard({
+      title,
+      ogTitle: `${title} · ${SITE_NAME}`,
+      description,
+      url,
+      localeKey: l,
+      imagePath: localeOgImagePath(l),
+    }),
   };
 }
 

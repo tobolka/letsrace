@@ -14,8 +14,9 @@ import { FACT_COPY } from "@/lib/race-fact-copy";
  */
 export function PracticalRaceFacts({ event, locale }: { event: EventListItem; locale: string }) {
   const facts = event.practicalDetails ?? {};
-  const c = practicalCopy[locale === "cs" ? "cs" : "en"];
-  const names = FACT_COPY[asLocale(locale)];
+  const loc = asLocale(locale);
+  const c = practicalCopy[loc];
+  const names = FACT_COPY[loc];
   const venue = facts.venue?.value;
   const venueName = venue?.name || event.location?.venue;
   const location = event.location;
@@ -37,7 +38,7 @@ export function PracticalRaceFacts({ event, locale }: { event: EventListItem; lo
       <div className="mt-2 text-xs leading-relaxed text-muted-foreground">
         {fact.status !== "current" && <p>{fact.status === "inherited" ? c.previous : c.neutral}</p>}
         <a href={fact.sourceUrl} target="_blank" rel="noopener noreferrer" className="underline underline-offset-4">{c.source}: {new URL(fact.sourceUrl).hostname}</a>
-        <details className="mt-1"><summary className="cursor-pointer">{locale === "cs" ? "Co uvádí zdroj" : "What the source says"}</summary><div className="mt-2 space-y-3">{[...citations.values()].map((citation, index) => <blockquote key={index} className="border-l-2 pl-3"><p>{citation.quote}</p>{citation.url !== fact.sourceUrl && <a className="underline" href={citation.url} target="_blank" rel="noopener noreferrer">{new URL(citation.url).hostname}</a>}</blockquote>)}</div></details>
+        <details className="mt-1"><summary className="cursor-pointer">{c.sourceSays}</summary><div className="mt-2 space-y-3">{[...citations.values()].map((citation, index) => <blockquote key={index} className="border-l-2 pl-3"><p>{citation.quote}</p>{citation.url !== fact.sourceUrl && <a className="underline" href={citation.url} target="_blank" rel="noopener noreferrer">{new URL(citation.url).hostname}</a>}</blockquote>)}</div></details>
       </div>
     );
   };
@@ -45,7 +46,7 @@ export function PracticalRaceFacts({ event, locale }: { event: EventListItem; lo
   const rows: { key: string; icon: ReactNode; label: string; content: ReactNode }[] = [];
   if (facts.schedule) rows.push({ key: "schedule", icon: FACT_ICONS.schedule, label: names.schedule, content: <>
     <FactList rows={facts.schedule.value.map((item, i) => ({ key: i, lead: `${multiDay ? `${date(item.date)} ` : ""}${item.approximate ? "≈ " : ""}${item.time.slice(0, 5)}${item.endTime ? `–${item.endTime}` : ""}`, label: item.label }))} />
-    {facts.schedule.value.some(item => item.approximate) && <p className="mt-2 text-xs text-muted-foreground">{locale === "cs" ? "Časy s ≈ uvádí pořadatel jako přibližné." : "The organiser marks times with ≈ as approximate."}</p>}
+    {facts.schedule.value.some(item => item.approximate) && <p className="mt-2 text-xs text-muted-foreground">{c.approximateNote}</p>}
     {source(facts.schedule)}
   </> });
   if (facts.fees) rows.push({ key: "fees", icon: FACT_ICONS.fees, label: names.fees, content: <>
@@ -67,9 +68,9 @@ export function PracticalRaceFacts({ event, locale }: { event: EventListItem; lo
     {source(facts.routes)}
   </> });
   if (venueName) rows.push({ key: "venue", icon: FACT_ICONS.venue, label: names.venue, content: <>
-    <a href={venueMapUrl} target="_blank" rel="noopener noreferrer" className="font-medium underline-offset-4 hover:underline" title={locale === "cs" ? "Zobrazit místo na mapě" : "View place on map"}>{venueName}</a>
+    <a href={venueMapUrl} target="_blank" rel="noopener noreferrer" className="font-medium underline-offset-4 hover:underline" title={c.viewOnMap}>{venueName}</a>
     {venue && <p className="text-muted-foreground">{[venue.streetAddress, [venue.postalCode, venue.locality].filter(Boolean).join(" ")].filter(Boolean).join(", ")}</p>}
-    {venue?.precision === "municipality" && <p className="text-xs text-muted-foreground">{locale === "cs" ? "Pouze obec; přesný start není uvedený." : "Municipality only; the exact start is not stated."}</p>}
+    {venue?.precision === "municipality" && <p className="text-xs text-muted-foreground">{c.municipalityOnly}</p>}
     {facts.venue && source(facts.venue)}
   </> });
   if (facts.organizer) {

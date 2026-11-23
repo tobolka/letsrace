@@ -5,7 +5,6 @@ import { Suspense } from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { listHubEvents } from "@/lib/race-hub-data";
-import { thisWeekendRange } from "@/lib/date-presets";
 import {
   countryDisplayName,
   isListedCountry,
@@ -49,30 +48,32 @@ export async function generateMetadata({ params, searchParams }: Props): Promise
   // The visible title carries the query someone actually types — the country
   // name alone competes with the country, not with race calendars.
   const heading = `${fillCopy(copy.countryTitle, { in: where })} ${seasonLabel()} – ${raceCopy[locale].calendar}`;
-  const title = `${heading} · ${SITE_NAME}`;
   const description = fillCopy(copy.country, { in: where });
   // Match the rendered slice, including malformed and out-of-range requests.
   // The route already reads searchParams; catalogue rows retain their shared cache.
   const today = new Date().toISOString().slice(0, 10);
   const events = await listHubEvents({ countryCodes: [code], dateFrom: today, dateTo: addDaysIso(today, 365) });
   const { page } = paginateRaces(events, (await searchParams).page);
+  const pagedHeading = page > 1 ? `${heading} (${page})` : heading;
+  const pagedTitle = `${pagedHeading} · ${SITE_NAME}`;
   const pagePath = (l: Locale) => raceListPagePath(hubPath(l, code), String(page));
   const url = absoluteUrl(`/${locale}/${pagePath(locale)}`);
   return {
-    title: brandedTitle(heading),
+    title: brandedTitle(pagedHeading),
     description,
     alternates: {
       canonical: url,
       languages: localeAlternates(pagePath),
     },
+    robots: events.length > 0 ? undefined : { index: false, follow: true },
     ...socialCard({
-      title: heading,
-      ogTitle: title,
+      title: pagedHeading,
+      ogTitle: pagedTitle,
       description,
       url,
       localeKey: locale,
       imagePath: localeOgImagePath(locale),
-      imageAlt: title,
+      imageAlt: pagedTitle,
     }),
   };
 }
@@ -102,7 +103,6 @@ async function CountryHub({
   const rawPage = (await searchParams).page;
   const t = messages[locale];
   const name = countryDisplayName(code, locale);
-  const weekend = thisWeekendRange();
   const today = new Date().toISOString().slice(0, 10);
   // The whole coming year, every race a link: the hub is how a crawler — and
   // a reader planning a season — reaches the races beyond next month.
@@ -127,6 +127,7 @@ async function CountryHub({
         title={heading}
         description={fillCopy(copy.country, { in: where })}
         path={raceListPagePath(hubPath(locale, code), String(paginated.page))}
+        breadcrumb={[{ name: rc.browse, path: hubPath(locale) }]}
         events={paginated.events.map((e) => ({
           name: e.name,
           slug: e.slug,
@@ -141,7 +142,7 @@ async function CountryHub({
       <div className="mx-auto max-w-3xl px-4 pb-12 pt-4 sm:px-6">
         <BrowseIntro title={`${heading} ${seasonLabel()}`} description={fill(rc.hubIntro, { count: events.length })}>
           <Button asChild>
-            <Link href={`/${locale}?country=${code}&dateFrom=${weekend.from}&dateTo=${weekend.to}`}>
+            <Link href={`/${locale}?country=${code}&dateFrom=${today}&dateTo=`}>
               <MapPinned data-icon="inline-start" />
               {t.viewOnMap}
             </Link>

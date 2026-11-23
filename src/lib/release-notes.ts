@@ -19,6 +19,21 @@ export type ReleaseNote = {
 
 export const RELEASE_NOTES: ReleaseNote[] = [
   {
+    date: "2026-11-23",
+    items: {
+      cs: [
+        "Sdílení závodu posílá přímý odkaz na jeho stránku s náhledem místo obecné mapy.",
+        "Tlačítko Zobrazit na mapě na stránce země otevře všechny nadcházející závody, ne jen tento víkend.",
+        "Praktické údaje před cestou na závod a kategorie jezdců jsou přeložené i do slovenštiny, němčiny a polštiny.",
+      ],
+      en: [
+        "Sharing a race sends a direct link to its own page with a preview instead of the general map.",
+        "View on map from a country page opens all upcoming races rather than only this weekend.",
+        "Before-you-travel details and rider categories are now translated into Slovak, German and Polish too.",
+      ],
+    },
+  },
+  {
     date: "2026-11-22",
     items: {
       cs: [

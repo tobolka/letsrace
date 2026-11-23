@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { LegalDoc, type LegalDocument } from "@/components/legal/legal-doc";
 import { asLocale, type Locale } from "@/lib/i18n/messages";
 import { LEGAL_CONTACT as CONTACT, OPERATOR } from "@/lib/legal";
-import { SITE_NAME, absoluteUrl, localeAlternates } from "@/lib/seo";
+import { SITE_NAME, absoluteUrl, localeAlternates, localeOgImagePath, socialCard } from "@/lib/seo";
 
 const UPDATED = "2026-11-18";
 
@@ -373,10 +373,19 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const locale = asLocale((await params).locale);
   const doc = DOCS[locale];
+  const url = absoluteUrl(`/${locale}/terms`);
   return {
     title: { absolute: `${doc.title} · ${SITE_NAME}` },
     description: doc.intro,
-    alternates: { canonical: absoluteUrl(`/${locale}/terms`), languages: localeAlternates("terms") },
+    alternates: { canonical: url, languages: localeAlternates("terms") },
+    ...socialCard({
+      title: doc.title,
+      ogTitle: `${doc.title} · ${SITE_NAME}`,
+      description: doc.intro,
+      url,
+      localeKey: locale,
+      imagePath: localeOgImagePath(locale),
+    }),
   };
 }
 

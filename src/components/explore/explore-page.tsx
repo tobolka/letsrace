@@ -22,6 +22,7 @@ export function ExplorePage({ locale, initialEvents }: { locale: Locale; initial
         href="/intro-race-v2.avif"
         type="image/avif"
         imageSrcSet="/intro-race-v2.avif 1x, /intro-race-v2@2x.avif 2x"
+        media="(min-width: 768px)"
         fetchPriority="high"
       />
       {/* nuqs reads search params and suspends during static rendering. Keep

@@ -17,6 +17,14 @@ import { localePath, translatePathname } from "@/lib/localized-paths";
 import { LEGAL_PAGES, LEGAL_TITLES } from "@/lib/legal";
 import { cn } from "@/lib/utils";
 
+const FEEDBACK_LABEL: Record<string, string> = {
+  cs: "Nápad nebo zpětná vazba…",
+  sk: "Nápad alebo spätná väzba…",
+  en: "Feature / feedback…",
+  de: "Vorschlag / Feedback…",
+  pl: "Pomysł / opinia…",
+};
+
 const SubmitRaceModal = dynamic(() =>
   import("@/components/explore/submit-race-modal").then((m) => ({ default: m.SubmitRaceModal })),
 );
@@ -159,7 +167,7 @@ export function MoreSheet({
                 <li className="border-b">
                   <button type="button" className={row} onClick={() => openDialog("feedback")}>
                     <MessageSquare aria-hidden />
-                    <span className="min-w-0 flex-1 truncate">Feature / feedback…</span>
+                    <span className="min-w-0 flex-1 truncate">{FEEDBACK_LABEL[locale] ?? FEEDBACK_LABEL.en}</span>
                   </button>
                 </li>
                 <li>

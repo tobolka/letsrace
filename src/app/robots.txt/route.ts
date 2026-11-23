@@ -6,12 +6,6 @@ export function GET() {
   const body = [
     "# Let's Race robots.txt",
     "User-agent: *",
-    // Inside the group, not after it. A blank line ends a record, so sitting
-    // below one left this attached to no user-agent at all — the signal was
-    // published and applied to nobody. Lighthouse still calls it an unknown
-    // directive and docks the SEO audit for it; real crawlers are required to
-    // ignore lines they do not recognise, so the audit is the only cost.
-    "Content-Signal: ai-train=no, search=yes, ai-input=yes",
     "Allow: /",
     "Disallow: /admin",
     "Disallow: /admin/",
@@ -21,7 +15,6 @@ export function GET() {
     // hosting allowance than they bring: one made 45% of a day's requests. A named
     // group replaces the one above for that crawler, so it repeats the rules.
     "User-agent: OAI-SearchBot",
-    "Content-Signal: ai-train=no, search=yes, ai-input=yes",
     "Allow: /",
     "Disallow: /admin",
     "Disallow: /admin/",
@@ -62,6 +55,7 @@ export function GET() {
     headers: {
       "Content-Type": "text/plain; charset=utf-8",
       "Cache-Control": "public, max-age=3600, stale-while-revalidate=86400",
+      "CDN-Cache-Control": "public, s-maxage=3600",
     },
   });
 }

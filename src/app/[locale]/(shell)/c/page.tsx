@@ -9,6 +9,7 @@ import { hubPath } from "@/lib/localized-paths";
 import { raceCopy } from "@/lib/seo-race-copy";
 import { BrowseHeader, BrowseIntro, CountryCard, TileGrid } from "@/components/browse/browse-ui";
 import { CollectionGrid } from "@/components/browse/collection-grid";
+import { HubJsonLd } from "@/components/seo/hub-json-ld";
 import { collectionCopy } from "@/lib/race-collections";
 import { BrowseSkeleton } from "./browse-skeleton";
 
@@ -59,6 +60,13 @@ async function Browse({ locale }: { locale: Locale }) {
 
   return (
     <article className="min-h-full bg-background">
+      <HubJsonLd
+        locale={locale}
+        title={rc.browseTitle}
+        description={rc.browseDescription}
+        path={hubPath(locale)}
+        events={[]}
+      />
       <BrowseHeader locale={locale} crumbs={[{ label: rc.browse }]} />
       <div className="mx-auto max-w-3xl px-4 pb-12 pt-4 sm:px-6">
         <BrowseIntro title={rc.browse} description={collectionCopy[locale].browseIntro} />

@@ -216,10 +216,15 @@ async function Race({ locale, event }: { locale: Locale; event: EventListItem })
         </p>
       )}
       <RacePageView raceId={event.id} slug={event.slug} hasRegistration={Boolean(event.registrationUrl)} hasPrimaryOutbound={Boolean(event.registrationUrl || event.websiteUrl || event.listingUrl || event.regulationsUrl)} isPast={isPast} />
+      {/* Show raw organiser description only when the event's country language matches the page locale; otherwise use the localized summary so Czech/German text does not leak onto English/other pages. */}
       <EventJsonLd
         event={event}
         locale={locale}
-        description={event.description?.trim() || raceSummary(event, locale).join(" ")}
+        description={(() => {
+          const cc = event.location?.countryCode?.toUpperCase();
+          const sameLanguage = (cc === "CZ" && locale === "cs") || (cc === "SK" && (locale === "sk" || locale === "cs")) || (cc === "PL" && locale === "pl") || ((cc === "DE" || cc === "AT" || cc === "CH") && locale === "de");
+          return (sameLanguage ? event.description?.trim() : null) || raceSummary(event, locale).join(" ");
+        })()}
         breadcrumb={[
           { name: SITE_NAME, path: "" },
           ...(hubCountry && countryName ? [{ name: countryName, path: hubPath(locale, hubCountry) }] : []),
@@ -392,7 +397,11 @@ async function Race({ locale, event }: { locale: Locale; event: EventListItem })
           {summary.length ? <p className="mb-2 text-sm font-medium">{capitalizeFirst(summary.join(" · "))}</p> : null}
           {/* One paragraph: the sentences are one account of the race, not a list. */}
           <p className="max-w-xl text-pretty text-sm leading-relaxed text-muted-foreground">
-            {event.description?.trim() || raceSummary(event, locale).join(" ")}
+            {(() => {
+              const cc = event.location?.countryCode?.toUpperCase();
+              const sameLanguage = (cc === "CZ" && locale === "cs") || (cc === "SK" && (locale === "sk" || locale === "cs")) || (cc === "PL" && locale === "pl") || ((cc === "DE" || cc === "AT" || cc === "CH") && locale === "de");
+              return (sameLanguage ? event.description?.trim() : null) || raceSummary(event, locale).join(" ");
+            })()}
           </p>
         </section>
 

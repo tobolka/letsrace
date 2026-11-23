@@ -17,6 +17,6 @@ export const SITEMAP_IDS = [SITEMAP_HUBS, ...locales.map(raceSitemapId)];
  * races; the other languages join once those are being crawled. Their files
  * still exist and the pages are still linked through hreflang.
  */
-export const ANNOUNCED_RACE_LOCALES: readonly Locale[] = ["cs", "en"];
+export const ANNOUNCED_RACE_LOCALES: readonly Locale[] = ["cs"];
 
 export const sitemapPath = (id: string) => `/sitemaps/sitemap/${id}.xml`;

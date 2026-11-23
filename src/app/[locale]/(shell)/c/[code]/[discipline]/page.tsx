@@ -61,18 +61,19 @@ export async function generateMetadata({ params, searchParams }: Props): Promise
   const heading = `${fillCopy(copy.title, { in: where })} ${seasonLabel()} – ${raceCopy[locale].calendar}`;
   const description = fillCopy(copy.description, { in: where, races: counted(events.length, "race", locale) });
   const { page } = paginateRaces(events, (await searchParams).page);
+  const pagedHeading = page > 1 ? `${heading} (${page})` : heading;
   const pagePath = (l: Locale) => raceListPagePath(hubPath(l, code, discipline), String(page));
   const path = pagePath(locale);
   const url = absoluteUrl(`/${locale}/${path}`);
-  const ogTitle = `${heading} · ${SITE_NAME}`;
+  const ogTitle = `${pagedHeading} · ${SITE_NAME}`;
 
   return {
-    title: brandedTitle(heading),
+    title: brandedTitle(pagedHeading),
     description,
     // Per language, not this language's path: `/en/zavody/cz/road` is not a page.
     alternates: { canonical: url, languages: localeAlternates(pagePath) },
     ...socialCard({
-      title: heading,
+      title: pagedHeading,
       ogTitle,
       description,
       url,

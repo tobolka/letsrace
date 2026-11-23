@@ -43,10 +43,22 @@ function edgeSeconds(response: Response): number {
   return Math.min(seconds, MAX_EDGE_SECONDS)
 }
 
+const TRACKING_PARAM = /^(?:utm_[a-z0-9_]+|fbclid|gclid|dclid|msclkid|mc_cid|mc_eid|srsltid|_gl)$/i
+const QUERYLESS_ROUTE = /^\/(?:(?:cs|en|sk|de|pl)\/(?:e|zavod|preteky|rennen|wyscigi|series|serie|seria|about|o-projektu|o-projekte|ueber|o-projekcie|privacy|soukromi|sukromie|datenschutz|prywatnosc|terms|podminky|podmienky|nutzungsbedingungen|regulamin)(?:\/|$)|robots\.txt$|sitemap\.xml$|sitemaps\/)/
+
 function cacheKey(request: Request, env: WorkerEnv): Request {
   const url = new URL(request.url)
   const version = env.CF_VERSION_METADATA?.id ?? "dev"
-  return new Request(`https://edge-cache.invalid/${version}${url.pathname}${url.search}`)
+  let search = ""
+  if (url.search && !QUERYLESS_ROUTE.test(url.pathname)) {
+    const kept = new URLSearchParams()
+    for (const [k, v] of [...url.searchParams.entries()].sort(([a], [b]) => a.localeCompare(b))) {
+      if (!TRACKING_PARAM.test(k)) kept.append(k, v)
+    }
+    const qs = kept.toString()
+    if (qs) search = `?${qs}`
+  }
+  return new Request(`https://edge-cache.invalid/${version}${url.pathname}${search}`)
 }
 
 function cacheable(request: Request): boolean {

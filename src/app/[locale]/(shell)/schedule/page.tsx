@@ -3,7 +3,7 @@ import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import { ScheduleView } from "@/components/shell/schedule-view";
 import { locales, type Locale } from "@/lib/i18n/messages";
-import { absoluteUrl, localeAlternates, SITE_NAME } from "@/lib/seo";
+import { absoluteUrl, localeAlternates, localeOgImagePath, SITE_NAME, socialCard } from "@/lib/seo";
 import { localePath } from "@/lib/localized-paths";
 import { CataloguePreview } from "@/components/seo/catalogue-preview";
 import { catalogueViewSeo } from "@/lib/catalogue-view-seo";
@@ -26,10 +26,20 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale } = await params;
   const l = locales.includes(locale as Locale) ? locale as Locale : "en";
+  const url = absoluteUrl(localePath(l, "schedule"));
+  const { title, description } = catalogueViewSeo[l].schedule;
   return {
-    title: { absolute: `${catalogueViewSeo[l].schedule.title} · ${SITE_NAME}` },
-    description: catalogueViewSeo[l].schedule.description,
-    alternates: { canonical: absoluteUrl(localePath(l, "schedule")), languages: localeAlternates("schedule") },
+    title: { absolute: `${title} · ${SITE_NAME}` },
+    description,
+    alternates: { canonical: url, languages: localeAlternates("schedule") },
+    ...socialCard({
+      title,
+      ogTitle: `${title} · ${SITE_NAME}`,
+      description,
+      url,
+      localeKey: l,
+      imagePath: localeOgImagePath(l),
+    }),
   };
 }
 

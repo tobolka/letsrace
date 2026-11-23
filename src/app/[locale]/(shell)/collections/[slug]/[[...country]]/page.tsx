@@ -41,14 +41,15 @@ export async function generateMetadata({ params, searchParams }: Props): Promise
   const { locale, slug, countryCode, title, description } = data;
   const { events } = await getRaceCollection(slug, countryCode);
   const { page } = paginateRaces(events, (await searchParams).page);
+  const pagedTitle = page > 1 ? `${title} (${page})` : title;
   const pagePath = (l: Locale) => raceListPagePath(collectionPath(l, slug, countryCode), String(page));
   const url = absoluteUrl(`/${locale}/${pagePath(locale)}`);
   return {
-    title: brandedTitle(title),
+    title: brandedTitle(pagedTitle),
     description,
     alternates: { canonical: url, languages: localeAlternates(pagePath) },
     robots: { index: events.length >= MIN_COLLECTION_RACES, follow: true },
-    ...socialCard({ title, description, url, localeKey: locale, imagePath: localeOgImagePath(locale), imageAlt: title }),
+    ...socialCard({ title: pagedTitle, description, url, localeKey: locale, imagePath: localeOgImagePath(locale), imageAlt: pagedTitle }),
   };
 }
 

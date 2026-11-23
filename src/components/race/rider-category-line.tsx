@@ -11,12 +11,16 @@ const HEADING: Record<string, string> = {
   cs: "Kategorie tvých jezdců",
   sk: "Kategórie tvojich jazdcov",
   en: "Your riders' categories",
+  de: "Kategorien deiner Fahrer",
+  pl: "Kategorie Twoich zawodników",
 };
 
 const TITLE: Record<string, string> = {
   cs: "Kategorie a startovné pro vaše jezdce podle roku narození",
   sk: "Kategórie a štartovné pre vašich jazdcov podľa roku narodenia",
   en: "Your riders' categories and entry fees, by year of birth",
+  de: "Kategorien und Startgeld für deine Fahrer nach Geburtsjahr",
+  pl: "Kategorie i opłaty startowe dla Twoich zawodników według rocznika",
 };
 
 function money(amount: number, currency: string, locale: string) {

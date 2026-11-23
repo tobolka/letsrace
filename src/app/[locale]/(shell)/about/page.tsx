@@ -4,7 +4,7 @@ import { DOC_WIDTH } from "@/components/account/panel";
 import { LegalLinks } from "@/components/legal/legal-doc";
 import { asLocale, locales, type Locale } from "@/lib/i18n/messages";
 import { RELEASE_NOTES, releaseNoteHeadings, releaseNoteItems, type ReleaseNote } from "@/lib/release-notes";
-import { absoluteUrl, getSiteUrl, localeAlternates, SITE_AUTHOR, SITE_NAME, SITE_PROFILES } from "@/lib/seo";
+import { absoluteUrl, getSiteUrl, localeAlternates, localeOgImagePath, SITE_AUTHOR, SITE_NAME, SITE_PROFILES, socialCard } from "@/lib/seo";
 
 const CONTACT = "info@letsrace.cz";
 const UPDATED = RELEASE_NOTES[0]!.date;
@@ -241,10 +241,19 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const locale = asLocale((await params).locale);
   const doc = DOCS[locale];
+  const url = absoluteUrl(`/${locale}/about`);
   return {
     title: { absolute: `${doc.title} · ${SITE_NAME}` },
     description: doc.intro,
-    alternates: { canonical: absoluteUrl(`/${locale}/about`), languages: localeAlternates("about") },
+    alternates: { canonical: url, languages: localeAlternates("about") },
+    ...socialCard({
+      title: doc.title,
+      ogTitle: `${doc.title} · ${SITE_NAME}`,
+      description: doc.intro,
+      url,
+      localeKey: locale,
+      imagePath: localeOgImagePath(locale),
+    }),
   };
 }
 

@@ -50,8 +50,8 @@ describe("sitemap split", () => {
     expect(await build("unknown")).toEqual([]);
   });
 
-  it("announces the hubs and the Czech and English races in the index", async () => {
+  it("announces the hubs and the Czech races in the index", async () => {
     const xml = await sitemapIndex().text();
-    expect(xml.match(/<loc>[^<]+<\/loc>/g)?.map((loc) => loc.replace(/.*\/sitemap\/|\.xml.*/g, ""))).toEqual(["hubs", "races-cs", "races-en"]);
+    expect(xml.match(/<loc>[^<]+<\/loc>/g)?.map((loc) => loc.replace(/.*\/sitemap\/|\.xml.*/g, ""))).toEqual(["hubs", "races-cs"]);
   });
 });

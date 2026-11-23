@@ -732,7 +732,7 @@ export async function listSitemapSeries(
   return out;
 }
 
-export async function listSitemapEvents(limit = 4000): Promise<
+export async function listSitemapEvents(limit = 10000): Promise<
   { slug: string; startDate: string; updatedAt: string | null }[]
 > {
   const supabase = createServerSupabase();

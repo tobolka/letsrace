@@ -34,6 +34,14 @@ export function SiteJsonLd({ locale }: { locale: Locale }) {
         description: seoCopy[locale].description,
         inLanguage: locale,
         publisher: { "@id": `${site}/#organization` },
+        potentialAction: {
+          "@type": "SearchAction",
+          target: {
+            "@type": "EntryPoint",
+            urlTemplate: `${absoluteUrl(`/${locale}`)}?q={search_term_string}`,
+          },
+          "query-input": "required name=search_term_string",
+        },
       },
     ],
   };

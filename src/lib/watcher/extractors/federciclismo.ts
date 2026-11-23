@@ -156,6 +156,10 @@ function parseFciPage(url: string, html: string): ParsedEvent[] {
     const tipo = spans[1] || a.find("h4").text();
     const abs = href.startsWith("http") ? href : `${origin}${href}`;
 
+    const isNonCompetitiveRide = /\b(?:non\s+competitiv[aeo]|cicloturistic[aeo]|ciclopasseggiata|cicloraduno)\b/i.test(
+      `${name} ${tipo}`,
+    );
+
     events.push({
       externalId: `fci-${id || normalizeName(name)}-${startDate}`,
       name: name
@@ -169,6 +173,7 @@ function parseFciPage(url: string, html: string): ParsedEvent[] {
       placeText: placeText.slice(0, 100),
       countryHint: "IT",
       discipline: mapFciDiscipline(`${name} ${tipo}`),
+      ...(isNonCompetitiveRide ? { eventType: "ride" as const } : {}),
       audience: /giovanile|junior|esordienti|allieve|allievi|ragazzi|giovanissimi/i.test(
         `${name} ${tipo}`,
       )
