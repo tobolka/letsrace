@@ -184,7 +184,7 @@ for (const { race, place, problems } of checked) {
 const eventOf = (change: Change) => change.owner ?? (change.tab === "public.events" ? change.pk.id : (change.after ?? change.before)?.event_id as string | undefined);
 const onlyNew = process.argv.includes("--only-new-races");
 const maxNew = Number(process.argv.find(value => value.startsWith("--max-new="))?.slice(10) ?? 100);
-if (!Number.isInteger(maxNew) || maxNew < 1 || maxNew > 100) throw Error("Invalid new race batch size");
+if (!Number.isInteger(maxNew) || maxNew < 1 || maxNew > 250) throw Error("Invalid new race batch size");
 const selected = kept.sort((a,b)=>a.date.localeCompare(b.date)).slice(0,maxNew);
 const readyIds = new Set(selected.map(race => race.id)), readyPlaces = new Set(selected.map(race => race.location));
 const primary = new Map(changes.filter(c=>c.tab==="public.events" && c.op==="insert").map(c=>[c.pk.id,c.after?.series_id]));
