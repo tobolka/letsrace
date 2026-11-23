@@ -21,8 +21,9 @@ export function dateFilterLabel(
   dateTo: string,
   presetLabels: Record<DatePresetId, string>,
   df: Locale,
+  now = new Date(),
 ): string {
-  const preset = datePresetRanges(dateFrom, dateTo).find((p) => p.active);
+  const preset = datePresetRanges(dateFrom, dateTo, now).find((p) => p.active);
   if (preset) return presetLabels[preset.id];
   const day = (iso: string) => format(parseISO(iso), "d MMM", { locale: df });
   if (dateFrom && dateTo) return dateFrom === dateTo ? day(dateFrom) : `${day(dateFrom)} – ${day(dateTo)}`;

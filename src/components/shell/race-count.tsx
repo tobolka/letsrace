@@ -53,7 +53,7 @@ export function raceCountWithDates(n: number, locale: string, dateFrom: string, 
   // A named window is said; a picked range is already on the date chip just
   // above, and repeated here it only crowded the line.
   const named = datePresetRanges(dateFrom, dateTo, now).some((p) => p.active);
-  return named ? `${raceCountLabel(n, locale)} ${dateScopeLabel(dateFrom, dateTo, locale)}` : raceCountLabel(n, locale);
+  return named ? `${raceCountLabel(n, locale)} ${dateScopeLabel(dateFrom, dateTo, locale, now)}` : raceCountLabel(n, locale);
 }
 
 /**
@@ -97,7 +97,7 @@ export function RaceCount({
 }
 
 /** "tento víkend", "this month", "22 Nov – 23 Nov": the window a count is for, said after it. */
-export function dateScopeLabel(dateFrom: string, dateTo: string, locale: string): string {
+export function dateScopeLabel(dateFrom: string, dateTo: string, locale: string, now = new Date()): string {
   const t = messagesFor(locale);
   const label = dateFilterLabel(
     dateFrom,
@@ -111,6 +111,7 @@ export function dateScopeLabel(dateFrom: string, dateTo: string, locale: string)
       any: t.anyDate,
     },
     dateFnsLocale(locale),
+    now,
   );
   // German nouns keep their capital; the rest read as the middle of a sentence.
   return asLocale(locale) === "de" ? label : label.charAt(0).toLowerCase() + label.slice(1);
