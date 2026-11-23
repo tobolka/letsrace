@@ -1,6 +1,8 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { braveSearch } from "@/lib/catalog/brave";
+import { serperSearch } from "@/lib/catalog/serper";
+import { searxngSearch } from "@/lib/catalog/searxng";
 import { askWithSearch, llmAvailable, SONNET } from "@/lib/llm/anthropic";
 import { fetchPage } from "@/lib/watcher/http";
 import { combineExtractedEvents, extractEvents, type ExtractResult } from "@/lib/watcher/core";
@@ -24,6 +26,14 @@ function dependencies(ai: boolean): DiscoveryDependencies {
     search: async task => {
       if (task.spec.provider === "brave") {
         const hits = await braveSearch(task.spec.query, { country: task.spec.country, count: 20 });
+        return { urls: hits.map(h => h.url), hints: [], searches: 1, costUsd: 0, raw: hits };
+      }
+      if (task.spec.provider === "serper") {
+        const hits = await serperSearch(task.spec.query, { country: task.spec.country, count: 20 });
+        return { urls: hits.map(h => h.url), hints: [], searches: 1, costUsd: 0, raw: hits };
+      }
+      if (task.spec.provider === "searxng") {
+        const hits = await searxngSearch(task.spec.query, { country: task.spec.country, count: 20 });
         return { urls: hits.map(h => h.url), hints: [], searches: 1, costUsd: 0, raw: hits };
       }
       if (!ai) throw new Error("ai_search_unavailable: AI disabled");

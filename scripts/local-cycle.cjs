@@ -21,6 +21,11 @@ const AGENT_EVERY_MS=6*HOUR;
 const PAID_DETAILS=process.env.LETSRACE_PAID_DETAILS==='1';
 /** Searching with Brave is off since 20 Nov 2026 (977 queries a month found 64 links). LETSRACE_BRAVE=1 turns it back on. */
 const BRAVE_ON=process.env.LETSRACE_BRAVE==='1';
+/** Free/low-cost search providers: Serper.dev (Google index, 2,500 free queries) or local SearXNG ($0). */
+const SERPER_ON=Boolean(process.env.SERPER_API_KEY)&&process.env.LETSRACE_SERPER!=='0';
+const SEARXNG_ON=Boolean(process.env.SEARXNG_URL)&&process.env.LETSRACE_SEARXNG!=='0';
+const SEARCH_ON=SERPER_ON||SEARXNG_ON||BRAVE_ON;
+const SEARCH_PROVIDER=SERPER_ON?'serper':SEARXNG_ON?'searxng':'brave';
 /** How stale the target copy may get while nothing here needs it: held races and operator locks. */
 const TARGET_MAX_AGE_MS=12*HOUR;
 /** New work may want the target sooner, but never a copy more than this often. */
@@ -335,7 +340,7 @@ async function main(){
   const agentBatch=fs.existsSync(submissionPath(data,discoveryDay,target));
   const discoveryDue=state.discoveryDay!==discoveryDay||(agentBatch&&state.discoveryAgentDay!==discoveryDay);
   if(discoveryDue){
-   await upkeep('discovery','discoveryAt',0,`Hledám nové weby pořadatelů (${discoveryName})`,[...discoveryArgs,`--mode=${BRAVE_ON?'all':'read'}`,'--providers=brave','--no-ai','--scheduled','--max=30','--minutes=4',`--cycle=${discoveryDay}`,`--agent-inbox=${path.join(data,'agent','discovery',discoveryName)}`],300,{BRAVE_SEARCH_LIMIT:BRAVE_ON?'16':'0'});
+   await upkeep('discovery','discoveryAt',0,`Hledám nové weby pořadatelů (${discoveryName})`,[...discoveryArgs,`--mode=${SEARCH_ON?'all':'read'}`,`--providers=${SEARCH_PROVIDER}`,'--no-ai','--scheduled','--max=30','--minutes=4',`--cycle=${discoveryDay}`,`--agent-inbox=${path.join(data,'agent','discovery',discoveryName)}`],300,{BRAVE_SEARCH_LIMIT:BRAVE_ON?'16':'0',SERPER_SEARCH_LIMIT:SERPER_ON?'8':'0',SEARXNG_SEARCH_LIMIT:SEARXNG_ON?'16':'0'});
    if(['done','partial'].includes(report.steps?.discovery?.outcome)){
     state.discoveryDay=discoveryDay;
     if(agentBatch)state.discoveryAgentDay=discoveryDay;
@@ -379,7 +384,7 @@ async function main(){
   await upkeep('internationalKids','internationalKidsAt',24*HOUR,'Hlídám dětské kategorie u mezinárodních závodů',['scripts/fix-international-kids.ts','--apply'],180,{},true);
   // The UCI calendar for our countries: class, website, categories and e-mail; new UCI races through the review gates.
   await upkeep('uciDirectory','uciDirectoryAt',24*HOUR,'Čtu kalendář UCI',['scripts/harvest-uci-directory.ts','--apply',`--out=${path.join(data,'uci-directory-latest.json')}`],900,{},true);
-  if(BRAVE_ON)await upkeep('websiteSearch','websiteSearchAt',WEBSITE_SEARCH_EVERY_MS,'Hledám weby závodů, které žádný nemají',['scripts/find-websites.ts','--apply','--max=40','--prefer=CZ,SK',`--countries=${COUNTRIES}`,`--from=${season}-01-01`],480,{BRAVE_SEARCH_LIMIT:'40',SEARCH_LEDGER_PATH:path.join(data,'search-budget.json')});
+  if(SEARCH_ON)await upkeep('websiteSearch','websiteSearchAt',WEBSITE_SEARCH_EVERY_MS,'Hledám weby závodů, které žádný nemají',['scripts/find-websites.ts','--apply','--max=12','--prefer=CZ,SK',`--countries=${COUNTRIES}`,`--from=${season}-01-01`],480,{BRAVE_SEARCH_LIMIT:BRAVE_ON?'40':'0',SERPER_SEARCH_LIMIT:SERPER_ON?'6':'0',SEARXNG_SEARCH_LIMIT:SEARXNG_ON?'20':'0',SEARCHES_A_DAY:SERPER_ON?'14':'40',SEARCH_LEDGER_PATH:path.join(data,'search-budget.json')});
   // The agent: looks for regulations and judges possible duplicates the readers could not settle.
   // Its answers stay in the data folder; nothing of them is sent. One run a day, kept by the step itself.
   // Every six hours: prepare cases for the desk and check answers that arrived through it. The agent itself (Codex) works in its own session.

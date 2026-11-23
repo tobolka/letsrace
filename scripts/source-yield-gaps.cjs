@@ -56,7 +56,7 @@ function main() {
   const byDay = new Map();
   for (const row of rows) byDay.set(row.d, [...(byDay.get(row.d) ?? []), row.n]);
   const { gaps: found, dropped } = gaps(input.checked ?? [], byDay);
-  const max = Number(arg('max') ?? 20);
+  const max = Number(arg('max') ?? 60);
   const urls = [...new Set(found.map(gap => gap.url).filter(url => /^https:\/\//.test(url ?? '')))].slice(0, max);
   const write = (file, value) => { const tmp = `${file}.${process.pid}.tmp`; writeFileSync(tmp, JSON.stringify(value, null, 2)); renameSync(tmp, file); };
   write(arg('out'), { at: new Date().toISOString(), auditAt: input.checkedAt, gaps: found, dropped });

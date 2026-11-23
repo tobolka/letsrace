@@ -21,7 +21,7 @@ export function discoveryUrl(raw: string): string | null {
 
 export const DISCOVERY_COUNTRIES = ["CZ", "SK", "AT", "DE", "PL", "CH", "IT"] as const;
 export type DiscoveryCountry = typeof DISCOVERY_COUNTRIES[number];
-export type SearchProvider = "ai" | "brave" | "openai";
+export type SearchProvider = "ai" | "brave" | "serper" | "searxng" | "openai";
 export type SearchSpec = { provider: SearchProvider; query: string; country: DiscoveryCountry; season: number };
 
 /** Deliberately independent of the events table and any benchmark list. */
@@ -50,6 +50,8 @@ export function discoveryPlan(season: number, providers: SearchProvider[] = ["ai
   const plan: SearchSpec[] = [
     { provider: "ai", query: raceDiscoveryPrompt(season, country), country, season },
     ...queries.map(query => ({ provider: "brave" as const, query, country, season })),
+    ...queries.map(query => ({ provider: "serper" as const, query, country, season })),
+    ...queries.map(query => ({ provider: "searxng" as const, query, country, season })),
   ];
   const ai = plan[0]!;
   return [...plan, { ...ai, provider: "openai" as const }].filter(spec => providers.includes(spec.provider));

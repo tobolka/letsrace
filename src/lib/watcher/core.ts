@@ -3,6 +3,7 @@ import { datesInLine } from "@/lib/catalog/next-edition-literal";
 import * as cheerio from "cheerio";
 import type { ParsedEvent } from "@/lib/domain";
 import { extractJsonLdEvents } from "@/lib/watcher/extractors/jsonld";
+import { extractGenericFeeds } from "@/lib/watcher/extractors/generic-feeds";
 import { extractWithAdapter } from "@/lib/watcher/extractors/adapters";
 import { extractGeneric } from "@/lib/watcher/extractors/generic";
 import { attachRegulationsUrl } from "@/lib/watcher/regulations-url";
@@ -111,6 +112,16 @@ async function extractEventsRaw(url: string, html: string, opts?: ExtractOptions
       strategy: "jsonld",
       childUrls: [],
       confidence: Math.min(...jsonld.map((e) => e.confidence)),
+    };
+  }
+
+  const feed = await extractGenericFeeds(url, html);
+  if (feed && feed.events.length) {
+    return {
+      events: attachRegulationsUrl(url, html, feed.events),
+      strategy: feed.strategy,
+      childUrls: [],
+      confidence: Math.min(...feed.events.map((e) => e.confidence)),
     };
   }
 

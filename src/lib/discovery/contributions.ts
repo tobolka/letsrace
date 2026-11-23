@@ -12,7 +12,7 @@ export function discoveryContributions(state: DiscoveryState) {
     if (task.kind === "search") return new Set([task.spec.provider]);
     return new Set(task.origins.flatMap(origin => [...providersOf(origin, visited)]));
   };
-  return (["ai", "brave", "openai"] as const).map(provider => {
+  return (["ai", "brave", "serper", "searxng", "openai"] as const).map(provider => {
     const searches = Object.values(state.tasks).filter(t => t.kind === "search" && t.spec.provider === provider);
     const sources = Object.values(state.tasks).filter(t => t.kind === "read" && t.lane === "blind" && providersOf(t.id).has(provider));
     const candidates = Object.values(state.candidates).filter(c => c.origins.some(id => providersOf(id).has(provider)));

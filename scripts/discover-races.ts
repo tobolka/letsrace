@@ -27,8 +27,8 @@ async function main() {
     return value;
   };
   const season = integer("season", 2027, 2026, 2100);
-  const providers = (arg("providers") ?? "ai,brave").split(",");
-  if (providers.some(p => !["ai", "brave", "openai"].includes(p))) throw new Error("Invalid --providers");
+  const providers = (arg("providers") ?? "ai,serper").split(",");
+  if (providers.some(p => !["ai", "brave", "serper", "searxng", "openai"].includes(p))) throw new Error("Invalid --providers");
   const country = (arg("country") ?? "CZ") as DiscoveryCountry;
   if (!DISCOVERY_COUNTRIES.includes(country)) throw new Error("Unsupported --country");
   const scheduled = process.argv.includes("--scheduled");
@@ -77,8 +77,15 @@ async function main() {
   }
   if (mode === "benchmark") await store.enqueueSources(benchmark.map(r => r.url), season, "benchmark", "csv-diagnostic");
   const wantsSearch = mode === "search" || mode === "all";
-  if (scheduled && wantsSearch && !process.env.BRAVE_API_KEY) console.log("Discovery search waiting for Brave credentials; reading queued URLs.");
-  if (wantsSearch && (!scheduled || process.env.BRAVE_API_KEY)) {
+  const hasSearchProvider = Boolean(
+    (providers.includes("serper") && process.env.SERPER_API_KEY) ||
+    (providers.includes("searxng") && process.env.SEARXNG_URL) ||
+    (providers.includes("brave") && process.env.BRAVE_API_KEY) ||
+    providers.includes("ai") ||
+    providers.includes("openai"),
+  );
+  if (scheduled && wantsSearch && !hasSearchProvider) console.log("Discovery search waiting for search credentials (SERPER_API_KEY / SEARXNG_URL / BRAVE_API_KEY); reading queued URLs.");
+  if (wantsSearch && (!scheduled || hasSearchProvider)) {
     const cycle = arg("cycle") ?? new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Prague", year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date());
     await store.enqueueSearches(plan, cycle);
     await runDiscovery(store, { directory, mode: "search", max: scheduled ? 8 : max, maxSearchResults: scheduled ? 3 : undefined, concurrency, deadline, ai: !process.argv.includes("--no-ai"), log: console.log });

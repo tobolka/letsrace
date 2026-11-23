@@ -82,13 +82,18 @@ export type SearchHit = { url: string; title: string };
  * from a script; this one can, if asked politely — a few seconds apart.
  */
 export async function searchWeb(query: string): Promise<SearchHit[]> {
-  // DuckDuckGo stopped answering scripts: for months this step asked, was refused and looked as if it found nothing.
+  // DuckDuckGo stopped answering scripts: prefer Serper (Google index), local SearXNG, or Brave.
   const ledger = process.env.SEARCH_LEDGER_PATH;
-  if (ledger && process.env.BRAVE_API_KEY && Number(process.env.BRAVE_SEARCH_LIMIT ?? 0) > 0) {
-    const { takeSearch } = await import("@/lib/catalog/race-completeness");
-    if (!takeSearch(ledger, { day: Number(process.env.SEARCHES_A_DAY ?? 60), month: 1000 })) throw new Error("search allowance used up");
-    const { braveSearch } = await import("@/lib/catalog/brave");
-    return (await braveSearch(query, { count: 10 })).map(hit => ({ url: hit.url, title: hit.title }));
+  const { webSearchAvailable, runWebSearch } = await import("@/lib/catalog/web-search");
+  if (webSearchAvailable()) {
+    if (ledger) {
+      const { takeSearch } = await import("@/lib/catalog/race-completeness");
+      if (!takeSearch(ledger, { day: Number(process.env.SEARCHES_A_DAY ?? 20), month: Number(process.env.SEARCHES_A_MONTH ?? 500) })) {
+        throw new Error("search allowance used up");
+      }
+    }
+    const { hits } = await runWebSearch(query, { count: 10 });
+    return hits.map(hit => ({ url: hit.url, title: hit.title }));
   }
   const res = await fetch(`https://html.duckduckgo.com/html/?q=${encodeURIComponent(query)}`, {
     headers: { "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Safari/605.1.15", accept: "text/html" },
