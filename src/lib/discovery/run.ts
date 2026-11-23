@@ -1,7 +1,7 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { braveSearch } from "@/lib/catalog/brave";
-import { serperSearch } from "@/lib/catalog/serper";
+import { serperAvailable, serperSearch } from "@/lib/catalog/serper";
 import { searxngSearch } from "@/lib/catalog/searxng";
 import { askWithSearch, llmAvailable, SONNET } from "@/lib/llm/anthropic";
 import { fetchPage } from "@/lib/watcher/http";
@@ -33,8 +33,16 @@ function dependencies(ai: boolean): DiscoveryDependencies {
         return { urls: hits.map(h => h.url), hints: [], searches: 1, costUsd: 0, raw: hits };
       }
       if (task.spec.provider === "searxng") {
-        const hits = await searxngSearch(task.spec.query, { country: task.spec.country, count: 20 });
-        return { urls: hits.map(h => h.url), hints: [], searches: 1, costUsd: 0, raw: hits };
+        try {
+          const hits = await searxngSearch(task.spec.query, { country: task.spec.country, count: 20 });
+          return { urls: hits.map(h => h.url), hints: [], searches: 1, costUsd: 0, raw: hits };
+        } catch (error) {
+          if (serperAvailable() && Number(process.env.SERPER_SEARCH_LIMIT ?? 0) > 0) {
+            const hits = await serperSearch(task.spec.query, { country: task.spec.country, count: 20 });
+            return { urls: hits.map(h => h.url), hints: [], searches: 1, costUsd: 0, raw: hits };
+          }
+          throw error;
+        }
       }
       if (!ai) throw new Error("ai_search_unavailable: AI disabled");
       if (task.spec.provider !== "openai" && !llmAvailable()) throw new Error("ai_search_unavailable: credentials missing");

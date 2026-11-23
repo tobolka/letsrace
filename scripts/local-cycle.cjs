@@ -25,7 +25,8 @@ const BRAVE_ON=process.env.LETSRACE_BRAVE==='1';
 const SERPER_ON=Boolean(process.env.SERPER_API_KEY)&&process.env.LETSRACE_SERPER!=='0';
 const SEARXNG_ON=Boolean(process.env.SEARXNG_URL)&&process.env.LETSRACE_SEARXNG!=='0';
 const SEARCH_ON=SERPER_ON||SEARXNG_ON||BRAVE_ON;
-const SEARCH_PROVIDER=SERPER_ON?'serper':SEARXNG_ON?'searxng':'brave';
+/** Prefer free local SearXNG for broad daily discovery (with automatic Serper fallback if offline), saving Serper's Google quota for exact race-website lookups. */
+const SEARCH_PROVIDER=SEARXNG_ON?'searxng':SERPER_ON?'serper':'brave';
 /** How stale the target copy may get while nothing here needs it: held races and operator locks. */
 const TARGET_MAX_AGE_MS=12*HOUR;
 /** New work may want the target sooner, but never a copy more than this often. */
@@ -340,7 +341,7 @@ async function main(){
   const agentBatch=fs.existsSync(submissionPath(data,discoveryDay,target));
   const discoveryDue=state.discoveryDay!==discoveryDay||(agentBatch&&state.discoveryAgentDay!==discoveryDay);
   if(discoveryDue){
-   await upkeep('discovery','discoveryAt',0,`Hledám nové weby pořadatelů (${discoveryName})`,[...discoveryArgs,`--mode=${SEARCH_ON?'all':'read'}`,`--providers=${SEARCH_PROVIDER}`,'--no-ai','--scheduled','--max=60','--minutes=8',`--cycle=${discoveryDay}`,`--agent-inbox=${path.join(data,'agent','discovery',discoveryName)}`],540,{BRAVE_SEARCH_LIMIT:BRAVE_ON?'16':'0',SERPER_SEARCH_LIMIT:SERPER_ON?'8':'0',SEARXNG_SEARCH_LIMIT:SEARXNG_ON?'16':'0'});
+   await upkeep('discovery','discoveryAt',0,`Hledám nové weby pořadatelů (${discoveryName})`,[...discoveryArgs,`--mode=${SEARCH_ON?'all':'read'}`,`--providers=${SEARCH_PROVIDER}`,'--no-ai','--scheduled','--max=60','--minutes=8',`--cycle=${discoveryDay}`,`--agent-inbox=${path.join(data,'agent','discovery',discoveryName)}`],540,{BRAVE_SEARCH_LIMIT:BRAVE_ON?'16':'0',SERPER_SEARCH_LIMIT:SERPER_ON?'8':'0',SEARXNG_SEARCH_LIMIT:SEARXNG_ON?'24':'0'});
    if(['done','partial'].includes(report.steps?.discovery?.outcome)){
     state.discoveryDay=discoveryDay;
     if(agentBatch)state.discoveryAgentDay=discoveryDay;
