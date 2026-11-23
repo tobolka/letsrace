@@ -43,7 +43,7 @@ let stopping = false, pausedForMemory = 0;
 function launch(worker) {
   const log = createWriteStream(join(home, 'logs', `worker-${worker.index}.log`), { flags: 'a' });
   const child = spawn(process.execPath, ['scripts/with-node.cjs', './node_modules/tsx/dist/cli.mjs', 'scripts/reload-calendars.ts', '--rounds=40', `--limit=${LIMIT}`, `--seconds=${SECONDS}`], {
-    env: { ...process.env, LOCAL_WORKER_SHARD: `${worker.index}/${WORKERS}`, LOCAL_CHROME_SLOTS_DIR: join(home, 'chrome-slots'), LOCAL_CHROME_SLOTS: process.env.LOCAL_CHROME_SLOTS ?? '3', LOCAL_WORKER_CONCURRENCY: process.env.LOCAL_WORKER_CONCURRENCY ?? '8', SOURCE_DOCUMENT_CACHE_DIR: join(home, 'documents') },
+    env: { ...process.env, LOCAL_WORKER_SHARD: `${worker.index}/${WORKERS}`, LOCAL_CHROME_SLOTS_DIR: join(home, 'chrome-slots'), LOCAL_CHROME_SLOTS: process.env.LOCAL_CHROME_SLOTS ?? '4', LOCAL_WORKER_CONCURRENCY: process.env.LOCAL_WORKER_CONCURRENCY ?? '12', SOURCE_DOCUMENT_CACHE_DIR: join(home, 'documents') },
     detached: true, stdio: ['ignore', 'pipe', 'pipe'],
   });
   worker.child = child; worker.paused = false; worker.lastOutput = Date.now(); worker.runs++; worker.reads = 0;

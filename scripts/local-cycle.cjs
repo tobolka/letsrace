@@ -30,18 +30,18 @@ const SEARCH_PROVIDER=SERPER_ON?'serper':SEARXNG_ON?'searxng':'brave';
 const TARGET_MAX_AGE_MS=12*HOUR;
 /** New work may want the target sooner, but never a copy more than this often. */
 const TARGET_MIN_GAP_MS=3*HOUR;
-const NEW_RACES_PER_SEND=100;
+const NEW_RACES_PER_SEND=200;
 /** Reading races' own sites for details, which the server used to do once a day. */
-const SITE_DETAILS_EVERY_MS=6*HOUR;
+const SITE_DETAILS_EVERY_MS=4*HOUR;
 const REGULATIONS_EVERY_MS=HOUR;
-const GEOCODE_EVERY_MS=12*HOUR;
+const GEOCODE_EVERY_MS=6*HOUR;
 const SOURCE_HEALTH_EVERY_MS=7*24*HOUR;
 /** Searching for sites of races that have none. A search is spaced about ten seconds apart. */
 const WEBSITE_SEARCH_EVERY_MS=4*HOUR;
-const ORGANISER_GAP_MS=HOUR/2;
+const ORGANISER_GAP_MS=15*60_000;
 const RESUME_PUBLISHING_EVERY_MS=HOUR;
 /** Every filled race queues a public page check, of which the server does 60 a day. */
-const FILLED_RACES_PER_CYCLE=30,FILLED_RACES_PER_DAY=150;
+const FILLED_RACES_PER_CYCLE=60,FILLED_RACES_PER_DAY=300;
 /** An operator's pause reaches the reader without a whole catalogue dump. */
 const PAUSE_SYNC_MS=HOUR/2;
 const ASSESS_AT_LEAST_EVERY_MS=24*HOUR;
@@ -237,7 +237,7 @@ async function main(){
    // 2 is a stopped or time-limited pass. Anything else means the reader itself did not work,
    // which must never read as "nothing was due".
    try{
-    await local(['scripts/local-parallel.cjs','--workers=4','--limit=24','--seconds=90','--max-minutes=15'],{allowedCodes:[0,2],timeout:17*60_000});
+    await local(['scripts/local-parallel.cjs','--workers=6','--limit=40','--seconds=180','--max-minutes=20'],{allowedCodes:[0,2],timeout:22*60_000});
     const sourceReport=path.join(directory,'sources.json');await node('./node_modules/tsx/dist/cli.mjs',['scripts/local-report.ts',`--out=${sourceReport}`,`--since=${report.startedAt}`]);
     report.sourceReport=sourceReport;
     const summary=json(sourceReport);report.readSources=summary.overall.sourcesRead;report.sourceFailures=summary.overall.failed;report.unreadableSources=summary.overall.unreadable;report.deferredSources=summary.overall.deferred;report.unfinishedSources=summary.overall.unfinished;report.problems=summary.problems;
@@ -253,8 +253,8 @@ async function main(){
   if(organiserDue(coverageBefore,Date.now(),state.organiserPassAt)){
    stage('Čtu weby pořadatelů');state.organiserPassAt=new Date().toISOString();saveState();
    try{
-    const bounded=['scripts/bounded-pipeline-step.cjs','600',process.execPath,'scripts/with-node.cjs','./node_modules/tsx/dist/cli.mjs','scripts/audit-next-edition-websites.ts',String(season),`--countries=${COUNTRIES}`,`--out=${archive}`,'--seconds=480','--limit=250'];
-    await local(bounded,{allowedCodes:[0,2],timeout:11*60_000});
+    const bounded=['scripts/bounded-pipeline-step.cjs','720',process.execPath,'scripts/with-node.cjs','./node_modules/tsx/dist/cli.mjs','scripts/audit-next-edition-websites.ts',String(season),`--countries=${COUNTRIES}`,`--out=${archive}`,'--seconds=600','--limit=500'];
+    await local(bounded,{allowedCodes:[0,2],timeout:13*60_000});
    }catch(e){if(interrupted)throw e;note(e);}
   }
   const sizeNow=ledgerSize();const coverage=json(path.join(archive,'coverage.json'));organiser.read=sizeNow>sizeBefore?Math.max(1,coverage?.requestsThisPass??((coverage?.attemptedPages??0)-(coverageBefore?.attemptedPages??0))):0;organiser.unread=coverage?.duePages??coverage?.unreadPages??null;organiser.nextDueAt=coverage?.nextDueAt??null;
@@ -266,7 +266,7 @@ async function main(){
    stage('Posuzuji termíny z webů pořadatelů');
    try{
     await node('./node_modules/tsx/dist/cli.mjs',['scripts/audit-next-edition-websites.ts',`--replay=${archive}`],{timeout:5*60_000});
-    const assessed=await local(['scripts/with-node.cjs','./node_modules/tsx/dist/cli.mjs','scripts/check-next-editions.ts',`--season=${season}`,`--archive=${archive}`,`--countries=${COUNTRIES}`,'--literal','--apply','--max-apply=30','--seconds=240',...(reviewedAt?[`--answers=${reviewed}`]:[])],{allowedCodes:[0,2],timeout:8*60_000});
+    const assessed=await local(['scripts/with-node.cjs','./node_modules/tsx/dist/cli.mjs','scripts/check-next-editions.ts',`--season=${season}`,`--archive=${archive}`,`--countries=${COUNTRIES}`,'--literal','--apply','--max-apply=80','--seconds=300',...(reviewedAt?[`--answers=${reviewed}`]:[])],{allowedCodes:[0,2],timeout:8*60_000});
     const line=assessed.output.split('\n').find(text=>text.startsWith('organiser_assessment '));
     const summary=line?JSON.parse(line.slice(21)):null;
     if(summary){organiser.assessment=summary;organiser.published=summary.counts?.published??0;organiser.deferred=summary.status==='deferred';organiser.attempted=organiser.published+(summary.waiting?.publish_failed??0);organiser.proposed=summary.waiting?.pass_limit??0;}
@@ -340,7 +340,7 @@ async function main(){
   const agentBatch=fs.existsSync(submissionPath(data,discoveryDay,target));
   const discoveryDue=state.discoveryDay!==discoveryDay||(agentBatch&&state.discoveryAgentDay!==discoveryDay);
   if(discoveryDue){
-   await upkeep('discovery','discoveryAt',0,`Hledám nové weby pořadatelů (${discoveryName})`,[...discoveryArgs,`--mode=${SEARCH_ON?'all':'read'}`,`--providers=${SEARCH_PROVIDER}`,'--no-ai','--scheduled','--max=30','--minutes=4',`--cycle=${discoveryDay}`,`--agent-inbox=${path.join(data,'agent','discovery',discoveryName)}`],300,{BRAVE_SEARCH_LIMIT:BRAVE_ON?'16':'0',SERPER_SEARCH_LIMIT:SERPER_ON?'8':'0',SEARXNG_SEARCH_LIMIT:SEARXNG_ON?'16':'0'});
+   await upkeep('discovery','discoveryAt',0,`Hledám nové weby pořadatelů (${discoveryName})`,[...discoveryArgs,`--mode=${SEARCH_ON?'all':'read'}`,`--providers=${SEARCH_PROVIDER}`,'--no-ai','--scheduled','--max=60','--minutes=8',`--cycle=${discoveryDay}`,`--agent-inbox=${path.join(data,'agent','discovery',discoveryName)}`],540,{BRAVE_SEARCH_LIMIT:BRAVE_ON?'16':'0',SERPER_SEARCH_LIMIT:SERPER_ON?'8':'0',SEARXNG_SEARCH_LIMIT:SEARXNG_ON?'16':'0'});
    if(['done','partial'].includes(report.steps?.discovery?.outcome)){
     state.discoveryDay=discoveryDay;
     if(agentBatch)state.discoveryAgentDay=discoveryDay;
@@ -361,7 +361,7 @@ async function main(){
   // Version 2, first lane: one queue task per site, read without keys, handed in as proposals and decided by
   // the gate on the server. It replaces harvest-site-documents.ts writing to the copy here. LOCAL_SITE_DOCUMENTS=1 brings the old step back.
   if(process.env.LOCAL_SITE_DOCUMENTS==='1')await upkeep('siteDocuments','siteDocumentsAt',24*HOUR,'Hledám propozice na webech závodů',['scripts/harvest-site-documents.ts','--apply','--seconds=480'],540);
-  else await upkeep('findDocuments','findDocumentsAt',24*HOUR,'Hledám propozice na webech závodů (fronta a brána)',['scripts/pipeline2-find-documents.ts','--server','--sites=80',`--out=${path.join(directory,'find-documents.json')}`],1500,{},true);
+  else await upkeep('findDocuments','findDocumentsAt',12*HOUR,'Hledám propozice na webech závodů (fronta a brána)',['scripts/pipeline2-find-documents.ts','--server','--sites=160',`--out=${path.join(directory,'find-documents.json')}`],1800,{},true);
   await upkeep('signups','signupsAt',24*HOUR,'Čtu přihlašovací portály',['scripts/harvest-signups.ts','--apply'],300);
   await upkeep('winspace','winspaceAt',24*HOUR,'Čtu pořadatele českých závodů z kalendáře',['scripts/harvest-winspace.ts','--apply','--seconds=300'],360);
   await upkeep('pzkol','pzkolAt',24*HOUR,'Čtu polské závody ze stránek federace',['scripts/harvest-pzkol.ts','--apply','--seconds=300'],360);
@@ -377,7 +377,7 @@ async function main(){
   // Nothing found above leaves the Mac until this reader has confirmed it against its source.
   await upkeep('checkDetails','checkDetailsAt',HOUR,'Kontroluji nalezené údaje',['scripts/check-details.ts','--max=40','--seconds=420',`--gate=${path.join(data,'details-gate.json')}`],480,{LOCAL_ALLOW_AI:'1',LLM_LEDGER_PATH:path.join(data,'llm-budget.json')});
   // A venue whose document states its coordinates beside it keeps them: directions lead to the venue, not the town.
-  await upkeep('venueCoordinates','venueCoordinatesAt',24*HOUR,'Doplňuji souřadnice míst konání z propozic',['scripts/fill-venue-coordinates.ts','--apply','--max=40'],420,{},true);
+  await upkeep('venueCoordinates','venueCoordinatesAt',12*HOUR,'Doplňuji souřadnice míst konání z propozic',['scripts/fill-venue-coordinates.ts','--apply','--max=100'],420,{},true);
   // Age classes the regulations name join the guessed set, so the header never shows fewer than the document.
   await upkeep('regulationAges','regulationAgesAt',HOUR,'Doplňuji věkové kategorie z propozic',['scripts/fill-practical-ages.ts'],300,{},true);
   // International races keep children's classes only where their own documents name them.
@@ -409,10 +409,10 @@ async function main(){
    }catch(e){if(interrupted)throw e;(report.steps??={}).agentApply={outcome:'failed',reason:'crashed'};(report.failedUpkeep??=[]).push('agentApply');console.warn(`Předání nálezů agenta se nepovedlo: ${e.message}`);}
   }
   // Regulations links the readers here put into the copy go to the server as proposals, not with the fills.
-  await upkeep('localRegulations','localRegulationsAt',HOUR,'Předávám nalezené odkazy na propozice bráně',['scripts/pipeline2-local-regulations.ts','--apply','--max=60'],600,{},true);
+  await upkeep('localRegulations','localRegulationsAt',HOUR,'Předávám nalezené odkazy na propozice bráně',['scripts/pipeline2-local-regulations.ts','--apply','--max=120'],600,{},true);
   // Links the gate accepted on the server are filled into the copy here, so the regulations reader finds them.
   try{report.pulledRegulations=pullAccepted(state);saveState();}catch(e){console.warn(`Přijaté odkazy se nepodařilo převzít: ${String(e.message).split('\n')[0].slice(0,160)}`);}
-  await upkeep('geocode','geocodedAt',GEOCODE_EVERY_MS,'Doplňuji místa na mapě',['scripts/geocode-pending.ts','120'],300);
+  await upkeep('geocode','geocodedAt',GEOCODE_EVERY_MS,'Doplňuji místa na mapě',['scripts/geocode-pending.ts','250'],360);
   // Which changes of a date or a cancellation have their quote and could go to the server. A look only; nothing is sent.
   await upkeep('dateProposals','dateProposalsAt',6*HOUR,'Hledám změny dat, které by šly odeslat (jen náhled)',['scripts/date-proposals.cjs',`--out=${path.join(data,'date-proposals-latest.json')}`],120,{},true);
   // The ones with their quote go to the server through the gate, which decides under the race's locks. LETSRACE_DATE_PROPOSALS=0 stops it.
