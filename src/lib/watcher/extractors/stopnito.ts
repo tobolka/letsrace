@@ -79,7 +79,7 @@ export function parseStopnito(url: string, html: string): ParsedEvent[] {
       name,
       startDate: dates.start,
       endDate: dates.end && dates.end !== dates.start ? dates.end : undefined,
-      placeText: placeText || undefined,
+      placeText: placeText || "",
       countryHint: "CZ",
       discipline: mapStopnitoDiscipline(combined),
       audience: /d[eě]t|kids|junior|ml[aá]de[zž]/i.test(name) ? "youth" : "mixed",

@@ -115,7 +115,7 @@ export function parseIcsEvents(sourceUrl: string, icsText: string): ParsedEvent[
       name,
       startDate: dtStart.iso,
       endDate,
-      placeText: location || undefined,
+      placeText: location || "",
       countryHint,
       discipline: inferDiscipline(combined),
       audience: /d[eě]t|kids|ml[aá]de[zž]|junior|u\d{1,2}|sch[uü]ler|jugend/i.test(combined) ? "mixed" : "mixed",
@@ -183,7 +183,7 @@ export function parseTribeEventsJson(sourceUrl: string, payload: unknown): Parse
     seen.add(externalId);
 
     const placeParts = [row.venue?.venue, row.venue?.city].filter(Boolean);
-    const placeText = placeParts.length ? placeParts.join(", ") : undefined;
+    const placeText = placeParts.length ? placeParts.join(", ") : "";
     const lat = typeof row.venue?.geo_lat === "number" && Number.isFinite(row.venue.geo_lat) ? row.venue.geo_lat : undefined;
     const lng = typeof row.venue?.geo_lng === "number" && Number.isFinite(row.venue.geo_lng) ? row.venue.geo_lng : undefined;
 

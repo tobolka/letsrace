@@ -87,7 +87,7 @@ export function parseRadmarathon(url: string, html: string): ParsedEvent[] {
     if (seen.has(externalId)) return;
     seen.add(externalId);
 
-    const placeText = attrPlace || undefined;
+    const placeText = attrPlace || "";
     events.push({
       externalId,
       name,
