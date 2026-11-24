@@ -14,7 +14,7 @@ Stav k 20. 11. 2026. Tohle je jediné místo pro rozpracované a zapomenuté úk
 | [annual-editions.md](annual-editions.md) | Pravidla pro nové ročníky |
 | [emails.md](emails.md) | Zapnutí e-mailů (Resend, Supabase Auth) |
 | [product-analytics.md](product-analytics.md) | Umami: události a metriky |
-| [propagace-2026-11/BEZ-OSLOVOVANI.md](propagace-2026-11/BEZ-OSLOVOVANI.md), [TEXTY.md](propagace-2026-11/TEXTY.md) | Odkazy na web bez oslovování pořadatelů, hotové texty |
+| [propagace-2026-11/ZPETNE-ODKAZY.md](propagace-2026-11/ZPETNE-ODKAZY.md), [TEXTY.md](propagace-2026-11/TEXTY.md) | Strategie zpětných odkazů (2026/2027) a hotové texty |
 | `quality/`, `fixtures/` | Kontrolní sady a referenční seznam CZ 2027 (používají je skripty) |
 
 ## A. Teď rozpracované (od nejdůležitějšího)
