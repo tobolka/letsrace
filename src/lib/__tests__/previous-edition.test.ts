@@ -34,6 +34,41 @@ describe("shared annual identity", () => {
     expect(findPreviousEdition(current, [{ ...identity("old", "2026-06-01", "Cup kolo 1"), series_id: "cup" }])).toBeNull();
     expect(findPreviousEdition(identity("new", "2027-06-01"), [{ ...identity("old", "2026-06-01"), disciplines: ["road"] }])).toBeNull();
   });
+  it("matches compatible discipline families like mtb/xco and road/road_race", () => {
+    const oldMtb = { ...identity("old-mtb", "2026-06-01", "Velká cena Touškova"), disciplines: ["mtb"] };
+    const newXco = { ...identity("new-xco", "2027-06-05", "Velká cena Touškova"), disciplines: ["xco"] };
+    expect(findNextEdition(oldMtb, [newXco])).toEqual(newXco);
+    const oldRoad = { ...identity("old-road", "2026-08-09", "Most - Lesná 2026"), disciplines: ["road"] };
+    const newRoadRace = { ...identity("new-road", "2027-08-08", "Most - Lesná"), disciplines: ["road_race"] };
+    expect(findNextEdition(oldRoad, [newRoadRace])).toEqual(newRoadRace);
+  });
+  it("matches recurring races across sponsor prefixes, discipline tags and subtitles at the same venue", () => {
+    expect(
+      findNextEdition(
+        identity("old-1", "2026-06-13", "Krakonošův cyklomaraton"),
+        [identity("new-1", "2027-06-12", "CASIA Krakonošův cyklomaraton")],
+      )?.id,
+    ).toBe("new-1");
+    expect(
+      findNextEdition(
+        identity("old-2", "2026-03-28", "34. Internationale KTM Kamptal Trophy"),
+        [identity("new-2", "2027-04-04", "35. KTM Kamptal Trophy - UCI XCO C1")],
+      )?.id,
+    ).toBe("new-2");
+    expect(
+      findNextEdition(
+        identity("old-3", "2026-06-13", "Rusavská 50ka"),
+        [identity("new-3", "2027-06-12", "Rusavská 50")],
+      )?.id,
+    ).toBe("new-3");
+    // Generic cycling words alone must never match two different races in the same town.
+    expect(
+      findNextEdition(
+        identity("old-4", "2026-06-01", "MTB Cup Praha"),
+        [identity("new-4", "2027-06-02", "MTB Marathon Brno")],
+      ),
+    ).toBeNull();
+  });
 });
 
 describe("editionKey", () => {
@@ -42,6 +77,8 @@ describe("editionKey", () => {
     expect(editionKey("XXXIX Ślężański Mnich")).toBe(editionKey("XL Ślężański Mnich"));
     expect(editionKey("Mikulášský cyklokros - Břeccross 2025")).toBe(editionKey("Mikulášský cyklokros - Břeccross 2026"));
     expect(editionKey("CycloCross im STEVENS-Cup 2026/2027 RG Wedel")).toBe(editionKey("CycloCross im STEVENS-Cup 2025/2026 RG Wedel"));
+    expect(editionKey("79° COPPA AGOSTONI - GIRO DELLE BRIANZE")).toBe(editionKey("Coppa Agostoni - Giro delle Brianze"));
+    expect(editionKey("Tour de Kosová2027")).toBe(editionKey("Tour de Kosová 2026"));
   });
 
   it("keeps what tells two races apart", () => {

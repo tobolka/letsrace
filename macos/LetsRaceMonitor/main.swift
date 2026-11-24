@@ -42,7 +42,7 @@ struct MonitorSnapshot: Decodable {
         let cpuPercent: Int?; let memoryFreePercent: Int?; let processes: [RunningProcess]
     }
     let at: String; let pid: Int; let root: String; let data: String
-    struct EditionCoverage: Decodable { let at: String?; let season: Int?; let races: Int; let withEdition: Int }
+    struct EditionCoverage: Decodable { let at: String?; let season: Int?; let races: Int; let withEdition: Int; let publicRaces: Int? }
     let paidDetailsEnabled: Bool?
     let pipelineMode: String?; let cycleResult: Cycle?; let editionCoverage: EditionCoverage?
     let status: String; let paused: Bool; let childPid: Int?
@@ -456,7 +456,14 @@ final class MonitorController: NSObject, NSApplicationDelegate, NSMenuDelegate {
         if let coverage = snapshot?.editionCoverage, let season = coverage.season, coverage.races > 0 {
             let percent = Int((100 * Double(coverage.withEdition) / Double(coverage.races)).rounded())
             let editions = section()
-            add("Závody s ročníkem \(season)", size: 13, bold: true, to: editions)
+            add("Závody pro rok \(season)", size: 13, bold: true, to: editions)
+            if let totalPublic = coverage.publicRaces {
+                let publicPct = Int((100 * Double(totalPublic) / Double(coverage.races)).rounded())
+                row([
+                    metric(totalPublic, "V kalendáři (\(publicPct) % loňska)", color: green),
+                    metric(coverage.withEdition, "Spárováno z loňska")
+                ], in: editions)
+            }
             let track = NSView()
             track.wantsLayer = true
             track.layer?.cornerRadius = 3
@@ -472,7 +479,7 @@ final class MonitorController: NSObject, NSApplicationDelegate, NSMenuDelegate {
             fill.layer?.cornerRadius = 3
             fill.layer?.backgroundColor = green.cgColor
             track.addSubview(fill)
-            let ratio = min(1, max(0, Double(coverage.withEdition) / Double(coverage.races)))
+            let ratio = min(1, max(0, Double(coverage.publicRaces ?? coverage.withEdition) / Double(coverage.races)))
             NSLayoutConstraint.activate([
                 fill.leadingAnchor.constraint(equalTo: track.leadingAnchor),
                 fill.topAnchor.constraint(equalTo: track.topAnchor),
@@ -480,7 +487,7 @@ final class MonitorController: NSObject, NSApplicationDelegate, NSMenuDelegate {
                 fill.widthAnchor.constraint(equalTo: track.widthAnchor, multiplier: ratio)
             ])
             track.setAccessibilityElement(false)
-            add("\(coverage.withEdition.formatted(.number.locale(Locale(identifier: "cs_CZ")))) z \(coverage.races.formatted(.number.locale(Locale(identifier: "cs_CZ")))) závodů předchozího roku · \(percent) %", size: 11, color: secondary, to: editions)
+            add("\(coverage.withEdition.formatted(.number.locale(Locale(identifier: "cs_CZ")))) z \(coverage.races.formatted(.number.locale(Locale(identifier: "cs_CZ")))) loňských spárováno · \(percent) %", size: 11, color: secondary, to: editions)
         }
 
         let actions = NSStackView(views: [

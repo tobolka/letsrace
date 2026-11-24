@@ -1,0 +1,13 @@
+{
+  "source": "https://www.roadcycling.cz/roadcup/rocnik-2027",
+  "website": "https://www.pekloseveruroad.cz/",
+  "series": "roadcup",
+  "races": [
+    {
+      "start": "2027-04-24",
+      "name": "Peklo Severu Road",
+      "quote": "Peklo Severu Road RR 60,6 km 24.04.2027",
+      "previous": "skoda-cup-peklo-severu-road-n-1-2026"
+    }
+  ]
+}

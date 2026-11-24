@@ -196,6 +196,13 @@ async function main() {
     const next = data ? new Date(Date.parse(data.started_at as string) + 3_600_000) : null;
     console.log(`Cache refresh: next hourly slot ${next ? next.toLocaleTimeString("cs-CZ", { timeZone: "Europe/Prague" }) : "soon"}; the Mac cycle takes it, or run scripts/request-public-refreshes.ts then. New pages are live already.`);
   } else console.log(`Cache refresh: ${refresh.status}, ${refresh.requested} item(s).`);
+  try {
+    const { refreshLiveEditionCoverage } = await import("./update-edition-coverage");
+    const cov = await refreshLiveEditionCoverage();
+    console.log(`Edition coverage (${cov.season}): ${cov.withEdition}/${cov.races}.`);
+  } catch (e) {
+    console.warn(`Edition coverage not refreshed: ${e instanceof Error ? e.message : String(e)}`);
+  }
   if (blocked.length) process.exitCode = 3;
 }
 main().catch((e) => { console.error(e instanceof Error ? e.message : e); process.exit(1); });

@@ -2,6 +2,7 @@
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore -- generated module is absent before the first build
 import handler from "./.open-next/worker.js"
+import { cacheable, cacheKey, edgeSeconds } from "./src/lib/cloudflare-edge-cache"
 
 type WorkerEnv = {
   CRON_SECRET?: string
@@ -25,55 +26,11 @@ const CRON_ROUTES: Record<string, string> = {
   "0 6 * * *": "/api/cron/owner-mail",
 }
 
-/**
- * Shared pages and public API answers are the same for every visitor and are marked
- * `CDN-Cache-Control: public, s-maxage=N` by the app (src/proxy.ts, src/app/api). Workers
- * do not sit behind Cloudflare's cache, so hold those answers in the Workers cache: a
- * repeat visit or crawler pass then costs no CPU. The lifetime is capped because there is
- * no tag-based purge here, and the cache key carries the deployment id, so every deploy
- * starts with an empty cache (stale HTML would point at files that no longer exist).
- */
-const MAX_EDGE_SECONDS = 1800
-
-function edgeSeconds(response: Response): number {
-  if (response.status !== 200 || response.headers.has("set-cookie")) return 0
-  const control = response.headers.get("cdn-cache-control") ?? ""
-  if (!/\bpublic\b/i.test(control)) return 0
-  const seconds = Number(/s-maxage=(\d+)/i.exec(control)?.[1] ?? 0)
-  return Math.min(seconds, MAX_EDGE_SECONDS)
-}
-
-const TRACKING_PARAM = /^(?:utm_[a-z0-9_]+|fbclid|gclid|dclid|msclkid|mc_cid|mc_eid|srsltid|_gl)$/i
-const QUERYLESS_ROUTE = /^\/(?:(?:cs|en|sk|de|pl)\/(?:e|zavod|preteky|rennen|wyscigi|series|serie|seria|about|o-projektu|o-projekte|ueber|o-projekcie|privacy|soukromi|sukromie|datenschutz|prywatnosc|terms|podminky|podmienky|nutzungsbedingungen|regulamin)(?:\/|$)|robots\.txt$|sitemap\.xml$|sitemaps\/)/
-
-function cacheKey(request: Request, env: WorkerEnv): Request {
-  const url = new URL(request.url)
-  const version = env.CF_VERSION_METADATA?.id ?? "dev"
-  let search = ""
-  if (url.search && !QUERYLESS_ROUTE.test(url.pathname)) {
-    const kept = new URLSearchParams()
-    for (const [k, v] of [...url.searchParams.entries()].sort(([a], [b]) => a.localeCompare(b))) {
-      if (!TRACKING_PARAM.test(k)) kept.append(k, v)
-    }
-    const qs = kept.toString()
-    if (qs) search = `?${qs}`
-  }
-  return new Request(`https://edge-cache.invalid/${version}${url.pathname}${search}`)
-}
-
-function cacheable(request: Request): boolean {
-  if (request.method !== "GET") return false
-  // Markdown and other content negotiation share a URL with the HTML page.
-  const accept = request.headers.get("accept") ?? ""
-  if (/markdown|json|text\/plain/i.test(accept) && !/text\/html/i.test(accept)) return false
-  return !request.headers.has("authorization")
-}
-
 const worker = {
   async fetch(request: Request, env: WorkerEnv, ctx: { waitUntil(promise: Promise<unknown>): void }) {
     if (!cacheable(request)) return handler.fetch(request, env, ctx)
     const edge = (caches as unknown as { default: EdgeCache }).default
-    const key = cacheKey(request, env)
+    const key = cacheKey(request, env.CF_VERSION_METADATA?.id ?? "dev")
     const hit = await edge.match(key)
     if (hit) {
       const response = new Response(hit.body, hit)

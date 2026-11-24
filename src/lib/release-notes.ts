@@ -19,6 +19,17 @@ export type ReleaseNote = {
 
 export const RELEASE_NOTES: ReleaseNote[] = [
   {
+    date: "2026-11-24",
+    items: {
+      cs: [
+        "Odkazy na další závody v okolí a v seriálech se teď vždy otevřou jako běžná stránka závodu.",
+      ],
+      en: [
+        "Links to nearby and series races now always open as normal race pages.",
+      ],
+    },
+  },
+  {
     date: "2026-11-23",
     items: {
       cs: [

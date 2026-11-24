@@ -276,7 +276,6 @@ async function main(){
     state.editionAssessmentVersion=EDITION_ASSESSMENT_VERSION;state.assessedLedgerSize=sizeNow;state.assessedAnswersMs=reviewedAt;state.assessedAt=new Date().toISOString();state.assessmentDeferred=organiser.deferred;saveState();
    }catch(e){if(interrupted)throw e;note(e);}
   }
-  try{report.coverage=writeCoverage(archive,data);}catch(e){console.warn(`Pokrytí nespočítáno: ${e.message}`);}
   save();
 
   // Part 3: the rest of the upkeep that only needs other people's websites and the copy here.
@@ -500,6 +499,19 @@ async function main(){
    }catch(e){if(interrupted)throw e;state.sendFailed=true;saveState();note(e);}
   }else{report.heldRaces=state.heldRaces??0;if(state.heldBacklog)report.heldBacklog=state.heldBacklog;}
   if(report.targetRead&&!failed){state.heldRaces=report.heldRaces;saveState();}
+  // Edition coverage counts the live server catalogue (including manually added races), not just the Mac copy.
+  const coverageFile=path.join(data,'edition-coverage.json');
+  if(report.publishedNewRaces>0||dueEvery(state.editionCoverageAt,HOUR)||!fs.existsSync(coverageFile)){
+   try{
+    const updated=await node(tsx,['scripts/update-edition-coverage.ts',`--season=${season}`,`--countries=${COUNTRIES}`,`--out=${coverageFile}`],{timeout:60_000});
+    const line=updated.output.split('\n').find(text=>text.startsWith('edition_coverage '));
+    if(line)report.coverage=JSON.parse(line.slice(17));
+    state.editionCoverageAt=new Date().toISOString();saveState();
+   }catch(e){
+    console.warn(`Živé pokrytí ročníků nespočítáno: ${String(e.message).split('\n')[0].slice(0,160)}`);
+    if(!fs.existsSync(coverageFile))try{report.coverage=writeCoverage(archive,data);}catch{}
+   }
+  }
 
   // What the runner needs to decide when to come back.
   const dueAfter=Number(sql('letsrace',dueNow).trim());report.dueSourcesAfter=dueAfter;

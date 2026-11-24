@@ -1,0 +1,26 @@
+{
+  "source": "https://www.roadclassics.cz/",
+  "website": "https://www.roadclassics.cz/",
+  "series": "road-classics",
+  "races": [
+    {
+      "start": "2027-05-15",
+      "name": "Road Classics Pálava",
+      "quote": "15. 5. 2027 Pálava 2027",
+      "previous": "road-classics-1-palava-2026"
+    },
+    {
+      "start": "2027-07-16",
+      "end": "2027-07-17",
+      "name": "Road Classics Vysočina",
+      "quote": "16. 7. 2027 – 17. 7. 2027 Vysočina 2027",
+      "previous": "road-classics-2-vysocina-2026"
+    },
+    {
+      "start": "2027-09-18",
+      "name": "Road Classics Ještěd",
+      "quote": "18. 9. 2027 Ještěd 2027",
+      "previous": "road-classics-3-jested-2026"
+    }
+  ]
+}
