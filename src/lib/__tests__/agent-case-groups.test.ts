@@ -29,12 +29,13 @@ describe("identical agent cases are asked once", () => {
     expect(pairKey("89c33129-3764", "08593b87-2f01")).toBe(pairKey("08593b87-2f01", "89c33129-3764"));
   });
 
-  it("keeps the Saturday endurance race and the Sunday kids race two events", () => {
+  it("keeps the Saturday endurance race and the Sunday kids race two events by date", () => {
     const stub = (id: string, name: string, date: string) => ({ case: `regulations-${id}`, race: { id, name, date } });
     expect(groupSameRace([stub("08593b87", "Stubalpen Mehrstunden Trophy", "2027-04-17"), stub("89c33129", "Stubalpen Kids Trophy", "2027-04-18")])).toHaveLength(2);
     const found = (name: string, start_date: string) => ({ name, start_date, end_date: null, place: "Maria Lankowitz", country: "AT", discipline: "mtb", url: "https://cyclingaustria.at/kalender?bl=Steiermark&view=events", quote: name });
     expect(mergeFoundRaces([found("Stubalpen Mehrstunden Trophy", "2027-04-17"), found("Stubalpen Kids Trophy", "2027-04-18")])).toHaveLength(2);
-    expect(isSeparateRace("Stubalpen Mehrstunden Trophy", "Stubalpen Kids Trophy")).toBe(true);
+    // Same-day kids races beside the main event now merge under owner policy (A6); different days still stay separate above.
+    expect(isSeparateRace("Stubalpen Mehrstunden Trophy", "Stubalpen Kids Trophy")).toBe(false);
   });
 
   it("reads Cycling Austria's general and road filters as one calendar", () => {

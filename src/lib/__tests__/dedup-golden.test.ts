@@ -16,6 +16,9 @@ const same: Pair[] = [
   { label: "same race, www and locale in the address", a: at("Kamptal Trophy", { countryCode: "AT", placeText: "Langenlois", urls: ["https://www.kamptal-trophy.at/en/race"] }), b: at("Kamptal Trophy", { countryCode: "AT", placeText: "Langenlois", urls: ["https://kamptal-trophy.at/de/race"] }) },
   { label: "same race, one source gives the second day of a weekend", a: at("MTB Marathon Pecka", { endDate: "2027-06-06", urls: ["https://pecka.test/"] }), b: at("MTB Marathon Pecka", { startDate: "2027-06-06", urls: ["https://pecka.test/"] }) },
   { label: "same cup round, series name written two ways", a: at("Český pohár MTB - 3. kolo Nové Město", { placeText: "Nové Město na Moravě", seriesName: "Český pohár MTB" }), b: at("Czech MTB Cup 3 Nové Město na Moravě", { placeText: "Nové Město na Moravě", seriesName: "Czech MTB Cup" }) },
+  // Settled by owner (2026-11-24, ROADMAP A6): distance variants and kids' races beside the main event belong to one event.
+  { label: "short and long distance races of one organiser, one day", a: at("Beskydská sedmička 50 km", { urls: ["https://beskydy.test/"] }), b: at("Beskydská sedmička 100 km", { urls: ["https://beskydy.test/"] }) },
+  { label: "children's race beside the main race", a: at("Kolo pro život - hlavní závod", { placeText: "Brno" }), b: at("Kolo pro život - dětský závod", { placeText: "Brno" }) },
 ];
 
 /** Must stay apart: looks alike, is not the same race. */
@@ -25,17 +28,6 @@ const distinct: Pair[] = [
   { label: "the same race a year apart", a: at("Pinguin Žernovský bajk", { startDate: "2026-06-06", urls: ["https://zernovskybajk.cz/"] }), b: at("Pinguin Žernovský bajk", { startDate: "2027-06-05", urls: ["https://zernovskybajk.cz/"] }) },
   { label: "different races in towns of one name in two countries", a: at("Sobotka MTB", { countryCode: "CZ", placeText: "Sobotka" }), b: at("Sobótka MTB", { countryCode: "PL", placeText: "Sobótka" }) },
   { label: "a road race and an MTB race of one town on one day", a: at("Memoriál Jana Veselého", { disciplines: ["road"], placeText: "Brno" }), b: at("Memoriál Jana Veselého MTB", { disciplines: ["mtb"], placeText: "Brno" }) },
-];
-
-/**
- * Not settled: one organiser, one place, one day, one address, and a distance or "children's" in the name.
- * Today the scorer merges these. That is right when the page lists one event with several distances, and wrong
- * when they are two races. The pairs are kept so a change in either direction is noticed, not because the
- * answer is decided; move a pair to the lists above once it is.
- */
-const unsettled: Pair[] = [
-  { label: "short and long distance races of one organiser, one day", a: at("Beskydská sedmička 50 km", { urls: ["https://beskydy.test/"] }), b: at("Beskydská sedmička 100 km", { urls: ["https://beskydy.test/"] }) },
-  { label: "children's race beside the main race", a: at("Kolo pro život - hlavní závod", { placeText: "Brno" }), b: at("Kolo pro život - dětský závod", { placeText: "Brno" }) },
 ];
 
 const decision = ({ a, b }: Pair) => assessDuplicate(a, b).decision;
@@ -49,12 +41,8 @@ describe("golden pairs for duplicate detection", () => {
     expect(decision(pair)).not.toBe("match");
   });
 
-  it.each(unsettled.map((pair) => [pair.label, pair] as const))("today merges (not settled): %s", (_label, pair) => {
-    expect(decision(pair)).toBe("match");
-  });
-
   it("scores a pair the same whichever way round it is asked", () => {
-    for (const pair of [...same, ...distinct, ...unsettled]) {
+    for (const pair of [...same, ...distinct]) {
       expect(decision({ ...pair, a: pair.b, b: pair.a })).toBe(decision(pair));
     }
   });

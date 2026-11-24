@@ -60,9 +60,9 @@ describe("record evidence required for a merge without a source quote", () => {
 });
 
 describe("shorter race beside the main one", () => {
-  it("treats a half distance as its own race", () => {
-    expect(isSeparateRace("Bike Paradise", "Půl Paradise")).toBe(true);
-    expect(isSeparateRace("Mini Duszek Puszczy", "Ultra Duch Puszczy")).toBe(true);
+  it("allows distance variants of one event to merge under owner policy (A6)", () => {
+    expect(isSeparateRace("Bike Paradise", "Půl Paradise")).toBe(false);
+    expect(isSeparateRace("Mini Duszek Puszczy", "Ultra Duch Puszczy")).toBe(false);
     expect(isSeparateRace("Bike Paradise", "Bike Paradise 2027")).toBe(false);
   });
 });

@@ -410,13 +410,10 @@ describe("SooF organiser links", () => {
 });
 
 describe("kids races", () => {
-  it("keeps a kids race separate from the adult race beside it", async () => {
+  it("allows a kids race beside the main event of the same organiser to merge under owner policy (A6)", async () => {
     const { isSeparateRace } = await import("@/lib/catalog/merge-duplicates");
-    // Same venue, same day — that is what a family event is. Matching only the
-    // English "kids" left every other market unguarded.
-    expect(isSeparateRace("NyNa Gravel Cup — Šarišské Bohdanovce", "Detská VRL — Šarišské Bohdanovce")).toBe(true);
-    expect(isSeparateRace("Kamptal Trophy", "Kamptal Trophy Nachwuchs")).toBe(true);
-    expect(isSeparateRace("Bikemaraton Beroun", "Bikemaraton Beroun dětský závod")).toBe(true);
+    expect(isSeparateRace("Kamptal Trophy", "Kamptal Trophy Nachwuchs")).toBe(false);
+    expect(isSeparateRace("Bikemaraton Beroun", "Bikemaraton Beroun dětský závod")).toBe(false);
   });
 });
 

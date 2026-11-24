@@ -189,10 +189,6 @@ const RIDE_NOT_RACE =
  * several races on one day — "18° MEMORIAL PARMALIANA" and the same memorial
  * "-ALLIEVI". They share a venue and a date and are still different races.
  */
-/** "Kids" across the covered markets — a youth race is its own race. */
-const KIDS_RACE =
-  /\bkids?\b|\bd[eě]tsk|\bdetsk|\bd[eě]ti\b|\bdeti\b|\bkinder|\bnachwuchs|\bsch[uü]ler|\bjugend|\bmini\b|\bmlad[eé][zž]|\bziaci\b|\b[zž][aá]ci\b|\bgiovanissimi\b|\besordienti\b|\bdzieci\b|\bmlodzik/i;
-
 const IT_CATEGORY =
   /\b(allievi|esordienti|giovanissimi|juniores?|donne|master|amatori|elite\s?sport|open)\b/i;
 
@@ -241,14 +237,10 @@ function distinctSuffixAfterSharedPrefix(a: string, b: string): boolean {
 const CHAMPIONSHIP =
   /\bmistrovstv|majstrovstv[aá]|\bm[cč]r\b|\bmsr\b|national\s+champ|championship|meisterschaft|campionato\s+italiano|mistrzostwa/i;
 
-/** "Půl Paradise" beside "Bike Paradise": a shorter race of its own, not another listing. */
-const SHORTER_RACE = /\b(?:pul|half|mini|maly|mala|kurz)\b/;
-
 export function isSeparateRace(a: string, b: string): boolean {
-  if (SHORTER_RACE.test(foldName(a)) !== SHORTER_RACE.test(foldName(b))) return true;
-  // A kids' race shares the venue and the day with the adult one it runs
-  // alongside — that is the whole point of a family event.
-  if (KIDS_RACE.test(a) !== KIDS_RACE.test(b)) return true;
+  // Owner policy (2026-11-24, ROADMAP A6): a shorter distance (50 km / 100 km, Půl / Mini)
+  // and a kids' race running alongside the main event on the same day and venue belong to
+  // the same event record — aligned with `assessDuplicate` in `src/lib/dedup.ts`.
   if (EBIKE.test(a) !== EBIKE.test(b)) return true;
   if (CHAMPIONSHIP.test(a) !== CHAMPIONSHIP.test(b)) return true;
   if (distinctSuffixAfterSharedPrefix(a, b)) return true;

@@ -24,9 +24,7 @@ Důležitost: **Vysoká** = přímo zlepšuje to, co vidí rodiče a jezdci, neb
 | # | Úkol | Proč na tom záleží (lidskou řečí) | Důležitost | Kdo / kdy |
 | --- | --- | --- | --- | --- |
 | A21 | Dokončit případy agenta (Codex je bez kreditu): zbývá 5 extrakcí podrobností (Świętokrzyska Liga a Porrentruy z PDF, Elmshorn, Nürnberg a Rheinzabern, tři z nich na rad-netu) | 20. 11. jsem zodpověděl 76 případů včetně 7 ověření podrobností a 3 extrakcí. Rad-net číst nesmím | **Nízká** | já, případně nový kredit Codexu |
-| A22 | Zbylých 5 skrytých závodů bez zjištěného důvodu a disciplína u Vinařská 50 (místo Kobylí doplněno, závod zůstává skrytý) | 69 skrytých má zapsaný důvod, 5 závodů bylo zveřejněno (Zábřeh, HarzGravel, THE43, Wörthersee Gravel, Imster Radmarathon) | **Nízká** | já |
 | A2 | Sledovat, kolik oprav data má citaci a jde na server (`pipeline:status`, řádky „Změny data a zrušení“ a „odeslané na server“) | Odesílač běží od 20. 11. (A3 hotové). Většina zadržených změn je už na serveru (4 z 5 byly „already_set“); 24 dalších nemá citaci, protože pocházejí z rozhraní API (radsport-events, odjazd.pl, endure, rideandrest) a ty stránky nemají text pro citaci | **Střední** | čas |
-| A6 | Rozhodnout, kdy jsou „50 km a 100 km“ nebo „hlavní a dětský závod“ jeden závod a kdy dva | Teď se u jedné akce občas objeví dva záznamy a občas jeden. Rodič pak nenajde správnou kategorii. Je to tvoje rozhodnutí | **Vysoká** | ty, po dvojicích |
 | A9 | Porovnat katalog s referenčními kalendáři SK, DE, AT, PL | Dnes víme jen, kolik závodů máme, ne kolik jich v zemi je. Bez toho nevíme, kolik nenacházíme | **Střední** | já nebo ty |
 | A13 | Denní strop AI odvozovat ze zbytku měsíce | Dnes se limit AI vyčerpá v polovině měsíce a pak se přestanou číst propozice | **Střední** | já, za týden |
 | A14 | Nastavit tvrdý měsíční limit v Anthropic Console | Pojistka proti chybě: kdyby se spletl náš vlastní hlídač výdajů, zastaví to služba | **Střední** | ty |
