@@ -75,7 +75,7 @@ export function WelcomeCard({
           height={112}
           fetchPriority="high"
           decoding="async"
-          className="h-24 w-full object-cover outline outline-1 outline-black/10 md:h-28"
+          className="h-24 w-full object-cover outline-1 -outline-offset-1 outline-black/10 dark:outline-white/10 md:h-28"
         />
       </picture>
       <Button
@@ -84,7 +84,7 @@ export function WelcomeCard({
         size="icon-sm"
         aria-label={messages.introDismiss}
         onClick={dismiss}
-        className="absolute right-2 top-2 bg-black/35 text-white hover:bg-black/55 hover:text-white"
+        className="absolute right-2 top-2 rounded-full bg-black/35 text-white hover:bg-black/55 hover:text-white"
       >
         <X />
       </Button>

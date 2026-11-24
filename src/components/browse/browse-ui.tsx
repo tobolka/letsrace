@@ -83,7 +83,7 @@ export function TileGrid({ title, children, className }: { title?: string; child
 }
 
 const TILE =
-  "browse-tile group flex items-center gap-3 rounded-xl border bg-card p-4 transition-[background-color,border-color] duration-150 [@media(hover:hover)_and_(pointer:fine)]:hover:border-foreground/20 [@media(hover:hover)_and_(pointer:fine)]:hover:bg-accent/40 focus-visible:outline-2 focus-visible:outline-foreground focus-visible:outline-offset-2 motion-reduce:transition-none";
+  "browse-tile group flex items-center gap-3 rounded-xl border bg-card p-4 [-webkit-tap-highlight-color:transparent] transition-transform duration-100 ease-out active:scale-[0.985] [@media(hover:hover)_and_(pointer:fine)]:hover:border-foreground/20 [@media(hover:hover)_and_(pointer:fine)]:hover:bg-accent/40 focus-visible:outline-2 focus-visible:outline-foreground focus-visible:outline-offset-2 motion-reduce:transition-none motion-reduce:active:scale-100";
 
 function TileText({ name, count }: { name: string; count: string }) {
   return (
@@ -108,7 +108,7 @@ export function CountryCard({ href, code, name, count }: { href: string; code: s
           alt=""
           width={28}
           height={21}
-          className="h-[21px] w-7 rounded-[3px] object-cover ring-1 ring-black/5"
+          className="h-[21px] w-7 rounded-[3px] object-cover outline-1 -outline-offset-1 outline-black/10 dark:outline-white/10"
         />
       </span>
       <TileText name={name} count={count} />

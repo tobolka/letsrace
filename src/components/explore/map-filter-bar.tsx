@@ -173,12 +173,12 @@ export function MapFilterBar({
         className={cn(
           "flex items-center gap-1.5",
           compact
-            ? "min-w-0 flex-nowrap overflow-x-auto [scrollbar-width:none]"
+            ? "scroll-fade-x min-w-0 flex-nowrap overflow-x-auto [scrollbar-width:none]"
             : wide
             ? "min-w-0 flex-1 flex-wrap"
             : pinAll
             ? "flex-nowrap"
-            : "min-w-0 flex-1 flex-wrap max-md:flex-nowrap max-md:overflow-x-auto",
+            : "min-w-0 flex-1 flex-wrap max-md:scroll-fade-x max-md:flex-nowrap max-md:overflow-x-auto max-md:[scrollbar-width:none]",
         )}
       >
         {hideDate ? null : (

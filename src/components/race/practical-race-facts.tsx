@@ -50,11 +50,11 @@ export function PracticalRaceFacts({ event, locale }: { event: EventListItem; lo
     {source(facts.schedule)}
   </> });
   if (facts.fees) rows.push({ key: "fees", icon: FACT_ICONS.fees, label: names.fees, content: <>
-    <FactList rows={facts.fees.value.map((item, i) => ({ key: i, label: <>{item.label}{item.validUntil ? <span className="text-muted-foreground"> · {c.until} {date(item.validUntil)}</span> : null}</>, value: <span className="font-medium text-foreground">{new Intl.NumberFormat(locale, { style: "currency", currency: item.currency, maximumFractionDigits: 2 }).format(item.amount)}</span> }))} />
+    <FactList rows={facts.fees.value.map((item, i) => ({ key: i, label: <>{item.label}{item.validUntil ? <span className="text-muted-foreground"> · {c.until} {date(item.validUntil)}</span> : null}</>, value: <span className="font-medium tabular-nums text-foreground">{new Intl.NumberFormat(locale, { style: "currency", currency: item.currency, maximumFractionDigits: 2 }).format(item.amount)}</span> }))} />
     {source(facts.fees)}
   </> });
   if (facts.categories) rows.push({ key: "categories", icon: FACT_ICONS.categories, label: names.categories, content: <>
-    <FactList rows={facts.categories.value.map((item, i) => ({ key: i, label: item.label, value: item.birthYears }))} />
+    <FactList rows={facts.categories.value.map((item, i) => ({ key: i, label: item.label, value: item.birthYears ? <span className="tabular-nums">{item.birthYears}</span> : undefined }))} />
     {source(facts.categories)}
   </> });
   if (facts.routes) rows.push({ key: "routes", icon: FACT_ICONS.routes, label: names.routes, content: <>

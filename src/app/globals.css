@@ -204,6 +204,55 @@ html:has(#shell-stage) {
   overscroll-behavior: none;
 }
 
+html {
+  background-color: var(--background);
+}
+
+/* Scroll-driven edge fades (Craft: scroll-fades) — only fade the side that still has content to scroll. */
+@property --fade-start {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+@property --fade-end {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+@keyframes craft-fade-start {
+  from { --fade-start: 0px; }
+  to { --fade-start: 2rem; }
+}
+@keyframes craft-fade-end {
+  from { --fade-end: 2rem; }
+  to { --fade-end: 0px; }
+}
+.scroll-fade-x,
+.scroll-fade-y {
+  mask-image: linear-gradient(
+    var(--fade-direction),
+    transparent,
+    black var(--fade-start),
+    black calc(100% - var(--fade-end)),
+    transparent
+  );
+}
+.scroll-fade-y { --fade-direction: to bottom; }
+.scroll-fade-x { --fade-direction: to right; }
+@supports (animation-timeline: scroll()) {
+  .scroll-fade-x,
+  .scroll-fade-y {
+    animation:
+      craft-fade-start 1ms linear both,
+      craft-fade-end 1ms linear both;
+    animation-range:
+      0 2.5rem,
+      calc(100% - 2.5rem) 100%;
+  }
+  .scroll-fade-y { animation-timeline: scroll(self y); }
+  .scroll-fade-x { animation-timeline: scroll(self x); }
+}
+
 body {
   background: var(--background);
   color: var(--foreground);

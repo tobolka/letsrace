@@ -66,7 +66,7 @@ export function RaceLinkRows({
   }
   // Each link a grey button, as the action buttons above, on the card and the race page alike.
   const row =
-    "grid min-h-11 grid-cols-[1rem_minmax(0,1fr)_1rem] items-center gap-x-3 rounded-lg bg-secondary px-3 text-sm font-medium transition-colors hover:bg-secondary/70 active:bg-secondary/70 focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none";
+    "grid min-h-11 grid-cols-[1rem_minmax(0,1fr)_1rem] items-center gap-x-3 rounded-lg bg-secondary px-3 text-sm font-medium [-webkit-tap-highlight-color:transparent] transition-transform duration-100 ease-out active:scale-[0.99] motion-reduce:transition-none motion-reduce:active:scale-100 [@media(hover:hover)_and_(pointer:fine)]:hover:bg-secondary/70 active:bg-secondary/70 focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none";
   return (
     <ul className={cn("flex flex-col gap-1.5", className)}>
       {links.map((link) => {

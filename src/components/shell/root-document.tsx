@@ -117,7 +117,7 @@ export function RootDocument({ lang, children }: { lang: string; children: React
      */
     <html
       lang={lang}
-      className={`${GeistSans.className} ${GeistSans.variable} h-full`}
+      className={`${GeistSans.className} ${GeistSans.variable} h-full bg-background`}
       suppressHydrationWarning
     >
       {/* The root layouts' document, shared — this is their <head>, not a page's. */}
