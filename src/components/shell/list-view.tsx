@@ -139,7 +139,7 @@ export function ListView({ locale }: { locale: string }) {
           </div>
         </div>
 
-        <div id="race-list" tabIndex={-1} className="scroll-fade-y min-h-0 flex-1 overflow-y-auto overscroll-contain outline-none [&>[data-slot=table-container]]:overflow-x-visible">
+        <div id="race-list" tabIndex={-1} className="scroll-fade-b min-h-0 flex-1 overflow-y-auto overscroll-contain outline-none [&>[data-slot=table-container]]:overflow-x-visible">
           {/* On a phone the count and the order head the list and scroll away
               with it; only the filter row above stays. */}
           {isMobile ? (

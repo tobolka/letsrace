@@ -228,7 +228,8 @@ html {
   to { --fade-end: 0px; }
 }
 .scroll-fade-x,
-.scroll-fade-y {
+.scroll-fade-y,
+.scroll-fade-b {
   mask-image: linear-gradient(
     var(--fade-direction),
     transparent,
@@ -237,7 +238,8 @@ html {
     transparent
   );
 }
-.scroll-fade-y { --fade-direction: to bottom; }
+.scroll-fade-y,
+.scroll-fade-b { --fade-direction: to bottom; }
 .scroll-fade-x { --fade-direction: to right; }
 @supports (animation-timeline: scroll()) {
   .scroll-fade-x,
@@ -249,7 +251,12 @@ html {
       0 2.5rem,
       calc(100% - 2.5rem) 100%;
   }
-  .scroll-fade-y { animation-timeline: scroll(self y); }
+  .scroll-fade-b {
+    animation: craft-fade-end 1ms linear both;
+    animation-range: calc(100% - 2.5rem) 100%;
+  }
+  .scroll-fade-y,
+  .scroll-fade-b { animation-timeline: scroll(self y); }
   .scroll-fade-x { animation-timeline: scroll(self x); }
 }
 
