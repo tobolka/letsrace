@@ -254,7 +254,7 @@ export function EventDetailPanel({
          * the sheet up to find out whether a race had an entry link.
          */
         className={cn(
-          "min-h-0 flex-1 overflow-x-hidden overflow-y-auto overscroll-contain px-4",
+          "scroll-fade-y min-h-0 flex-1 overflow-x-hidden overflow-y-auto overscroll-contain px-4",
           embedded
             ? "px-4 pt-3 pb-[max(1rem,env(safe-area-inset-bottom))] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
             : "pt-3 pb-4",

@@ -21,7 +21,7 @@ export async function CollectionGrid({ locale, countryCode }: { locale: Locale; 
           const Icon = ICONS[slug];
           const summary = summaries.find((s) => s.slug === slug && s.countryCode === (fixed ? null : countryCode ?? null));
           return (
-            <Link key={slug} href={`/${locale}/${collectionPath(locale, slug, countryCode)}`} className="browse-tile group flex min-w-0 items-center gap-3 rounded-xl border bg-card p-4 transition-colors hover:border-foreground/20 hover:bg-accent/40 focus-visible:outline-2 focus-visible:outline-foreground focus-visible:outline-offset-2 motion-reduce:transition-none">
+            <Link key={slug} href={`/${locale}/${collectionPath(locale, slug, countryCode)}`} className="browse-tile group flex min-w-0 items-center gap-3 rounded-xl border bg-card p-4 [-webkit-tap-highlight-color:transparent] transition-transform duration-100 ease-out active:scale-[0.985] [@media(hover:hover)_and_(pointer:fine)]:hover:border-foreground/20 [@media(hover:hover)_and_(pointer:fine)]:hover:bg-accent/40 focus-visible:outline-2 focus-visible:outline-foreground focus-visible:outline-offset-2 motion-reduce:transition-none motion-reduce:active:scale-100">
               <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-muted/70"><Icon className="size-4" aria-hidden /></span>
               <span className="flex min-w-0 flex-1 flex-col gap-1">
                 <span className="text-sm font-semibold leading-tight">{copy.collections[slug].label}</span>

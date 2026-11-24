@@ -518,7 +518,7 @@ function DayList({
         </span>
         <span className="text-2xl font-semibold tabular-nums">{format(date, "d", { locale: df })}</span>
       </div>
-      <ul data-keyboard-list data-keyboard-focus-only className="max-h-[min(60dvh,24rem)] overflow-y-auto p-1">
+      <ul data-keyboard-list data-keyboard-focus-only className="scroll-fade-y max-h-[min(60dvh,24rem)] overflow-y-auto p-1">
         {items.map((item) => (
           <li key={item.id}>
             <button

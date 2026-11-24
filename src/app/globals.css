@@ -591,7 +591,7 @@ time,
     @apply relative border-b border-border/50 last:border-b-0;
   }
   .race-row-link {
-    @apply relative flex items-center gap-2.5 px-4 py-3 pr-12 text-sm outline-none transition-colors duration-100 focus-visible:ring-[3px] focus-visible:ring-ring/50 active:bg-accent max-md:py-2.5 [@media(hover:hover)_and_(pointer:fine)]:hover:bg-accent/50;
+    @apply relative flex items-center gap-2.5 px-4 py-3 pr-12 text-sm outline-none [-webkit-tap-highlight-color:transparent] focus-visible:ring-[3px] focus-visible:ring-ring/50 active:bg-accent max-md:py-2.5 [@media(hover:hover)_and_(pointer:fine)]:hover:bg-accent/50;
   }
   .race-row-edge {
     @apply absolute inset-y-2.5 left-1.5 w-[3px] rounded-full max-md:inset-y-2;

@@ -245,7 +245,7 @@ export function MobileFiltersSheet({
           </div>
         </div>
 
-        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 pb-4">
+        <div className="scroll-fade-y min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 pb-4">
           <div className="flex flex-col gap-6">
             {/* The date has a pill of its own in the row; the panel holds it
                 only when a range is being picked by hand. */}
@@ -397,7 +397,7 @@ export function MobileFiltersSheet({
                   spellCheck={false}
                   className="h-11 text-base"
                 />
-                <div className="flex max-h-48 flex-col gap-1 overflow-y-auto overscroll-contain">
+                <div className="scroll-fade-y flex max-h-48 flex-col gap-1 overflow-y-auto overscroll-contain">
                   {series ? (
                     <Button
                       type="button"

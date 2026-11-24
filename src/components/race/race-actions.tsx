@@ -34,7 +34,7 @@ const PRESENTATION = { row: "page", grid: "panel", tiles: "sheet" } as const;
 // the actions sit quietly under the race instead of shouting over it. Links,
 // buttons and the save button alike get it from this one class.
 const TILE =
-  "flex h-[3.25rem] min-w-0 flex-col items-center justify-center gap-1 rounded-lg bg-foreground/[0.055] px-1 text-[11px] leading-none font-medium text-foreground outline-none touch-manipulation transition-[background-color,scale] duration-150 hover:bg-foreground/10 active:scale-[0.97] focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-60 [&_svg]:size-[18px] [&>span:last-child]:max-w-full [&>span:last-child]:truncate [&>span:last-child]:py-px";
+  "flex h-[3.25rem] min-w-0 flex-col items-center justify-center gap-1 rounded-lg bg-foreground/[0.055] px-1 text-[11px] leading-none font-medium text-foreground outline-none touch-manipulation [-webkit-tap-highlight-color:transparent] transition-transform duration-100 ease-out [@media(hover:hover)_and_(pointer:fine)]:hover:bg-foreground/10 active:scale-[0.97] disabled:active:scale-100 motion-reduce:transition-none motion-reduce:active:scale-100 focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-60 [&_svg]:size-[18px] [&>span:last-child]:max-w-full [&>span:last-child]:truncate [&>span:last-child]:py-px";
 const TILE_BAR = "grid gap-1.5";
 
 /**

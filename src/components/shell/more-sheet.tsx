@@ -90,7 +90,7 @@ export function MoreSheet({
             </DrawerClose>
           </div>
 
-          <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain pb-2">
+          <div className="scroll-fade-y min-h-0 flex-1 overflow-y-auto overscroll-contain pb-2">
             <section aria-label={t.moreAccount}>
               <div className="px-4 pt-1 pb-2">
                 <p className="text-xs text-muted-foreground">{authed ? t.accountSignedIn : t.accountSignedOut}</p>

@@ -228,7 +228,7 @@ export function MapFilterBar({
                     // No scrollbar column kept free when the list does not
                     // scroll: it read as a wide margin on the right. Only the
                     // series, whose counts line up at the edge, keep it.
-                    "max-h-[min(60dvh,20rem)] overflow-y-auto [scrollbar-width:thin]",
+                    "scroll-fade-y max-h-[min(60dvh,20rem)] overflow-y-auto [scrollbar-width:thin]",
                     id === "series" && "[scrollbar-gutter:stable]",
                     id === "series" ? "w-72 max-w-[calc(100vw-1.5rem)]" : "w-56",
                   )}
@@ -289,7 +289,7 @@ export function MapFilterBar({
                       <DropdownMenuSubContent
                         className={cn(
                           // The scrollbar took the column the counts sit in.
-                          "max-h-80 overflow-y-auto [scrollbar-width:thin]",
+                          "scroll-fade-y max-h-80 overflow-y-auto [scrollbar-width:thin]",
                           id === "series" && "[scrollbar-gutter:stable]",
                           id === "series" ? "w-72" : "w-56",
                         )}

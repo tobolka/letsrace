@@ -99,7 +99,7 @@ export function ExplorePhoneSheets({
         <div
           id="race-list-mobile"
           ref={listRef}
-          className="min-h-0 flex-1 overflow-y-auto overscroll-contain md:hidden"
+          className="scroll-fade-y min-h-0 flex-1 overflow-y-auto overscroll-contain md:hidden"
         >
           <div className="border-b border-border/50">
             <ActiveFilterChips locale={locale} className="pb-0" {...chips} />

@@ -87,7 +87,7 @@ export function ExploreDesktopPanel({
           </div>
           <Separator />
           <ListToolbar {...toolbar} distanceEnabled messages={messages} locale={locale} />
-          <div id="race-list" tabIndex={-1} className="min-h-0 flex-1 overflow-y-auto outline-none">
+          <div id="race-list" tabIndex={-1} className="scroll-fade-y min-h-0 flex-1 overflow-y-auto outline-none">
             <div ref={listRef} className="@container min-h-0">
             <ExploreRaceRows variant="panel" locale={locale} messages={messages} {...rows} />
             </div>
