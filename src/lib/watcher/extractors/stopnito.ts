@@ -2,8 +2,8 @@ import * as cheerio from "cheerio";
 import type { Discipline, ParsedEvent } from "@/lib/domain";
 import { normalizeName } from "@/lib/domain";
 
-const CYCLING_SPORT = /\b(?:cykl|mtb|kolo|kola|gravel|silni[cč]|bike|bajk|bmx|enduro|downhill|časovk|casovk|cyklokros|xco|xcm)\b/i;
-const EXCLUDED_SPORT = /\b(?:b[eě]h|b[eě][zž]k|triatlon|duatlon|plav|canicros|orient|ch[uů]z|pochod|nordic|ly[zž]|skialp|skyrace)\b/i;
+const CYCLING_SPORT = /\b(?:cykl|mtb|kolo|kola|gravel|silni[cč]|bike|bajk|bmx|enduro|downhill|časovk|casovk|xco|xcm)/i;
+const EXCLUDED_SPORT = /\b(?:b[eě]h|b[eě][zž]k|triatlon|duatlon|plav|canicros|orient|ch[uů]z|pochod|nordic|ly[zž]|skialp|skyrace)/i;
 
 function parseCzDate(raw: string): { start: string; end?: string } | null {
   const clean = raw.replace(/\s+/g, " ").trim();
@@ -22,7 +22,7 @@ function parseCzDate(raw: string): { start: string; end?: string } | null {
 function mapStopnitoDiscipline(text: string): Discipline[] {
   const t = text.toLowerCase();
   if (/cyklokros|cyclocross|\bcx\b/.test(t)) return ["cx"];
-  if (/gravel/.test(t)) return ["gravel"];
+  if (/gravel|bikepacking/.test(t)) return ["gravel"];
   if (/enduro/.test(t)) return ["enduro"];
   if (/downhill|\bdh\b/.test(t)) return ["dh"];
   if (/časovk|casovk|\btt\b/.test(t)) return ["tt"];
