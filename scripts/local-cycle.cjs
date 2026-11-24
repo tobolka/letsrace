@@ -19,11 +19,13 @@ const { discoveryTarget, submissionPath } = require('./agent-discovery.cjs');
 const HOUR=3_600_000;
 const AGENT_EVERY_MS=6*HOUR;
 const PAID_DETAILS=process.env.LETSRACE_PAID_DETAILS==='1';
+/** Check whether a non-empty key exists in process.env or .env.local (local-cycle.sh does not source .env.local). */
+const hasLocalEnvKey=key=>{if(process.env[key])return true;try{return new RegExp(`^${key}=.+`,'m').test(fs.readFileSync(path.join(root,'.env.local'),'utf8'));}catch{return false;}};
 /** Searching with Brave is off since 20 Nov 2026 (977 queries a month found 64 links). LETSRACE_BRAVE=1 turns it back on. */
 const BRAVE_ON=process.env.LETSRACE_BRAVE==='1';
 /** Free/low-cost search providers: Serper.dev (Google index, 2,500 free queries) or local SearXNG ($0). */
-const SERPER_ON=Boolean(process.env.SERPER_API_KEY)&&process.env.LETSRACE_SERPER!=='0';
-const SEARXNG_ON=Boolean(process.env.SEARXNG_URL)&&process.env.LETSRACE_SEARXNG!=='0';
+const SERPER_ON=hasLocalEnvKey('SERPER_API_KEY')&&process.env.LETSRACE_SERPER!=='0';
+const SEARXNG_ON=hasLocalEnvKey('SEARXNG_URL')&&process.env.LETSRACE_SEARXNG!=='0';
 const SEARCH_ON=SERPER_ON||SEARXNG_ON||BRAVE_ON;
 /** Prefer free local SearXNG for broad daily discovery (with automatic Serper fallback if offline), saving Serper's Google quota for exact race-website lookups. */
 const SEARCH_PROVIDER=SEARXNG_ON?'searxng':SERPER_ON?'serper':'brave';
@@ -385,7 +387,7 @@ async function main(){
   await upkeep('internationalKids','internationalKidsAt',24*HOUR,'Hlídám dětské kategorie u mezinárodních závodů',['scripts/fix-international-kids.ts','--apply'],180,{},true);
   // The UCI calendar for our countries: class, website, categories and e-mail; new UCI races through the review gates.
   await upkeep('uciDirectory','uciDirectoryAt',24*HOUR,'Čtu kalendář UCI',['scripts/harvest-uci-directory.ts','--apply',`--out=${path.join(data,'uci-directory-latest.json')}`],900,{},true);
-  if(SEARCH_ON)await upkeep('websiteSearch','websiteSearchAt',WEBSITE_SEARCH_EVERY_MS,'Hledám weby závodů, které žádný nemají',['scripts/find-websites.ts','--apply','--max=12','--prefer=CZ,SK',`--countries=${COUNTRIES}`,`--from=${season}-01-01`],480,{BRAVE_SEARCH_LIMIT:BRAVE_ON?'40':'0',SERPER_SEARCH_LIMIT:SERPER_ON?'6':'0',SEARXNG_SEARCH_LIMIT:SEARXNG_ON?'20':'0',SEARCHES_A_DAY:SERPER_ON?'14':'40',SEARCH_LEDGER_PATH:path.join(data,'search-budget.json')});
+  if(SEARCH_ON)await upkeep('websiteSearch','websiteSearchAt',WEBSITE_SEARCH_EVERY_MS,'Hledám weby závodů, které žádný nemají',['scripts/find-websites.ts','--apply','--max=12','--prefer=CZ,SK',`--countries=${COUNTRIES}`,`--from=${season}-01-01`],480,{BRAVE_SEARCH_LIMIT:BRAVE_ON?'40':'0',SERPER_SEARCH_LIMIT:SERPER_ON?'6':'0',SEARXNG_SEARCH_LIMIT:SEARXNG_ON?'20':'0',SEARCHES_A_DAY:SERPER_ON?'14':'40',SEARCH_LEDGER_PATH:path.join(data,SERPER_ON?'serper-search-budget.json':'search-budget.json')});
   // The agent: looks for regulations and judges possible duplicates the readers could not settle.
   // Its answers stay in the data folder; nothing of them is sent. One run a day, kept by the step itself.
   // Every six hours: prepare cases for the desk and check answers that arrived through it. The agent itself (Codex) works in its own session.
