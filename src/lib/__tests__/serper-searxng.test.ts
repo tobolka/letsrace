@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { resetSerperProcessCounter, serperSearch } from "@/lib/catalog/serper";
 import { resetSearxngProcessCounter, searxngSearch } from "@/lib/catalog/searxng";
-import { activeSearchProviders } from "@/lib/catalog/web-search";
+import { activeSearchProviders, runWebSearch } from "@/lib/catalog/web-search";
 import { organizerLinks } from "@/lib/discovery/organizer-links";
 
 afterEach(() => {
@@ -56,12 +56,31 @@ describe("Serper & SearXNG search providers", () => {
     ]);
   });
 
-  it("prefers serper -> searxng -> brave in activeSearchProviders", () => {
+  it("prefers searxng -> serper -> brave in activeSearchProviders", () => {
     vi.stubEnv("SERPER_API_KEY", "k");
     vi.stubEnv("SEARXNG_URL", "http://127.0.0.1:8888");
     vi.stubEnv("BRAVE_API_KEY", "b");
     vi.stubEnv("BRAVE_SEARCH_LIMIT", "10");
-    expect(activeSearchProviders()).toEqual(["serper", "searxng", "brave"]);
+    expect(activeSearchProviders()).toEqual(["searxng", "serper", "brave"]);
+  });
+
+  it("falls back to serper when searxng returns empty results", async () => {
+    vi.stubEnv("SEARXNG_URL", "http://127.0.0.1:8888");
+    vi.stubEnv("SERPER_API_KEY", "k");
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce({ ok: true, status: 200, json: async () => ({ results: [] }) })
+      .mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: async () => ({
+          organic: [{ link: "https://zavod.cz", title: "Závod", snippet: "2027" }],
+        }),
+      });
+    vi.stubGlobal("fetch", fetchMock);
+    const out = await runWebSearch("zavod 2027", { country: "CZ" });
+    expect(out.provider).toBe("serper");
+    expect(out.hits).toHaveLength(1);
   });
 
   it("extracts same-host calendar/race subpages in organizerLinks", () => {

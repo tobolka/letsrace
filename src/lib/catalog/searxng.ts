@@ -30,7 +30,7 @@ let queue: Promise<void> = Promise.resolve();
 
 async function searchSlot(): Promise<void> {
   const slot = queue.then(async () => {
-    const wait = last + 1500 - Date.now();
+    const wait = last + 1000 - Date.now();
     if (wait > 0) await new Promise((r) => setTimeout(r, wait));
     last = Date.now();
   });
@@ -49,7 +49,7 @@ export async function searxngSearch(
   const base = process.env.SEARXNG_URL?.trim().replace(/\/+$/, "");
   if (!base) throw new SearxngUnavailable("SEARXNG_URL is not set");
   await searchSlot();
-  const limit = Number(process.env.SEARXNG_SEARCH_LIMIT ?? 25);
+  const limit = Number(process.env.SEARXNG_SEARCH_LIMIT ?? 100);
   if (!Number.isFinite(limit) || limit <= 0 || searches >= limit) {
     throw new SearxngUnavailable(`SearXNG search limit of ${limit} for this process reached`);
   }

@@ -39,8 +39,8 @@ const SITE_DETAILS_EVERY_MS=4*HOUR;
 const REGULATIONS_EVERY_MS=HOUR;
 const GEOCODE_EVERY_MS=6*HOUR;
 const SOURCE_HEALTH_EVERY_MS=7*24*HOUR;
-/** Searching for sites of races that have none. A search is spaced about ten seconds apart. */
-const WEBSITE_SEARCH_EVERY_MS=4*HOUR;
+/** Searching for sites of races that have none. Runs every 2h when free local SearXNG is active. */
+const WEBSITE_SEARCH_EVERY_MS=(SEARXNG_ON?2:4)*HOUR;
 const ORGANISER_GAP_MS=15*60_000;
 const RESUME_PUBLISHING_EVERY_MS=HOUR;
 /** Every filled race queues a public page check, of which the server does 60 a day. */
@@ -343,7 +343,7 @@ async function main(){
   const agentBatch=fs.existsSync(submissionPath(data,discoveryDay,target));
   const discoveryDue=state.discoveryDay!==discoveryDay||(agentBatch&&state.discoveryAgentDay!==discoveryDay);
   if(discoveryDue){
-   await upkeep('discovery','discoveryAt',0,`Hledám nové weby pořadatelů (${discoveryName})`,[...discoveryArgs,`--mode=${SEARCH_ON?'all':'read'}`,`--providers=${SEARCH_PROVIDER}`,'--no-ai','--scheduled','--max=60','--minutes=8',`--cycle=${discoveryDay}`,`--agent-inbox=${path.join(data,'agent','discovery',discoveryName)}`],540,{BRAVE_SEARCH_LIMIT:BRAVE_ON?'16':'0',SERPER_SEARCH_LIMIT:SERPER_ON?'8':'0',SEARXNG_SEARCH_LIMIT:SEARXNG_ON?'24':'0'});
+   await upkeep('discovery','discoveryAt',0,`Hledám nové weby pořadatelů (${discoveryName})`,[...discoveryArgs,`--mode=${SEARCH_ON?'all':'read'}`,`--providers=${SEARCH_PROVIDER}`,'--no-ai','--scheduled',`--max=${SEARXNG_ON?100:60}`,`--minutes=${SEARXNG_ON?12:8}`,`--cycle=${discoveryDay}`,`--agent-inbox=${path.join(data,'agent','discovery',discoveryName)}`],SEARXNG_ON?780:540,{BRAVE_SEARCH_LIMIT:BRAVE_ON?'16':'0',SERPER_SEARCH_LIMIT:SERPER_ON?'10':'0',SEARXNG_SEARCH_LIMIT:SEARXNG_ON?'100':'0'});
    if(['done','partial'].includes(report.steps?.discovery?.outcome)){
     state.discoveryDay=discoveryDay;
     if(agentBatch)state.discoveryAgentDay=discoveryDay;
@@ -376,7 +376,7 @@ async function main(){
   // because the copy here holds every merge for review; each merge is audited and can be undone (restore-event-merge.ts).
   await upkeep('movedRaces','movedRacesAt',24*HOUR,'Slučuji rakouské závody přesunuté na jiný den',['scripts/merge-moved-races.ts','--apply',`--out=${path.join(directory,'moved-races.json')}`],300,{},true);
   // The one step allowed the AI key, and only within the shared limits the step itself enforces.
-  await upkeep('regulations','regulationsAt',REGULATIONS_EVERY_MS,'Čtu propozice a doplňuji údaje o závodech',['scripts/enrich-practical-details.ts','--apply','--max=40','--minutes=12','--tolerate-unreadable',`--search-ledger=${path.join(data,'search-budget.json')}`],780,{LOCAL_ALLOW_AI:'1',BRAVE_SEARCH_LIMIT:BRAVE_ON?'60':'0',LLM_LEDGER_PATH:path.join(data,'llm-budget.json'),LLM_EXTRACTION_CACHE_DIR:path.join(data,'extraction-cache')});
+  await upkeep('regulations','regulationsAt',REGULATIONS_EVERY_MS,'Čtu propozice a doplňuji údaje o závodech',['scripts/enrich-practical-details.ts','--apply','--max=40','--minutes=12','--tolerate-unreadable',`--search-ledger=${path.join(data,SEARXNG_ON?'searxng-search-budget.json':SERPER_ON?'serper-search-budget.json':'search-budget.json')}`],780,{LOCAL_ALLOW_AI:'1',BRAVE_SEARCH_LIMIT:BRAVE_ON?'60':'0',SERPER_SEARCH_LIMIT:SERPER_ON?'10':'0',SEARXNG_SEARCH_LIMIT:SEARXNG_ON?'80':'0',SEARCHES_A_DAY:SEARXNG_ON?'300':'40',LLM_LEDGER_PATH:path.join(data,'llm-budget.json'),LLM_EXTRACTION_CACHE_DIR:path.join(data,'extraction-cache')});
   // Nothing found above leaves the Mac until this reader has confirmed it against its source.
   await upkeep('checkDetails','checkDetailsAt',HOUR,'Kontroluji nalezené údaje',['scripts/check-details.ts','--max=40','--seconds=420',`--gate=${path.join(data,'details-gate.json')}`],480,{LOCAL_ALLOW_AI:'1',LLM_LEDGER_PATH:path.join(data,'llm-budget.json')});
   // A venue whose document states its coordinates beside it keeps them: directions lead to the venue, not the town.
@@ -387,7 +387,7 @@ async function main(){
   await upkeep('internationalKids','internationalKidsAt',24*HOUR,'Hlídám dětské kategorie u mezinárodních závodů',['scripts/fix-international-kids.ts','--apply'],180,{},true);
   // The UCI calendar for our countries: class, website, categories and e-mail; new UCI races through the review gates.
   await upkeep('uciDirectory','uciDirectoryAt',24*HOUR,'Čtu kalendář UCI',['scripts/harvest-uci-directory.ts','--apply',`--out=${path.join(data,'uci-directory-latest.json')}`],900,{},true);
-  if(SEARCH_ON)await upkeep('websiteSearch','websiteSearchAt',WEBSITE_SEARCH_EVERY_MS,'Hledám weby závodů, které žádný nemají',['scripts/find-websites.ts','--apply','--max=12','--prefer=CZ,SK',`--countries=${COUNTRIES}`,`--from=${season}-01-01`],480,{BRAVE_SEARCH_LIMIT:BRAVE_ON?'40':'0',SERPER_SEARCH_LIMIT:SERPER_ON?'6':'0',SEARXNG_SEARCH_LIMIT:SEARXNG_ON?'20':'0',SEARCHES_A_DAY:SERPER_ON?'14':'40',SEARCH_LEDGER_PATH:path.join(data,SERPER_ON?'serper-search-budget.json':'search-budget.json')});
+  if(SEARCH_ON)await upkeep('websiteSearch','websiteSearchAt',WEBSITE_SEARCH_EVERY_MS,'Hledám weby závodů, které žádný nemají',['scripts/find-websites.ts','--apply',`--max=${SEARXNG_ON?40:12}`,'--prefer=CZ,SK',`--countries=${COUNTRIES}`,`--from=${season}-01-01`],600,{BRAVE_SEARCH_LIMIT:BRAVE_ON?'40':'0',SERPER_SEARCH_LIMIT:SERPER_ON?'6':'0',SEARXNG_SEARCH_LIMIT:SEARXNG_ON?'100':'0',SEARCHES_A_DAY:SEARXNG_ON?'400':SERPER_ON?'14':'40',SEARCH_LEDGER_PATH:path.join(data,SEARXNG_ON?'searxng-search-budget.json':SERPER_ON?'serper-search-budget.json':'search-budget.json')});
   // The agent: looks for regulations and judges possible duplicates the readers could not settle.
   // Its answers stay in the data folder; nothing of them is sent. One run a day, kept by the step itself.
   // Every six hours: prepare cases for the desk and check answers that arrived through it. The agent itself (Codex) works in its own session.
