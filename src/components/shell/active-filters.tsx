@@ -192,7 +192,7 @@ export function SortMenu({
   const t = messagesFor(locale);
   const label = sort === "distance" ? t.sortDistance : sort === "date" ? t.date : t.sortBy;
   return (
-    <DropdownMenu>
+    <DropdownMenu modal={false}>
       <DropdownMenuTrigger asChild>
         <Button
           type="button"

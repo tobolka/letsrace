@@ -24,12 +24,12 @@ export const RELEASE_NOTES: ReleaseNote[] = [
       cs: [
         "Na iPhonu přidaném na plochu teď mapa sahá až k hornímu okraji displeje bez bílého pruhu pod hodinami.",
         "V tabulce Seznam si teď můžeš zapnout a seřadit i volitelné sloupce Přidáno, Aktualizováno, Ověřeno, Uzávěrka, Propozice a Zdroj.",
-        "V liště filtrů zůstává vždy otevřená jen jedna nabídka a po výběru položky se sama zavře.",
+        "Nabídky filtrů, sloupců a řazení se teď chovají všude stejně: otevřená je vždy jen jedna, přepnutí na další jde jedním kliknutím a po výběru se zavřou. Dřív některé zůstávaly otevřené navíc.",
       ],
       en: [
         "When opened from an iPhone home screen, the map now reaches the top edge of the screen without a white bar under the clock.",
         "The List table now offers optional sortable columns for Added, Updated, Checked, Entry closes, Regulations and Source.",
-        "Only one filter menu stays open at a time, and choosing an option closes the menu automatically.",
+        "Filter, column and sort menus now behave the same everywhere: only one is open at a time, switching to another takes a single click, and choosing an option closes it. Before, some stayed open on top of each other.",
       ],
     },
   },

@@ -3,7 +3,6 @@
 import { useState, type ComponentType, type ReactNode } from "react";
 import { Bike, ChartNoAxesColumnIncreasing, Globe, ListFilter, Trophy, UserRound, X } from "lucide-react";
 import { DateFilter } from "@/components/explore/date-filter";
-import { FilterBarMenuProvider, useFilterMenu } from "@/components/explore/filter-bar-menu-context";
 import {
   extraMeta as describeExtras,
   hasExtraValue,
@@ -81,11 +80,7 @@ export function MapFilterBar(props: {
   /** Additional filters kept inside the filter menu. */
   menuExtra?: ReactNode;
 }) {
-  return (
-    <FilterBarMenuProvider>
-      <MapFilterBarInner {...props} />
-    </FilterBarMenuProvider>
-  );
+  return <MapFilterBarInner {...props} />;
 }
 
 function FilterChipDropdown({
@@ -107,10 +102,9 @@ function FilterChipDropdown({
   onClear: () => void;
   children: ReactNode;
 }) {
-  const menu = useFilterMenu(id);
   return (
     <div className="inline-flex h-full max-w-full shrink-0 items-center">
-      <DropdownMenu open={menu.open} onOpenChange={menu.onOpenChange}>
+      <DropdownMenu modal={false}>
         <DropdownMenuTrigger asChild>
           <Button
             type="button"
@@ -193,7 +187,6 @@ function MapFilterBarInner({
   menuExtra,
 }: Parameters<typeof MapFilterBar>[0]) {
   const [seriesQuery, setSeriesQuery] = useState("");
-  const moreMenu = useFilterMenu("more");
 
   const state = { disciplines, categories, levels, country, series };
   const hasValue = (id: ExtraFilter) => hasExtraValue(id, state);
@@ -296,13 +289,7 @@ function MapFilterBarInner({
         ))}
 
         {menuFilters.length > 0 || menuExtra ? (
-          <DropdownMenu
-            open={moreMenu.open}
-            onOpenChange={(next) => {
-              moreMenu.onOpenChange(next);
-              if (next) setSeriesQuery("");
-            }}
-          >
+          <DropdownMenu modal={false} onOpenChange={(next) => next && setSeriesQuery("")}>
             <DropdownMenuTrigger asChild>
               <Button
                 type="button"

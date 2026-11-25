@@ -259,6 +259,18 @@ html {
   .scroll-fade-b { animation-timeline: scroll(self y); }
   .scroll-fade-x { animation-timeline: scroll(self x); }
 }
+/*
+ * A menu or popover that scrolls wears this fade on the very element Radix
+ * animates in and out. The fade is tied to scrolling and never ends, so a
+ * closed menu kept waiting for an animation that never finished: it stayed on
+ * the page, kept the page locked, and the next menu opened on top of it.
+ * Once closed there is nothing left to animate, so let it go at once.
+ */
+[data-state="closed"].scroll-fade-x,
+[data-state="closed"].scroll-fade-y,
+[data-state="closed"].scroll-fade-b {
+  animation: none;
+}
 
 body {
   background: var(--background);
