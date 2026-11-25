@@ -383,7 +383,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
 
 
   return (
-    <div className="absolute inset-0 overflow-hidden bg-background">
+    <div data-edge-to-edge-top className="absolute inset-0 overflow-hidden bg-background">
       <a
         href="#race-list"
         className="sr-only focus:not-sr-only focus:absolute focus:left-3 focus:top-3 focus:z-50 focus:rounded-md focus:bg-background focus:px-3 focus:py-2 focus:text-sm focus:font-medium focus:shadow-md focus:outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 max-md:hidden"
@@ -448,16 +448,16 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
       </div>
 
       {/*
-        Opened from an iPhone's home screen, iOS draws its own band behind the
-        clock and fills it from the top edge of the page. Over the map that was
-        a washed-out strip of map fading into white. A solid edge here gives
-        the band a solid colour to take, and the map starts under a clean line.
+        Opened from an iPhone's home screen with `black-translucent`, the map
+        runs edge-to-edge behind the white clock and status icons. A soft top
+        scrim keeps those icons legible over bright map tiles without adding a
+        solid bar.
       */}
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-x-0 top-0 z-30 hidden h-3 border-b bg-background md:hidden [@media(display-mode:standalone)]:max-md:block"
+        className="pointer-events-none absolute inset-x-0 top-0 z-30 hidden h-[calc(env(safe-area-inset-top)+1.25rem)] bg-gradient-to-b from-black/45 via-black/15 to-transparent md:hidden [@media(display-mode:standalone)]:max-md:block"
       />
-      <div className="pointer-events-none absolute inset-x-0 top-0 z-30 flex items-start justify-between p-3 [@media(display-mode:standalone)]:max-md:top-3">
+      <div className="pointer-events-none absolute inset-x-0 top-0 z-30 flex items-start justify-between p-3 pt-[calc(0.75rem+env(safe-area-inset-top))]">
         {/*
           On a phone the sheet is the page, and the wordmark inside it spent a
           row of a small screen saying where you already are. Over the map it is

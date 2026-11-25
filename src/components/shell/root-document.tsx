@@ -53,11 +53,12 @@ export const rootMetadata: Metadata = {
   description: en.description,
   applicationName: SITE_NAME,
   // Added to an iPhone's home screen, the site opens full screen under its own
-  // name. The opaque status bar keeps the top of the page clear of the clock.
+  // name. `black-translucent` lets the map run edge-to-edge behind the clock
+  // and Dynamic Island instead of painting a solid white bar above it.
   appleWebApp: {
     capable: true,
     title: SITE_NAME,
-    statusBarStyle: "default",
+    statusBarStyle: "black-translucent",
     startupImage: IPHONE_LAUNCH_SCREENS,
   },
   keywords: [

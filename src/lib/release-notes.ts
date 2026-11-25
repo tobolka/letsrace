@@ -19,6 +19,17 @@ export type ReleaseNote = {
 
 export const RELEASE_NOTES: ReleaseNote[] = [
   {
+    date: "2026-11-25",
+    items: {
+      cs: [
+        "Na iPhonu přidaném na plochu teď mapa sahá až k hornímu okraji displeje bez bílého pruhu pod hodinami.",
+      ],
+      en: [
+        "When opened from an iPhone home screen, the map now reaches the top edge of the screen without a white bar under the clock.",
+      ],
+    },
+  },
+  {
     date: "2026-11-24",
     items: {
       cs: [

@@ -17,10 +17,10 @@ import { Skeleton } from "@/components/ui/skeleton";
  */
 export default function Loading() {
   return (
-    <div className="absolute inset-0 overflow-hidden bg-background">
+    <div data-edge-to-edge-top className="absolute inset-0 overflow-hidden bg-background">
       <Skeleton className="absolute inset-0 rounded-none bg-muted" aria-hidden />
 
-      <div className="pointer-events-none absolute inset-x-0 top-0 z-30 flex justify-end p-3 md:hidden">
+      <div className="pointer-events-none absolute inset-x-0 top-0 z-30 flex justify-end p-3 pt-[calc(0.75rem+env(safe-area-inset-top))] md:hidden">
         <Skeleton className="size-9 rounded-full" />
       </div>
 

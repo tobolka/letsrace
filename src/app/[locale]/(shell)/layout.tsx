@@ -38,10 +38,23 @@ export default async function ShellLayout({
           // hairline outline and a soft shadow rather than a drawn border.
           // It sits above the rail (z-20) so that outline is not painted over
           // on its left edge by the fixed rail.
-          "relative z-20 min-h-0 overflow-hidden bg-background md:peer-data-[variant=inset]:m-2 md:peer-data-[variant=inset]:ml-0 md:peer-data-[variant=inset]:peer-data-[state=collapsed]:ml-0 md:peer-data-[variant=inset]:rounded-xl md:peer-data-[variant=inset]:shadow-(--shell-sheet-shadow)"
+          "group/inset relative z-20 min-h-0 overflow-hidden bg-background md:peer-data-[variant=inset]:m-2 md:peer-data-[variant=inset]:ml-0 md:peer-data-[variant=inset]:peer-data-[state=collapsed]:ml-0 md:peer-data-[variant=inset]:rounded-xl md:peer-data-[variant=inset]:shadow-(--shell-sheet-shadow)"
         }
       >
-        <div id="shell-stage" className="relative min-h-0 flex-1 overflow-auto overscroll-contain">
+        {/*
+          In iOS home-screen mode (`black-translucent`), the status bar text is
+          white. On the map (`[data-edge-to-edge-top]`) the map paints its own
+          soft gradient scrim; on white pages this strip keeps the clock legible
+          and shields it from scrolled content.
+        */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-x-0 top-0 z-30 hidden h-[env(safe-area-inset-top)] bg-foreground/90 backdrop-blur-md md:hidden [@media(display-mode:standalone)]:max-md:block group-has-[[data-edge-to-edge-top]]/inset:hidden"
+        />
+        <div
+          id="shell-stage"
+          className="relative min-h-0 flex-1 overflow-auto overscroll-contain max-md:pt-[env(safe-area-inset-top)]"
+        >
           {children}
         </div>
       </SidebarInset>
