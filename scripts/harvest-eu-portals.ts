@@ -7,6 +7,15 @@
 import { SZC_CALENDARS, parseSzcCalendar, szcParsedEvent } from "../src/lib/catalog/szc";
 import { parseCompetitCycling, parseDatasportPlCycling, polishPortalParsedEvent } from "../src/lib/catalog/competit-datasport";
 import { enrichTime2WinFromDetail, parseCasomieraPtCycling, parseTime2WinEvents, time2WinParsedEvent, type TribeApiEvent } from "../src/lib/catalog/time2win-casomierapt";
+import {
+  czasNaRowerParsedEvent,
+  extractComputerauswertungLinks,
+  isEnduCyclingSlug,
+  parseComputerauswertung,
+  parseCzasNaRower,
+  parseEnduEvent,
+  parseVysledkovyServis,
+} from "../src/lib/catalog/eu-portals-extra";
 import { findCatalogueMatch, loadCatalogue, loadLocalEnv, publishAndEnrich, sha256 } from "./lib/harvest-helpers";
 
 const HDR = { "user-agent": "Mozilla/5.0 (compatible; LetsRace race calendar)" };
@@ -28,6 +37,10 @@ async function main() {
     competit: mkStat(),
     datasportPl: mkStat(),
     time2win: mkStat(),
+    czasNaRower: mkStat(),
+    computerauswertung: mkStat(),
+    vysledkovyServis: mkStat(),
+    endu: mkStat(),
   };
 
   async function processCandidate(
@@ -165,6 +178,101 @@ async function main() {
       const ev = time2WinParsedEvent(enriched, quote);
       await processCandidate("time2win", ev, { sourceUrl: enriched.detailUrl, documentHash: sha256(html), textHash: sha256(pageText), reason: "Cycling race on time2win.at.", country: enriched.countryCode });
     }
+  }
+
+  // 6. CzasNaRower.pl (Poland) — /wyscigi
+  const cnrUrl = "https://www.czasnarower.pl/wyscigi";
+  const cnrRes = await fetch(cnrUrl, { headers: HDR, signal: AbortSignal.timeout(15_000) }).catch(() => null);
+  if (cnrRes?.ok) {
+    const html = await cnrRes.text();
+    const pageText = pageAsText(html, cnrUrl).text;
+    const docHash = sha256(html), textHash = sha256(pageText);
+    for (const row of parseCzasNaRower(html)) {
+      if (row.date < today) continue;
+      const idx = pageText.indexOf(row.title);
+      const quote = idx >= 0 ? pageText.slice(idx, idx + 220).replace(/\s+/g, " ").trim() : row.rawQuote;
+      const ev = czasNaRowerParsedEvent({ ...row, rawQuote: quote }, cnrUrl);
+      await processCandidate("czasNaRower", ev, { sourceUrl: cnrUrl, documentHash: docHash, textHash, reason: "Polish cycling race on czasnarower.pl/wyscigi.", country: "PL" });
+    }
+  }
+
+  // 7. Computerauswertung.at (Austria)
+  const caRes = await fetch("https://www.computerauswertung.at/", { headers: HDR, signal: AbortSignal.timeout(15_000) }).catch(() => null);
+  if (caRes?.ok) {
+    const html = await caRes.text();
+    for (const row of parseComputerauswertung(html)) {
+      if (row.startDate < today) continue;
+      const detRes = await fetch(row.detailUrl, { headers: HDR, signal: AbortSignal.timeout(12_000) }).catch(() => null);
+      if (!detRes?.ok) continue;
+      const detHtml = await detRes.text();
+      const detText = pageAsText(detHtml, row.detailUrl).text;
+      const links = extractComputerauswertungLinks(detHtml);
+      const idx = detText.indexOf(row.title);
+      const quote = idx >= 0 ? detText.slice(idx, idx + 220).replace(/\s+/g, " ").trim() : detText.slice(0, 220).replace(/\s+/g, " ").trim();
+      const ev: import("../src/lib/domain").ParsedEvent = {
+        externalId: `computerauswertung:${row.id}`,
+        name: row.title,
+        startDate: row.startDate,
+        ...(row.endDate ? { endDate: row.endDate } : {}),
+        placeText: row.title,
+        countryHint: "AT",
+        discipline: [row.discipline],
+        sourceUrl: row.detailUrl,
+        ...(links.websiteUrl ? { websiteUrl: links.websiteUrl } : {}),
+        ...(links.registrationUrl ? { registrationUrl: links.registrationUrl } : { registrationUrl: row.detailUrl }),
+        confidence: 0.85,
+        evidence: { quote, sourceUrl: row.detailUrl, method: "computerauswertung_at", version: "ca-v1" },
+      };
+      await processCandidate("computerauswertung", ev, { sourceUrl: row.detailUrl, documentHash: sha256(detHtml), textHash: sha256(detText), reason: "Austrian cycling race on computerauswertung.at.", country: "AT" });
+    }
+  }
+
+  // 8. VysledkovyServis.sk (Slovakia)
+  const vsUrl = "https://vysledkovyservis.sk/";
+  const vsRes = await fetch(vsUrl, { headers: HDR, signal: AbortSignal.timeout(15_000) }).catch(() => null);
+  if (vsRes?.ok) {
+    const html = await vsRes.text();
+    const pageText = pageAsText(html, vsUrl).text;
+    const docHash = sha256(html), textHash = sha256(pageText);
+    for (const row of parseVysledkovyServis(html, today)) {
+      if (row.date < today) continue;
+      const idx = pageText.indexOf(row.title);
+      const quote = idx >= 0 ? pageText.slice(idx, idx + 220).replace(/\s+/g, " ").trim() : `${row.title} ${row.date}`;
+      const ev: import("../src/lib/domain").ParsedEvent = {
+        externalId: `vysledkovyservis:${row.date}:${row.url.split("/").pop()}`,
+        name: row.title,
+        startDate: row.date,
+        placeText: row.title,
+        countryHint: "SK",
+        discipline: [row.discipline],
+        sourceUrl: vsUrl,
+        registrationUrl: row.url,
+        confidence: 0.8,
+        evidence: { quote, sourceUrl: vsUrl, method: "vysledkovyservis_sk", version: "vs-v1" },
+      };
+      await processCandidate("vysledkovyServis", ev, { sourceUrl: vsUrl, documentHash: docHash, textHash, reason: "Slovak cycling race on vysledkovyservis.sk.", country: "SK" });
+    }
+  }
+
+  // 9. ENDU.net (Italy / EU) — sitemap-events.xml filtered to cycling slugs (bounded per run)
+  const enSmRes = await fetch("https://www.endu.net/sitemap-events.xml", { headers: HDR, signal: AbortSignal.timeout(15_000) }).catch(() => null);
+  if (enSmRes?.ok) {
+    const smXml = await enSmRes.text();
+    const cyclingUrls = [...smXml.matchAll(/<loc>([^<]+)<\/loc>/g)].map(m => m[1]!).filter(isEnduCyclingSlug).slice(0, 120);
+    let enCursor = 0;
+    const enWorker = async () => {
+      while (enCursor < cyclingUrls.length) {
+        const url = cyclingUrls[enCursor++]!;
+        const detRes = await fetch(url, { headers: HDR, signal: AbortSignal.timeout(12_000) }).catch(() => null);
+        if (!detRes?.ok) continue;
+        const detHtml = await detRes.text();
+        const ev = parseEnduEvent(detHtml, url);
+        if (!ev || ev.startDate < today) continue;
+        const detText = pageAsText(detHtml, url).text;
+        await processCandidate("endu", ev, { sourceUrl: url, documentHash: sha256(detHtml), textHash: sha256(detText), reason: "Cycling race on endu.net.", country: ev.countryHint });
+      }
+    };
+    await Promise.all(Array.from({ length: 6 }, () => enWorker()));
   }
 
   console.log(JSON.stringify(summary, null, 2));

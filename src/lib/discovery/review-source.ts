@@ -6,6 +6,7 @@ import { parseSportsoftRegistration } from "@/lib/watcher/extractors/sportsoft";
 import { parseUciCompetition } from "@/lib/watcher/extractors/uci-competition";
 import { uciDirectoryApi, uciDirectoryEvent, uciDirectoryId } from "@/lib/catalog/uci-directory";
 import { radsportEventsApiUrl, radsportEventsId, radsportEventsParsedEvent } from "@/lib/catalog/radsport-events";
+import { parseEnduEvent } from "@/lib/catalog/eu-portals-extra";
 import { discoveryUrl } from "./plan";
 import type { Json } from "@/lib/supabase/database.types";
 import type { ParsedEvent } from "@/lib/domain";
@@ -75,8 +76,16 @@ export async function validateReviewSource(row: ReviewRow, decision: ReviewDecis
   const sameDocument = evidence?.textHash && !structured ? hash(text) === evidence.textHash : Boolean(evidence?.documentHash && hash(source.html) === evidence.documentHash);
   // Known deterministic readers re-check their complete assertion below. A changed
   // navigation/script hash alone must not invalidate identical official facts.
-  const recheckedReader = ["uci_competition", "official_annual_announcement", "swiss_cycling_table", "sportsoft_registration"].includes(event.evidence?.method ?? "");
+  const recheckedReader = ["uci_competition", "official_annual_announcement", "swiss_cycling_table", "sportsoft_registration", "endu_net"].includes(event.evidence?.method ?? "");
   if (source.status !== 200) throw Error(`Source unavailable: ${row.id} (HTTP ${source.status})`);
+  if (event.evidence?.method === "endu_net") {
+    const parsed = parseEnduEvent(source.html, row.source_url);
+    if (!parsed || parsed.evidence?.quote !== event.evidence?.quote || parsed.evidence?.version !== event.evidence?.version
+      || !sameCandidateFacts(JSON.parse(JSON.stringify(parsed)) as Json, row.payload)) {
+      throw new ReviewSourceChangedError("ENDU event differs from current JSON-LD");
+    }
+    return;
+  }
   if (event.evidence?.method === "sportsoft_registration") {
     const [parsed] = parseSportsoftRegistration(row.source_url, source.html);
     if (!parsed || parsed.evidence?.version !== event.evidence.version
