@@ -373,6 +373,7 @@ async function main(){
   await upkeep('drn','drnAt',24*HOUR,'Čtu německé závody z deutscherradsportnachwuchs.de',['scripts/harvest-drn.ts','--apply'],420,{},true);
   await upkeep('radgate','radgateAt',24*HOUR,'Čtu evropské závody z radgate.de',['scripts/harvest-radgate.ts','--apply'],480,{},true);
   await upkeep('radsportEvents','radsportEventsAt',24*HOUR,'Čtu závody z radsport-events.de',['scripts/harvest-radsport-events.ts','--apply'],480,{},true);
+  await upkeep('euPortals','euPortalsAt',24*HOUR,'Čtu slovenské, polské a rakouské portály (SZC, Competit, Datasport, Time2Win)',['scripts/harvest-eu-portals.ts','--apply'],360,{},true);
   // Cycling Austria keys a race by federation id and day, so a moved race comes back as a second race. One full read of
   // its calendar folds the old-day race into the new-day one, only under the same name (dated-id-moves.ts). On the server,
   // because the copy here holds every merge for review; each merge is audited and can be undone (restore-event-merge.ts).
