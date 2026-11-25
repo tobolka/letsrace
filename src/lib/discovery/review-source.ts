@@ -5,6 +5,7 @@ import { parseSwissCycling } from "@/lib/watcher/extractors/swisscycling";
 import { parseSportsoftRegistration } from "@/lib/watcher/extractors/sportsoft";
 import { parseUciCompetition } from "@/lib/watcher/extractors/uci-competition";
 import { uciDirectoryApi, uciDirectoryEvent, uciDirectoryId } from "@/lib/catalog/uci-directory";
+import { radsportEventsApiUrl, radsportEventsId, radsportEventsParsedEvent } from "@/lib/catalog/radsport-events";
 import { discoveryUrl } from "./plan";
 import type { Json } from "@/lib/supabase/database.types";
 import type { ParsedEvent } from "@/lib/domain";
@@ -50,6 +51,20 @@ export async function validateReviewSource(row: ReviewRow, decision: ReviewDecis
     if (!parsed || parsed.evidence?.quote !== event.evidence?.quote || parsed.evidence?.version !== event.evidence?.version
       || !sameCandidateFacts(JSON.parse(JSON.stringify(parsed)) as Json, JSON.parse(JSON.stringify(asserted)) as Json)) throw Error("UCI directory competition differs from the current directory");
     await verifyFieldEvidence(event, parsed.websiteUrl, read);
+    return;
+  }
+  if ((row.payload as unknown as ParsedEvent).evidence?.method === "radsport_events") {
+    const event = row.payload as unknown as ParsedEvent;
+    const id = radsportEventsId(row.source_url);
+    if (!id) throw Error("Not a radsport-events.de event");
+    const fresh = await read(radsportEventsApiUrl(id), { fresh: true, accept: "application/json" });
+    if (fresh.status !== 200) throw Error(`Source unavailable: ${row.id} (HTTP ${fresh.status})`);
+    let parsed: ParsedEvent | null = null;
+    try { parsed = radsportEventsParsedEvent(JSON.parse(fresh.html)); } catch { parsed = null; }
+    if (!parsed || parsed.evidence?.quote !== event.evidence?.quote || parsed.evidence?.version !== event.evidence?.version
+      || !sameCandidateFacts(JSON.parse(JSON.stringify(parsed)) as Json, JSON.parse(JSON.stringify(event)) as Json)) {
+      throw Error("radsport-events.de item differs from current API");
+    }
     return;
   }
   const source = await read(row.source_url, { fresh: true });

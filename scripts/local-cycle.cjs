@@ -370,6 +370,9 @@ async function main(){
   await upkeep('federciclismo','federciclismoAt',24*HOUR,'Čtu italské závody ze stránek federace',['scripts/harvest-federciclismo.ts','--apply','--seconds=480',`--date-report=${path.join(data,'federation-date-differences.json')}`],540);
   await upkeep('radNetNew','radNetNewAt',24*HOUR,'Přidávám chybějící vypsané německé závody',['scripts/radnet-new-races.ts','--apply','--skip=3 Rosen Cross,Meisterschaft der Nordverbände'],360);
   await upkeep('radNet','radNetAt',24*HOUR,'Čtu německé závody z rad-net',['scripts/harvest-radnet.ts','--apply'],540);
+  await upkeep('drn','drnAt',24*HOUR,'Čtu německé závody z deutscherradsportnachwuchs.de',['scripts/harvest-drn.ts','--apply'],420,{},true);
+  await upkeep('radgate','radgateAt',24*HOUR,'Čtu evropské závody z radgate.de',['scripts/harvest-radgate.ts','--apply'],480,{},true);
+  await upkeep('radsportEvents','radsportEventsAt',24*HOUR,'Čtu závody z radsport-events.de',['scripts/harvest-radsport-events.ts','--apply'],480,{},true);
   // Cycling Austria keys a race by federation id and day, so a moved race comes back as a second race. One full read of
   // its calendar folds the old-day race into the new-day one, only under the same name (dated-id-moves.ts). On the server,
   // because the copy here holds every merge for review; each merge is audited and can be undone (restore-event-merge.ts).
