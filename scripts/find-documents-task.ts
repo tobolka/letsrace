@@ -12,7 +12,7 @@ import { readDocument } from "../src/lib/catalog/regulation-ages";
 import { documentIsAboutRace } from "../src/lib/catalog/race-completeness";
 import { regulationsCandidates, siteDocuments } from "../src/lib/catalog/site-documents";
 
-export const READER = "site_documents", VERSION = "2";
+export const READER = "site_documents", VERSION = "3";
 type Race = { id: string; name: string; start_date: string; website_url: string; municipality?: string | null };
 type Task = { site: string; races: Race[]; seconds?: number };
 

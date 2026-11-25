@@ -415,6 +415,8 @@ async function main(){
   // Links the gate accepted on the server are filled into the copy here, so the regulations reader finds them.
   try{report.pulledRegulations=pullAccepted(state);saveState();}catch(e){console.warn(`Přijaté odkazy se nepodařilo převzít: ${String(e.message).split('\n')[0].slice(0,160)}`);}
   await upkeep('geocode','geocodedAt',GEOCODE_EVERY_MS,'Doplňuji místa na mapě',['scripts/geocode-pending.ts','250'],360);
+  // Locations created directly on production (e.g. UCI, manual announcements, or new server rows) are not in the Mac copy.
+  await upkeep('geocodeServer','geocodedServerAt',GEOCODE_EVERY_MS,'Doplňuji místa na mapě na serveru',['scripts/geocode-pending.ts','100'],360,{},true);
   // Which changes of a date or a cancellation have their quote and could go to the server. A look only; nothing is sent.
   await upkeep('dateProposals','dateProposalsAt',6*HOUR,'Hledám změny dat, které by šly odeslat (jen náhled)',['scripts/date-proposals.cjs',`--out=${path.join(data,'date-proposals-latest.json')}`],120,{},true);
   // The ones with their quote go to the server through the gate, which decides under the race's locks. LETSRACE_DATE_PROPOSALS=0 stops it.

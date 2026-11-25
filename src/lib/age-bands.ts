@@ -65,6 +65,8 @@ function agesInText(rawName: string): { ageMin?: number; ageMax?: number } {
   if (bare) return { ageMin: Number(bare[1]), ageMax: Number(bare[2]) };
   const plus = name.match(/(?<![\d.])(\d{1,2})\s*(?:\+|a\s*vice|let\s*a\s*vice|and\s*over|und\s*alter)/);
   if (plus) return { ageMin: Number(plus[1]) };
+  const above = name.match(/\b(?:nad|over|above|ab)\s*(\d{1,2})\s*(?:let|lat|rokov|years|jahren?|anni)\b/);
+  if (above) return { ageMin: Number(above[1]) };
   const upper = name.match(/\b(?:do|up to|bis)\s*(\d{1,2})\s*(?:let|lat|rokov|years|jahre)\b/);
   if (upper) return { ageMax: Number(upper[1]) };
   return {};
@@ -141,6 +143,7 @@ function bandsFor(rawName: string, ageMin?: number, ageMax?: number): AgeCategor
     return [...bands];
   }
   if (ageMin != null && ageMax != null && ageMax > 18) return ageMin >= 35 ? ["masters"] : ["amateur"];
+  if (ageMin == null && ageMax != null && ageMax > 18) return ["amateur"];
 
   // U-numbers: "U11", "U 13", "U-15".
   // "MU15/WU17": a gender letter glued to the U-number, and more than one per name.

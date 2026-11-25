@@ -39,7 +39,12 @@ export function psqlDb(database: string, opts: { bin?: string; port?: string } =
   };
 }
 
-type Rpc = { rpc(name: string, params?: object): PromiseLike<{ data: unknown; error: { message: string } | null }>; from(table: string): { select(columns: string): { eq(column: string, value: string): { order(column: string): PromiseLike<{ data: { outcome: string | null; error: string | null }[] | null; error: { message: string } | null }> } } } };
+type Rpc = {
+  rpc(name: string, params?: object): PromiseLike<{ data: unknown; error: { message: string } | null }> & {
+    range?: (from: number, to: number) => PromiseLike<{ data: unknown; error: { message: string } | null }>;
+  };
+  from(table: string): { select(columns: string): { eq(column: string, value: string): { order(column: string): PromiseLike<{ data: { outcome: string | null; error: string | null }[] | null; error: { message: string } | null }> } } };
+};
 
 /** The server, with the service role. Refuses to start work the server has no functions for. */
 export function serverDb(client: Rpc): FindDocumentsDb {
@@ -49,7 +54,18 @@ export function serverDb(client: Rpc): FindDocumentsDb {
     return data as T;
   };
   return {
-    races: () => call("pipeline_find_documents_races"),
+    races: async () => {
+      const rows: Race[] = [];
+      for (let offset = 0; ; offset += 1000) {
+        const req = client.rpc("pipeline_find_documents_races");
+        const { data, error } = req.range ? await req.range(offset, offset + 999) : await req;
+        if (error) throw Error(`pipeline_find_documents_races: ${error.message}`);
+        const page = (data ?? []) as Race[];
+        rows.push(...page);
+        if (!req.range || page.length < 1000) break;
+      }
+      return rows;
+    },
     queue: (sites, again) => call("pipeline_queue_find_documents", { p_sites: sites, p_again_after_seconds: Math.round(again) }),
     claim: limit => call("pipeline_claim_tasks", { p_kind: "find_documents", p_capabilities: ["http"], p_limit: limit }),
     attempts: async key => {
