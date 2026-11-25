@@ -91,7 +91,7 @@ export function DistanceFilter({
 
   return (
     <div className="inline-flex shrink-0 items-center">
-      <DropdownMenu open={distanceMenu.open} onOpenChange={distanceMenu.onOpenChange} modal={false}>
+      <DropdownMenu open={distanceMenu.open} onOpenChange={distanceMenu.onOpenChange}>
         <DropdownMenuTrigger asChild>
           <Button
             type="button"

@@ -81,7 +81,7 @@ export function RiderFilterChip({
   const c = RIDER_FILTER_COPY[locale] ?? RIDER_FILTER_COPY.en;
   return (
     <div className="inline-flex h-full max-w-full shrink-0 items-center">
-      <DropdownMenu open={riderMenu.open} onOpenChange={riderMenu.onOpenChange} modal={false}>
+      <DropdownMenu open={riderMenu.open} onOpenChange={riderMenu.onOpenChange}>
         <DropdownMenuTrigger asChild>
           <Button
             type="button"
