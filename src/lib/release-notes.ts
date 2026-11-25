@@ -23,9 +23,13 @@ export const RELEASE_NOTES: ReleaseNote[] = [
     items: {
       cs: [
         "Na iPhonu přidaném na plochu teď mapa sahá až k hornímu okraji displeje bez bílého pruhu pod hodinami.",
+        "V tabulce Seznam si teď můžeš zapnout a seřadit i volitelné sloupce Přidáno, Aktualizováno, Ověřeno, Uzávěrka, Propozice a Zdroj.",
+        "V liště filtrů zůstává vždy otevřená jen jedna nabídka a po výběru položky se sama zavře.",
       ],
       en: [
         "When opened from an iPhone home screen, the map now reaches the top edge of the screen without a white bar under the clock.",
+        "The List table now offers optional sortable columns for Added, Updated, Checked, Entry closes, Regulations and Source.",
+        "Only one filter menu stays open at a time, and choosing an option closes the menu automatically.",
       ],
     },
   },

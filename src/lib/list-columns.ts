@@ -17,6 +17,12 @@ export const LIST_COLUMNS = [
   "categories",
   "series",
   "distance",
+  "createdAt",
+  "updatedAt",
+  "lastSeenAt",
+  "registrationClosesAt",
+  "regulations",
+  "source",
 ] as const;
 
 export type ListColumn = (typeof LIST_COLUMNS)[number];
@@ -25,7 +31,7 @@ export type ColumnLayout = { order: ListColumn[]; hidden: ListColumn[] };
 
 export const DEFAULT_LAYOUT: ColumnLayout = {
   order: [...LIST_COLUMNS],
-  hidden: ["country", "categories", "series"],
+  hidden: ["country", "categories", "series", "createdAt", "updatedAt", "lastSeenAt", "registrationClosesAt", "regulations", "source"],
 };
 
 /** Always on: a row without its name or date is not a race. */

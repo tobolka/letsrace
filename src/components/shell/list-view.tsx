@@ -85,6 +85,12 @@ export function ListView({ locale }: { locale: string }) {
     categories: t.colCategories,
     series: t.colSeries,
     distance: t.colDistance,
+    createdAt: t.colCreatedAt,
+    updatedAt: t.colUpdatedAt,
+    lastSeenAt: t.colLastSeenAt,
+    registrationClosesAt: t.colRegistrationClosesAt,
+    regulations: t.colRegulations,
+    source: t.colSource,
   };
   const isDefault = JSON.stringify(layout) === JSON.stringify(DEFAULT_LAYOUT);
 
@@ -96,7 +102,11 @@ export function ListView({ locale }: { locale: string }) {
   }
 
   function sortColumn(column: ListColumn) {
-    setTableSort({ column, direction: activeSort.column === column && activeSort.direction === "asc" ? "desc" : "asc" });
+    const newestFirst = column === "createdAt" || column === "updatedAt" || column === "lastSeenAt";
+    const nextDirection = activeSort.column === column
+      ? (activeSort.direction === "asc" ? "desc" : "asc")
+      : (newestFirst ? "desc" : "asc");
+    setTableSort({ column, direction: nextDirection });
     if (column === "date" || column === "distance") {
       void setFilters({ sort: column === "distance" ? "distance" : null });
     }

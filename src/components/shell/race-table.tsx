@@ -27,6 +27,12 @@ const WIDTH: Record<ListColumn, string> = {
   categories: "w-48",
   series: "w-56",
   distance: "w-24 text-right",
+  createdAt: "w-28",
+  updatedAt: "w-28",
+  lastSeenAt: "w-28",
+  registrationClosesAt: "w-28",
+  regulations: "w-24",
+  source: "w-44",
 };
 
 /** Pixel widths of the fixed columns (w-36 = 144px …), the name at least 256. */
@@ -40,7 +46,31 @@ const MIN_PX: Record<ListColumn, number> = {
   categories: 192,
   series: 224,
   distance: 96,
+  createdAt: 112,
+  updatedAt: 112,
+  lastSeenAt: 112,
+  registrationClosesAt: 112,
+  regulations: 96,
+  source: 176,
 };
+
+function formatMetaDate(iso: string | null | undefined, df: ReturnType<typeof dateFnsLocale>): string {
+  if (!iso) return "";
+  try {
+    return format(parseISO(iso), "d. M. yyyy", { locale: df });
+  } catch {
+    return "";
+  }
+}
+
+function sourceHost(url: string | null | undefined): string {
+  if (!url) return "";
+  try {
+    return new URL(url).hostname.replace(/^www\./, "");
+  } catch {
+    return "";
+  }
+}
 
 function tableMinWidth(columns: ListColumn[]): number {
   return columns.reduce((sum, col) => sum + MIN_PX[col], 0);
@@ -83,6 +113,18 @@ function cellText(col: ListColumn, event: EventListItem, locale: string, origin:
       const km = eventDistanceKm(event, origin);
       return km != null ? formatDistanceKm(km, locale) : "";
     }
+    case "createdAt":
+      return formatMetaDate(event.createdAt, df);
+    case "updatedAt":
+      return formatMetaDate(event.updatedAt, df);
+    case "lastSeenAt":
+      return formatMetaDate(event.lastSeenAt, df);
+    case "registrationClosesAt":
+      return formatMetaDate(event.registrationClosesAt, df);
+    case "regulations":
+      return event.regulationsUrl ? "✓" : "";
+    case "source":
+      return sourceHost(event.websiteUrl || event.listingUrl);
   }
 }
 
@@ -93,7 +135,11 @@ export function sortTableEvents(events: EventListItem[], sort: ListSort, locale:
   const values = new Map(events.map((event) => [event.id,
     sort.column === "distance" ? eventDistanceKm(event, origin)
       : sort.column === "date" ? event.startDate
-        : cellText(sort.column, event, locale, origin),
+        : sort.column === "createdAt" ? (event.createdAt ?? "")
+          : sort.column === "updatedAt" ? (event.updatedAt ?? "")
+            : sort.column === "lastSeenAt" ? (event.lastSeenAt ?? "")
+              : sort.column === "registrationClosesAt" ? (event.registrationClosesAt ?? "")
+                : cellText(sort.column, event, locale, origin),
   ]));
   return [...events].sort((a, b) => {
     const av = values.get(a.id);
@@ -228,7 +274,7 @@ const Row = memo(function Row({
               i === columns.length - 1 && "pr-4",
               col === "name" ? "font-medium" : "text-muted-foreground",
               col === "name" && planned && "pr-8",
-              (col === "date" || col === "distance") && "tabular-nums",
+              (col === "date" || col === "distance" || col === "createdAt" || col === "updatedAt" || col === "lastSeenAt" || col === "registrationClosesAt") && "tabular-nums",
               col === "date" && "text-foreground",
             )}
           >

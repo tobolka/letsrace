@@ -56,7 +56,6 @@ export function FilterValues(props: FilterValuesProps) {
             <DropdownMenuCheckboxItem
               checked={props.disciplines.includes(opt.id)}
               onCheckedChange={() => props.onDiscipline(opt.id)}
-              onSelect={(e) => e.preventDefault()}
               className={itemClass}
             >
               <span
@@ -71,7 +70,6 @@ export function FilterValues(props: FilterValuesProps) {
                 key={child.id}
                 checked={props.disciplines.includes(child.id)}
                 onCheckedChange={() => props.onDiscipline(child.id)}
-                onSelect={(e) => e.preventDefault()}
                 className={cn(itemClass, "pl-12 [&>span]:left-6")}
               >
                 <span
@@ -95,7 +93,6 @@ export function FilterValues(props: FilterValuesProps) {
             key={opt.id}
             checked={props.categories.includes(opt.id)}
             onCheckedChange={() => props.onCategory(opt.id)}
-            onSelect={(e) => e.preventDefault()}
             className={itemClass}
           >
             {ageCategoryLabel(opt.id, locale)}
@@ -126,7 +123,6 @@ export function FilterValues(props: FilterValuesProps) {
           onCheckedChange={() => {
             if (props.country.length) props.onClearCountries();
           }}
-          onSelect={(e) => e.preventDefault()}
           className={itemClass}
         >
           {messages.allCountries}
@@ -137,7 +133,6 @@ export function FilterValues(props: FilterValuesProps) {
             key={code}
             checked={props.country.includes(code)}
             onCheckedChange={() => props.onCountry(code)}
-            onSelect={(e) => e.preventDefault()}
             className={itemClass}
           >
             {countryDisplayName(code, locale)}

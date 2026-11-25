@@ -67,6 +67,8 @@ export type EventListItem = {
   level: string;
   classLabel: string | null;
   uciClass: string | null;
+  createdAt?: string | null;
+  updatedAt?: string | null;
   lastSeenAt: string | null;
   location: {
     id: string;
@@ -117,7 +119,7 @@ export type EventFilters = {
   polygon?: [number, number][];
 };
 
-const EVENT_LIST_COLUMNS = `id, slug, name, start_date, end_date, disciplines, formats, audience, age_categories, age_confidence, status, visibility, event_type, competition_type, season, website_url, facebook_url, registration_url, regulations_url, results_url, registration_closes_at, source_kind, level, class_label, uci_class, last_seen_at, updated_at`;
+const EVENT_LIST_COLUMNS = `id, slug, name, start_date, end_date, disciplines, formats, audience, age_categories, age_confidence, status, visibility, event_type, competition_type, season, website_url, facebook_url, registration_url, regulations_url, results_url, registration_closes_at, source_kind, level, class_label, uci_class, created_at, last_seen_at, updated_at`;
 
 /** `YYYY-MM-DD`, and a real day — the only date shape this catalogue stores. */
 export function isIsoDay(value: string | null | undefined): value is string {
@@ -855,6 +857,8 @@ function mapEventRow(row: Record<string, unknown>): EventListItem {
     level: String(row.level ?? "local"),
     classLabel: (row.class_label as string) ?? null,
     uciClass: (row.uci_class as string) ?? null,
+    createdAt: row.created_at ? String(row.created_at) : null,
+    updatedAt: row.updated_at ? String(row.updated_at) : null,
     lastSeenAt: row.last_seen_at
       ? String(row.last_seen_at)
       : row.updated_at

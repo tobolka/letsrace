@@ -6,6 +6,7 @@ import { format, parseISO } from "date-fns";
 import { Calendar, ChevronDown, X } from "lucide-react";
 import type { DateRange } from "react-day-picker";
 import { isoToRange } from "@/components/explore/date-range";
+import { useFilterMenu } from "@/components/explore/filter-bar-menu-context";
 import { ACTIVE_CHIP } from "@/components/explore/filter-styles";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -42,7 +43,7 @@ export function DateFilter({
   dateTo: string;
   onPreset: (from: string, to: string) => void;
 }) {
-  const [dateOpen, setDateOpen] = useState(false);
+  const { open: dateOpen, onOpenChange: setDateOpen } = useFilterMenu("date");
   const [customPicked, setCustomPicked] = useState(false);
   const [dateDraft, setDateDraft] = useState<DateRange | undefined>();
 

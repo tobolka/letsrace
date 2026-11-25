@@ -1,6 +1,7 @@
 "use client";
 
 import { Check, UsersRound, X } from "lucide-react";
+import { useFilterMenu } from "@/components/explore/filter-bar-menu-context";
 import { ACTIVE_CHIP, itemClass } from "@/components/explore/filter-styles";
 import { Button } from "@/components/ui/button";
 import {
@@ -75,11 +76,12 @@ export function RiderFilterChip({
   onApply?: OnRiderFilter;
 }) {
   const { options, activeName, clear } = useRiderFilterOptions(locale, { categories, disciplines, dateFrom }, onApply);
+  const riderMenu = useFilterMenu("rider");
   if (!options.length || !activeName) return null;
   const c = RIDER_FILTER_COPY[locale] ?? RIDER_FILTER_COPY.en;
   return (
     <div className="inline-flex h-full max-w-full shrink-0 items-center">
-      <DropdownMenu>
+      <DropdownMenu open={riderMenu.open} onOpenChange={riderMenu.onOpenChange} modal={false}>
         <DropdownMenuTrigger asChild>
           <Button
             type="button"

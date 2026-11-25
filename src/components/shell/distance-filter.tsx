@@ -1,6 +1,7 @@
 "use client";
 
 import { LocateFixed, LocateOff, X } from "lucide-react";
+import { useFilterMenu } from "@/components/explore/filter-bar-menu-context";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -44,6 +45,7 @@ export function DistanceFilter({
   submenu?: boolean;
 }) {
   const t = messagesFor(locale);
+  const distanceMenu = useFilterMenu("distance");
   // Keep the preference for a later successful location fix, but never show
   // an unavailable radius as an applied filter.
   const unavailable = status === "denied" || status === "outside";
@@ -89,7 +91,7 @@ export function DistanceFilter({
 
   return (
     <div className="inline-flex shrink-0 items-center">
-      <DropdownMenu>
+      <DropdownMenu open={distanceMenu.open} onOpenChange={distanceMenu.onOpenChange} modal={false}>
         <DropdownMenuTrigger asChild>
           <Button
             type="button"

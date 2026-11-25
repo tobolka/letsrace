@@ -20,4 +20,13 @@ describe("list columns", () => {
     expect(moveColumn(["date", "name", "place"], "place", 0)).toEqual(["place", "date", "name"]);
     expect(moveColumn(["date", "name"], "name", 5)).toEqual(["date", "name"]);
   });
+
+  it("keeps metadata columns hidden by default and appends them hidden to older saved layouts", () => {
+    const out = normalizeLayout({ order: ["date", "name", "place"], hidden: [] });
+    for (const col of ["createdAt", "updatedAt", "lastSeenAt", "registrationClosesAt", "regulations", "source"] as const) {
+      expect(DEFAULT_LAYOUT.hidden).toContain(col);
+      expect(out.order).toContain(col);
+      expect(out.hidden).toContain(col);
+    }
+  });
 });

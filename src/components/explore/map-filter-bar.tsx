@@ -3,6 +3,7 @@
 import { useState, type ComponentType, type ReactNode } from "react";
 import { Bike, ChartNoAxesColumnIncreasing, Globe, ListFilter, Trophy, UserRound, X } from "lucide-react";
 import { DateFilter } from "@/components/explore/date-filter";
+import { FilterBarMenuProvider, useFilterMenu } from "@/components/explore/filter-bar-menu-context";
 import {
   extraMeta as describeExtras,
   hasExtraValue,
@@ -36,39 +37,7 @@ const FILTER_ICONS: Record<ExtraFilter, ComponentType<{ className?: string }>> =
   series: Trophy,
 };
 
-export function MapFilterBar({
-  messages,
-  locale,
-  dateFrom,
-  dateTo,
-  categories,
-  disciplines,
-  levels,
-  series,
-  country,
-  seriesList,
-  onPreset,
-  onCategory,
-  onDiscipline,
-  onLevel,
-  onClearDisciplines,
-  onClearLevels,
-  onClearCategories,
-  onSeries,
-  onCountry,
-  onClearCountries,
-  onRiderFilter,
-  q,
-  onQ,
-  onSearchSubmit,
-  hideSearch = false,
-  allFilters = false,
-  wide = false,
-  compact = false,
-  hideDate = false,
-  extra,
-  menuExtra,
-}: {
+export function MapFilterBar(props: {
   messages: Messages;
   locale: string;
   dateFrom: string;
@@ -112,7 +81,119 @@ export function MapFilterBar({
   /** Additional filters kept inside the filter menu. */
   menuExtra?: ReactNode;
 }) {
+  return (
+    <FilterBarMenuProvider>
+      <MapFilterBarInner {...props} />
+    </FilterBarMenuProvider>
+  );
+}
+
+function FilterChipDropdown({
+  id,
+  label,
+  value,
+  active,
+  icon: Icon,
+  clearLabel,
+  onClear,
+  children,
+}: {
+  id: ExtraFilter;
+  label: string;
+  value?: string;
+  active: boolean;
+  icon: ComponentType<{ className?: string }>;
+  clearLabel: string;
+  onClear: () => void;
+  children: ReactNode;
+}) {
+  const menu = useFilterMenu(id);
+  return (
+    <div className="inline-flex h-full max-w-full shrink-0 items-center">
+      <DropdownMenu open={menu.open} onOpenChange={menu.onOpenChange} modal={false}>
+        <DropdownMenuTrigger asChild>
+          <Button
+            type="button"
+            variant="secondary"
+            size="sm"
+            aria-label={`${label} ${value ?? ""}`.trim()}
+            className={cn(
+              "max-md:h-11 [@media(pointer:coarse)]:h-11",
+              active && cn("rounded-r-none", ACTIVE_CHIP),
+            )}
+          >
+            <Icon />
+            <span className="max-w-[12rem] truncate">
+              {value || label}
+            </span>
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent
+          align="start"
+          className={cn(
+            // No scrollbar column kept free when the list does not
+            // scroll: it read as a wide margin on the right. Only the
+            // series, whose counts line up at the edge, keep it.
+            "scroll-fade-y max-h-[min(60dvh,20rem)] overflow-y-auto [scrollbar-width:thin]",
+            id === "series" && "[scrollbar-gutter:stable]",
+            id === "series" ? "w-72 max-w-[calc(100vw-1.5rem)]" : "w-56",
+          )}
+          collisionPadding={12}
+        >
+          {children}
+        </DropdownMenuContent>
+      </DropdownMenu>
+      {active ? (
+        <Button
+          type="button"
+          variant="secondary"
+          size="icon-sm"
+          aria-label={`${clearLabel} ${label}`}
+          className={cn("rounded-l-none max-md:size-11 [@media(pointer:coarse)]:size-11", ACTIVE_CHIP)}
+          onClick={onClear}
+        >
+          <X />
+        </Button>
+      ) : null}
+    </div>
+  );
+}
+
+function MapFilterBarInner({
+  messages,
+  locale,
+  dateFrom,
+  dateTo,
+  categories,
+  disciplines,
+  levels,
+  series,
+  country,
+  seriesList,
+  onPreset,
+  onCategory,
+  onDiscipline,
+  onLevel,
+  onClearDisciplines,
+  onClearLevels,
+  onClearCategories,
+  onSeries,
+  onCountry,
+  onClearCountries,
+  onRiderFilter,
+  q,
+  onQ,
+  onSearchSubmit,
+  hideSearch = false,
+  allFilters = false,
+  wide = false,
+  compact = false,
+  hideDate = false,
+  extra,
+  menuExtra,
+}: Parameters<typeof MapFilterBar>[0]) {
   const [seriesQuery, setSeriesQuery] = useState("");
+  const moreMenu = useFilterMenu("more");
 
   const state = { disciplines, categories, levels, country, series };
   const hasValue = (id: ExtraFilter) => hasExtraValue(id, state);
@@ -199,65 +280,29 @@ export function MapFilterBar({
           onApply={onRiderFilter}
         />
 
-        {shownExtras.map((id) => {
-          const Icon = FILTER_ICONS[id];
-          const active = hasValue(id);
-          return (
-            <div key={id} className="inline-flex h-full max-w-full shrink-0 items-center">
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    type="button"
-                    variant="secondary"
-                    size="sm"
-                    aria-label={`${extraMeta[id].label} ${extraMeta[id].value ?? ""}`.trim()}
-                    className={cn(
-                      "max-md:h-11 [@media(pointer:coarse)]:h-11",
-                      active && cn("rounded-r-none", ACTIVE_CHIP),
-                    )}
-                  >
-                    <Icon />
-                    <span className="max-w-[12rem] truncate">
-                      {extraMeta[id].value || extraMeta[id].label}
-                    </span>
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent
-                  align="start"
-                  className={cn(
-                    // No scrollbar column kept free when the list does not
-                    // scroll: it read as a wide margin on the right. Only the
-                    // series, whose counts line up at the edge, keep it.
-                    "scroll-fade-y max-h-[min(60dvh,20rem)] overflow-y-auto [scrollbar-width:thin]",
-                    id === "series" && "[scrollbar-gutter:stable]",
-                    id === "series" ? "w-72 max-w-[calc(100vw-1.5rem)]" : "w-56",
-                  )}
-                  collisionPadding={12}
-                >
-                  {renderValues(id)}
-                </DropdownMenuContent>
-              </DropdownMenu>
-              {active ? (
-                <Button
-                  type="button"
-                  variant="secondary"
-                  size="icon-sm"
-                  aria-label={`${messages.clearFilter} ${extraMeta[id].label}`}
-                  className={cn("rounded-l-none max-md:size-11 [@media(pointer:coarse)]:size-11", ACTIVE_CHIP)}
-                  onClick={() => unpin(id)}
-                >
-                  <X />
-                </Button>
-              ) : null}
-            </div>
-          );
-        })}
+        {shownExtras.map((id) => (
+          <FilterChipDropdown
+            key={id}
+            id={id}
+            label={extraMeta[id].label}
+            value={extraMeta[id].value}
+            active={hasValue(id)}
+            icon={FILTER_ICONS[id]}
+            clearLabel={messages.clearFilter}
+            onClear={() => unpin(id)}
+          >
+            {renderValues(id)}
+          </FilterChipDropdown>
+        ))}
 
         {menuFilters.length > 0 || menuExtra ? (
           <DropdownMenu
+            open={moreMenu.open}
             onOpenChange={(next) => {
+              moreMenu.onOpenChange(next);
               if (next) setSeriesQuery("");
             }}
+            modal={false}
           >
             <DropdownMenuTrigger asChild>
               <Button
