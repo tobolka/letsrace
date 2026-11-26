@@ -124,11 +124,21 @@ try {
    from pipeline_tasks t where t.payload->>'slug'='hidden-sample'
    on conflict(task_key) do update set revision=excluded.revision,requested_at=excluded.requested_at;
    insert into pipeline_refresh_receipts(task_key,revision,requested_at)
-   select t.key,t.payload->>'revision',now()-interval '31 minutes'
+   select t.key,t.payload->>'revision',now()-interval '36 minutes'
    from pipeline_tasks t where t.payload->>'slug'='demoted-30'
    on conflict(task_key) do update set revision=excluded.revision,requested_at=excluded.requested_at;
+   update pipeline_refresh_receipts set requested_at=now()-interval '36 minutes'
+   where task_key in (
+     select key from pipeline_tasks
+     where payload->>'slug' like 'sample-%' and status='pending'
+       and (coalesce(payload->>'htmlCheck','sample')='sample' or payload->>'slug'='sample-renamed')
+   );
    update pipeline_refresh_receipts set requested_at=now()-interval '31 minutes'
-   where task_key in (select key from pipeline_tasks where payload->>'slug' like 'sample-%' and status='pending');
+   where task_key in (
+     select key from pipeline_tasks
+     where payload->>'slug' like 'sample-%' and status='pending'
+       and payload->>'htmlCheck'='required' and payload->>'slug'<>'sample-renamed'
+   );
  `);
  const drifted=await db.query(`
    select t.last_error, t.payload->>'revision' as task_rev, e.public_revision::text as event_rev
@@ -153,6 +163,42 @@ try {
  const remainingSample=await db.query("select count(*)::integer n from pipeline_tasks where payload->>'slug' like 'sample-%' and status='pending' and coalesce(payload->>'htmlCheck','sample')='sample' and payload->>'slug' not in ('sample-5','sample-6')");
  assert.equal(remainingSample.rows[0].n,0,'aged routine sample tasks are closed');
  assert(closedAged>=2,'closes demoted, hidden routine, and aged sample tasks');
+
+ await db.exec(`
+   insert into events(id,slug,name,start_date,visibility,status)
+   values
+     (gen_random_uuid(),'critical-fresh','Critical Fresh',current_date+10,'public','scheduled'),
+     (gen_random_uuid(),'critical-aged','Critical Aged',current_date+10,'public','scheduled'),
+     (gen_random_uuid(),'critical-renamed-new','Critical Renamed',current_date+10,'public','scheduled'),
+     (gen_random_uuid(),'critical-errored','Critical Errored',current_date+10,'public','scheduled');
+   update pipeline_tasks
+   set payload=jsonb_set(payload,'{previousSlugs}','["critical-renamed-old"]'::jsonb)
+   where payload->>'slug'='critical-renamed-new';
+   update pipeline_tasks
+   set last_error='HTTP 500'
+   where payload->>'slug'='critical-errored';
+   insert into pipeline_refresh_receipts(task_key,revision,requested_at)
+   select t.key,t.payload->>'revision',
+     case when t.payload->>'slug'='critical-fresh' then now()-interval '34 minutes' else now()-interval '36 minutes' end
+   from pipeline_tasks t
+   where t.payload->>'slug' in ('critical-fresh','critical-aged','critical-renamed-new','critical-errored')
+   on conflict(task_key) do update set revision=excluded.revision,requested_at=excluded.requested_at;
+ `);
+ const closedCritical=await close();
+ assert.equal(closedCritical,1,'only aged critical task without previousSlugs or last_error is closed');
+ assert.equal(await close(),0,'edge_ttl_expired tasks are not closed twice');
+ const criticalRows=await db.query(`
+   select payload->>'slug' as slug, status, result
+   from pipeline_tasks
+   where payload->>'slug' in ('critical-fresh','critical-aged','critical-renamed-new','critical-errored')`);
+ const criticalBySlug=new Map(criticalRows.rows.map(r=>[r.slug,r]));
+ assert.equal(criticalBySlug.get('critical-fresh')?.status,'pending','fresh (<35m) required task stays pending');
+ assert.equal(criticalBySlug.get('critical-aged')?.status,'done','aged (>35m) required task without previousSlugs is closed');
+ assert.equal(criticalBySlug.get('critical-aged')?.result?.verified,false);
+ assert.equal(criticalBySlug.get('critical-aged')?.result?.verification,'edge_ttl_expired');
+ assert.equal(criticalBySlug.get('critical-aged')?.result?.verifiedAt,undefined);
+ assert.equal(criticalBySlug.get('critical-renamed-new')?.status,'pending','aged required task with previousSlugs stays pending');
+ assert.equal(criticalBySlug.get('critical-errored')?.status,'pending','aged required task with last_error stays pending');
  await db.exec('reset role; set role anon;');
  await assert.rejects(close(),/permission denied/);
  console.log('PASS: bounded 200-row requests, private receipts, receipt-gated 60/day checks, one expiration batch per hour, concurrent revisions, expired claims, no false completion');

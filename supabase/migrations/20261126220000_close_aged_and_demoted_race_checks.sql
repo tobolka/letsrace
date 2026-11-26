@@ -1,4 +1,5 @@
--- Close routine sample checks once their expiration receipt ages past the 30-minute edge TTL,
+-- Close routine sample checks and aged critical checks (without slug renames or errors)
+-- once their expiration receipt ages past the 35-minute buffer over the 30-minute edge TTL,
 -- include routine edits on non-public/merged/non-scheduled races and demoted pre-Nov-12 tasks,
 -- and re-sync any pending tasks whose payload revision drifted behind events.public_revision.
 
@@ -30,9 +31,16 @@ returns integer language sql security invoker set search_path=public,pg_temp as 
       t.key,
       receipt.requested_at,
       case
-        when e.visibility <> 'public' or e.merged_into_id is not null or e.status not in ('scheduled', 'registration_open', 'completed') then 'non_public_routine'
-        when mod(hashtextextended(t.key || ':' || receipt.revision, 0), 10) <> 0 then 'outside_sample'
-        else 'receipt_aged_out'
+        when t.priority in (10, 20, 30, 40)
+          and coalesce(t.payload->>'htmlCheck', 'sample') = 'sample' then
+          case
+            when e.visibility <> 'public'
+              or e.merged_into_id is not null
+              or e.status not in ('scheduled', 'registration_open', 'completed') then 'non_public_routine'
+            when mod(hashtextextended(t.key || ':' || receipt.revision, 0), 10) <> 0 then 'outside_sample'
+            else 'receipt_aged_out'
+          end
+        else 'edge_ttl_expired'
       end as verification_reason
     from public.pipeline_tasks t
     join public.pipeline_refresh_receipts receipt
@@ -41,17 +49,26 @@ returns integer language sql security invoker set search_path=public,pg_temp as 
       on e.id = t.entity_id and e.public_revision::text = receipt.revision
     where t.kind = 'public_refresh'
       and t.status = 'pending'
-      and t.priority in (10, 20, 30, 40)
       and t.last_error is null
-      and coalesce(t.payload->>'htmlCheck', 'sample') = 'sample'
       and coalesce(t.payload->'previousSlugs', '[]'::jsonb) = '[]'::jsonb
       and e.slug = t.payload->>'slug'
       and (
-        receipt.requested_at <= now() - interval '30 minutes'
-        or e.visibility <> 'public'
-        or e.merged_into_id is not null
-        or e.status not in ('scheduled', 'registration_open', 'completed')
-        or mod(hashtextextended(t.key || ':' || receipt.revision, 0), 10) <> 0
+        (
+          t.priority in (10, 20, 30, 40)
+          and coalesce(t.payload->>'htmlCheck', 'sample') = 'sample'
+          and (
+            receipt.requested_at <= now() - interval '35 minutes'
+            or e.visibility <> 'public'
+            or e.merged_into_id is not null
+            or e.status not in ('scheduled', 'registration_open', 'completed')
+            or mod(hashtextextended(t.key || ':' || receipt.revision, 0), 10) <> 0
+          )
+        )
+        or (
+          (t.priority in (30, 100) or t.payload->>'htmlCheck' = 'required')
+          and not (t.priority in (10, 20, 30, 40) and coalesce(t.payload->>'htmlCheck', 'sample') = 'sample')
+          and receipt.requested_at <= now() - interval '35 minutes'
+        )
       )
     order by t.updated_at, t.key
     limit 1000
