@@ -25,15 +25,8 @@ const GENERIC = new Set(["cross", "cyclo", "cyclocross", "ciclocross", "cyklokro
 // The amateur ride beside a professional race ("ADAC Velotour Eschborn-Frankfurt") is another event.
 const RIDE = /velotour|jedermann|brezel\s+race|gran\s*fondo|granfondo|cicloturist|sportive|hobby|rtf\b|ctf\b|volksrad/i;
 const words = (text: string) => new Set((fold(text).match(/[a-z0-9]{4,}/g) ?? []).filter((w) => !GENERIC.has(w)));
-const AGE_FIELDS = ["age_categories", "age_confidence", "audience"];
 
-type Row = {
-  id: string; slug: string; name: string; start_date: string; end_date: string | null; visibility: string; status: string | null; merged_into_id: string | null;
-  level: string | null; uci_class: string | null; website_url: string | null; registration_url: string | null; regulations_url: string | null; results_url: string | null;
-  age_categories: string[] | null; age_confidence: string | null; audience: string; public_revision: string; practical_details: Record<string, unknown> | null;
-  disciplines: string[] | null; location: { municipality: string | null; country_code: string | null } | null; sources: { source_url: string | null; external_id: string | null }[];
-  overrides: { locked_fields: string[] | null } | null;
-};
+type Row = import("../src/lib/catalog/uci-directory").UciCatalogRow;
 
 async function main() {
   for (const [key, value] of Object.entries(parse(readFileSync(".env.local")))) process.env[key] ??= value;
@@ -41,7 +34,7 @@ async function main() {
   const apply = process.argv.includes("--apply");
   const out = arg("out");
   const ucd = await import("../src/lib/catalog/uci-directory");
-  const { audienceFromAgeCategories, levelAtLeast, eventDisciplineFamily } = await import("../src/lib/taxonomy");
+  const { eventDisciplineFamily } = await import("../src/lib/taxonomy");
   const { saveFoundLinks, savePracticalDetails } = await import("../src/lib/catalog/practical-enrichment");
   const { saveCandidate } = await import("../src/lib/discovery/review");
   const { validateReviewSource } = await import("../src/lib/discovery/review-source");
@@ -56,13 +49,32 @@ async function main() {
 
   // The directory, then each competition's own record with its races.
   const listed: import("../src/lib/catalog/uci-directory").UciDirectoryCompetition[] = [];
+  const listFailures: { target: string; error: string }[] = [];
+  let listAttempts = 0;
   if (ids?.length) {
-    for (const id of ids) listed.push(await ucd.readUciDirectoryCompetition(id));
+    for (const id of ids) {
+      listAttempts++;
+      try { listed.push(await ucd.readUciDirectoryCompetition(id)); } catch (e) {
+        const message = (e instanceof Error ? e.message : String(e)).slice(0, 300);
+        listFailures.push({ target: id, error: message });
+        console.log(`  ! ${id}: ${message}`);
+      }
+    }
   } else {
     for (const country of countries) for (const season of [year, year + 1]) {
-      listed.push(...(await ucd.listUciDirectory(season, country)).filter((c) => (c.endDate ?? c.startDate) >= today));
+      listAttempts++;
+      try {
+        listed.push(...(await ucd.listUciDirectory(season, country)).filter((c) => (c.endDate ?? c.startDate) >= today));
+      } catch (e) {
+        const message = (e instanceof Error ? e.message : String(e)).slice(0, 300);
+        listFailures.push({ target: `${country}/${season}`, error: message });
+        console.log(`  ! ${country} ${season}: ${message}`);
+      }
       await wait(300);
     }
+  }
+  if (listAttempts > 0 && listFailures.length === listAttempts && listed.length === 0) {
+    throw Error(`UCI directory unavailable (${listFailures[0]!.target}: ${listFailures[0]!.error})`);
   }
   const unique = [...new Map(listed.map((c) => [c.id, c])).values()];
   console.log(`UCI adresář: ${unique.length} soutěží ke kontrole (${countries.join(", ")})`);
@@ -91,7 +103,7 @@ async function main() {
   }
   const normalized = (text: string) => fold(text).replace(/[^a-z0-9]+/g, " ").replace(/\b(20\d\d|uci)\b/g, " ").replace(/\s+/g, " ").trim();
 
-  const report: Record<string, unknown>[] = [];
+  const report: Record<string, unknown>[] = listFailures.map((f) => ({ target: f.target, outcome: "list-failed", error: f.error }));
   const publishedThisRun = new Set<string>();
   /** Unresolved: into the shared review queue, unpublished, with what a person has to settle. */
   const queue = async (event: import("../src/lib/domain").ParsedEvent, competition: import("../src/lib/catalog/uci-directory").UciDirectoryCompetition, reason: string) => {
@@ -99,7 +111,7 @@ async function main() {
     const body = JSON.stringify(competition);
     await saveCandidate(db, event, { sourceUrl: event.sourceUrl, documentHash: hash(body), textHash: hash(body), reason: `UCI Competition Directory — ${reason}`.slice(0, 500), country: event.countryHint }).catch(() => null);
   };
-  const stats = { competitions: unique.length, skipped: 0, matched: 0, enriched: 0, published: 0, ambiguous: 0, ruledOut: 0, failed: 0 };
+  const stats = { competitions: unique.length, skipped: 0, matched: 0, enriched: 0, published: 0, ambiguous: 0, ruledOut: 0, failed: listFailures.length };
   // First every competition and the races it could be; nothing is written until all are known.
   type Read = { competition: import("../src/lib/catalog/uci-directory").UciDirectoryCompetition; event: import("../src/lib/domain").ParsedEvent; matches: { r: Row; score: number }[]; sameDay: Row[] };
   const reads: Read[] = [];
@@ -158,13 +170,20 @@ async function main() {
     }
     if (!best && matches.length) { stats.ruledOut++; report.push({ ...line, outcome: "merged", slug: matches[0]!.r.slug }); continue; }
     if (best) {
-      stats.matched++;
       const r = best.r;
-      if (r.visibility !== "public") { stats.ruledOut++; report.push({ ...line, outcome: "hidden", slug: r.slug }); continue; }
-      const changes = await enrich(r, read);
-      if (changes.length) stats.enriched++;
-      report.push({ ...line, outcome: changes.length ? "enriched" : "same", slug: r.slug, changes });
-      console.log(`  = ${start} ${event.name.slice(0, 44)} → ${r.slug}${changes.length ? ` [${changes.join(", ")}]` : ""}`);
+      if (r.visibility !== "public") { stats.matched++; stats.ruledOut++; report.push({ ...line, outcome: "hidden", slug: r.slug }); continue; }
+      try {
+        const changes = await enrich(r, read);
+        stats.matched++;
+        if (changes.length) stats.enriched++;
+        report.push({ ...line, outcome: changes.length ? "enriched" : "same", slug: r.slug, changes });
+        console.log(`  = ${start} ${event.name.slice(0, 44)} → ${r.slug}${changes.length ? ` [${changes.join(", ")}]` : ""}`);
+      } catch (failure) {
+        stats.failed++;
+        const message = (failure instanceof Error ? failure.message : String(failure)).slice(0, 300);
+        report.push({ ...line, outcome: "failed", slug: r.slug, error: message });
+        console.log(`  ! ${start} ${event.name.slice(0, 44)} → ${r.slug}: ${message.slice(0, 180)}`);
+      }
       continue;
     }
     // The same name in the same discipline within a few days ("Czech Tour", whose words are all generic) is this race.
@@ -227,59 +246,31 @@ async function main() {
   if (out) writeFileSync(out, JSON.stringify({ at: new Date().toISOString(), apply, stats, report }, null, 1));
 
   // Fills what the race lacks; never replaces what someone or a better source set.
-  async function enrich(r: Row, { competition, event }: Read): Promise<string[]> {
-      const locked = new Set(r.overrides?.locked_fields ?? []);
-      const changes: string[] = [];
-      const update: { uci_class?: string; level?: string; age_categories?: string[]; audience?: string; age_confidence?: string } = {};
-      const uciClass = event!.uciClass;
-      if (uciClass && !r.uci_class && !locked.has("uci_class")) { update.uci_class = uciClass; changes.push(`třída ${uciClass}`); }
-      const level = ucd.uciDirectoryLevel(competition.classCode);
-      if (!locked.has("level") && level !== r.level && levelAtLeast(level, (r.level ?? "local") as never)) { update.level = level; changes.push(`úroveň ${level}`); }
-      const ages = event!.ageCategories ?? [];
-      const previous = r.age_categories ?? [];
-      const { ages: merged, confidence } = ucd.uciDirectoryCategoryState(event, r);
-      const agesChange = merged.length !== previous.length || merged.some((a) => !previous.includes(a));
-      if (ages.length && !AGE_FIELDS.some((f) => locked.has(f)) && (agesChange || confidence !== r.age_confidence)) {
-        if (agesChange) { update.age_categories = merged; update.audience = audienceFromAgeCategories(merged); changes.push(`kategorie ${previous.join("/")} → ${merged.join("/")}`); }
-        if (confidence !== r.age_confidence) { update.age_confidence = confidence ?? "default"; changes.push(confidence === "explicit" ? "kategorie potvrzené UCI" : "kategorie odhad"); }
-      }
-      const hasSource = r.sources.some((s) => s.external_id === event!.externalId || ucd.uciDirectoryId(s.source_url) === competition.id);
-      if (!hasSource) changes.push("zdroj UCI");
-      const pd = r.practical_details ?? {};
-      const labels = (event!.categories ?? []).map((c) => c.name);
-      const website = event!.websiteUrl ?? null;
-      const email = ucd.uciDirectoryEmail(competition.email);
-      const needsCategories = labels.length && !pd.categories;
-      const needsOrganizer = email && website && !pd.organizer;
-      if (needsCategories) changes.push("popisky kategorií");
-      if (needsOrganizer) changes.push("e-mail pořadatele");
-      if (!apply) {
-        if (website && websiteWouldChange(r.website_url) && !locked.has("website_url")) changes.push("web");
-        return changes;
-      }
-      if (Object.keys(update).length) {
-        const { data: updated, error } = await db.from("events").update(update).eq("id", r.id).eq("public_revision", r.public_revision).select("id");
+  function enrich(r: Row, { competition, event }: Read): Promise<string[]> {
+    return ucd.enrichUciCatalogRow(r, { competition, event }, {
+      apply,
+      async updateEvent(id, revision, patch, facts) {
+        const { data: updated, error } = await db.from("events").update(patch).eq("id", id).eq("public_revision", revision).select("id,public_revision");
         if (error) throw Error(error.message);
         if (updated?.length !== 1) throw Error("Catalogue changed while enriching the UCI competition");
-        const facts = Object.entries(update).map(([field, value]) => ({ event_id: r.id, field, value: value as never, previous: (r as unknown as Record<string, unknown>)[field] as never ?? null,
-          source_url: event!.sourceUrl, quote: event!.evidence!.quote.slice(0, 1500), method: "uci_directory", version: "uci-directory-v2" }));
-        const { error: factError } = await db.from("event_facts").insert(facts);
+        const { error: factError } = await db.from("event_facts").insert(facts as never);
         if (factError) throw factError;
-      }
-      if (!hasSource) await db.from("event_sources").insert({ event_id: r.id, source_url: event!.sourceUrl, external_id: event!.externalId, is_canonical: false, kind: "official" });
-      // Only a different site: "https://x.cz" and "https://x.cz/" are one, and rewriting it every run bumps the race's revision.
-      const sameSite = (x: string | null, y: string | null) => Boolean(x && y) && canonicalSite(x!) === canonicalSite(y!);
-      if (website && !sameSite(r.website_url, website) && (await saveFoundLinks(r, { website }))) changes.push("web");
-      if (needsCategories || needsOrganizer) {
-        const { data: fresh } = await db.from("events").select("public_revision").eq("id", r.id).single();
-        const checkedAt = new Date().toISOString(), editionYear = Number(event!.startDate.slice(0, 4));
-        const quote = `UCI Competition Directory: ${competition.name} · ${labels.join(" · ")}${email ? ` · ${email}` : ""}`.slice(0, 1500);
-        const details: import("../src/lib/practical-details").PracticalDetails = {};
-        if (needsCategories) details.categories = { sourceUrl: event!.sourceUrl, quote, checkedAt, editionYear, status: "current", value: labels.map((label) => ({ label, sourceUrl: event!.sourceUrl, checkedAt })) };
-        if (needsOrganizer) details.organizer = { sourceUrl: event!.sourceUrl, quote, checkedAt, editionYear, status: "current", value: { name: new URL(website!).hostname.replace(/^www\./, ""), url: website!, email: email! } };
-        if (fresh) await savePracticalDetails(r.id, fresh.public_revision, details);
-      }
-      return changes;
+        return updated[0]!.public_revision;
+      },
+      async insertSource(eventId, sourceUrl, externalId) {
+        const { error } = await db.from("event_sources").insert({ event_id: eventId, source_url: sourceUrl, external_id: externalId, is_canonical: false, kind: "official" });
+        if (error && error.code !== "23505") throw Error(error.message);
+      },
+      async saveWebsite(row, website) {
+        return (await saveFoundLinks(row, { website })) > 0;
+      },
+      async readRevision(eventId) {
+        const { data, error } = await db.from("events").select("public_revision").eq("id", eventId).single();
+        if (error) throw Error(error.message);
+        return data?.public_revision ?? null;
+      },
+      savePracticalDetails,
+    });
   }
 }
 
@@ -299,18 +290,10 @@ function placeLike(raw: string, cc: string, towns: Map<string, Set<string>>): bo
 /** The women's and the men's race of one town share a name but are two competitions. */
 const isWomen = (name: string) => /\b(women|woman|donne|donna|femmes?|frauen|feminin\w*|féminin\w*|damen|ladies|kobiety|ženy)\b/i.test(name);
 
-function canonicalSite(url: string) {
-  return url.trim().toLowerCase().replace(/^https?:\/\//, "").replace(/^www\./, "").replace(/\/+$/, "");
-}
-
 function addDays(date: string, days: number) {
   const d = new Date(`${date}T12:00:00Z`);
   d.setUTCDate(d.getUTCDate() + days);
   return d.toISOString().slice(0, 10);
-}
-/** A calendar's or the UCI's page in the website slot gives way to the organiser's own site. */
-function websiteWouldChange(current: string | null) {
-  return !current || /uci\.org|federciclismo|rideandrest|radsport-events|rad-net|pzkol|cyklokros\.cz\/kalendar/i.test(current);
 }
 
 main().catch((error) => { console.error(error instanceof Error ? error.message : error); process.exitCode = 1; });

@@ -25,8 +25,19 @@ const COUNTRY_LANG: Record<string, string> = {
 };
 
 let searches = 0;
+let searxngDown: string | null = null;
 let last = 0;
 let queue: Promise<void> = Promise.resolve();
+
+function formatError(error: unknown): string {
+  if (!(error instanceof Error)) return String(error);
+  const cause = (error as { cause?: unknown }).cause;
+  if (cause instanceof Error) {
+    const code = (cause as { code?: string }).code;
+    return code ? `${error.message} (${code})` : `${error.message} (${cause.message})`;
+  }
+  return error.message;
+}
 
 async function searchSlot(): Promise<void> {
   const slot = queue.then(async () => {
@@ -40,6 +51,32 @@ async function searchSlot(): Promise<void> {
 
 export function resetSearxngProcessCounter() {
   searches = 0;
+  searxngDown = null;
+}
+
+export async function checkSearxngHealth(
+  timeoutMs = 2000,
+): Promise<{ configured: boolean; ok: boolean; error?: string }> {
+  const base = process.env.SEARXNG_URL?.trim().replace(/\/+$/, "");
+  if (!base) return { configured: false, ok: false };
+  const deadline = Date.now() + Math.max(100, timeoutMs);
+  const probe = async (url: string): Promise<Response> =>
+    fetch(url, {
+      headers: { accept: "application/json" },
+      signal: AbortSignal.timeout(Math.max(100, deadline - Date.now())),
+    });
+  try {
+    let res = await probe(`${base}/healthz`);
+    if (res.status === 404) {
+      await res.body?.cancel().catch(() => {});
+      res = await probe(`${base}/search?q=test&format=json`);
+    }
+    await res.body?.cancel().catch(() => {});
+    if (res.ok) return { configured: true, ok: true };
+    return { configured: true, ok: false, error: `HTTP ${res.status}` };
+  } catch (error) {
+    return { configured: true, ok: false, error: formatError(error) };
+  }
 }
 
 export async function searxngSearch(
@@ -48,7 +85,13 @@ export async function searxngSearch(
 ): Promise<SearxngHit[]> {
   const base = process.env.SEARXNG_URL?.trim().replace(/\/+$/, "");
   if (!base) throw new SearxngUnavailable("SEARXNG_URL is not set");
+  if (searxngDown) {
+    throw new SearxngUnavailable(`SearXNG unavailable in this process: ${searxngDown}`);
+  }
   await searchSlot();
+  if (searxngDown) {
+    throw new SearxngUnavailable(`SearXNG unavailable in this process: ${searxngDown}`);
+  }
   const limit = Number(process.env.SEARXNG_SEARCH_LIMIT ?? 100);
   if (!Number.isFinite(limit) || limit <= 0 || searches >= limit) {
     throw new SearxngUnavailable(`SearXNG search limit of ${limit} for this process reached`);
@@ -57,14 +100,34 @@ export async function searxngSearch(
   const params = new URLSearchParams({ q: query, format: "json", categories: "general" });
   const cc = opts?.country?.toLowerCase();
   if (cc && COUNTRY_LANG[cc]) params.set("language", COUNTRY_LANG[cc]!);
-  const res = await fetch(`${base}/search?${params}`, {
-    headers: { accept: "application/json" },
-    signal: AbortSignal.timeout(20_000),
-  });
-  if (!res.ok) throw new SearxngUnavailable(`SearXNG HTTP ${res.status}: ${(await res.text()).slice(0, 200)}`);
-  const body = (await res.json()) as {
+  let res: Response;
+  try {
+    res = await fetch(`${base}/search?${params}`, {
+      headers: { accept: "application/json" },
+      signal: AbortSignal.timeout(20_000),
+    });
+  } catch (error) {
+    const msg = formatError(error);
+    searxngDown = msg;
+    throw new SearxngUnavailable(`SearXNG unreachable: ${msg}`);
+  }
+  if (!res.ok) {
+    const detail = await res.text().catch(() => "");
+    if (res.status >= 500) searxngDown = `HTTP ${res.status}`;
+    throw new SearxngUnavailable(`SearXNG HTTP ${res.status}: ${detail.slice(0, 200)}`);
+  }
+  let body: {
     results?: { url?: string; title?: string; content?: string }[];
   };
+  try {
+    body = (await res.json()) as {
+      results?: { url?: string; title?: string; content?: string }[];
+    };
+  } catch (error) {
+    const msg = formatError(error);
+    if (!(error instanceof SyntaxError)) searxngDown = msg;
+    throw new SearxngUnavailable(`SearXNG invalid response: ${msg}`);
+  }
   const max = Math.min(30, Math.max(1, opts?.count ?? 10));
   return (body.results ?? [])
     .filter((r): r is { url: string; title?: string; content?: string } => Boolean(r.url))

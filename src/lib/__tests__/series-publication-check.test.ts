@@ -16,6 +16,14 @@ describe("series publication", () => {
     expect(() => verifyPublicSeries(page.replace(compactRaceDates(race, "cs"), "3 čvn"), 200, series, "cs")).toThrow("round does not match");
     expect(() => verifyPublicSeries(page.replace("Brno · CZ", "Jihlava · CZ"), 200, series, "cs")).toThrow("round does not match");
   });
+  it("accepts a past round that renders a status badge before the place span", () => {
+    const pastPage = `<article><div class="browse-intro"><h1 data-page-title>Cup</h1><p>Ročník 2027</p></div></article>
+      <div hidden><a class="race-row-link" data-series-round="cup" href="${eventPagePath("en", "race")}"></a></div>
+      <div hidden><span class="race-row-name" data-series-race="race">Race</span></div>
+      <div hidden><span class="race-row-meta" data-series-race="race"><time datetime="2027-06-03">${compactRaceDates(race, "en")}</time><span class="race-row-place">Past</span><span class="race-row-place" title="Brno · CZ · XCO">Brno · CZ · XCO</span></span></div>`;
+    expect(() => verifyPublicSeries(pastPage, 200, series, "en")).not.toThrow();
+    expect(() => verifyPublicSeries(pastPage.replace(/Brno · CZ · XCO/g, "Jihlava · CZ · XCO"), 200, series, "en")).toThrow("round does not match");
+  });
   it("does not use unrelated links or hidden responses as proof", () => {
     expect(() => verifyPublicSeries(page.replace('data-series-round="cup"', 'data-series-round="another"'), 200, series, "cs")).toThrow("round count");
     expect(() => verifyPublicSeries(page, 200, null, "cs")).toThrow("still publicly available");

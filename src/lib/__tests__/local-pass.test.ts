@@ -241,6 +241,34 @@ describe("date sender", () => {
     expect(orderColumns({ before: { end_date: "2027-04-11" }, after: { end_date: "2027-04-12" } })).toEqual(["end_date"]);
     expect(orderColumns({ before: { status: "scheduled" }, after: { status: "cancelled" } })).toEqual(["status"]);
   });
+
+  it("skips columns already matching the server before taking max so set races do not starve pending ones", async () => {
+    const { partitionServerMatches } = await import("../../../scripts/pipeline2-date-proposals");
+    const proof = { quote: "q", source_url: "https://example.test", method: "manual_date_fix" };
+    const ready: Parameters<typeof partitionServerMatches>[0] = [
+      { id: "already", name: "LAWI Tour", before: { start_date: "2027-08-30", end_date: "2027-08-30" }, after: { start_date: "2027-08-29", end_date: "2027-08-29" }, proofs: { start_date: proof, end_date: proof } },
+      { id: "partial", name: "Partial Race", before: { start_date: "2027-06-05", end_date: "2027-06-05" }, after: { start_date: "2027-06-06", end_date: "2027-06-06" }, proofs: { start_date: proof, end_date: proof } },
+      { id: "pending", name: "Gravel Trans Jura", before: { start_date: "2027-06-03" }, after: { start_date: "2027-06-02" }, proofs: { start_date: proof } },
+      { id: "cancelled", name: "Cancelled Race", before: { status: "scheduled" }, after: { status: "cancelled" }, proofs: { status: proof } },
+    ];
+    const serverById = new Map([
+      ["already", { id: "already", start_date: "2027-08-29", end_date: "2027-08-29", status: "scheduled" }],
+      ["partial", { id: "partial", start_date: "2027-06-06", end_date: "2027-06-05", status: "scheduled" }],
+      ["pending", { id: "pending", start_date: "2027-06-03", end_date: "2027-06-09", status: "scheduled" }],
+      ["cancelled", { id: "cancelled", start_date: "2027-07-01", end_date: null, status: "cancelled" }],
+    ]);
+    const { todo, skipped } = partitionServerMatches(ready, serverById);
+    expect(skipped).toEqual([
+      { race: "LAWI Tour", column: "start_date", to: "2027-08-29" },
+      { race: "LAWI Tour", column: "end_date", to: "2027-08-29" },
+      { race: "Partial Race", column: "start_date", to: "2027-06-06" },
+      { race: "Cancelled Race", column: "status", to: "cancelled" },
+    ]);
+    expect(todo.map(entry => ({ id: entry.item.id, columns: entry.columns }))).toEqual([
+      { id: "partial", columns: ["end_date"] },
+      { id: "pending", columns: ["start_date"] },
+    ]);
+  });
 });
 
 describe("held backlog", () => {

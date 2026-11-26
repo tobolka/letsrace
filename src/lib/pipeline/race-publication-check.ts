@@ -1,8 +1,19 @@
 import { checkPublicationLocales, publicationLocaleWaves } from "@/lib/pipeline/publication-locales";
+import { MAX_EDGE_SECONDS } from "@/lib/cloudflare-edge-cache";
 import { createServerSupabase } from "@/lib/supabase/server";
 import { StalePublication, publicationPayload, publicationLocation, publicationIsVisible, verifyPublicRevision } from "@/lib/pipeline/publication";
 import { localePath } from "@/lib/localized-paths";
 import { getSiteUrl } from "@/lib/seo";
+
+const EDGE_RETRY_BUFFER_SECONDS = 60;
+const MIN_EDGE_RETRY_SECONDS = MAX_EDGE_SECONDS + EDGE_RETRY_BUFFER_SECONDS;
+
+/** Wait past Cloudflare's edge TTL on stale HTML so retries do not burn daily checks on cached hits. */
+export function raceRetryDelaySeconds(error: unknown, attempts = 0): number {
+  const exponent = Number.isFinite(attempts) && attempts > 0 ? Math.min(Math.floor(attempts), 8) : 0;
+  const backoff = Math.min(86400, 300 * 2 ** exponent);
+  return error instanceof StalePublication ? Math.max(MIN_EDGE_RETRY_SECONDS, backoff) : backoff;
+}
 
 export async function closeUnsampledRaceChecks() {
   const { data, error } = await createServerSupabase().rpc("pipeline_close_unsampled_race_checks");
@@ -61,7 +72,7 @@ export async function checkPublicRaceRevisions({ maxChecks, deadline, timeoutMs 
       const { error: retryError } = await db.rpc("pipeline_retry_publication_check", {
         p_key: task.key, p_token: task.token!, p_revision: revision, p_stale: error instanceof StalePublication,
         p_error: error instanceof Error ? error.message : "Publication check failed",
-        p_delay_seconds: Math.min(86400, 300 * 2 ** Math.min(task.attempts, 8)),
+        p_delay_seconds: raceRetryDelaySeconds(error, task.attempts),
       });
       if (retryError) throw retryError;
       deferredInBatch++;

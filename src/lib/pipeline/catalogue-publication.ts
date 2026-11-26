@@ -1,8 +1,27 @@
 import { createHash } from "node:crypto";
+import { MAX_EDGE_SECONDS } from "@/lib/cloudflare-edge-cache";
 import { listEvents, type EventListItem } from "@/lib/events";
 import { createServerSupabase } from "@/lib/supabase/server";
 import { getSiteUrl } from "@/lib/seo";
 import { boundedBody } from "@/lib/watcher/http";
+
+const EDGE_RETRY_BUFFER_SECONDS = 60;
+const MIN_RETRY_SECONDS = 300;
+const MAX_EDGE_RETRY_SECONDS = 1900;
+const MAX_BACKOFF_SECONDS = 3600;
+
+/** Wait until the Cloudflare edge entry expires when a stale response is an edge HIT. */
+export function catalogueRetryDelaySeconds(headers?: Headers | null, attempts = 0): number {
+  if (headers?.get("x-edge-cache")?.toUpperCase() === "HIT") {
+    const rawAge = headers.get("age");
+    const parsedAge = rawAge !== null && rawAge.trim() !== "" ? Number(rawAge) : 0;
+    const age = Number.isFinite(parsedAge) && parsedAge >= 0 ? parsedAge : 0;
+    const remaining = Math.max(0, MAX_EDGE_SECONDS - age);
+    return Math.min(MAX_EDGE_RETRY_SECONDS, Math.max(MIN_RETRY_SECONDS, Math.ceil(remaining) + EDGE_RETRY_BUFFER_SECONDS));
+  }
+  const exponent = Number.isFinite(attempts) && attempts > 0 ? Math.min(Math.floor(attempts), 4) : 0;
+  return Math.min(MAX_BACKOFF_SECONDS, MIN_RETRY_SECONDS * 2 ** exponent);
+}
 
 /** Compare public content, not source-reader heartbeats or a JSON object's key order. */
 export function catalogueFingerprint(events: EventListItem[]) {
@@ -26,6 +45,7 @@ export async function publishCatalogueBatch() {
   if (error) throw error;
   const task = tasks[0];
   if (!task) return { status: "waiting", verified: false, eventWrites: 0 };
+  let pageHeaders: Headers | undefined;
   try {
     const payload = task.payload as { revision?: string };
     if (task.key !== "catalogue:upcoming" || typeof payload.revision !== "string") throw Error("Invalid catalogue publication task");
@@ -38,6 +58,7 @@ export async function publishCatalogueBatch() {
     if (!refreshed.ok) throw Error(`Catalogue publication returned HTTP ${refreshed.status}`);
     // This must be the ordinary public URL, without a cache-busting query or auth.
     const page = await fetch(`${getSiteUrl()}/api/events?catalogue=1`, { redirect: "manual", signal: AbortSignal.timeout(25_000) });
+    pageHeaders = page.headers;
     if (!page.ok) throw Error(`Public catalogue returned HTTP ${page.status}`);
     const actual: unknown = JSON.parse(new TextDecoder().decode(await boundedBody(page, 8 * 1024 * 1024)));
     if (!Array.isArray(actual) || actual.some(row => !row || typeof row.id !== "string") || catalogueFingerprint(actual) !== catalogueFingerprint(expected)) throw Error("Public catalogue does not match the saved races");
@@ -48,7 +69,12 @@ export async function publishCatalogueBatch() {
     if (error) throw error;
     return { status: finished ? "ok" : "superseded", verified: finished, races: expected.length, eventWrites: 0 };
   } catch (error) {
-    const { error: retryError } = await db.rpc("pipeline_retry_task", { p_key: task.key, p_token: task.token!, p_error: error instanceof Error ? error.message : "Catalogue publication failed", p_delay_seconds: 300 });
+    const { error: retryError } = await db.rpc("pipeline_retry_task", {
+      p_key: task.key,
+      p_token: task.token!,
+      p_error: error instanceof Error ? error.message : "Catalogue publication failed",
+      p_delay_seconds: catalogueRetryDelaySeconds(pageHeaders, task.attempts),
+    });
     if (retryError) throw retryError;
     return { status: "deferred", verified: false, eventWrites: 0 };
   }

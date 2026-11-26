@@ -25,3 +25,12 @@ it("verifies both ends of a Swiss full-year date range", () => {
   expect(quoteStatesDate(quote, "2027-09-11", { role: "end" })).toBe(false);
   expect(quoteStatesDate("31.02.2027 - 01.03.2027", "2027-03-01", { role: "end" })).toBe(false);
 });
+
+it("reads German, Czech and English word-connector ranges such as '2. bis 8. Juni 2027'", () => {
+  expect(quoteStatesDate("2. bis 8. Juni 2027", "2027-06-02")).toBe(true);
+  expect(quoteStatesDate("2. bis 8. Juni 2027", "2027-06-08", { role: "end" })).toBe(true);
+  expect(quoteStatesDate("2. bis 8. Juni 2027", "2027-06-03")).toBe(false);
+  expect(quoteStatesDate("2. až 8. června 2027", "2027-06-02")).toBe(true);
+  expect(quoteStatesDate("2 to 8 June 2027", "2027-06-08", { role: "end" })).toBe(true);
+  expect(quoteStatesDate("2. bis 8.6.2027", "2027-06-02")).toBe(true);
+});

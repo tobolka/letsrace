@@ -103,5 +103,57 @@ try {
  }
  await db.exec('reset role; set role anon;');
  await assert.rejects(close(),/permission denied/);
+
+ await db.exec('reset role;');
+ await db.exec(`
+   insert into events(id,slug,name,start_date,visibility,status)
+   values
+     (gen_random_uuid(),'drifted-1','Drifted 1',current_date+10,'public','scheduled'),
+     (gen_random_uuid(),'demoted-30','Demoted 30',current_date+10,'public','scheduled'),
+     (gen_random_uuid(),'hidden-sample','Hidden Sample',current_date+10,'hidden','scheduled');
+   update pipeline_tasks set status='done' where payload->>'slug'='hidden-sample';
+   update events set description='Routine edit' where slug='hidden-sample';
+   update pipeline_tasks set priority=30, payload=payload-'htmlCheck' where payload->>'slug'='demoted-30';
+   update pipeline_tasks set payload=jsonb_set(payload,'{revision}','"stale-revision"'), last_error='Race changed while checking publication' where payload->>'slug'='drifted-1';
+ `);
+ await db.exec(await readFile('supabase/migrations/20261126220000_close_aged_and_demoted_race_checks.sql','utf8'));
+ await db.exec(await readFile('supabase/migrations/20261126220000_close_aged_and_demoted_race_checks.sql','utf8'));
+ await db.exec(`set role service_role;
+   insert into pipeline_refresh_receipts(task_key,revision,requested_at)
+   select t.key,t.payload->>'revision',now()
+   from pipeline_tasks t where t.payload->>'slug'='hidden-sample'
+   on conflict(task_key) do update set revision=excluded.revision,requested_at=excluded.requested_at;
+   insert into pipeline_refresh_receipts(task_key,revision,requested_at)
+   select t.key,t.payload->>'revision',now()-interval '31 minutes'
+   from pipeline_tasks t where t.payload->>'slug'='demoted-30'
+   on conflict(task_key) do update set revision=excluded.revision,requested_at=excluded.requested_at;
+   update pipeline_refresh_receipts set requested_at=now()-interval '31 minutes'
+   where task_key in (select key from pipeline_tasks where payload->>'slug' like 'sample-%' and status='pending');
+ `);
+ const drifted=await db.query(`
+   select t.last_error, t.payload->>'revision' as task_rev, e.public_revision::text as event_rev
+   from pipeline_tasks t join events e on e.id=t.entity_id where e.slug='drifted-1'`);
+ assert.equal(drifted.rows[0].last_error,null);
+ assert.equal(drifted.rows[0].task_rev,drifted.rows[0].event_rev,'drifted task revision is resynced to events.public_revision');
+ const closedAged=await close();
+ const expectedAged=await db.query(`
+   select payload->>'slug' as slug, status, result->>'verification' as verification
+   from pipeline_tasks where payload->>'slug' in ('demoted-30','hidden-sample','sample-1','sample-renamed','sample-3','sample-4','sample-5','sample-6')
+   union all
+   select payload->>'slug' as slug, status, result->>'verification' as verification
+   from pipeline_tasks where payload->>'slug' like 'sample-%' and key = any($1)`, [[...outside]]);
+ const bySlug=new Map(expectedAged.rows.map(r=>[r.slug,r]));
+ assert.equal(bySlug.get('demoted-30')?.status,'done');
+ assert(['outside_sample','receipt_aged_out'].includes(bySlug.get('demoted-30')?.verification));
+ assert.equal(bySlug.get('hidden-sample')?.status,'done');
+ assert.equal(bySlug.get('hidden-sample')?.verification,'non_public_routine');
+ for (const requiredSlug of ['sample-1','sample-renamed','sample-3','sample-4','sample-5','sample-6']) {
+   assert.equal(bySlug.get(requiredSlug)?.status,'pending',`${requiredSlug} must stay pending`);
+ }
+ const remainingSample=await db.query("select count(*)::integer n from pipeline_tasks where payload->>'slug' like 'sample-%' and status='pending' and coalesce(payload->>'htmlCheck','sample')='sample' and payload->>'slug' not in ('sample-5','sample-6')");
+ assert.equal(remainingSample.rows[0].n,0,'aged routine sample tasks are closed');
+ assert(closedAged>=2,'closes demoted, hidden routine, and aged sample tasks');
+ await db.exec('reset role; set role anon;');
+ await assert.rejects(close(),/permission denied/);
  console.log('PASS: bounded 200-row requests, private receipts, receipt-gated 60/day checks, one expiration batch per hour, concurrent revisions, expired claims, no false completion');
 } finally { await db.close(); }

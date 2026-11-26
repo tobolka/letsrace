@@ -46,11 +46,12 @@ export function verifyPublicSeries(html: string, status: number, expected: Publi
     const row = rounds.get(eventPagePath(locale, event.slug));
     const meta = metaBySlug.get(event.slug);
     const date = meta?.find("time");
-    const place = normalize([event.location?.municipality || event.location?.name || "—", event.location?.countryCode].filter(Boolean).join(" · "));
-    const metadata = normalize(meta?.find(".race-row-place").text() ?? "");
+    const place = normalize([event.location?.municipality || event.location?.name, event.location?.countryCode].filter(Boolean).join(" · "));
+    const placeEl = meta?.find(".race-row-place[title]");
+    const metadata = normalize((placeEl?.length ? placeEl.first() : meta?.find(".race-row-place").last())?.text() ?? "");
     if (!row || normalize(nameBySlug.get(event.slug) ?? "") !== normalize(event.name)
         || date?.attr("datetime") !== event.startDate || normalize(date.text()) !== normalize(compactRaceDates(event, locale))
-        || (metadata !== place && !metadata.startsWith(`${place} · `))) {
+        || (place !== "" && metadata !== place && !metadata.startsWith(`${place} · `))) {
       throw new StalePublication(`Public series round does not match the saved race: ${event.slug}`);
     }
   }

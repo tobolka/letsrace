@@ -22,7 +22,7 @@ child.once('exit',code=>{clearTimeout(timer);assert.equal(code,0);assert.ok(outp
  const evening=new Date('2026-11-09T20:15:00Z');
  assert.ok(Math.abs(aiAllowanceLeft({days:{'2026-11-09':0.498},months:{'2026-11':3.04},holds:{}},evening,{})-0.002)<1e-9);
  assert.equal(aiAllowanceLeft({},evening,{}),0.5);
- assert.ok(Math.abs(aiAllowanceLeft({days:{},months:{'2026-11':4.99},holds:{x:{amount:0.005,day:'2026-11-09',month:'2026-11',at:0}}},evening,{})-0.005)<1e-9);
+ assert.ok(Math.abs(aiAllowanceLeft({days:{},months:{'2026-11':9.99},holds:{x:{amount:0.005,day:'2026-11-09',month:'2026-11',at:0}}},evening,{})-0.005)<1e-9);
  const near=(at,iso)=>assert.ok(Math.abs(at-Date.parse(iso))<2500,new Date(at).toISOString());
  near(nextPragueDay(evening.getTime()),'2026-11-09T23:00:00Z');
  near(nextPragueDay(Date.parse('2027-03-28T12:00:00Z')),'2027-03-28T22:00:00Z');
@@ -71,7 +71,7 @@ child.once('exit',code=>{clearTimeout(timer);assert.equal(code,0);assert.ok(outp
 {
  const {aiBudgetWait}=require('./local-cycle.cjs');
  const now=new Date('2026-11-17T21:10:00Z');
- assert.deepEqual(aiBudgetWait({months:{'2026-11':4.99}},now,{}),
+ assert.deepEqual(aiBudgetWait({months:{'2026-11':9.99}},now,{}),
   {period:'month',at:Date.parse('2026-11-30T23:00:00Z')});
  assert.deepEqual(aiBudgetWait({days:{'2026-11-17':0.49}},now,{}),
   {period:'day',at:Date.parse('2026-11-17T23:00:00Z')});

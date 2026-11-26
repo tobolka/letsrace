@@ -4,7 +4,7 @@ const state = vi.hoisted(() => ({ rpc: vi.fn(), rows: [] as EventListItem[] }));
 vi.mock("@/lib/events", () => ({ listEvents: async () => state.rows }));
 vi.mock("@/lib/supabase/server", () => ({ createServerSupabase: () => ({ rpc: state.rpc }) }));
 vi.mock("@/lib/seo", () => ({ getSiteUrl: () => "https://letsrace.test" }));
-import { catalogueFingerprint, publishCatalogueBatch } from "@/lib/pipeline/catalogue-publication";
+import { catalogueFingerprint, catalogueRetryDelaySeconds, publishCatalogueBatch } from "@/lib/pipeline/catalogue-publication";
 const row = { id: "a", name: "Race", startDate: "2027-07-09", disciplines: ["mtb"], location: { name: "Deštné", lat: 50, lng: 16 } } as EventListItem;
 const task = { key: "catalogue:upcoming", token: "claim", payload: { revision: "r1" } };
 beforeEach(() => {
@@ -37,4 +37,19 @@ it("keeps mismatched public data pending instead of treating invalidation as suc
 it("does not report a concurrent change as the completed batch", async () => {
   state.rpc.mockImplementation(async name => name === "pipeline_claim_tasks" ? { data: [task], error: null } : { data: false, error: null });
   expect(await publishCatalogueBatch()).toMatchObject({ status: "superseded", verified: false });
+});
+it("waits until after the Cloudflare edge TTL on stale edge cache hits", () => {
+  expect(catalogueRetryDelaySeconds(new Headers({ "x-edge-cache": "HIT", age: "120" }), 0)).toBe(1740);
+  expect(catalogueRetryDelaySeconds(new Headers({ "x-edge-cache": "HIT", age: "1750" }), 0)).toBe(300);
+  expect(catalogueRetryDelaySeconds(new Headers({ "x-edge-cache": "HIT" }), 0)).toBe(1860);
+  expect(catalogueRetryDelaySeconds(new Headers({ "x-edge-cache": "MISS" }), 0)).toBe(300);
+  expect(catalogueRetryDelaySeconds(new Headers({ "x-edge-cache": "MISS" }), 2)).toBe(1200);
+});
+it("schedules the retry after edge cache expiry when a mismatch comes from an edge HIT", async () => {
+  vi.mocked(fetch)
+    .mockReset()
+    .mockResolvedValueOnce(new Response("{}"))
+    .mockResolvedValueOnce(new Response("[]", { headers: { "x-edge-cache": "HIT", age: "120" } }));
+  expect(await publishCatalogueBatch()).toMatchObject({ status: "deferred", verified: false });
+  expect(state.rpc).toHaveBeenCalledWith("pipeline_retry_task", expect.objectContaining({ p_delay_seconds: 1740 }));
 });

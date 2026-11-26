@@ -6,6 +6,7 @@ import {execFileSync} from 'node:child_process';
 import {readdirSync,readFileSync,writeFileSync,renameSync} from 'node:fs';
 import {summarise,type CycleResult} from '../src/lib/pipeline2/status';
 import {dayRow,historyTable,withDay,type AgentCounts,type DayRow,type GateCounts} from '../src/lib/pipeline2/history';
+import {checkSearxngHealth} from '../src/lib/catalog/searxng';
 const read=async(p:string)=>{try{return JSON.parse(await readFile(p,'utf8'));}catch{return null;}};
 async function main(){
  const base=join(homedir(),'Library/Application Support/LetsRace');
@@ -96,6 +97,15 @@ async function main(){
   console.log(`Mac zdarma: ${status.runner?'běží':'NEBĚŽÍ'}; panel: ${status.panel?'běží':'zavřený'}; poslední hlášení před ${status.heartbeatAgeSeconds??'?'} s`);
   console.log(`Stav: ${monitor?.status??'neznámý'}; poslední výsledek: ${JSON.stringify(monitor?.lastResult?{at:monitor.lastResult.at,reads:monitor.lastResult.reads,created:monitor.lastResult.created,updated:monitor.lastResult.updated,failed:monitor.lastResult.failed}:null)}`);
   console.log(`Server zdarma: ${monitor?.server?.error??monitor?.server?.checkedAt??'zatím neověřeno'}`);
+  if(!process.env.SEARXNG_URL){try{const {parse}=await import('dotenv');for(const [key,value] of Object.entries(parse(readFileSync(join(process.cwd(),'.env.local'),'utf8'))))process.env[key]??=value;}catch{}}
+  const searxngHealth=await checkSearxngHealth(2000);
+  const utcDay=now.toISOString().slice(0,10);
+  const searxngBudget=await read(join(data,'searxng-search-budget.json')) as {days?:Record<string,number>}|null;
+  const serperBudget=await read(join(data,'serper-search-budget.json')) as {days?:Record<string,number>}|null;
+  const searxngToday=searxngBudget?.days?.[utcDay]??0;
+  const serperToday=serperBudget?.days?.[utcDay]??0;
+  const searxngState=!searxngHealth.configured?'není nastaven':searxngHealth.ok?'běží':`NEDOSTUPNÝ — zkontroluj Colima/Docker${searxngHealth.error?` (${searxngHealth.error})`:''}`;
+  console.log(`Vyhledávání: SearXNG ${searxngState}; dnes dotazů: SearXNG ${searxngToday}, Serper ${serperToday}`);
   console.log(`Starý ČSC plán: ${status.legacyAgent?'POZOR, aktivní':'vypnutý'}; podrobnosti: docs/keep-fresh.md`);
  }
 }

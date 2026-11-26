@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { resetSerperProcessCounter, serperSearch } from "@/lib/catalog/serper";
-import { resetSearxngProcessCounter, searxngSearch } from "@/lib/catalog/searxng";
+import { checkSearxngHealth, resetSearxngProcessCounter, searxngSearch, SearxngUnavailable } from "@/lib/catalog/searxng";
 import { activeSearchProviders, runWebSearch } from "@/lib/catalog/web-search";
 import { organizerLinks } from "@/lib/discovery/organizer-links";
 
@@ -81,6 +81,85 @@ describe("Serper & SearXNG search providers", () => {
     const out = await runWebSearch("zavod 2027", { country: "CZ" });
     expect(out.provider).toBe("serper");
     expect(out.hits).toHaveLength(1);
+  });
+
+  it("throws SearxngUnavailable on network error and circuit-breaks subsequent calls in the same process", async () => {
+    vi.stubEnv("SEARXNG_URL", "http://127.0.0.1:8888");
+    const err = Object.assign(new TypeError("fetch failed"), {
+      cause: Object.assign(new Error("connect ECONNREFUSED 127.0.0.1:8888"), { code: "ECONNREFUSED" }),
+    });
+    const fetchMock = vi.fn().mockRejectedValue(err);
+    vi.stubGlobal("fetch", fetchMock);
+
+    await expect(searxngSearch("mtb 2027")).rejects.toThrow(SearxngUnavailable);
+    await expect(searxngSearch("gravel 2027")).rejects.toThrow(SearxngUnavailable);
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+
+    resetSearxngProcessCounter();
+    await expect(searxngSearch("road 2027")).rejects.toThrow(SearxngUnavailable);
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+  });
+
+  it("throws SearxngUnavailable when SearXNG returns invalid JSON", async () => {
+    vi.stubEnv("SEARXNG_URL", "http://127.0.0.1:8888");
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue({
+        ok: true,
+        status: 200,
+        json: async () => {
+          throw new SyntaxError("Unexpected token <");
+        },
+      }),
+    );
+
+    await expect(searxngSearch("mtb 2027")).rejects.toThrow(SearxngUnavailable);
+  });
+
+  it("falls back cleanly from dead searxng to serper and skips dead searxng on next runWebSearch", async () => {
+    vi.stubEnv("SEARXNG_URL", "http://127.0.0.1:8888");
+    vi.stubEnv("SERPER_API_KEY", "k");
+    const fetchMock = vi.fn(async (input: string | URL) => {
+      const url = String(input);
+      if (url.startsWith("http://127.0.0.1:8888")) {
+        throw Object.assign(new TypeError("fetch failed"), {
+          cause: Object.assign(new Error("connect ECONNREFUSED 127.0.0.1:8888"), { code: "ECONNREFUSED" }),
+        });
+      }
+      return {
+        ok: true,
+        status: 200,
+        json: async () => ({
+          organic: [{ link: "https://zavod.cz", title: "Závod", snippet: "2027" }],
+        }),
+      };
+    });
+    vi.stubGlobal("fetch", fetchMock);
+
+    const first = await runWebSearch("zavod 2027", { country: "CZ" });
+    expect(first.provider).toBe("serper");
+    expect(first.hits).toHaveLength(1);
+
+    const second = await runWebSearch("jiny zavod 2027", { country: "CZ" });
+    expect(second.provider).toBe("serper");
+    expect(second.hits).toHaveLength(1);
+    const searxngCalls = fetchMock.mock.calls.filter(([u]) => String(u).startsWith("http://127.0.0.1:8888"));
+    expect(searxngCalls).toHaveLength(1);
+  });
+
+  it("reports SearXNG health status cleanly", async () => {
+    vi.stubEnv("SEARXNG_URL", "");
+    expect(await checkSearxngHealth(500)).toEqual({ configured: false, ok: false });
+
+    vi.stubEnv("SEARXNG_URL", "http://127.0.0.1:8888");
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce({ ok: true, status: 200 })
+      .mockRejectedValueOnce(new TypeError("fetch failed"));
+    vi.stubGlobal("fetch", fetchMock);
+
+    expect(await checkSearxngHealth(500)).toEqual({ configured: true, ok: true });
+    expect(await checkSearxngHealth(500)).toEqual({ configured: true, ok: false, error: "fetch failed" });
   });
 
   it("extracts same-host calendar/race subpages in organizerLinks", () => {

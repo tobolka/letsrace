@@ -9,8 +9,8 @@ export function quoteStatesDate(quote: string, date: string, options?: { role?: 
   if (!Number.isFinite(parsed.getTime()) || parsed.toISOString().slice(0, 10) !== date) return false;
   const normalized = fold(quote);
   const fullRange = normalized.match(/\b(\d{1,2})\.\s*(\d{1,2})\.\s*(20\d{2})\s*[-–]\s*(\d{1,2})\.\s*(\d{1,2})\.\s*(20\d{2})\b/);
-  const numericRange = normalized.match(/\b(\d{1,2})\.\s*(?:(\d{1,2})\.\s*)?[&–-]\s*(\d{1,2})\.\s*(\d{1,2})\.\s*(20\d{2})\b/);
-  const namedRange = normalized.match(/\b(\d{1,2})\.?\s*(?:[-–+&]|und|and|a|i|e|et)\s*(\d{1,2})\.?\s*([a-z]+)\s*(20\d{2})\b/);
+  const numericRange = normalized.match(/\b(\d{1,2})\.\s*(?:(\d{1,2})\.\s*)?(?:[&–-]|\bbis\b)\s*(\d{1,2})\.\s*(\d{1,2})\.\s*(20\d{2})\b/);
+  const namedRange = normalized.match(/\b(\d{1,2})\.?\s*(?:[-–+&]|\b(?:und|and|bis|to|az|do|al|au|a|i|e|et)\b)\s*(\d{1,2})\.?\s*([a-z]+)\s*(20\d{2})\b/);
   const months = ["leden ledna lednu january januar gennaio stycznia", "unor unora unoru february februar febbraio lutego", "brezen brezna breznu march marec marz marzo marca",
     "duben dubna dubnu april aprile kwietnia", "kveten kvetna kvetnu maj may mai maggio maja", "cerven cervna cervnu jun june juni giugno czerwca", "cervenec cervence cervenci jul july juli luglio lipca",
     "srpen srpna srpnu august agosto sierpnia augusta", "zari september settembre wrzesnia septembra", "rijen rijna rijnu october oktober ottobre pazdziernika oktobra", "listopad listopadu november novembre listopada novembra", "prosinec prosince prosinci december dezember dicembre grudnia decembra"];

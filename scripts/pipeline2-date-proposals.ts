@@ -13,8 +13,10 @@ import { homedir } from "node:os";
 import { join, resolve } from "node:path";
 import { parse } from "dotenv";
 
-type Proof = { quote: string; source_url: string; method: string };
-type Ready = { id: string; name: string; before: Record<string, string | null>; after: Record<string, string>; proofs: Record<string, Proof> };
+export type Proof = { quote: string; source_url: string; method: string };
+export type Ready = { id: string; name: string; before: Record<string, string | null>; after: Record<string, string>; proofs: Record<string, Proof> };
+export type ServerEventState = { id: string; start_date: string | null; end_date: string | null; status: string | null };
+export type PlannedProposal = { item: Ready; columns: string[] };
 
 /** A later start needs the end moved first, an earlier start moves first: the end never comes before the start. */
 export function orderColumns(item: Pick<Ready, "before" | "after">): string[] {
@@ -22,6 +24,36 @@ export function orderColumns(item: Pick<Ready, "before" | "after">): string[] {
   if (columns.length < 2 || !item.after.start_date || !item.before.start_date) return columns;
   const later = item.after.start_date > item.before.start_date;
   return [...columns].sort((a, b) => (a === "end_date" ? (later ? -1 : 1) : b === "end_date" ? (later ? 1 : -1) : 0));
+}
+
+export function serverFieldValue(row: ServerEventState | undefined, column: string): string | null {
+  if (!row) return null;
+  const raw = column === "start_date" ? row.start_date : column === "end_date" ? row.end_date : column === "status" ? row.status : null;
+  if (raw == null) return null;
+  return column === "status" ? String(raw) : String(raw).slice(0, 10);
+}
+
+/** Skip columns that already match the server before fetching pages or counting toward `max`. */
+export function partitionServerMatches(
+  ready: Ready[],
+  serverById: Map<string, ServerEventState>,
+): { todo: PlannedProposal[]; skipped: Array<{ race: string; column: string; to: string }> } {
+  const todo: PlannedProposal[] = [];
+  const skipped: Array<{ race: string; column: string; to: string }> = [];
+  for (const item of ready) {
+    const serverRow = serverById.get(item.id);
+    const pendingColumns: string[] = [];
+    for (const column of orderColumns(item)) {
+      const value = item.after[column];
+      if (value != null && serverFieldValue(serverRow, column) === value) {
+        skipped.push({ race: item.name, column, to: value });
+      } else {
+        pendingColumns.push(column);
+      }
+    }
+    if (pendingColumns.length > 0) todo.push({ item, columns: pendingColumns });
+  }
+  return { todo, skipped };
 }
 
 async function main() {
@@ -37,11 +69,24 @@ async function main() {
   const { createServerSupabase } = await import("../src/lib/supabase/server");
   const db = createServerSupabase();
   const call = (name: string, params: object) => (db as unknown as { rpc(name: string, params: object): PromiseLike<{ data: unknown; error: { message: string } | null }> }).rpc(name, params);
+  const serverById = new Map<string, ServerEventState>();
+  const ids = [...new Set(ready.map(item => item.id))];
+  for (let i = 0; i < ids.length; i += 200) {
+    const { data, error } = await db.from("events").select("id, start_date, end_date, status").in("id", ids.slice(i, i + 200));
+    if (error) throw Error(error.message);
+    for (const row of (data ?? []) as ServerEventState[]) serverById.set(row.id, row);
+  }
+  const { todo, skipped } = partitionServerMatches(ready, serverById);
   const totals: Record<string, number> = {}, log: object[] = [];
   const count = (key: string) => { totals[key] = (totals[key] ?? 0) + 1; };
+  for (const entry of skipped) {
+    count("already_matches_server");
+    log.push({ race: entry.race, column: entry.column, to: entry.to, outcome: "already_matches_server" });
+  }
   const pages = new Map<string, string>();
-  for (const item of ready.slice(0, max)) {
-    for (const column of orderColumns(item)) {
+  const batch = todo.slice(0, max);
+  for (const { item, columns } of batch) {
+    for (const column of columns) {
       const proof = item.proofs?.[column], value = item.after[column];
       if (!proof || !value) { count("no_proof"); continue; }
       if (!pages.has(proof.source_url)) pages.set(proof.source_url, (await readDocument(proof.source_url, { maxBytes: 4 * 1024 * 1024 }).catch(() => null))?.text ?? "");
@@ -59,7 +104,7 @@ async function main() {
       log.push({ race: item.name, column, to: value, outcome: label });
     }
   }
-  const summary = { at: new Date().toISOString(), apply, considered: Math.min(ready.length, max), ...totals };
+  const summary = { at: new Date().toISOString(), apply, considered: batch.length, ...totals };
   const out = arg("out");
   if (out) { const tmp = `${out}.${process.pid}.tmp`; writeFileSync(tmp, JSON.stringify({ ...summary, log }, null, 2)); renameSync(tmp, out); }
   console.log("date_send " + JSON.stringify(summary));

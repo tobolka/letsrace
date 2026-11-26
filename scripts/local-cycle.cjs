@@ -96,15 +96,59 @@ function acquireLock(file){
 function run(command,args,{allowedCodes=[0],timeout=120000,extraEnv={}}={}){
  return new Promise((resolve,reject)=>{
   if(interrupted)return reject(Error('Běh byl zastaven; uložená práce zůstává na příště'));
-  const child=cp.spawn(command,args,{cwd:root,env:{...env,...extraEnv},stdio:['ignore','pipe','pipe']});let output='';let timedOut=false;
+  const child=cp.spawn(command,args,{cwd:root,env:{...env,...extraEnv},stdio:['ignore','pipe','pipe']});let output='';let stderr='';let timedOut=false;
   let killTimer;const stop=()=>{child.kill('SIGTERM');killTimer=setTimeout(()=>child.kill('SIGKILL'),15000);killTimer.unref();};
   const timer=setTimeout(()=>{timedOut=true;stop();},timeout);const abort=()=>{interrupted=true;stop();};process.once('SIGTERM',abort);process.once('SIGINT',abort);
-  child.stdout.on('data',b=>{process.stdout.write(b);output=(output+b).slice(-(2**22));});child.stderr.on('data',b=>process.stderr.write(b));
+  child.stdout.on('data',b=>{process.stdout.write(b);output=(output+b).slice(-(2**22));});child.stderr.on('data',b=>{process.stderr.write(b);stderr=(stderr+b).slice(-(2**16));});
   // The step is over when its process is. Waiting for its output to close as well let a
   // forgotten descendant hold a finished step, and the whole cycle, until that one gave up.
-  let settled=false;const settle=(code,signal)=>{if(settled)return;settled=true;clearTimeout(timer);clearTimeout(killTimer);process.removeListener('SIGTERM',abort);process.removeListener('SIGINT',abort);child.stdout.destroy();child.stderr.destroy();if(!interrupted&&!timedOut&&!signal&&allowedCodes.includes(code))resolve({code,output});else reject(Object.assign(Error(`${path.basename(args.find(a=>/^scripts\//.test(a))||args[0]||command)}: ${interrupted?'běh zastaven':timedOut?'časový limit':signal||code}`),{code,timedOut,output}));};
-  child.once('error',reject);child.once('close',settle);child.once('exit',(code,signal)=>{const drain=setTimeout(()=>settle(code,signal),OUTPUT_DRAIN_MS);drain.unref();});
+  let settled=false;const settle=(code,signal)=>{if(settled)return;settled=true;clearTimeout(timer);clearTimeout(killTimer);process.removeListener('SIGTERM',abort);process.removeListener('SIGINT',abort);child.stdout.destroy();child.stderr.destroy();if(!interrupted&&!timedOut&&!signal&&allowedCodes.includes(code))resolve({code,output,stderr});else reject(Object.assign(Error(`${path.basename(args.find(a=>/^scripts\//.test(a))||args[0]||command)}: ${interrupted?'běh zastaven':timedOut?'časový limit':signal||code}`),{code,timedOut,output,stderr}));};
+  child.once('error',e=>{clearTimeout(timer);process.removeListener('SIGTERM',abort);process.removeListener('SIGINT',abort);reject(e);});child.once('close',settle);child.once('exit',(code,signal)=>{const drain=setTimeout(()=>settle(code,signal),OUTPUT_DRAIN_MS);drain.unref();});
  });
+}
+/** Redact credentials, bearer tokens, JWTs, and query-param secrets from captured error tails. */
+function sanitizeError(text){
+ return String(text??'').slice(0,4000)
+  .replace(/\b(Bearer|Basic)\s+[A-Za-z0-9._~+/=-]{8,}/gi,'$1 [REDACTED]')
+  .replace(/\beyJ[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{8,}\b/g,'[REDACTED]')
+  .replace(/\b(?:sb_(?:secret|publishable)|sbp|sk|pk|re|gh[pousr]|xox[baprs])_[A-Za-z0-9_-]{10,}\b/g,'[REDACTED]')
+  .replace(/\bsk-[A-Za-z0-9_-]{16,}\b/g,'[REDACTED]')
+  .replace(/(https?|postgres(?:ql)?):\/\/[^:\s/@]+:[^@\s/@]+@/gi,'$1://[REDACTED]@')
+  .replace(/([?&](?:token|access_token|refresh_token|api_key|apikey|key|secret|password|passwd|auth|signature|sig)=)[^&\s#'"]+/gi,'$1[REDACTED]')
+  .replace(/(\b(?:CRON_SECRET|SUPABASE_SERVICE_ROLE_KEY|SERVICE_ROLE_KEY|ANTHROPIC_API_KEY|OPENAI_API_KEY|RESEND_API_KEY|BRAVE_API_KEY|SERPER_API_KEY|EMAIL_LINK_SECRET|api_key|apikey|secret|password|token|authorization|x-api-key)\s*[:=]\s*['"]?)[^\s'",;}\]]+/gi,'$1[REDACTED]');
+}
+/** Bounded, sanitized tail of stderr (falling back to non-marker stdout lines) for failed steps. */
+function stepError({stderr='',output='',message='',code=null}={},maxChars=300){
+ const cleanLines=(text,skipMarkers)=>String(text||'').replace(/\r\n?/g,'\n').split('\n').map(l=>l.trimEnd()).filter(l=>l.trim().length>0&&!/^Node\.js v\d+/.test(l.trim())&&(!skipMarkers||(!l.startsWith('step_outcome ')&&!l.startsWith('pipeline_step_deferred '))));
+ let lines=cleanLines(stderr,false);
+ if(!lines.length)lines=cleanLines(output,true);
+ if(!lines.length){
+  if(code==null&&message)lines=cleanLines(message,false);
+  else return null;
+ }
+ // Collapse consecutive `at ...` stack frames to the first frame per block so the Error header fits.
+ const compacted=[];let inStack=false;
+ for(const line of lines.slice(-30)){
+  const isFrame=/^\s+at\s+/.test(line);
+  if(isFrame){if(!inStack){compacted.push(line.trim());inStack=true;}}
+  else{inStack=false;compacted.push(line.trim());}
+ }
+ const kept=[];let total=0;
+ for(let i=compacted.length-1;i>=0;i--){
+  const piece=sanitizeError(compacted[i]);
+  const sep=kept.length?3:0;
+  if(total+piece.length+sep<=maxChars){kept.unshift(piece);total+=piece.length+sep;}
+  else{
+   if(!kept.length)kept.unshift(piece.slice(0,Math.max(1,maxChars-1))+'…');
+   else if(kept.every(k=>k.startsWith('at '))&&!piece.startsWith('at ')){
+    const budget=maxChars-total-sep;
+    if(budget>=20)kept.unshift(piece.slice(0,budget-1)+'…');
+    else kept.splice(0,kept.length,piece.slice(0,Math.max(1,maxChars-1))+'…');
+   }
+   break;
+  }
+ }
+ return kept.length?kept.join(' | '):null;
 }
 /** What a step may say about itself on a line `step_outcome {"outcome":…,"reason":…}`. */
 const STEP_OUTCOMES=['done','partial','timeout','blocked','waiting','failed'];
@@ -222,7 +266,7 @@ async function main(){
  const season=editionSeason(),archive=path.join(data,`organiser-check-${season+1}`);const organiser={read:0,attempted:0,proposed:0,published:0,deferred:false};report.organiser=organiser;
  let remote,failed=null;
  // A step cut off because the Mac fell asleep did not fail; it simply runs again on the next cycle.
- const note=e=>{if(sleptInStage()){(report.sleptDuring??=[]).push(report.stage);console.warn(`Krok „${report.stage}“ přerušil spánek Macu: ${e.message}`);return;}failed??=e.message;console.error(`!!! ${e.message}`);};
+ const note=e=>{if(sleptInStage()){(report.sleptDuring??=[]).push(report.stage);console.warn(`Krok „${report.stage}“ přerušil spánek Macu: ${e.message}`);return;}const detail=stepError(e);const msg=detail?`${e.message}: ${detail}`:e.message;failed??=msg;console.error(`!!! ${msg}`);};
  try{
   stage('Zjišťuji, co je potřeba udělat');
   await run('/bin/bash',['scripts/local-db.sh','start']);
@@ -310,19 +354,23 @@ async function main(){
    stage(text);
    try{
     const done=await launch(['scripts/bounded-pipeline-step.cjs',String(seconds),process.execPath,'scripts/with-node.cjs',tsx,...args],{allowedCodes:[0,2],timeout:(seconds+60)*1000,extraEnv:{...extraEnv,LETSRACE_STEP:name}});
-    const ended=remember(stepOutcome(done),sleptThrough(Date.now()-began,seconds*1000));(report.steps??={})[name]=ended;
+    const ended=remember(stepOutcome(done),sleptThrough(Date.now()-began,seconds*1000));
+    const detail=(ended.outcome==='failed'||(ended.outcome==='timeout'&&!ended.slept))?stepError(done):null;
+    (report.steps??={})[name]=detail?{...ended,error:detail}:ended;
     state[key]=new Date().toISOString();saveState();(report.upkeep??={})[name]=ended.outcome==='done'?'done':ended.outcome==='partial'?'deferred':ended.outcome;
     if(ended.outcome==='timeout'&&!ended.slept)(report.failedUpkeep??=[]).push(name);
    }catch(e){
     if(interrupted)throw e;
     // The allowance can run out in the middle of a step. What it saved stays; the rest waits.
     if(waitForAi(name,extraEnv))return;
-    const ended=remember(stepOutcome(e),sleptThrough(Date.now()-began,(seconds+60)*1000));(report.steps??={})[name]=ended;
+    const ended=remember(stepOutcome(e),sleptThrough(Date.now()-began,(seconds+60)*1000));
+    const detail=(ended.outcome==='failed'||(ended.outcome==='timeout'&&!ended.slept))?stepError(e):null;
+    (report.steps??={})[name]=detail?{...ended,error:detail}:ended;
     // Kept out by the other side: nothing here failed, and asking again every cycle changes nothing.
     // The step, and any other reading the same website, waits its usual interval.
     if(ended.outcome==='blocked'){state[key]=new Date().toISOString();saveState();(report.upkeep??={})[name]=`blocked: ${ended.reason}`;(report.blockedUpkeep??=[]).push(name);console.warn(`Údržba ${name} čeká: ${ended.reason}`);return;}
     if(ended.slept){(report.upkeep??={})[name]='timeout: the Mac slept';console.warn(`Údržba ${name}: čas vypršel během spánku Macu`);return;}
-    (report.upkeep??={})[name]=`failed: ${e.message}`;(report.failedUpkeep??=[]).push(name);console.warn(`Údržba ${name} se nepovedla: ${e.message}${ended.stopped?'; krok je zastavený a zkusí se za týden':''}`);
+    (report.upkeep??={})[name]=`failed: ${e.message}`;(report.failedUpkeep??=[]).push(name);console.warn(`Údržba ${name} se nepovedla: ${e.message}${detail?` (${detail})`:''}${ended.stopped?'; krok je zastavený a zkusí se za týden':''}`);
    }
   };
   // Races whose day has passed are completed in the copy here as the server completes its own. Without this the
@@ -374,6 +422,10 @@ async function main(){
   await upkeep('radgate','radgateAt',24*HOUR,'Čtu evropské závody z radgate.de',['scripts/harvest-radgate.ts','--apply'],480,{},true);
   await upkeep('radsportEvents','radsportEventsAt',24*HOUR,'Čtu závody z radsport-events.de',['scripts/harvest-radsport-events.ts','--apply'],480,{},true);
   await upkeep('euPortals','euPortalsAt',24*HOUR,'Čtu slovenské, polské a rakouské portály (SZC, Competit, Datasport, Time2Win)',['scripts/harvest-eu-portals.ts','--apply'],360,{},true);
+  await upkeep('itPortals','itPortalsAt',24*HOUR,'Čtu italské portály (MTBonline, WinningTime)',['scripts/harvest-it-portals.ts','--apply'],420,{},true);
+  await upkeep('chPortals','chPortalsAt',24*HOUR,'Čtu švýcarské a alpské portály (TrackMaxx, Datasport)',['scripts/harvest-ch-portals.ts','--apply'],360,{},true);
+  await upkeep('dePlPortals','dePlPortalsAt',24*HOUR,'Čtu německé a polské portály (dsergebnis.de, b4sportonline.pl)',['scripts/harvest-de-pl-portals.ts','--apply'],420,{},true);
+  await upkeep('czTiming','czTimingAt',24*HOUR,'Čtu české timing portály (Cykloman, Irontime, Sportovní servis)',['scripts/harvest-cz-timing.ts','--apply'],360,{},true);
   // Cycling Austria keys a race by federation id and day, so a moved race comes back as a second race. One full read of
   // its calendar folds the old-day race into the new-day one, only under the same name (dated-id-moves.ts). On the server,
   // because the copy here holds every merge for review; each merge is audited and can be undone (restore-event-merge.ts).
@@ -412,7 +464,7 @@ async function main(){
     const seen=verifiedAt();const handed=await node(tsx,['scripts/agent-apply.ts',`--answers=${agentAnswers}`,'--apply'],{timeout:10*60_000});
     const line=handed.output.split('\n').find(text=>text.startsWith('agent_apply '));report.agentApplied=line?JSON.parse(line.slice(12)):null;
     state.agentAppliedMs=seen;saveState();
-   }catch(e){if(interrupted)throw e;(report.steps??={}).agentApply={outcome:'failed',reason:'crashed'};(report.failedUpkeep??=[]).push('agentApply');console.warn(`Předání nálezů agenta se nepovedlo: ${e.message}`);}
+   }catch(e){if(interrupted)throw e;const detail=stepError(e);(report.steps??={}).agentApply={outcome:'failed',reason:'crashed',...(detail?{error:detail}:{})};(report.failedUpkeep??=[]).push('agentApply');console.warn(`Předání nálezů agenta se nepovedlo: ${e.message}${detail?` (${detail})`:''}`);}
   }
   // Regulations links the readers here put into the copy go to the server as proposals, not with the fills.
   await upkeep('localRegulations','localRegulationsAt',HOUR,'Předávám nalezené odkazy na propozice bráně',['scripts/pipeline2-local-regulations.ts','--apply','--max=120'],600,{},true);
@@ -595,4 +647,4 @@ async function main(){
   console.log(`=== done ${report.finishedAt}\n=== failed steps: ${report.state==='attention'?1:0}\n=== deferred steps: 0`);
  }
 }
-module.exports={holdAfter,heldNow,sleptThrough,FAILURE_DELAYS_MS,stepOutcome,STEP_OUTCOMES,acquireLock,run,organiserDue,targetNeeded,targetWanted,editionSeason,coverageFrom,aiAllowanceLeft,aiBudgetWait,nextPragueDay};if(require.main===module)main().catch(e=>{console.error(e.message);process.exitCode=1;});
+module.exports={holdAfter,heldNow,sleptThrough,FAILURE_DELAYS_MS,stepOutcome,STEP_OUTCOMES,stepError,sanitizeError,acquireLock,run,organiserDue,targetNeeded,targetWanted,editionSeason,coverageFrom,aiAllowanceLeft,aiBudgetWait,nextPragueDay};if(require.main===module)main().catch(e=>{console.error(e.message);process.exitCode=1;});

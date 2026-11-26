@@ -1,6 +1,7 @@
 import { beforeEach, expect, it, vi } from "vitest";
 import type { Locale } from "@/lib/i18n/messages";
-import { checkPublicRaceRevisions } from "@/lib/pipeline/race-publication-check";
+import { checkPublicRaceRevisions, raceRetryDelaySeconds } from "@/lib/pipeline/race-publication-check";
+import { StalePublication } from "@/lib/pipeline/publication";
 
 const state = vi.hoisted(() => ({ rpc: vi.fn(), checkLocales: vi.fn() }));
 const site = "https://letsrace.test";
@@ -54,5 +55,22 @@ it("keeps the merge pending if the former URL still returns its own page", async
     return ["cs"];
   });
   await expect(check()).resolves.toMatchObject({ publicRevisionsVerified: 0, deferredInBatch: 1 });
-  expect(state.rpc).toHaveBeenCalledWith("pipeline_retry_publication_check", expect.objectContaining({ p_stale: true }));
+  expect(state.rpc).toHaveBeenCalledWith("pipeline_retry_publication_check", expect.objectContaining({ p_stale: true, p_delay_seconds: 1860 }));
+});
+
+it("waits past the Cloudflare edge TTL on stale HTML while keeping backoff for transient errors", () => {
+  expect(raceRetryDelaySeconds(new StalePublication("stale"), 0)).toBe(1860);
+  expect(raceRetryDelaySeconds(new StalePublication("stale"), 1)).toBe(1860);
+  expect(raceRetryDelaySeconds(new StalePublication("stale"), 2)).toBe(1860);
+  expect(raceRetryDelaySeconds(new StalePublication("stale"), 3)).toBe(2400);
+  expect(raceRetryDelaySeconds(new StalePublication("stale"), 10)).toBe(76800);
+  expect(raceRetryDelaySeconds(new Error("timeout"), 0)).toBe(300);
+  expect(raceRetryDelaySeconds(new Error("timeout"), 1)).toBe(600);
+  expect(raceRetryDelaySeconds(new Error("timeout"), 2)).toBe(1200);
+});
+
+it("uses short exponential backoff for transient fetch errors", async () => {
+  state.checkLocales.mockReset().mockRejectedValue(new Error("cs: timeout"));
+  await expect(check()).resolves.toMatchObject({ publicRevisionsVerified: 0, deferredInBatch: 1 });
+  expect(state.rpc).toHaveBeenCalledWith("pipeline_retry_publication_check", expect.objectContaining({ p_stale: false, p_delay_seconds: 600 }));
 });
