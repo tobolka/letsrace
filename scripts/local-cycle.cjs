@@ -426,6 +426,7 @@ async function main(){
   await upkeep('chPortals','chPortalsAt',24*HOUR,'Čtu švýcarské a alpské portály (TrackMaxx, Datasport)',['scripts/harvest-ch-portals.ts','--apply'],360,{},true);
   await upkeep('dePlPortals','dePlPortalsAt',24*HOUR,'Čtu německé a polské portály (dsergebnis.de, b4sportonline.pl)',['scripts/harvest-de-pl-portals.ts','--apply'],420,{},true);
   await upkeep('czTiming','czTimingAt',24*HOUR,'Čtu české timing portály (Cykloman, Irontime, Sportovní servis)',['scripts/harvest-cz-timing.ts','--apply'],360,{},true);
+  await upkeep('primaCup','primaCupAt',24*HOUR,'Čtu propozice seriálu Prima CUP',['scripts/harvest-primacup.ts','--apply'],300);
   // Cycling Austria keys a race by federation id and day, so a moved race comes back as a second race. One full read of
   // its calendar folds the old-day race into the new-day one, only under the same name (dated-id-moves.ts). On the server,
   // because the copy here holds every merge for review; each merge is audited and can be undone (restore-event-merge.ts).

@@ -37,3 +37,9 @@ it("needs no second reader for what a federation's fixed page says, while anythi
   const kept = confirmedDetails({ organizer: fact("https://www.rad-net.de/rad-net-portal/a.htm"), venue: fact("https://club.test/propozice.pdf") }, undefined);
   expect(Object.keys(kept)).toEqual(["organizer"]);
 });
+
+it("needs no second reader for iprimacup.cz round pages without an AI gate entry", () => {
+  const fact = (sourceUrl: string) => ({ value: { name: "Prima CUP" }, sourceUrl });
+  const kept = confirmedDetails({ organizer: fact("https://www.iprimacup.cz/27-hk/"), venue: fact("https://club.test/propozice.pdf") }, undefined);
+  expect(Object.keys(kept)).toEqual(["organizer"]);
+});
