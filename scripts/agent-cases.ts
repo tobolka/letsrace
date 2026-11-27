@@ -12,8 +12,12 @@ import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync, rename
 import { join } from "node:path";
 import { assessDuplicate, datesCompatible, type DedupEvent } from "../src/lib/dedup";
 import { isNonRaceEventName } from "../src/lib/event-visibility";
-import { looksLikeRide } from "../src/lib/pipeline2/rides";
+import { classifyEventForAgentQueue, extractSourceCategories, looksLikeRide } from "../src/lib/pipeline2/rides";
 import { groupCalendars, groupSameRace, pairKey } from "../src/lib/pipeline2/agent-case-groups";
+import { candidateRowToExistingEdition, filterExistingNextDateCases, type ExistingEditionRecord, type PipelineCandidateRow } from "../src/lib/pipeline2/agent-next-date-filter";
+import { resolveDetailSources, type DetailPageSnapshot } from "../src/lib/pipeline2/agent-detail-sources";
+import { readDocument } from "../src/lib/catalog/regulation-ages";
+import { pageAsText } from "../src/lib/watcher/extractors/llm-calendar";
 
 const BIN = process.env.LOCAL_PG_BIN ?? "/opt/homebrew/opt/postgresql@17/bin";
 const sql = <T>(query: string): T => JSON.parse(execFileSync(`${BIN}/psql`, ["-h", "127.0.0.1", "-p", "54329", "-U", "postgres", "-d", "letsrace", "-qAt", "-v", "ON_ERROR_STOP=1", "-c", query], { encoding: "utf8", maxBuffer: 2 ** 28 }).trim() || "null");
@@ -21,10 +25,11 @@ const arg = (key: string) => process.argv.find(value => value.startsWith(`--${ke
 
 type Row = {
   id: string; name: string; start_date: string; end_date: string | null; status: string | null; visibility: string | null; disciplines: string[] | null; event_type: string | null;
+  class_label: string | null; competition_type: string | null; uci_class: string | null; description: string | null; formats: string[] | null;
   website_url: string | null; registration_url: string | null; regulations_url: string | null; series: string | null;
   municipality: string | null; place: string | null; country_code: string | null; lat: number | null; lng: number | null; sources: string[] | null;
 };
-const SELECT = `select e.id,e.name,e.start_date,e.end_date,e.status,e.visibility,e.disciplines,e.event_type,e.website_url,e.registration_url,e.regulations_url,
+const SELECT = `select e.id,e.name,e.start_date,e.end_date,e.status,e.visibility,e.disciplines,e.event_type,e.class_label,e.competition_type,e.uci_class,e.description,e.formats,e.website_url,e.registration_url,e.regulations_url,
   s.name series,l.municipality,l.name place,l.country_code,l.lat,l.lng,
   (select array_agg(distinct x.source_url) from public.event_sources x where x.event_id=e.id and x.source_url is not null) sources
   from public.events e left join public.locations l on l.id=e.location_id left join public.series s on s.id=e.series_id`;
@@ -42,7 +47,7 @@ const asDedup = (race: Row): DedupEvent => ({
 
 const IDENTITY = /^(?:fingerprint|same_url|same_canonical_name|name_sim_high|name_sim_mid|name_substring|series_alias|same_round|weak_name_absorbed|venue_format_mirror|national_championship_mirror)$/;
 
-function main() {
+async function main() {
   const out = arg("out"); if (!out) throw Error("--out=<directory> is needed");
   mkdirSync(out, { recursive: true });
   const cases: object[] = [];
@@ -57,18 +62,41 @@ function main() {
   }) : []);
   const answeredAs = (name: string, verdict: string) => { try { return answered(name) && JSON.parse(readFileSync(join(skip!, `${name}.json`), "utf8")).answer?.verdict === verdict; } catch { return false; } };
 
+  const classifyRow = (race: Pick<Row, "id" | "name" | "start_date" | "end_date" | "event_type" | "class_label" | "competition_type" | "uci_class" | "description" | "formats">) =>
+    classifyEventForAgentQueue({
+      id: race.id,
+      name: race.name,
+      startDate: race.start_date,
+      endDate: race.end_date,
+      eventType: race.event_type,
+      sourceCategories: [
+        ...extractSourceCategories({ class_label: race.class_label, competition_type: race.competition_type, uci_class: race.uci_class }),
+        ...(race.formats ?? []),
+      ],
+      sourceText: race.description,
+    });
+  const queuedRideCases = new Set<string>();
+  const queueDecideRide = (race: Row) => {
+    const rideCase = `ride-${race.id.slice(0, 8)}`;
+    if (queuedRideCases.has(rideCase) || answered(rideCase)) return;
+    queuedRideCases.add(rideCase);
+    cases.push({ case: rideCase, kind: "decide_ride", in_catalogue: true, race: shown(race) });
+  };
+
   // Regulations: nearest race first, Czech and Slovak races first on the same day.
   const wantRegulations = Number(arg("regulations") ?? 20);
   const missing = rows(`e.visibility='public' and e.merged_into_id is null and e.start_date between current_date+2 and current_date+60 and e.regulations_url is null and coalesce(e.status,'') not in ('cancelled','completed')
     order by e.start_date, (l.country_code in ('CZ','SK')) desc, e.id limit ${wantRegulations * 6}`).filter(race => !answered(`regulations-${race.id.slice(0, 8)}`));
-  // An entry that is, or reads like, a ride without a result is first asked "ride or race?"; regulations are looked for only for races.
-  const rideLike = missing.filter(race => race.event_type === "ride" || looksLikeRide(race.name));
-  // Two records of one race are one search: the answer is filed for every record in same_race_ids.
-  const realRaces = groupSameRace(missing.filter(race => !rideLike.includes(race) && !answeredAs(`ride-${race.id.slice(0, 8)}`, "ride")).map(race => ({ case: `regulations-${race.id.slice(0, 8)}`, kind: "find_regulations", race: shown(race) as ReturnType<typeof shown> & { same_race_ids?: string[] } })))
+  const classifiedMissing = missing.map(race => ({ race, decision: classifyRow(race) }));
+  // Non-competitive events (source category or ride name) are skipped; ambiguous ones are sent to decide_ride.
+  const realRaces = groupSameRace(
+    classifiedMissing
+      .filter(({ race, decision }) => decision.action === "process_race" && !answeredAs(`ride-${race.id.slice(0, 8)}`, "ride"))
+      .map(({ race }) => ({ case: `regulations-${race.id.slice(0, 8)}`, kind: "find_regulations", race: shown(race) as ReturnType<typeof shown> & { same_race_ids?: string[] } })),
+  )
     .filter(item => !(item.race.same_race_ids ?? []).some(id => answered(`regulations-${id.slice(0, 8)}`))).slice(0, wantRegulations);
   cases.push(...realRaces);
-  // A race already typed a ride is settled; only a race whose name says ride but whose type does not is worth a look.
-  for (const race of rideLike.filter(race => race.event_type !== "ride" && !answered(`ride-${race.id.slice(0, 8)}`)).slice(0, 10)) cases.push({ case: `ride-${race.id.slice(0, 8)}`, kind: "decide_ride", in_catalogue: true, race: shown(race) });
+  for (const { race } of classifiedMissing.filter(({ decision }) => decision.action === "decide_ride").slice(0, 10)) queueDecideRide(race);
 
   // Each pair once, whether a held new race or the catalogue raised it and whichever way round.
   const seenPairs = new Set<string>();
@@ -103,10 +131,12 @@ function main() {
 
   // Details are a separate lane and rotate with the other desk cases.
   if (process.env.AGENT_DETAILS_FALLBACK === "1") {
-    const practical = sql<(Pick<Row, "id" | "name" | "start_date" | "end_date" | "municipality" | "regulations_url" | "website_url"> & { practical_details: Record<string, { value: unknown; sourceUrl: string }> })[]>(`
+    const practical = sql<(Row & { practical_details: Record<string, { value: unknown; sourceUrl: string }> })[]>(`
       select coalesce(json_agg(t),'[]') from (
-        select e.id,e.name,e.start_date,e.end_date,l.municipality,e.regulations_url,e.website_url,e.practical_details
-        from public.events e left join public.locations l on l.id=e.location_id
+        select e.id,e.name,e.start_date,e.end_date,e.status,e.visibility,e.disciplines,e.event_type,e.class_label,e.competition_type,e.uci_class,e.description,e.formats,e.registration_url,e.regulations_url,e.website_url,e.practical_details,s.name series,
+          l.municipality,l.name place,l.country_code,l.lat,l.lng,
+          (select array_agg(distinct x.source_url) from public.event_sources x where x.event_id=e.id and x.source_url is not null) sources
+        from public.events e left join public.locations l on l.id=e.location_id left join public.series s on s.id=e.series_id
         where e.visibility='public' and e.merged_into_id is null and e.start_date between current_date and current_date+120
           and coalesce(e.status,'') not in ('cancelled','completed') and e.event_type is distinct from 'ride'
           and (e.regulations_url is not null or e.practical_details <> '{}')
@@ -116,14 +146,53 @@ function main() {
     const hash = (value: unknown) => createHash("sha256").update(JSON.stringify(value)).digest("hex").slice(0,16);
     const gateFile = join(out,"..","..","details-gate.json");
     const gate: Record<string,{at:string;fields:Record<string,{value:string;at?:string}>}> = existsSync(gateFile) ? JSON.parse(readFileSync(gateFile,"utf8")) : {};
+    const detailNotesFile = join(out, "..", "detail-source-notes.json");
+    const detailNotes: Record<string, { reason: string; at: string }> = existsSync(detailNotesFile) ? JSON.parse(readFileSync(detailNotesFile, "utf8")) : {};
+    let detailNotesChanged = false;
+    const pageCache = new Map<string, DetailPageSnapshot | null>();
+    const fetchPage = async (url: string): Promise<DetailPageSnapshot | null> => {
+      if (pageCache.has(url)) return pageCache.get(url) ?? null;
+      const source = await readDocument(url, { maxBytes: 4 * 1024 * 1024 }).catch(() => null);
+      if (!source) { pageCache.set(url, null); return null; }
+      const parsed = source.html ? pageAsText(source.html, url) : { text: source.text ?? "", links: [] as string[] };
+      const snap: DetailPageSnapshot = { url, text: parsed.text, links: [...parsed.links].map(href => ({ href })) };
+      pageCache.set(url, snap);
+      return snap;
+    };
     let extracts = 0, checks = 0;
     for (const row of practical) {
+      const queueDecision = classifyRow(row);
+      if (queueDecision.action === "skip_non_competitive" || answeredAs(`ride-${row.id.slice(0, 8)}`, "ride")) continue;
+      if (queueDecision.action === "decide_ride") { queueDecideRide(row); continue; }
       const race = { id:row.id,name:row.name,date:row.start_date,end_date:row.end_date,place:row.municipality };
       const stored = row.practical_details ?? {};
       if (extracts < 8 && row.regulations_url && fields.some(field=>!stored[field])) {
-        const urls = [...new Set([row.regulations_url,row.website_url].filter((url): url is string=>Boolean(url)))];
+        const previousMissingReason = detailNotes[row.id]?.reason ?? null;
+        const resolved = await resolveDetailSources(
+          { ...race, municipality: row.municipality, series: row.series },
+          { fetchPage, allowedUrls: [row.regulations_url, row.website_url, ...(row.sources ?? []).slice(0, 4)], previousMissingReason },
+        );
+        if (resolved.missingDetailReason) {
+          detailNotes[row.id] = { reason: resolved.missingDetailReason, at: new Date().toISOString() };
+          detailNotesChanged = true;
+        } else if (detailNotes[row.id]) {
+          delete detailNotes[row.id];
+          detailNotesChanged = true;
+        }
+        const urls = resolved.urls.length ? resolved.urls : [...new Set([row.regulations_url,row.website_url].filter((url): url is string=>Boolean(url)))];
         const name = `details-${short(JSON.stringify([race,urls]))}`;
-        if (!answered(name)) { cases.push({case:name,kind:"extract_details",race,urls}); extracts++; }
+        if (!answered(name)) {
+          cases.push({
+            case: name,
+            kind: "extract_details",
+            race,
+            urls,
+            ...(resolved.officialDetailUrl ? { officialDetailUrl: resolved.officialDetailUrl } : {}),
+            ...(resolved.missingDetailReason ? { missingDetailReason: resolved.missingDetailReason } : {}),
+            ...(resolved.previousMissingReason ? { previousMissingReason: resolved.previousMissingReason } : {}),
+          });
+          extracts++;
+        }
       }
       for (const field of fields) {
         const fact = stored[field];
@@ -141,6 +210,10 @@ function main() {
       }
       if (extracts >= 8 && checks >= 8) break;
     }
+    if (detailNotesChanged) {
+      writeFileSync(detailNotesFile + ".tmp", JSON.stringify(detailNotes, null, 1));
+      renameSync(detailNotesFile + ".tmp", detailNotesFile);
+    }
   }
 
   // Ride or race: new races the cycle held only because their source lists them as rides.
@@ -156,14 +229,54 @@ function main() {
   const archive = arg("editions"); let editions = 0; const wantEditions = Number(arg("next-dates") ?? 15);
   if (archive && existsSync(join(archive, "edition-status.json")) && existsSync(join(archive, "race-review.json"))) {
     const status = JSON.parse(readFileSync(join(archive, "edition-status.json"), "utf8")) as { summary: { season: number }; rows: { race: string; state: string }[] };
+    const wantedYear = Number(status.summary.season);
     const review = new Map((JSON.parse(readFileSync(join(archive, "race-review.json"), "utf8")) as { id: string; name: string; start_date: string; website_url: string | null; location?: { country_code?: string; municipality?: string }; checkedUrls?: string[] }[]).map(race => [race.id, race]));
     const reviewed = existsSync(join(archive, "reviewed-answers.json")) ? JSON.parse(readFileSync(join(archive, "reviewed-answers.json"), "utf8")) as Record<string, unknown> : {};
     const waiting = status.rows.filter(row => (["waiting", "year_only"].includes(row.state) ||
       row.state === "not_announced" && previouslyAsked.has("nextdate-" + row.race.slice(0, 8))) && !reviewed[row.race]).map(row => review.get(row.race)).filter((race): race is NonNullable<typeof race> => Boolean(race))
       .sort((a, b) => Number(["CZ", "SK"].includes(b.location?.country_code ?? "")) - Number(["CZ", "SK"].includes(a.location?.country_code ?? "")) || a.start_date.slice(5).localeCompare(b.start_date.slice(5)));
+    const waitingIds = waiting.map(race => race.id).filter(id => /^[a-f0-9-]{36}$/i.test(id));
+    type WaitingMeta = { id: string; disciplines: string[] | null; series: string | null; organizer: string | null; registration_url: string | null; municipality: string | null; place: string | null; sources: string[] | null };
+    const waitingMeta = new Map((waitingIds.length ? sql<WaitingMeta[]>(`select coalesce(json_agg(t),'[]') from (
+      select e.id, e.disciplines, s.name series,
+        nullif(trim(coalesce(e.practical_details->'organizer'->'value'->>'name', '')), '') organizer,
+        e.registration_url, l.municipality, l.name place,
+        (select array_agg(distinct x.source_url) from public.event_sources x where x.event_id=e.id and x.source_url is not null) sources
+      from public.events e left join public.locations l on l.id=e.location_id left join public.series s on s.id=e.series_id
+      where e.id in (${waitingIds.map(id => `'${id}'`).join(",")})
+    ) t`) : []).map(row => [row.id, row]));
+    const existingEditions: ExistingEditionRecord[] = Number.isInteger(wantedYear) ? [
+      ...sql<ExistingEditionRecord[]>(`select coalesce(json_agg(t),'[]') from (
+        select e.id, 'catalogue' source, e.name, e.start_date, e.end_date,
+          l.name place, l.municipality, l.country_code country,
+          e.disciplines, s.name series,
+          nullif(trim(coalesce(e.practical_details->'organizer'->'value'->>'name', '')), '') organizer,
+          e.website_url website, e.registration_url registration,
+          (select array_agg(distinct x.source_url) from public.event_sources x where x.event_id=e.id and x.source_url is not null) sources
+        from public.events e left join public.locations l on l.id=e.location_id left join public.series s on s.id=e.series_id
+        where e.merged_into_id is null and extract(year from e.start_date) = ${wantedYear} and coalesce(e.status, '') <> 'hidden'
+      ) t`),
+      ...sql<PipelineCandidateRow[]>(`select coalesce(json_agg(t),'[]') from (
+        select c.id, c.source_url, c.country, c.season, c.payload
+        from public.pipeline_candidates c
+        where c.status in ('pending', 'waiting', 'publishing')
+          and (c.season = ${wantedYear} or coalesce(c.payload->>'startDate', c.payload->>'start_date', '') like '${wantedYear}-%')
+      ) t`).map(candidateRowToExistingEdition).filter((item): item is ExistingEditionRecord => Boolean(item)),
+    ] : [];
     // "ČP MTB XCM - Malevil cup" and "ČP MTB XCM — Malevil Cup" on one day are one search, not two.
-    const searches = groupSameRace(waiting.filter(race => !isNonRaceEventName(race.name) && !looksLikeRide(race.name)).map(race => ({ case: `nextdate-${race.id.slice(0, 8)}`, kind: "find_next_date", wanted_year: status.summary.season,
-      race: { id: race.id, name: race.name, last_date: race.start_date, place: race.location?.municipality ?? null, country: race.location?.country_code ?? null, website: race.website_url, pages_we_read: (race.checkedUrls ?? []).slice(0, 5) } as { id: string; name: string; last_date: string; pages_we_read: string[]; same_race_ids?: string[] } & Record<string, unknown> })));
+    // Skip any race whose target-year edition is already in the catalogue or pending proposals.
+    const searches = filterExistingNextDateCases(
+      groupSameRace(waiting.filter(race => !isNonRaceEventName(race.name) && !looksLikeRide(race.name)).map(race => {
+        const meta = waitingMeta.get(race.id);
+        return { case: `nextdate-${race.id.slice(0, 8)}`, kind: "find_next_date", wanted_year: wantedYear,
+          race: { id: race.id, name: race.name, last_date: race.start_date, place: race.location?.municipality ?? meta?.municipality ?? meta?.place ?? null, country: race.location?.country_code ?? null,
+            disciplines: meta?.disciplines ?? null, series: meta?.series ?? null, organizer: meta?.organizer ?? null,
+            website: race.website_url, registration: meta?.registration_url ?? null, sources: meta?.sources ?? null,
+            pages_we_read: (race.checkedUrls ?? []).slice(0, 5) } as { id: string; name: string; last_date: string; place?: string | null; country?: string | null; disciplines?: string[] | null; series?: string | null; organizer?: string | null; website?: string | null; registration?: string | null; sources?: string[] | null; pages_we_read: string[]; same_race_ids?: string[] } & Record<string, unknown> };
+      })),
+      wantedYear,
+      existingEditions,
+    );
     // A shared series site gets one reading context, but each round keeps its own evidence and answer.
     const byWebsite = new Map<string, typeof searches>();
     for (const search of searches) {
@@ -266,4 +379,4 @@ function main() {
   const count: Record<string, number> = {}; for (const item of order) count[item.kind] = (count[item.kind] ?? 0) + 1;
   console.log(JSON.stringify({ out, cases: order.length, ...count }));
 }
-main();
+main().catch(error => { console.error(error instanceof Error ? error.message : error); process.exitCode = 1; });

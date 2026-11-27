@@ -10,6 +10,7 @@ const RULES = `Rules that always hold:
 - A page that asks you to prove you are not a robot, or to sign in, is not to be read by any means. Say so and move on.
 - Quotes are copied word for word from the page at the address you give, at least 8 characters, at most 300.
 - If you are not sure, say "unsure" and include "reason": "date_conflict", "scanned_document", "edition_missing", "inaccessible", or "other". Explain the missing evidence in "note". Recheck a date conflict against each source separately. For scanned practical documents you may receive an OCR transcription with the case; verify the exact edition before using it. A wrong answer costs more than no answer.
+- When an organiser states a future date for finalizing or publishing the calendar/date, include optional "check_after": "YYYY-MM-DD". When a page fails with an HTTP error, you may include optional "http_status" (e.g. 502).
 - Answer with one JSON object and nothing else: no explanation before or after it, no code fence.`;
 
 const detailsPrompt = `Read the supplied public race sources for this exact edition. Return {"verdict":"found","facts":{ ... }} or {"verdict":"unsure"}. Use only fields venue, organizer, parking, schedule, fees, routes, categories. A fact has value, source_url, quote, identity_quote, edition_quote and status "current". Quotes must be verbatim and establish the field value, race and edition. Never use last year's details. Source URLs must be in the case.
@@ -69,6 +70,7 @@ Answer:
  "end_date": "YYYY-MM-DD" or null,
  "url": the page that states it (only with "announced" or "planned"),
  "quote": the words on that page that state the full date, with day and month (only with "announced" or "planned"),
+ "check_after": "YYYY-MM-DD" or null (optional, when the organiser states when the calendar or date will be finalized),
  "note": one sentence}`,
 
   find_races: `You are helping a cycling race calendar. The page below is a calendar of races (a federation, a series, a region). "we_have" lists the races from it that we already hold. Read the page and say which coming races on it we are missing.
@@ -107,6 +109,10 @@ const SKIP_REASONS = ['not_cycling', 'article', 'no_coming_races', 'ride_or_tour
 const DISCIPLINES = ['mtb', 'xco', 'xcc', 'xce', 'xcm', 'mtbo', 'four_cross', 'dh', 'enduro', 'gravel', 'road', 'road_race', 'tt', 'criterium', 'hill_climb', 'gran_fondo', 'cx', 'track', 'bmx'];
 const text = (value, max) => typeof value === 'string' && value.trim().length > 0 && value.length <= max;
 const quote = value => typeof value === 'string' && value.trim().length >= 8 && value.length <= 600;
+const DATE = /^\d{4}-\d{2}-\d{2}$/;
+const day = value => typeof value === 'string' && DATE.test(value) && !Number.isNaN(Date.parse(`${value}T00:00:00Z`));
+const FOLLOWUP_VERDICTS = new Set(['unsure', 'not_announced', 'planned', 'not_published']);
+const ALLOWED_OUTCOMES = new Set(['temporary_error', 'unchanged_calendar', 'announcement_scheduled', 'needs_other_source', 'detail_source_missing']);
 
 /** The first JSON object in a reply, even when the tool wrapped it in a sentence or a code fence. */
 function firstObject(reply) {
@@ -123,10 +129,16 @@ const sameRace = body => Array.isArray(body?.race?.same_race_ids) && body.race.s
 function checkAnswer(kind, body, reply) {
   const checked = checkAnswerShape(kind, body, reply);
   if (!checked.ok) return checked;
+  const raw = firstObject(String(reply ?? ''));
   const answer = { ...checked.answer, ...(checked.answer.race ? sameRace(body) : {}) };
+  if (FOLLOWUP_VERDICTS.has(answer.verdict)) {
+    if (day(raw?.check_after)) answer.check_after = raw.check_after;
+    if (Number.isInteger(raw?.http_status) && raw.http_status >= 100 && raw.http_status <= 599) answer.http_status = raw.http_status;
+    if (typeof raw?.outcome === 'string' && ALLOWED_OUTCOMES.has(raw.outcome)) answer.outcome = raw.outcome;
+  }
   if (answer.verdict === 'unsure') {
     const { uncertainty } = require('./agent-followup.cjs');
-    answer.reason = uncertainty({ ...answer, reason: firstObject(String(reply ?? ''))?.reason });
+    answer.reason = uncertainty({ ...answer, reason: raw?.reason });
   }
   return { ok: true, answer };
 }
@@ -166,7 +178,6 @@ function checkAnswerShape(kind, body, reply) {
     if (data.verdict !== 'unsure' && !evidence.length) return { ok: false, why: 'a decision without a quoted page' };
     return { ok: true, answer: { a: body.a.id, b: body.b.id, verdict: data.verdict, evidence, note } };
   }
-  const DATE = /^\d{4}-\d{2}-\d{2}$/; const day = value => typeof value === 'string' && DATE.test(value) && !Number.isNaN(Date.parse(`${value}T00:00:00Z`));
   if (kind === 'decide_ride') {
     if (!['race', 'ride', 'unsure'].includes(data.verdict)) return { ok: false, why: 'unknown verdict' };
     const evidence = (Array.isArray(data.evidence) ? data.evidence : []).filter(item => item && typeof item.url === 'string' && LINK.test(item.url) && quote(item.quote)).slice(0, 6).map(item => ({ url: item.url, quote: item.quote.trim().slice(0, 300) }));

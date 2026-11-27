@@ -11,11 +11,15 @@ struct CollectionHealth: Decodable {
 
 struct RaceFinderHealth: Decodable {
     struct Discovery: Decodable { let waiting: Int; let blocked: Int; let published: Int }
-    struct DiscoverySources: Decodable { let submitted: Int; let read: Int }
+    struct DiscoverySite: Decodable { let url: String; let scope: String?; let submittedAt: String?; let firstReadAt: String?; let read: Bool; let publishedRaces: Int? }
+    struct DiscoverySources: Decodable { let submitted: Int; let read: Int; let firstReadAt: String?; let publishedRaces: Int?; let sites: [DiscoverySite]? }
+    struct StatusItem: Decodable { let `case`: String; let kind: String?; let reason: String; let since: String?; let ageHours: Double? }
     let at: String
     let due: Int; let ready: Int?; let planned: Int; let late: Int
     let waiting: Int; let inCatalogue: Int; let blocked: Int
     let localDetails: Int; let confirmedDetails: Int
+    let receivedAnswers: Int?; let waitingVerification: Int?; let writtenToCatalogue: Int?; let publiclyVerified: Int?
+    let waitingItems: [StatusItem]?; let blockedItems: [StatusItem]?
     let reasons: [String: Int]; let discovery: Discovery?; let discoverySources: DiscoverySources?
 }
 
@@ -437,11 +441,15 @@ final class MonitorController: NSObject, NSApplicationDelegate, NSMenuDelegate {
         add("2. Codex řeší složité případy", size: 13, bold: true, to: review)
         row([
             metric(raceFinderHealth?.ready, "Pro Codex"),
-            metric(raceFinderHealth?.waiting, "Čeká na ověření"),
+            metric(raceFinderHealth?.waitingVerification ?? raceFinderHealth?.waiting, "Čeká na ověření"),
             metric(raceFinderHealth?.blocked, "Chybí jistota")
         ], in: review)
         if let agent = raceFinderHealth {
-            add("Stav v \(shortDate(agent.at))", size: 10, color: secondary, to: review)
+            var footer = "Stav v \(shortDate(agent.at))"
+            if let written = agent.writtenToCatalogue, let verified = agent.publiclyVerified, written > 0 || verified > 0 {
+                footer = "Zapsáno \(written) · veřejně ověřeno \(verified) · \(footer)"
+            }
+            add(footer, size: 10, color: secondary, to: review)
         }
 
         let result = section()
@@ -573,8 +581,31 @@ final class MonitorController: NSObject, NSApplicationDelegate, NSMenuDelegate {
         }
         if let agent = raceFinderHealth {
             stack.addArrangedSubview(label("Případy ke kontrole teď \(agent.due) · později \(agent.planned)", size: 12))
+            let received = agent.receivedAnswers ?? 0
+            let waiting = agent.waitingVerification ?? agent.waiting
+            let written = agent.writtenToCatalogue ?? (agent.inCatalogue + agent.localDetails)
+            let verified = agent.publiclyVerified ?? agent.inCatalogue
+            let funnel = label("Odpovědi Codexu: přijato \(received) · čeká na ověření \(waiting) · zapsáno \(written) · veřejně ověřeno \(verified)", size: 11, color: .secondaryLabelColor)
+            funnel.maximumNumberOfLines = 2
+            stack.addArrangedSubview(funnel)
+            if let waitingItems = agent.waitingItems, !waitingItems.isEmpty {
+                let top = waitingItems.prefix(3).map { "\($0.case): \($0.reason) (\(ageText($0.ageHours)))" }.joined(separator: "\n")
+                let detail = label("Čeká na ověření (nejstarší):\n\(top)", size: 10, color: .secondaryLabelColor)
+                detail.maximumNumberOfLines = 4
+                stack.addArrangedSubview(detail)
+            }
+            if let blockedItems = agent.blockedItems, !blockedItems.isEmpty {
+                let top = blockedItems.prefix(3).map { "\($0.case): \($0.reason) (\(ageText($0.ageHours)))" }.joined(separator: "\n")
+                let detail = label("Zastaveno při ověření (nejstarší):\n\(top)", size: 10, color: .systemOrange)
+                detail.maximumNumberOfLines = 4
+                stack.addArrangedSubview(detail)
+            }
             if let discovery = agent.discoverySources {
-                stack.addArrangedSubview(label("Nové weby od Codexu · přečteno \(discovery.read) z \(discovery.submitted)", size: 12))
+                let published = discovery.publishedRaces ?? agent.discovery?.published ?? 0
+                let firstRead = discovery.firstReadAt.map { " · první čtení \(shortDate($0))" } ?? (discovery.submitted > 0 ? " · zatím nepřečteno" : "")
+                let discoveryLabel = label("Nové weby od Codexu · přečteno \(discovery.read) z \(discovery.submitted) · zveřejněno \(published) závodů\(firstRead)", size: 11)
+                discoveryLabel.maximumNumberOfLines = 2
+                stack.addArrangedSubview(discoveryLabel)
             }
         }
         let totals = snapshot?.totals ?? []
@@ -744,6 +775,14 @@ final class MonitorController: NSObject, NSApplicationDelegate, NSMenuDelegate {
     private func duration(_ ms: Double?) -> String {
         guard let ms else { return "—" }; let seconds = max(0, Int(Date().timeIntervalSince1970 - ms / 1000))
         return seconds < 60 ? "\(seconds) s" : seconds < 3600 ? "\(seconds / 60) min" : "\(seconds / 3600) h \((seconds % 3600) / 60) min"
+    }
+    private func ageText(_ hours: Double?) -> String {
+        guard let hours else { return "stáří neznámé" }
+        if hours < 1 { return "< 1 h" }
+        if hours < 24 { return "\(Int(hours.rounded())) h" }
+        let days = Int(hours / 24)
+        let rem = Int(hours.truncatingRemainder(dividingBy: 24).rounded())
+        return rem > 0 ? "\(days) d \(rem) h" : "\(days) d"
     }
     private func time(_ ms: Double) -> String {
         let f = DateFormatter(); f.locale = Locale(identifier: "cs_CZ"); f.timeZone = TimeZone(identifier: "Europe/Prague"); f.dateFormat = "d. M. H:mm"; return f.string(from: Date(timeIntervalSince1970: ms / 1000))

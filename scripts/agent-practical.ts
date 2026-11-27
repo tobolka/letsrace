@@ -8,6 +8,7 @@ import { parse } from "dotenv";
 import { verifyPracticalExtraction, isOwnDocument, isSeriesDocumentOfRound, type PracticalDocument } from "../src/lib/catalog/practical-extraction";
 import { savePracticalDetails } from "../src/lib/catalog/practical-enrichment";
 import { readDocument } from "../src/lib/catalog/regulation-ages";
+import { isVerifiedDetailUrlForHub } from "../src/lib/pipeline2/agent-detail-sources";
 import { createServerSupabase } from "../src/lib/supabase/server";
 import { pageAsText } from "../src/lib/watcher/extractors/llm-calendar";
 
@@ -81,7 +82,10 @@ async function main() {
     if (!race || ["cancelled","completed"].includes(race.status ?? "") || race.start_date !== asked.date || race.end_date !== asked.end) { await record("race_changed"); continue; }
     const stored = (race.practical_details ?? {}) as Record<string,{value:unknown;sourceUrl:string}>;
     const current = asked.field ? stored[asked.field] : undefined;
-    const eligible = asked.field ? [current?.sourceUrl] : [race.regulations_url,race.website_url];
+    const hubUrls = [race.regulations_url,race.website_url];
+    const eligible = asked.field
+      ? [current?.sourceUrl]
+      : [...new Set([...hubUrls, ...asked.urls.filter(url => isVerifiedDetailUrlForHub(url, hubUrls))])];
     if (asked.field && (!current || asked.storedFactHash !== hash(current))) { await record("value_changed"); continue; }
     const facts = Object.fromEntries(Object.entries(answer.facts).filter(([field,fact]) =>
       (asked.field ? field === asked.field : !stored[field]) && eligible.includes(fact.source_url) && asked.urls.includes(fact.source_url)));

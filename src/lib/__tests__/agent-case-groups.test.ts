@@ -68,4 +68,82 @@ describe("identical agent cases are asked once", () => {
     // Filed the same way whichever answer came first.
     expect(mergeFoundRaces([...answer(all, "calendar-e33ed6a2"), ...answer(road, "calendar-4fb1334b")]).map(race => race.url)).toEqual(merged.map(race => race.url));
   });
+
+  it("folds two different name variants for Oberthal on the same day into a single find_next_date case", () => {
+    const grouped = groupSameRace([
+      {
+        case: "nextdate-ob111111",
+        kind: "find_next_date",
+        wanted_year: 2027,
+        race: {
+          id: "ob111111-0000-0000-0000-000000000001",
+          name: "MTB-Rennen Oberthal",
+          last_date: "2026-09-13",
+          place: "Oberthal",
+          country: "DE",
+          disciplines: ["mtb", "xco"],
+          organizer: "RSV Oberthal",
+          website: "https://rsv-oberthal.de/",
+          pages_we_read: ["https://rsv-oberthal.de/"],
+        },
+      },
+      {
+        case: "nextdate-ob222222",
+        kind: "find_next_date",
+        wanted_year: 2027,
+        race: {
+          id: "ob222222-0000-0000-0000-000000000002",
+          name: "Saarlandliga Bikepark Cup",
+          last_date: "2026-09-13",
+          place: "Oberthal",
+          country: "DE",
+          disciplines: ["mtb"],
+          pages_we_read: ["https://mtbsaarlandliga.de/rennen"],
+        },
+      },
+    ]);
+    expect(grouped).toHaveLength(1);
+    expect((grouped[0]!.race as { same_race_ids?: string[] }).same_race_ids).toEqual(["ob222222-0000-0000-0000-000000000002"]);
+    expect(grouped[0]!.race.pages_we_read).toEqual(["https://rsv-oberthal.de/", "https://mtbsaarlandliga.de/rennen"]);
+  });
+
+  it("keeps XCO and XCM in Trieb on the same day, place, and series as two separate cases", () => {
+    const grouped = groupSameRace([
+      {
+        case: "nextdate-tr111111",
+        kind: "find_next_date",
+        wanted_year: 2027,
+        race: {
+          id: "tr111111-0000-0000-0000-000000000001",
+          name: "CUBE Cup Trieb XCO",
+          last_date: "2026-07-12",
+          place: "Trieb",
+          country: "DE",
+          series: "CUBE Cup",
+          disciplines: ["mtb", "xco"],
+          website: "https://cup.cube.eu/",
+          pages_we_read: ["https://cup.cube.eu/"],
+        },
+      },
+      {
+        case: "nextdate-tr222222",
+        kind: "find_next_date",
+        wanted_year: 2027,
+        race: {
+          id: "tr222222-0000-0000-0000-000000000002",
+          name: "CUBE Cup Trieb XCM",
+          last_date: "2026-07-12",
+          place: "Trieb",
+          country: "DE",
+          series: "CUBE Cup",
+          disciplines: ["mtb", "xcm"],
+          website: "https://cup.cube.eu/",
+          pages_we_read: ["https://cup.cube.eu/"],
+        },
+      },
+    ]);
+    expect(grouped).toHaveLength(2);
+    expect((grouped[0]!.race as { same_race_ids?: string[] }).same_race_ids).toBeUndefined();
+    expect((grouped[1]!.race as { same_race_ids?: string[] }).same_race_ids).toBeUndefined();
+  });
 });

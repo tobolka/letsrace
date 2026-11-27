@@ -8,6 +8,71 @@
  * different days stay different cases (Stubalpen Mehrstunden on Saturday, Kids on Sunday).
  */
 import { normalizeName } from "@/lib/domain";
+import { nameSimilarity, urlsOverlap } from "@/lib/dedup";
+import {
+  collectUrls,
+  countriesConflict,
+  disciplinesConflict,
+  genderConflict,
+  hasCompatibleKnownDisciplines,
+  placesMatch,
+  roundConflict,
+  sameOrganizer,
+  seriesRelation,
+  sharedNonGenericHost,
+  sharesDistinctiveToken,
+} from "@/lib/pipeline2/agent-next-date-filter";
+
+/** Large cities that frequently host multiple unrelated races on the same day. */
+const LARGE_METRO_PLACES = new Set([
+  "praha",
+  "prague",
+  "brno",
+  "ostrava",
+  "plzen",
+  "bratislava",
+  "kosice",
+  "wien",
+  "vienna",
+  "graz",
+  "linz",
+  "berlin",
+  "munchen",
+  "munich",
+  "hamburg",
+  "koln",
+  "cologne",
+  "frankfurt",
+  "stuttgart",
+  "warszawa",
+  "warsaw",
+  "krakow",
+  "wroclaw",
+  "gdansk",
+  "zurich",
+  "geneva",
+  "genf",
+  "milano",
+  "milan",
+  "roma",
+  "rome",
+  "torino",
+  "paris",
+  "madrid",
+  "barcelona",
+]);
+
+function isLargeMetroPlace(place: string | null | undefined): boolean {
+  if (!place) return false;
+  const folded = place
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9\s]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+  return LARGE_METRO_PLACES.has(folded);
+}
 
 /** One key for a pair of races, whichever way round it is asked. */
 export const pairKey = (a: string, b: string) => [a, b].sort().join("|");
@@ -15,24 +80,84 @@ export const pairKey = (a: string, b: string) => [a, b].sort().join("|");
 /** Name and day of a race, the way two records of it would agree: punctuation, case, accents and year do not count. */
 export const sameRaceKey = (name: string, date: string) => `${normalizeName(name)}|${date}`;
 
-type RaceCase = { case: string; race: { id: string; name: string; last_date?: string; date?: string; pages_we_read?: string[]; found_on?: string[]; same_race_ids?: string[] } };
+type RaceCase = {
+  case: string;
+  race: {
+    id: string;
+    name: string;
+    last_date?: string;
+    date?: string;
+    place?: string | null;
+    country?: string | null;
+    series?: string | null;
+    organizer?: string | null;
+    disciplines?: string[] | null;
+    website?: string | null;
+    registration?: string | null;
+    pages_we_read?: string[];
+    found_on?: string[];
+    same_race_ids?: string[];
+  };
+};
+
+function isSameRaceCase(a: RaceCase["race"], b: RaceCase["race"]): boolean {
+  const dateA = a.last_date ?? a.date ?? "";
+  const dateB = b.last_date ?? b.date ?? "";
+  if (dateA !== dateB) return false;
+
+  // Hard identity boundaries: never fold different countries, disciplines/formats, rounds, genders or series.
+  if (countriesConflict(a, b)) return false;
+  if (disciplinesConflict(a, b)) return false;
+  if (roundConflict(a.name, b.name)) return false;
+  if (genderConflict(a.name, b.name)) return false;
+
+  const seriesRel = seriesRelation(a, b);
+  if (seriesRel === "conflict") return false;
+
+  // Existing rule: same normalized name on the same day (now guarded by discipline/format checks above).
+  if (sameRaceKey(a.name, dateA) === sameRaceKey(b.name, dateB)) return true;
+
+  const urlsA = collectUrls(a);
+  const urlsB = collectUrls(b);
+  if (urlsOverlap(urlsA, urlsB)) return true;
+
+  if (!placesMatch(a, b)) return false;
+
+  if (sharedNonGenericHost(urlsA, urlsB)) return true;
+  if (seriesRel === "same") return true;
+  if (sameOrganizer(a, b)) return true;
+  if (nameSimilarity(a.name, b.name) >= 0.55) return true;
+  if (sharesDistinctiveToken(a, b)) return true;
+
+  // Strong place + compatible discipline identity on the same day (e.g., two name variants for Oberthal).
+  if (hasCompatibleKnownDisciplines(a, b) && !isLargeMetroPlace(a.place ?? b.place)) {
+    return true;
+  }
+
+  return false;
+}
 
 /**
  * Cases about one race in several records, folded into the first. The kept case lists the other
  * records in `race.same_race_ids` and every page any of them was read from, so one answer covers all.
  */
 export function groupSameRace<T extends RaceCase>(cases: T[]): T[] {
-  const kept = new Map<string, T>();
+  const kept: T[] = [];
   for (const item of cases) {
-    const key = sameRaceKey(item.race.name, item.race.last_date ?? item.race.date ?? "");
-    const first = kept.get(key);
-    if (!first) { kept.set(key, item); continue; }
+    const first = kept.find((candidate) => isSameRaceCase(candidate.race, item.race));
+    if (!first) { kept.push(item); continue; }
     const race = first.race;
     race.same_race_ids = [...new Set([...(race.same_race_ids ?? []), item.race.id])];
     if (item.race.pages_we_read) race.pages_we_read = [...new Set([...(race.pages_we_read ?? []), ...item.race.pages_we_read])];
     if (item.race.found_on) race.found_on = [...new Set([...(race.found_on ?? []), ...item.race.found_on])];
+    race.place ??= item.race.place;
+    race.country ??= item.race.country;
+    race.series ??= item.race.series;
+    race.organizer ??= item.race.organizer;
+    race.website ??= item.race.website;
+    if (!race.disciplines?.length && item.race.disciplines?.length) race.disciplines = item.race.disciplines;
   }
-  return [...kept.values()];
+  return kept;
 }
 
 /** A calendar regardless of its filter and page: the host without www, and the path. */

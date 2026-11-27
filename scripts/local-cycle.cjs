@@ -579,7 +579,7 @@ async function main(){
    report.collectionHealth=health;
   }catch(error){console.warn(`Přehled pokrytí se nepodařilo aktualizovat: ${error.message}`);}
   try {
-   const {agentHealth,discoveryKeys,discoverySources,discoveryCountsQuery,practicalCountsQuery}=require('./agent-health.cjs');
+   const {agentHealth,applyDiscoverySiteCounts,discoveryKeys,discoverySources,discoveryCountsQuery,discoverySiteCountsQuery,practicalCountsQuery}=require('./agent-health.cjs');
    const health=agentHealth(data,archive);
    if(health){
     const agent=health.report;
@@ -590,17 +590,28 @@ async function main(){
      agent.discovery=JSON.parse(cp.execFileSync(BIN+'/psql',['-qAt','-v','ON_ERROR_STOP=1','-c',discoveryCountsQuery(keys)],{
       encoding:'utf8',timeout:30_000,env:{...serverEnvironment(),NODE_OPTIONS:''}
      }));
+     try {
+      const siteCounts=JSON.parse(cp.execFileSync(BIN+'/psql',['-qAt','-v','ON_ERROR_STOP=1','-c',discoverySiteCountsQuery(keys)],{
+       encoding:'utf8',timeout:30_000,env:{...serverEnvironment(),NODE_OPTIONS:''}
+      }));
+      applyDiscoverySiteCounts(agent.discoverySources,siteCounts);
+     }catch{}
     }catch(error){console.warn('Výsledek hledání nových webů se nepodařilo načíst: '+error.message.split('\n')[0]);}
+    agent.discoverySources.publishedRaces=agent.discovery?.published??0;
     if(health.practicalWrites.length)try {
      const practical=JSON.parse(cp.execFileSync(BIN+'/psql',['-qAt','-v','ON_ERROR_STOP=1','-c',practicalCountsQuery(health.practicalWrites)],{
       encoding:'utf8',timeout:30_000,env:{...serverEnvironment(),NODE_OPTIONS:''}
      }));
      agent.inCatalogue+=practical.published;
      agent.localDetails+=practical.local;
+     agent.publiclyVerified+=practical.published;
     }catch(error){
      agent.localDetails+=health.practicalWrites.length;
      console.warn('Zápis praktických údajů na server se nepodařilo ověřit: '+error.message.split('\n')[0]);
     }
+    const discoveryPublished=agent.discovery?.published??0;
+    agent.publiclyVerified+=discoveryPublished;
+    agent.writtenToCatalogue=agent.inCatalogue+agent.localDetails+discoveryPublished;
     atomic(path.join(data,'agent-health.json'),agent);
    }
   }catch(error){console.warn('Přehled Race Finderu se nepodařilo aktualizovat: '+error.message);}

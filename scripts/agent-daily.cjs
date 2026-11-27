@@ -11,10 +11,11 @@ const cases = path.join(data, 'agent', 'cases'), answers = path.join(data, 'agen
 const max = process.argv.find(value => value.startsWith('--max='))?.slice(6) ?? '20';
 const outcome = (kind, reason) => console.log('step_outcome ' + JSON.stringify({ outcome: kind, reason }));
 
-const { rotateAnswers } = require('./agent-followup.cjs');
+const { rotateAnswers, macRecheckDue } = require('./agent-followup.cjs');
 const editions = fs.existsSync(data) ? fs.readdirSync(data).filter(name => /^organiser-check-\d{4}$/.test(name))
   .sort().reverse().map(name => path.join(data, name)).find(dir => fs.existsSync(path.join(dir, 'edition-status.json'))) : null;
 rotateAnswers(cases, answers, editions);
+const macRechecks = macRecheckDue(cases, answers, editions);
 // Fresh cases from the Mac's copy of the catalogue and the latest cycle's held races. If that fails, yesterday's stand.
 if (!process.argv.includes('--keep-cases')) {
   const cycles = path.join(data, 'local-cycles'); let plan = null;
@@ -86,7 +87,7 @@ if ((run.ran && run.asked) || lastAnswer > newest(path.join(answers, 'verified.j
   run.plannedDates = planned;
 }
 const left = (() => { try { return JSON.parse(fs.readFileSync(path.join(cases, 'index.json'), 'utf8')).filter(item => !fs.existsSync(path.join(answers, `${item.case}.json`))).length; } catch { return null; } })();
-console.log('agent_daily ' + JSON.stringify({ ...run, casesLeft: left }));
+console.log('agent_daily ' + JSON.stringify({ ...run, casesLeft: left, macRecheckDue: macRechecks.length }));
 // Not signed in or out of allowance is a wait, not a failure of the step.
 if (run.stopped?.startsWith('the agent cannot work')) { outcome('waiting', 'agent_unavailable'); process.exit(1); }
 

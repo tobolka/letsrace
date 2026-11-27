@@ -13,7 +13,7 @@
  */
 const fs = require('node:fs'); const os = require('node:os'); const path = require('node:path');
 const { discoveryTarget, submissionPath, sourceUrls, MAX_URLS } = require('./agent-discovery.cjs');
-const { answerRecords, latestAnswer, uncertainty } = require('./agent-followup.cjs');
+const { answerRecords, classifyOutcome, followup, latestAnswer, sourceChanges, uncertainty } = require('./agent-followup.cjs');
 const { checkAnswer, PROMPTS } = require('./agent-answer.cjs');
 
 const data = process.env.LETSRACE_DATA_DIR || path.join(os.homedir(), 'Library/Application Support/LetsRace/data');
@@ -57,15 +57,36 @@ function main() {
   if (command === 'next') {
     const s = state(); const max = Math.min(Number(rest.find(value => value.startsWith('--max='))?.slice(6) ?? 5), s.left);
     const ocr = json(path.join(answers, 'ocr.json'), {});
+    const followupState = json(path.join(answers, 'followup-state.json'), {});
+    const editions = fs.existsSync(data) ? fs.readdirSync(data).filter(name => /^organiser-check-\d{4}$/.test(name))
+      .sort().reverse().map(name => path.join(data, name)).find(dir => fs.existsSync(path.join(dir, 'edition-status.json')) || fs.existsSync(path.join(dir, 'pages.jsonl'))) : null;
+    const changes = sourceChanges(editions);
     const batch = s.open.slice(0, Math.max(0, Math.min(5, max))).map(item => {
       const name = item.case + '.json';
+      const body = json(path.join(cases, name));
       const previous = latestAnswer(answers, name);
       const documents = ocr[item.case]?.answerAt === previous?.at ? ocr[item.case]?.documents : null;
+      const showPrevious = previous && (
+        ['unsure', 'not_announced', 'planned', 'not_published', 'none'].includes(previous.answer?.verdict)
+        || !previous.answer?.verdict
+        || previous.answer?.outcome === 'detail_source_missing'
+        || previous.answer?.outcome === 'needs_other_source'
+      );
+      const plan = showPrevious ? followup(previous, body, changes, ocr[item.case]) : null;
+      const savedState = followupState[item.case];
       return {
-        ...json(path.join(cases, name)), instructions: PROMPTS[item.kind],
+        ...body, instructions: PROMPTS[item.kind],
         ...(documents?.length ? { localOcr: documents } : {}),
-        ...(previous?.answer?.verdict === 'unsure' ? {
-          previousReview: { checkedAt: previous.at, reason: uncertainty(previous.answer), note: previous.answer.note },
+        ...(showPrevious ? {
+          previousReview: {
+            checkedAt: previous.at,
+            verdict: previous.answer?.verdict ?? null,
+            reason: previous.answer?.verdict === 'unsure' ? uncertainty(previous.answer) : (plan?.reason ?? null),
+            lastOutcome: plan?.lastOutcome ?? savedState?.lastOutcome ?? classifyOutcome(previous, body),
+            nextCheckReason: plan?.nextCheckReason ?? savedState?.nextCheckReason ?? null,
+            note: previous.answer?.note ?? null,
+            checkAfter: plan?.checkAfter ?? previous.answer?.check_after ?? null,
+          },
         } : {}),
       };
     });
