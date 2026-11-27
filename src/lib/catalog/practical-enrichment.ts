@@ -63,6 +63,12 @@ const completeDocument = (doc: PracticalDocument, row: { name: string; start_dat
   return details.fees && details.times >= 2;
 };
 const MAX_READS_PER_RACE = 8, MAX_DOCUMENTS_FOR_MODEL = 5, MAX_BROWSER_READS_PER_RUN = 8;
+const RACE_CONCURRENCY = 3, DOCUMENT_WAVE_CONCURRENCY = 3;
+
+const hostOf = (url: string | null | undefined): string => {
+  if (!url) return "";
+  try { return new URL(url).hostname.toLowerCase(); } catch { return ""; }
+};
 
 /** Rotate bounded child reads so a long navigation cannot starve later rules. */
 export function rotatePracticalLinks(links: string[], attempts: number): string[] {
@@ -129,23 +135,55 @@ export async function enrichPracticalDetails(options: { max?: number; ids?: stri
     for (const link of links ?? []) sourcePages.set(link.event_id, [...(sourcePages.get(link.event_id) ?? []), link.source_url as string]);
   }
   const result = { eligible: targets.length, considered: batch.length, searched: 0, foundBySearch: 0, linksSaved: 0, read: 0, changedFacts: 0, changedRaces: 0, skippedLocked: 0, unchanged: 0, partialReads: 0, deferred: 0, failed: 0, costUsd: 0, downloadedDocuments: 0, reusedDocuments: 0 };
+  let stopReason: "deadline" | "model" | null = null;
+  const hostChains = new Map<string, Promise<void>>();
+  const withHostSlot = async <T>(url: string, work: () => Promise<T>): Promise<T> => {
+    const host = hostOf(url);
+    if (!host) return work();
+    const previous = hostChains.get(host) ?? Promise.resolve();
+    let release!: () => void;
+    const next = new Promise<void>(resolve => { release = resolve; });
+    const chain = previous.then(() => next);
+    hostChains.set(host, chain);
+    await previous;
+    try { return await work(); }
+    finally {
+      if (hostChains.get(host) === chain) hostChains.delete(host);
+      release();
+    }
+  };
   const shared = process.env.SOURCE_DOCUMENT_CACHE_DIR ? localSourceReader({
     directory: resolve(process.env.SOURCE_DOCUMENT_CACHE_DIR, "practical-v1"), maxAgeMs: 15 * 60_000,
-    deadline, stopped: () => false, read: url => readDocument(url, { maxBytes: 4 * 1024 * 1024 }),
+    deadline, stopped: () => Boolean(stopReason), read: url => withHostSlot(url, () => readDocument(url, { maxBytes: 4 * 1024 * 1024 })),
   }) : null;
   const documentsByUrl = new Map<string, ReturnType<typeof readDocument>>();
   const readOnce = (raw: string) => {
     const url = raw.replace(/#.*$/, "");
     if (documentsByUrl.has(url)) { result.reusedDocuments++; return documentsByUrl.get(url)!; }
-    const request = shared ? shared.read(url) : readDocument(url, { maxBytes: 4 * 1024 * 1024 }).then(doc => { if (doc) result.downloadedDocuments++; return doc; });
+    const request = shared
+      ? shared.read(url)
+      : withHostSlot(url, () => readDocument(url, { maxBytes: 4 * 1024 * 1024 })).then(doc => { if (doc) result.downloadedDocuments++; return doc; });
     documentsByUrl.set(url, request);
     return request;
   };
   let renders = 0;
-  for (const row of batch) {
+  const tryTakeBrowserRender = () => {
+    if (renders >= MAX_BROWSER_READS_PER_RUN) return false;
+    renders++;
+    return true;
+  };
+  let auditChain: Promise<void> = Promise.resolve();
+  const emitAudit = (value: unknown) => {
+    if (!options.audit) return Promise.resolve();
+    const run = auditChain.then(() => options.audit!(value));
+    auditChain = run.catch(() => {});
+    return run;
+  };
+  const primaryHostOf = (row: (typeof batch)[number]) => hostOf(isPracticalDocumentUrl(row.website_url) ? row.website_url : practicalSeedUrls(row)[0]);
+
+  const processRace = async (row: (typeof batch)[number]) => {
     let deferred = false;
     const defer = () => { if (!deferred) { result.deferred++; deferred = true; } };
-    if (Date.now() + 60_000 >= deadline) { defer(); break; }
     const queue = practicalSeedUrls(row);
     const stored = new Set(queue);
     // Pages of this race that a calendar told us about, read after what is stored.
@@ -156,26 +194,43 @@ export async function enrichPracticalDetails(options: { max?: number; ids?: stri
     let checkpoint: "failed" | "silent" | null = null;
     try {
       while (queue.length && seen.size < MAX_READS_PER_RACE && Date.now() + 30_000 < deadline && !documents.some(document => completeDocument(document, row))) {
-        const url = queue.shift()!;
-        if (seen.has(url) || !isPracticalDocumentUrl(url)) continue;
-        seen.add(url);
-        const doc = await readOnce(url).catch(() => null);
-        if (!doc?.text.trim()) { unreadable++; continue; }
-        let source = doc.html ? pageAsText(doc.html, url) : { text: doc.text, links: new Set<string>() };
-        // Only on the Mac, and a few per run: starting a browser is the slow way to read a page.
-        if (doc.html && process.platform === "darwin" && !isServerless() && !options.structuredOnly && renders < MAX_BROWSER_READS_PER_RUN && onlyInBrowser(doc.html, source.text)) {
-          renders++;
-          const rendered = await renderPagesHtml([url], { settleMs: 2500, budgetMs: 30_000 }).then(pages => pages.get(url)).catch(() => undefined);
-          if (rendered) source = pageAsText(rendered, url);
+        const waveUrls: string[] = [];
+        // When the race already points directly at its regulations, read that first before fanning out.
+        const maxWave = seen.size === 0 && row.regulations_url && queue[0] === row.regulations_url ? 1 : DOCUMENT_WAVE_CONCURRENCY;
+        while (queue.length && waveUrls.length < maxWave && seen.size < MAX_READS_PER_RACE) {
+          const url = queue.shift()!;
+          if (seen.has(url) || !isPracticalDocumentUrl(url)) continue;
+          seen.add(url);
+          waveUrls.push(url);
         }
-        // A calendar's old link can point at another race of the series: only the page stored for this race is taken on trust.
-        if (!stored.has(url) && !documentIsAboutRace(source.text, { ...row, municipality: row.location?.municipality })) continue;
-        documents.push({ url, text: source.text, links: [...source.links] });
-        const children = practicalChildLinks(url, source.links, row, source.text).filter(link => !seen.has(link));
-        const posters = doc.html ? posterImages(doc.html, url).filter(link => !seen.has(link)) : [];
-        // The most promising links come first, ahead of what earlier pages left waiting.
-        queue.push(...posters, ...children);
-        queue.sort((a, b) => (children.indexOf(a) < 0 ? 99 : children.indexOf(a)) - (children.indexOf(b) < 0 ? 99 : children.indexOf(b)));
+        if (!waveUrls.length) break;
+        const fetched = await Promise.all(waveUrls.map(async url => {
+          const doc = await readOnce(url).catch(() => null);
+          if (!doc?.text.trim()) return { url, doc: null, source: null };
+          let source = doc.html ? pageAsText(doc.html, url) : { text: doc.text, links: new Set<string>() };
+          // Only on the Mac, and a few per run: starting a browser is the slow way to read a page.
+          if (doc.html && process.platform === "darwin" && !isServerless() && !options.structuredOnly && onlyInBrowser(doc.html, source.text) && tryTakeBrowserRender()) {
+            const rendered = await withHostSlot(url, () => renderPagesHtml([url], { settleMs: 2500, budgetMs: 30_000 })).then(pages => pages.get(url)).catch(() => undefined);
+            if (rendered) source = pageAsText(rendered, url);
+          }
+          return { url, doc, source };
+        }));
+        const discoveredChildren: string[] = [];
+        const discoveredPosters: string[] = [];
+        for (const { url, doc, source } of fetched) {
+          if (!doc || !source) { unreadable++; continue; }
+          // A calendar's old link can point at another race of the series: only the page stored for this race is taken on trust.
+          if (!stored.has(url) && !documentIsAboutRace(source.text, { ...row, municipality: row.location?.municipality })) continue;
+          documents.push({ url, text: source.text, links: [...source.links] });
+          if (completeDocument(documents.at(-1)!, row)) break;
+          discoveredChildren.push(...practicalChildLinks(url, source.links, row, source.text).filter(link => !seen.has(link)));
+          if (doc.html) discoveredPosters.push(...posterImages(doc.html, url).filter(link => !seen.has(link)));
+        }
+        if (!documents.some(document => completeDocument(document, row)) && (discoveredPosters.length || discoveredChildren.length)) {
+          // The most promising links come first, ahead of what earlier pages left waiting.
+          queue.push(...discoveredPosters, ...discoveredChildren);
+          queue.sort((a, b) => (discoveredChildren.indexOf(a) < 0 ? 99 : discoveredChildren.indexOf(a)) - (discoveredChildren.indexOf(b) < 0 ? 99 : discoveredChildren.indexOf(b)));
+        }
       }
       // What we knew about gave nothing a rider can use: look for it.
       const found: { website?: string; regulations?: string; results?: string } = {};
@@ -188,42 +243,58 @@ export async function enrichPracticalDetails(options: { max?: number; ids?: stri
         let urls = usableHits(hits.map(hit => hit.url), row, seen);
         const second = placeAndDayQuery({ ...race, discipline: row.disciplines?.[0] });
         if (second && takeSearch(options.search.ledger, options.search)) { result.searched++; urls = [...new Set([...urls, ...usableHits((await search(second)).map(hit => hit.url), row, seen)])].slice(0, 6); }
-        for (const url of urls) {
-          if (Date.now() + 30_000 >= deadline) break;
-          seen.add(url);
-          const doc = await readOnce(url).catch(() => null);
-          if (!doc?.text.trim()) continue;
-          const source = doc.html ? pageAsText(doc.html, url) : { text: doc.text, links: new Set<string>() };
-          if (!documentIsAboutRace(source.text, race)) continue;
-          documents.push({ url, text: source.text, links: [...source.links] });
-          const isFile = /\.pdf(?:$|\?)/i.test(url);
-          if (isFile || /propoz|ausschreibung|regulamin|regolamento|reglement|règlement/i.test(decodeURIComponent(url))) found.regulations ??= url;
-          if (!isFile) found.website ??= url;
-          // The site's own regulations are usually one link away from its page about the race.
-          for (const link of practicalChildLinks(url, source.links, row, source.text).filter(link => /\.pdf(?:$|\?)|propoz|ausschreibung|regulamin|regolamento/i.test(link) && !seen.has(link)).slice(0, 2)) {
-            seen.add(link);
-            const child = await readOnce(link).catch(() => null);
-            if (!child?.text.trim()) continue;
-            const childText = child.html ? pageAsText(child.html, link) : { text: child.text, links: new Set<string>() };
-            if (!documentIsAboutRace(childText.text, race)) continue;
-            documents.push({ url: link, text: childText.text, links: [...childText.links] });
-            found.regulations = link;
+        for (let offset = 0; offset < urls.length; offset += DOCUMENT_WAVE_CONCURRENCY) {
+          if (Date.now() + 30_000 >= deadline || documents.some(document => completeDocument(document, row))) break;
+          const wave = urls.slice(offset, offset + DOCUMENT_WAVE_CONCURRENCY).filter(url => {
+            if (seen.has(url)) return false;
+            seen.add(url);
+            return true;
+          });
+          const pages = await Promise.all(wave.map(async url => {
+            const doc = await readOnce(url).catch(() => null);
+            if (!doc?.text.trim()) return null;
+            const source = doc.html ? pageAsText(doc.html, url) : { text: doc.text, links: new Set<string>() };
+            return documentIsAboutRace(source.text, race) ? { url, source } : null;
+          }));
+          for (const page of pages) {
+            if (!page) continue;
+            const { url, source } = page;
+            documents.push({ url, text: source.text, links: [...source.links] });
+            const isFile = /\.pdf(?:$|\?)/i.test(url);
+            if (isFile || /propoz|ausschreibung|regulamin|regolamento|reglement|règlement/i.test(decodeURIComponent(url))) found.regulations ??= url;
+            if (!isFile) found.website ??= url;
+            // The site's own regulations are usually one link away from its page about the race.
+            const childLinks = practicalChildLinks(url, source.links, row, source.text)
+              .filter(link => /\.pdf(?:$|\?)|propoz|ausschreibung|regulamin|regolamento/i.test(link) && !seen.has(link))
+              .slice(0, 2);
+            for (const link of childLinks) seen.add(link);
+            const children = await Promise.all(childLinks.map(async link => {
+              const child = await readOnce(link).catch(() => null);
+              if (!child?.text.trim()) return null;
+              const childText = child.html ? pageAsText(child.html, link) : { text: child.text, links: new Set<string>() };
+              return documentIsAboutRace(childText.text, race) ? { link, childText } : null;
+            }));
+            for (const child of children) {
+              if (!child) continue;
+              documents.push({ url: child.link, text: child.childText.text, links: [...child.childText.links] });
+              found.regulations = child.link;
+            }
+            if (documents.some(document => completeDocument(document, row))) break;
           }
-          if (documents.some(document => completeDocument(document, row))) break;
         }
         if (found.website || found.regulations) result.foundBySearch++;
       }
-      if (!documents.length) { result.failed++; checkpoint = "failed"; continue; }
+      if (!documents.length) { result.failed++; checkpoint = "failed"; return; }
       // Statutes and the like only cost money and invite mistakes.
       const kinds = new Map(documents.map(document => [document.url, documentKind(document, { name: row.name, startDate: row.start_date })]));
       const rank = { regulations: 0, no_details: 1, other_edition: 2, general_terms: 3, not_about_races: 4 } as const;
       documents.splice(0, documents.length, ...documents.filter(document => kinds.get(document.url) !== "not_about_races").sort((a, b) => rank[kinds.get(a.url)!] - rank[kinds.get(b.url)!]).slice(0, MAX_DOCUMENTS_FOR_MODEL));
-      if (!documents.length) { result.failed++; checkpoint = "failed"; continue; }
+      if (!documents.length) { result.failed++; checkpoint = "failed"; return; }
       const partial = unreadable > 0 || queue.some(url => !seen.has(url) && isPracticalDocumentUrl(url));
       if (partial) { result.partialReads++; defer(); }
       const hash = createHash("sha256").update(JSON.stringify({ documents, name: row.name, startDate: row.start_date, endDate: row.end_date, knownVenue: row.location?.venue })).digest("hex"), reader = `${probe}:${row.id}`;
-      if (await alreadyRead(db, checkpointUrl, reader, hash)) { result.unchanged++; checkpoint = partial ? "failed" : "silent"; continue; }
-      if (Date.now() + 10_000 >= deadline) { defer(); break; }
+      if (await alreadyRead(db, checkpointUrl, reader, hash)) { result.unchanged++; checkpoint = partial ? "failed" : "silent"; return; }
+      if (Date.now() + 10_000 >= deadline) { defer(); stopReason ??= "deadline"; return; }
       const context = { name: row.name, startDate: row.start_date, endDate: row.end_date, knownVenue: row.location?.venue ?? undefined, municipality: row.location?.municipality ?? null, ownUrls: [row.website_url, row.regulations_url], documents };
       let deterministic: PracticalDetails = {};
       for (const document of documents) deterministic = combinePracticalFindings(deterministic, practicalProgramme(document, context));
@@ -233,17 +304,21 @@ export async function enrichPracticalDetails(options: { max?: number; ids?: stri
       let usage = { tokensIn: 0, tokensOut: 0, costUsd: 0 };
       // Nothing this edition's rider could use was found, so the model would only be paid to say so.
       if (!options.structuredOnly && fieldsNeeded.length && documents.some(document => kinds.get(document.url) === "regulations")) {
-        try {
-          const reply = await cachedExtraction({ version: probe, system: PRACTICAL_EXTRACTION_PROMPT, schema: PRACTICAL_RESPONSE_SCHEMA, eventId: row.id, sourceHash: hash, user }, async () => {
-            const answer = await askJson<unknown>({ system: PRACTICAL_EXTRACTION_PROMPT, user, outputSchema: PRACTICAL_RESPONSE_SCHEMA, maxTokens: 5000, timeoutMs: Math.max(1000, Math.min(60000, deadline - Date.now() - 10000)) });
-            return { value: answer.json, usage: answer.usage };
-          });
-          raw = reply.value; usage = reply.usage;
-        } catch (error) {
-          const invalidRequest = error instanceof Error && /^Anthropic API 400:/.test(error.message);
-          if (!(error instanceof LlmUnavailable) && !(error instanceof LlmResponseError) && !invalidRequest) throw error;
-          if (error instanceof LlmResponseError) usage = error.usage;
-          defer(); modelDeferred = true; options.log?.(error instanceof Error ? error.message : "Model request deferred");
+        if (stopReason === "model") {
+          defer(); modelDeferred = true;
+        } else {
+          try {
+            const reply = await cachedExtraction({ version: probe, system: PRACTICAL_EXTRACTION_PROMPT, schema: PRACTICAL_RESPONSE_SCHEMA, eventId: row.id, sourceHash: hash, user }, async () => {
+              const answer = await askJson<unknown>({ system: PRACTICAL_EXTRACTION_PROMPT, user, outputSchema: PRACTICAL_RESPONSE_SCHEMA, maxTokens: 5000, timeoutMs: Math.max(1000, Math.min(60000, deadline - Date.now() - 10000)) });
+              return { value: answer.json, usage: answer.usage };
+            });
+            raw = reply.value; usage = reply.usage;
+          } catch (error) {
+            const invalidRequest = error instanceof Error && /^Anthropic API 400:/.test(error.message);
+            if (!(error instanceof LlmUnavailable) && !(error instanceof LlmResponseError) && !invalidRequest) throw error;
+            if (error instanceof LlmResponseError) usage = error.usage;
+            defer(); modelDeferred = true; stopReason ??= "model"; options.log?.(error instanceof Error ? error.message : "Model request deferred");
+          }
         }
       }
       result.costUsd += usage.costUsd; result.read++;
@@ -254,11 +329,11 @@ export async function enrichPracticalDetails(options: { max?: number; ids?: stri
         const first = documents.find(document => document.url === links[0]!.url)!;
         checked.details = { ...checked.details, documents: { value: links, sourceUrl: first.url, quote: first.text.replace(/\s+/g, " ").trim().slice(0, 200).padEnd(8, "."), checkedAt: new Date().toISOString(), editionYear: Number(row.start_date.slice(0, 4)), status: "current" } };
       }
-      await options.audit?.({ id: row.id, raw, documents, checked, usage });
+      await emitAudit({ id: row.id, raw, documents, checked, usage });
       options.log?.(JSON.stringify({ id: row.id, name: row.name, documents: documents.length, details: checked.details, rejected: checked.rejected, dry: !options.apply }));
       if (options.apply) {
         const saved = await savePracticalDetails(row.id, row.public_revision, checked.details);
-        if (saved.status !== "saved") { defer(); continue; }
+        if (saved.status !== "saved") { defer(); return; }
         for (const document of documents) { found.results ??= resultsLinkIn(document.text) ?? undefined; }
         found.regulations ??= regulationsAmong(documents, { name: row.name, start_date: row.start_date, municipality: row.location?.municipality }) ?? undefined;
         result.linksSaved += await saveFoundLinks(row, found);
@@ -267,10 +342,10 @@ export async function enrichPracticalDetails(options: { max?: number; ids?: stri
         if (!partial && !modelDeferred) await markRead(db, checkpointUrl, reader, hash);
         checkpoint = modelDeferred ? null : partial ? "failed" : "silent";
       }
-      if (modelDeferred) break;
+      if (modelDeferred) stopReason ??= "model";
     } catch (error) {
-      if (error instanceof LlmUnavailable) { defer(); options.log?.(error.message); break; }
-      if (error instanceof LlmResponseError) { result.costUsd += error.usage.costUsd; defer(); options.log?.(error.message); break; }
+      if (error instanceof LlmUnavailable) { defer(); stopReason ??= "model"; options.log?.(error.message); return; }
+      if (error instanceof LlmResponseError) { result.costUsd += error.usage.costUsd; defer(); stopReason ??= "model"; options.log?.(error.message); return; }
       result.failed++; options.log?.(`${row.id}: ${error instanceof Error ? error.message : "Practical enrichment failed"}`);
       unreadable++; checkpoint = "failed";
     } finally {
@@ -281,7 +356,53 @@ export async function enrichPracticalDetails(options: { max?: number; ids?: stri
         if (error) throw Error(`Saving practical reader checkpoint: ${error.message}`);
       }
     }
-  }
+  };
+
+  const concurrency = !options.ids?.length && (options.max ?? 12) > 1 && batch.length > 1 ? Math.min(RACE_CONCURRENCY, batch.length) : 1;
+  const pendingIndices = batch.map((_, index) => index);
+  const activePrimaryHosts = new Set<string>();
+  let waiters: (() => void)[] = [];
+  const notifyWaiters = () => {
+    const current = waiters;
+    waiters = [];
+    for (const wake of current) wake();
+  };
+  const claimNextRace = async (): Promise<{ row: (typeof batch)[number]; primaryHost: string } | null> => {
+    while (pendingIndices.length && !stopReason) {
+      if (Date.now() + 60_000 >= deadline) {
+        stopReason = "deadline";
+        result.deferred++;
+        notifyWaiters();
+        return null;
+      }
+      const readyAt = pendingIndices.findIndex(index => {
+        const host = primaryHostOf(batch[index]!);
+        return !host || !activePrimaryHosts.has(host);
+      });
+      if (readyAt >= 0) {
+        const [index] = pendingIndices.splice(readyAt, 1);
+        const row = batch[index!]!;
+        const primaryHost = primaryHostOf(row);
+        if (primaryHost) activePrimaryHosts.add(primaryHost);
+        return { row, primaryHost };
+      }
+      await new Promise<void>(resolve => { waiters.push(resolve); });
+    }
+    return null;
+  };
+
+  await Promise.all(Array.from({ length: concurrency }, async () => {
+    for (;;) {
+      const claimed = await claimNextRace();
+      if (!claimed) return;
+      try {
+        await processRace(claimed.row);
+      } finally {
+        if (claimed.primaryHost) activePrimaryHosts.delete(claimed.primaryHost);
+        notifyWaiters();
+      }
+    }
+  }));
   if (shared) { result.downloadedDocuments = shared.stats().downloaded; result.reusedDocuments += shared.stats().cached; }
   return result;
 }

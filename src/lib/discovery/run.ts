@@ -1,4 +1,5 @@
-import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { randomUUID } from "node:crypto";
+import { mkdir, readFile, rename, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { braveSearch } from "@/lib/catalog/brave";
 import { serperAvailable, serperSearch } from "@/lib/catalog/serper";
@@ -8,9 +9,9 @@ import { fetchPage } from "@/lib/watcher/http";
 import { combineExtractedEvents, extractEvents, type ExtractResult } from "@/lib/watcher/core";
 import { extractWithLlm } from "@/lib/watcher/extractors/llm-calendar";
 import { askOpenAIWithSearch } from "@/lib/llm/openai-search";
-import { mapPool, withHostGate } from "@/lib/watcher/pool";
+import { hostnameOf, mapPool, withHostGate } from "@/lib/watcher/pool";
 import { groundedHints, hash } from "./plan";
-import { DiscoveryStore, type Task } from "./store";
+import { DiscoveryStore, type ReadTask, type Task } from "./store";
 import { DISCOVERY_SEARCH_SYSTEM as SYSTEM } from "./prompt";
 
 type SearchOutput = { urls: string[]; hints: ReturnType<typeof groundedHints>; searches: number; costUsd: number; raw: unknown };
@@ -21,7 +22,7 @@ export type DiscoveryDependencies = {
   extract: (url: string, html: string, deadline: number) => Promise<ExtractResult>;
 };
 
-function dependencies(ai: boolean): DiscoveryDependencies {
+function dependencies(ai: boolean, deadline?: number): DiscoveryDependencies {
   return {
     search: async task => {
       if (task.spec.provider === "brave") {
@@ -53,7 +54,11 @@ function dependencies(ai: boolean): DiscoveryDependencies {
       // Keep *every* actual search result, including ones the answer omitted.
       return { urls: result.results.map(r => r.url), hints, searches: result.searches, costUsd: result.usage.costUsd, raw: result };
     },
-    fetch: async url => ({ ...await fetchPage(url, { timeoutMs: 20_000, retries: 1 }), fetchedAt: new Date().toISOString() }),
+    fetch: async url => {
+      const remaining = deadline ? deadline - Date.now() - 2_000 : 15_000;
+      const timeoutMs = Math.max(2_000, Math.min(15_000, remaining));
+      return { ...await fetchPage(url, { timeoutMs, retries: 0 }), fetchedAt: new Date().toISOString() };
+    },
     extract: async (url, html, deadline) => {
       const parsed = await extractEvents(url, html, { ai: false, render: false, deadline });
       if (!ai || !llmAvailable()) return parsed;
@@ -71,67 +76,180 @@ function dependencies(ai: boolean): DiscoveryDependencies {
   };
 }
 
+/** Claim the highest-priority eligible read task whose normalized host is not currently active. */
+async function claimReadForDistinctHost(
+  store: DiscoveryStore,
+  activeHosts: ReadonlySet<string>,
+  now: number,
+  leaseMs: number,
+  lane?: ReadTask["lane"],
+): Promise<{ task: (Task & { kind: "read" }) | null; hasEligible: boolean; hasOtherFreeHosts: boolean }> {
+  return store.edit(state => {
+    const hinted = new Set(state.hints.map(h => h.hint.url));
+    const countrySuffix = `.${(state.country ?? "CZ").toLowerCase()}`;
+    const priority = (t: Task & { kind: "read" }) =>
+      (t.lane === "benchmark" && t.depth === 0 ? 1000 : 0)
+      + Number(t.origins.some(origin => origin.startsWith("agent-discovery:"))) * 100
+      + (t.depth === 0 ? 100 : t.depth === 1 ? 20 : 0)
+      + Number(hinted.has(t.url)) * 40
+      + Number(hostnameOf(t.url).endsWith(countrySuffix)) * 15
+      + Number(t.url.includes(String(t.season))) * 2;
+    const eligible = Object.values(state.tasks).filter((t): t is Task & { kind: "read" } =>
+      t.kind === "read"
+      && (!lane || t.lane === lane)
+      && (((t.status === "pending" || t.status === "retry") && t.availableAt <= now) || (t.status === "running" && (t.leaseUntil ?? 0) <= now)),
+    );
+    if (!eligible.length) return { task: null, hasEligible: false, hasOtherFreeHosts: false };
+    eligible.sort((a, b) => priority(b) - priority(a));
+    const task = eligible.find(t => !activeHosts.has(hostnameOf(t.url)));
+    if (!task) return { task: null, hasEligible: true, hasOtherFreeHosts: false };
+    const chosenHost = hostnameOf(task.url);
+    const hasOtherFreeHosts = eligible.some(t => {
+      const host = hostnameOf(t.url);
+      return host !== chosenHost && !activeHosts.has(host);
+    });
+    task.status = "running";
+    task.token = randomUUID();
+    task.leaseUntil = now + leaseMs;
+    task.attempts++;
+    return { task: structuredClone(task), hasEligible: true, hasOtherFreeHosts };
+  });
+}
+
 export async function runDiscovery(store: DiscoveryStore, options: {
   directory: string; mode: "search" | "read"; max: number; maxSearchResults?: number; concurrency?: number; deadline: number;
   ai: boolean; log?: (line: string) => void; deps?: DiscoveryDependencies;
   lane?: "blind" | "benchmark";
 }) {
-  const deps = options.deps ?? dependencies(options.ai);
+  const deps = options.deps ?? dependencies(options.ai, options.deadline);
   await mkdir(join(options.directory, "documents"), { recursive: true });
   await mkdir(join(options.directory, "searches"), { recursive: true });
+
+  // Serialize queue mutations in-process so workers do not contend on queue.json.lock or race on counters.
+  let storeLock: Promise<unknown> = Promise.resolve();
+  const withStoreLock = <T>(fn: () => Promise<T>): Promise<T> => {
+    const next = storeLock.then(fn, fn);
+    storeLock = next.catch(() => {});
+    return next;
+  };
+
+  // Search provider calls stay sequential/rate-limited; reads fan out across distinct hosts.
+  const concurrency = options.mode === "search" ? 1 : Math.max(1, options.concurrency ?? 4);
   let claimed = 0;
-  await mapPool(Array.from({ length: options.concurrency ?? 3 }), options.concurrency ?? 3, async () => {
-    while (claimed < options.max && Date.now() < options.deadline - 5000) {
-      // Reserve a local slot before awaiting the shared queue mutex.
-      claimed++;
-      const task = await store.claim([options.mode === "search" ? "search" : "read"], Date.now(), 10 * 60_000, options.lane);
-      if (!task) return;
-      options.log?.(`${task.kind === "search" ? task.spec.provider : task.lane}: ${task.kind === "search" ? task.spec.query : task.url}`);
-      try {
-        if (task.kind === "search") {
-          const result = await deps.search(task);
-          const artifact = join(options.directory, "searches", `${task.id}-${task.attempts}.json`);
-          await writeFile(artifact, JSON.stringify({ at: new Date().toISOString(), spec: task.spec, ...result }, null, 2));
-          await store.finish(task, { searches: result.searches, modelCostUsd: result.costUsd, results: result.urls.length,
-            groundedHints: result.hints.length, artifact, providerCost: task.spec.provider === "brave" ? "Not included; search API billing is separate" : "Included in model cost" }, { ...result, urls: result.urls.slice(0, options.maxSearchResults) });
-        } else {
-          // Serialize the whole read per host, including local rendering, not just HTTP starts.
-          await withHostGate(`discovery:${new URL(task.url).hostname}`, 300, async () => {
-            const cache = join(options.directory, "documents", `${hash(task.url)}.json`);
-            let document: Document | undefined;
-            try {
-              const previous = JSON.parse(await readFile(cache, "utf8")) as Document;
-              if (Date.now() - Date.parse(previous.fetchedAt) < 24 * 3600_000 && previous.status === 200) document = previous;
-            } catch (e) { if ((e as NodeJS.ErrnoException).code !== "ENOENT" && !(e instanceof SyntaxError)) throw e; }
-            if (!document) {
-              document = await deps.fetch(task.url);
-              if (document.status !== 200) throw new Error(`source_http_${document.status}`);
-              // Cache is a convenience; immutable evidence below is the source of truth.
-              const temp = `${cache}.${task.token}.tmp`;
-              await writeFile(temp, JSON.stringify(document));
-              const { rename } = await import("node:fs/promises");
-              await rename(temp, cache);
-            }
-            const snapshot = join(options.directory, "documents", `${hash(task.url)}-${document.hash}.snapshot.json`);
-            try { await writeFile(snapshot, JSON.stringify({ ...document, requestedUrl: task.url }), { flag: "wx" }); }
-            catch (error) { if ((error as NodeJS.ErrnoException).code !== "EEXIST") throw error; }
-            if (/^image\//i.test(document.contentType ?? "") || /\.(?:jpe?g|png|gif|webp)(?:\?|$)/i.test(task.url)) throw new Error("image_source_requires_visual_reader");
-            const result = await deps.extract(task.url, document.html, options.deadline);
-            const events = result.events.filter(e => e.startDate.slice(0, 4) === String(task.season));
-            // Extraction is not official-source/identity approval. Every candidate stays in review.
-            const incomplete = result.complete === false;
-            await store.finish(task, { strategy: result.strategy, complete: !incomplete,
-              issues: result.issues ?? [], extracted: events.length, otherSeason: result.events.length - events.length,
-              modelCostUsd: result.usage?.costUsd ?? 0, diagnostics: result.diagnostics, snapshot },
-            { urls: result.childUrls, events, snapshot }, incomplete ? (result.issues?.join("; ") || "incomplete_read") : undefined);
-          });
-        }
-      } catch (error) {
-        const message = error instanceof Error ? error.message : String(error);
-        options.log?.(`deferred: ${message}`);
-        await store.finish(task, { error: message }, {}, message);
-      }
-    }
+  let epoch = 0;
+  let noFreeHostAtEpoch = -1;
+  let exhausted = false;
+  const activeHosts = new Set<string>();
+  const waiters = new Set<() => void>();
+  const notify = () => {
+    for (const wake of waiters) wake();
+    waiters.clear();
+  };
+  const waitForSignal = () => new Promise<void>(resolve => {
+    waiters.add(resolve);
   });
+  const canContinue = () => claimed < options.max && Date.now() < options.deadline - 5000;
+
+  try {
+    await mapPool(Array.from({ length: concurrency }), concurrency, async () => {
+      for (;;) {
+        const next = await withStoreLock(async (): Promise<{ task: Task | null; waitPromise: Promise<void> | null }> => {
+          if (!canContinue() || exhausted) return { task: null, waitPromise: null };
+          if (options.mode === "search") {
+            const task = await store.claim(["search"], Date.now(), 10 * 60_000, options.lane);
+            if (!task) {
+              exhausted = true;
+              notify();
+              return { task: null, waitPromise: null };
+            }
+            claimed++;
+            return { task, waitPromise: null };
+          }
+
+          if (epoch === noFreeHostAtEpoch) {
+            return { task: null, waitPromise: activeHosts.size > 0 ? waitForSignal() : null };
+          }
+
+          const { task, hasEligible, hasOtherFreeHosts } = await claimReadForDistinctHost(store, activeHosts, Date.now(), 10 * 60_000, options.lane);
+          if (task) {
+            claimed++;
+            activeHosts.add(hostnameOf(task.url));
+            if (!hasOtherFreeHosts) noFreeHostAtEpoch = epoch;
+            return { task, waitPromise: null };
+          }
+          if (!hasEligible && activeHosts.size === 0) {
+            exhausted = true;
+            notify();
+            return { task: null, waitPromise: null };
+          }
+          noFreeHostAtEpoch = epoch;
+          return { task: null, waitPromise: activeHosts.size > 0 ? waitForSignal() : null };
+        });
+
+        if (!next.task) {
+          if (!next.waitPromise || !canContinue() || exhausted) return;
+          await next.waitPromise;
+          continue;
+        }
+
+        const task = next.task;
+        options.log?.(`${task.kind === "search" ? task.spec.provider : task.lane}: ${task.kind === "search" ? task.spec.query : task.url}`);
+        const host = task.kind === "read" ? hostnameOf(task.url) : null;
+        try {
+          if (task.kind === "search") {
+            const result = await deps.search(task);
+            const artifact = join(options.directory, "searches", `${task.id}-${task.attempts}.json`);
+            await writeFile(artifact, JSON.stringify({ at: new Date().toISOString(), spec: task.spec, ...result }, null, 2));
+            await withStoreLock(() => store.finish(task, { searches: result.searches, modelCostUsd: result.costUsd, results: result.urls.length,
+              groundedHints: result.hints.length, artifact, providerCost: task.spec.provider === "brave" ? "Not included; search API billing is separate" : "Included in model cost" }, { ...result, urls: result.urls.slice(0, options.maxSearchResults) }));
+          } else {
+            // Serialize the whole read per host, including local rendering, not just HTTP starts.
+            await withHostGate(`discovery:${host}`, 300, async () => {
+              const cache = join(options.directory, "documents", `${hash(task.url)}.json`);
+              let document: Document | undefined;
+              try {
+                const previous = JSON.parse(await readFile(cache, "utf8")) as Document;
+                if (Date.now() - Date.parse(previous.fetchedAt) < 24 * 3600_000 && previous.status === 200) document = previous;
+              } catch (e) { if ((e as NodeJS.ErrnoException).code !== "ENOENT" && !(e instanceof SyntaxError)) throw e; }
+              if (!document) {
+                document = await deps.fetch(task.url);
+                if (document.status !== 200) throw new Error(`source_http_${document.status}`);
+                // Cache is a convenience; immutable evidence below is the source of truth.
+                const temp = `${cache}.${task.token}.tmp`;
+                await writeFile(temp, JSON.stringify(document));
+                await rename(temp, cache);
+              }
+              const snapshot = join(options.directory, "documents", `${hash(task.url)}-${document.hash}.snapshot.json`);
+              try { await writeFile(snapshot, JSON.stringify({ ...document, requestedUrl: task.url }), { flag: "wx" }); }
+              catch (error) { if ((error as NodeJS.ErrnoException).code !== "EEXIST") throw error; }
+              if (/^image\//i.test(document.contentType ?? "") || /\.(?:jpe?g|png|gif|webp)(?:\?|$)/i.test(task.url)) throw new Error("image_source_requires_visual_reader");
+              const result = await deps.extract(task.url, document.html, options.deadline);
+              const events = result.events.filter(e => e.startDate.slice(0, 4) === String(task.season));
+              // Extraction is not official-source/identity approval. Every candidate stays in review.
+              const incomplete = result.complete === false;
+              await withStoreLock(() => store.finish(task, { strategy: result.strategy, complete: !incomplete,
+                issues: result.issues ?? [], extracted: events.length, otherSeason: result.events.length - events.length,
+                modelCostUsd: result.usage?.costUsd ?? 0, diagnostics: result.diagnostics, snapshot },
+              { urls: result.childUrls, events, snapshot }, incomplete ? (result.issues?.join("; ") || "incomplete_read") : undefined));
+            });
+          }
+        } catch (error) {
+          const message = error instanceof Error ? error.message : String(error);
+          options.log?.(`deferred: ${message}`);
+          await withStoreLock(() => store.finish(task, { error: message }, {}, message));
+        } finally {
+          if (host) {
+            await withStoreLock(async () => {
+              activeHosts.delete(host);
+              epoch++;
+              notify();
+            });
+          }
+        }
+      }
+    });
+  } finally {
+    notify();
+  }
   return store.snapshot();
 }

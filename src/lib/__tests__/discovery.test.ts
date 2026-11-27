@@ -184,6 +184,112 @@ describe("independent discovery", () => {
     await queueDiscoverySources(db, await store.snapshot());
     expect(writes).toEqual([{ table: "discovered_links", rows: [{ url: "https://bike-paradise.cz", status: "pending", hint_kind: "independent_season_discovery" }], opts: { onConflict: "url", ignoreDuplicates: true } }]);
   });
+
+  it("fetches distinct hosts in parallel while serializing per-host requests and respecting max/deadline bounds", async () => {
+    const { store, dir } = await queue();
+    const urls = [
+      "https://alpha.cz/1",
+      "https://www.alpha.cz/2",
+      "https://alpha.cz/3",
+      "https://beta.cz/1",
+      "https://beta.cz/2",
+      "https://gamma.cz/1",
+      "https://delta.cz/1",
+    ];
+    await store.enqueueSources(urls, 2027, "blind", "test");
+
+    let activeGlobal = 0;
+    let maxGlobal = 0;
+    const activeByHost = new Map<string, number>();
+    const maxByHost = new Map<string, number>();
+
+    const deps: DiscoveryDependencies = {
+      search: async () => ({ urls: [], hints: [], searches: 0, costUsd: 0, raw: [] }),
+      fetch: async url => {
+        const host = new URL(url).hostname.replace(/^www\./, "").toLowerCase();
+        activeGlobal++;
+        maxGlobal = Math.max(maxGlobal, activeGlobal);
+        const hostActive = (activeByHost.get(host) ?? 0) + 1;
+        activeByHost.set(host, hostActive);
+        maxByHost.set(host, Math.max(maxByHost.get(host) ?? 0, hostActive));
+        await new Promise(resolve => setTimeout(resolve, 60));
+        activeByHost.set(host, (activeByHost.get(host) ?? 1) - 1);
+        activeGlobal--;
+        return { html: "<h1>Race 2027</h1>", hash: `snap-${host}`, status: 200, fetchedAt: new Date().toISOString() };
+      },
+      extract: async () => ({ events: [], strategy: "test", childUrls: [], confidence: 0.9 }),
+    };
+
+    // First verify max bound with distinct hosts in flight.
+    const cappedState = await runDiscovery(store, { directory: dir, mode: "read", max: 4, concurrency: 4, deadline: Date.now() + 60_000, ai: false, deps });
+    const cappedTasks = Object.values(cappedState.tasks);
+    expect(cappedTasks.filter(t => t.status === "done")).toHaveLength(4);
+    expect(cappedTasks.filter(t => t.status === "pending")).toHaveLength(3);
+    expect(cappedTasks.filter(t => t.status === "running")).toHaveLength(0);
+    expect(maxGlobal).toBe(4);
+    for (const count of maxByHost.values()) expect(count).toBe(1);
+
+    // Finish remaining tasks (including multiple same-host alpha.cz tasks).
+    const finalState = await runDiscovery(store, { directory: dir, mode: "read", max: 10, concurrency: 4, deadline: Date.now() + 60_000, ai: false, deps });
+    expect(Object.values(finalState.tasks).every(t => t.status === "done")).toBe(true);
+    for (const count of maxByHost.values()) expect(count).toBe(1);
+
+    // Verify deadline bound stops further claims cleanly without leaving running leases.
+    const { store: deadlineStore, dir: deadlineDir } = await queue();
+    await deadlineStore.enqueueSources(
+      ["https://h1.cz/", "https://h2.cz/", "https://h3.cz/", "https://h4.cz/", "https://h5.cz/", "https://h6.cz/"],
+      2027, "blind", "test",
+    );
+    const deadline = Date.now() + 5300;
+    const deadlineState = await runDiscovery(deadlineStore, {
+      directory: deadlineDir,
+      mode: "read",
+      max: 6,
+      concurrency: 2,
+      deadline,
+      ai: false,
+      deps: {
+        search: deps.search,
+        extract: deps.extract,
+        fetch: async () => {
+          const wait = deadline - 4950 - Date.now();
+          if (wait > 0) await new Promise(resolve => setTimeout(resolve, wait));
+          return { html: "<h1>Race 2027</h1>", hash: "snap-deadline", status: 200, fetchedAt: new Date().toISOString() };
+        },
+      },
+    });
+    const deadlineTasks = Object.values(deadlineState.tasks);
+    expect(deadlineTasks.filter(t => t.status === "done")).toHaveLength(2);
+    expect(deadlineTasks.filter(t => t.status === "pending")).toHaveLength(4);
+    expect(deadlineTasks.filter(t => t.status === "running")).toHaveLength(0);
+
+    // Verify search mode stays sequential even if concurrency > 1 is passed.
+    const { store: searchStore, dir: searchDir } = await queue();
+    await searchStore.enqueueSearches(discoveryPlan(2027, ["brave"]).slice(0, 3), "cycle");
+    let activeSearch = 0;
+    let maxSearch = 0;
+    const searchState = await runDiscovery(searchStore, {
+      directory: searchDir,
+      mode: "search",
+      max: 3,
+      concurrency: 4,
+      deadline: Date.now() + 60_000,
+      ai: false,
+      deps: {
+        search: async () => {
+          activeSearch++;
+          maxSearch = Math.max(maxSearch, activeSearch);
+          await new Promise(resolve => setTimeout(resolve, 25));
+          activeSearch--;
+          return { urls: [], hints: [], searches: 1, costUsd: 0, raw: [] };
+        },
+        fetch: deps.fetch,
+        extract: deps.extract,
+      },
+    });
+    expect(maxSearch).toBe(1);
+    expect(Object.values(searchState.tasks).filter(t => t.status === "done")).toHaveLength(3);
+  });
 });
 
 describe("CSV diagnostics", () => {

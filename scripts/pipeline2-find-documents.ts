@@ -7,7 +7,7 @@
  * to our own server. What comes back is checked as data, handed in with the task in one
  * transaction, and decided by pipeline_apply_proposal.
  *
- *   tsx scripts/pipeline2-find-documents.ts --psql=<scratch database> [--sites=30] [--countries=CZ,SK] [--days=90] [--events=id,id] [--out=report.json]
+ *   tsx scripts/pipeline2-find-documents.ts --psql=<scratch database> [--sites=30] [--concurrency=4] [--countries=CZ,SK] [--days=90] [--events=id,id] [--out=report.json]
  *   tsx scripts/pipeline2-find-documents.ts --server …        (needs the two migrations applied)
  */
 import { spawn } from "node:child_process";
@@ -21,6 +21,93 @@ import { checkReaderOutput, failuresInARow, nextAttempt, type Ended } from "../s
 const root = resolve(__dirname, "..");
 const TASK_SECONDS = 200, KILL_AFTER_MS = 240_000; // the queue's lease is five minutes
 const AGAIN_AFTER_SECONDS = 24 * 3600;
+export const DEFAULT_CONCURRENCY = 4;
+export const MAX_CONCURRENCY = 8;
+export const DEADLINE_BUFFER_MS = 30_000;
+
+/** Clamp --concurrency=N to 1..8 (default 4), forcing 1 when at most one site can run. */
+export function parseConcurrency(raw: string | undefined, limit: number): number {
+  if (limit <= 1) return 1;
+  const parsed = raw !== undefined && raw.trim() !== "" ? Number(raw) : DEFAULT_CONCURRENCY;
+  const value = Number.isFinite(parsed) ? Math.floor(parsed) : DEFAULT_CONCURRENCY;
+  return Math.max(1, Math.min(MAX_CONCURRENCY, value));
+}
+
+/** Parse SOURCE_RUN_DEADLINE (Unix epoch seconds) into epoch milliseconds, or Infinity when unset. */
+export function deadlineMsFromEnv(raw: string | undefined = process.env.SOURCE_RUN_DEADLINE): number {
+  const seconds = Number(raw ?? 0);
+  return Number.isFinite(seconds) && seconds > 0 ? seconds * 1000 : Infinity;
+}
+
+export type WorkerPoolOptions<T> = {
+  concurrency: number;
+  limit: number;
+  claim: () => Promise<T | null | undefined>;
+  worker: (task: T, id: number) => Promise<void>;
+  deadlineMs?: number;
+  deadlineBufferMs?: number;
+  now?: () => number;
+};
+
+/**
+ * Run up to `concurrency` workers concurrently, claiming one task at a time up to `limit`.
+ * Stops claiming when `claim` returns empty or less than `deadlineBufferMs` remains before `deadlineMs`.
+ */
+export async function runWorkerPool<T>({
+  concurrency,
+  limit,
+  claim,
+  worker,
+  deadlineMs = Infinity,
+  deadlineBufferMs = DEADLINE_BUFFER_MS,
+  now = Date.now,
+}: WorkerPoolOptions<T>): Promise<{ claimed: number; stoppedByDeadline: boolean }> {
+  if (limit <= 0) return { claimed: 0, stoppedByDeadline: false };
+  const slots = Math.max(1, Math.min(limit, Math.floor(concurrency) || 1));
+  let claimTail: Promise<unknown> = Promise.resolve();
+  let claimed = 0;
+  let exhausted = false;
+  let stoppedByDeadline = false;
+
+  const nextTask = (): Promise<{ task: T; id: number } | null> => {
+    const step = claimTail.then(async () => {
+      if (exhausted || claimed >= limit) return null;
+      if (deadlineMs - now() < deadlineBufferMs) {
+        stoppedByDeadline = true;
+        return null;
+      }
+      const task = await claim();
+      if (!task) {
+        exhausted = true;
+        return null;
+      }
+      claimed += 1;
+      return { task, id: claimed };
+    });
+    claimTail = step.catch(() => {
+      exhausted = true;
+    });
+    return step;
+  };
+
+  const runSlot = async () => {
+    while (true) {
+      const next = await nextTask();
+      if (!next) break;
+      try {
+        await worker(next.task, next.id);
+      } catch (error) {
+        exhausted = true;
+        throw error;
+      }
+    }
+  };
+
+  const results = await Promise.allSettled(Array.from({ length: slots }, runSlot));
+  const failed = results.find((result): result is PromiseRejectedResult => result.status === "rejected");
+  if (failed) throw failed.reason;
+  return { claimed, stoppedByDeadline };
+}
 
 /** Start the reader with nothing of ours in its environment, and wait for it within the limit. */
 function read(taskFile: string, outFile: string): Promise<{ code: number | null; timedOut: boolean; stderr: string }> {
@@ -61,7 +148,10 @@ async function main() {
     }
   } else throw Error("Say where: --psql=<scratch database on this Mac> or --server");
 
-  const limit = Number(arg("sites") ?? 20), days = Number(arg("days") ?? 0);
+  const rawLimit = Number(arg("sites") ?? 20);
+  const limit = Number.isFinite(rawLimit) ? Math.max(0, Math.floor(rawLimit)) : 20, days = Number(arg("days") ?? 0);
+  const concurrency = parseConcurrency(arg("concurrency"), limit);
+  const deadlineMs = deadlineMsFromEnv();
   const countries = arg("countries")?.split(","), only = arg("events")?.split(",");
   const until = days ? new Date(Date.now() + days * 86_400_000).toISOString().slice(0, 10) : null;
   const wanted = (await db.races()).filter(race => (!countries || countries.includes(race.country_code ?? "")) && (!until || race.start_date <= until) && (!only || only.includes(race.id)));
@@ -71,52 +161,67 @@ async function main() {
   const queued = await db.queue(sites, AGAIN_AFTER_SECONDS);
 
   const directory = await mkdtemp(join(tmpdir(), "letsrace-find-documents-"));
-  const report = { at: new Date().toISOString(), racesWanted: wanted.length, sitesKnown: bySite.size, sitesAsked: sites.length, queued, tasks: [] as object[], totals: {} as Record<string, number> };
+  const report = {
+    at: new Date().toISOString(),
+    racesWanted: wanted.length,
+    sitesKnown: bySite.size,
+    sitesAsked: sites.length,
+    queued,
+    concurrency,
+    stoppedByDeadline: false,
+    tasks: [] as object[],
+    totals: {} as Record<string, number>,
+  };
   const add = (key: string, n = 1) => { report.totals[key] = (report.totals[key] ?? 0) + n; };
   try {
-    for (let taken = 0; taken < limit;) {
+    const pool = await runWorkerPool({
+      concurrency,
+      limit,
+      deadlineMs,
       // One at a time: a task's five-minute lease starts when it is taken, not when its turn comes.
-      const [task] = await db.claim(1) as Task[];
-      if (!task) break;
-      taken++;
-      const races = bySite.get(task.payload.site) ?? [];
-      const started = Date.now();
-      const entry: Record<string, unknown> = { site: task.payload.site, races: races.length };
-      report.tasks.push(entry);
-      let ended: Ended, proposals: object[] = [], stats: object | undefined;
-      if (!races.length) ended = { outcome: "waiting", reason: "no_document_yet" }; // filled or hidden since it was queued
-      else {
-        const taskFile = join(directory, `task-${taken}.json`), outFile = join(directory, `out-${taken}.json`);
-        await writeFile(taskFile, JSON.stringify({ site: task.payload.site, seconds: TASK_SECONDS, races: races.map(({ id, name, start_date, website_url, municipality }) => ({ id, name, start_date, website_url, municipality })) }));
-        const ran = await read(taskFile, outFile);
-        const raw = await readFile(outFile, "utf8").then(JSON.parse).catch(() => null);
-        const checked = raw ? checkReaderOutput(raw, { eventIds: races.map(race => race.id), fields: ["regulations_url"], reader: "site_documents" }) : null;
-        if (ran.timedOut) ended = { outcome: "timeout", reason: "timeout" };
-        else if (!checked) { ended = { outcome: "failed", reason: "crashed" }; entry.error = ran.stderr.split("\n").filter(Boolean).at(-1)?.slice(0, 200); }
-        else if (!checked.ok) { ended = { outcome: "failed", reason: "bad_output" }; entry.error = checked.why; }
-        else { ended = { outcome: checked.output.outcome, reason: checked.output.reason }; proposals = checked.output.proposals; stats = checked.output.stats; }
-      }
-      entry.outcome = ended.outcome; entry.reason = ended.reason; entry.stats = stats; entry.seconds = Math.round((Date.now() - started) / 100) / 10;
-      add(`task_${ended.outcome}`);
-
-      if (["done", "partial", "waiting"].includes(ended.outcome)) {
-        // The site was read. What it gave is handed in with the task, or not at all.
-        const finished = await db.finish(task, { ...ended, stats }, proposals);
-        entry.accepted = finished.accepted; if (!finished.accepted) { entry.refused = finished.reason; add("handin_refused"); continue; }
-        entry.decisions = [];
-        for (const key of finished.proposals ?? []) {
-          const decision = await db.apply(key);
-          (entry.decisions as object[]).push({ key, ...decision });
-          add(`proposal_${decision.status}${decision.reason ? `_${decision.reason}` : ""}`);
+      claim: async () => (await db.claim(1) as Task[])[0],
+      worker: async (task, id) => {
+        const races = bySite.get(task.payload.site) ?? [];
+        const started = Date.now();
+        const entry: Record<string, unknown> = { site: task.payload.site, races: races.length };
+        report.tasks.push(entry);
+        let ended: Ended, proposals: object[] = [], stats: object | undefined;
+        if (!races.length) ended = { outcome: "waiting", reason: "no_document_yet" }; // filled or hidden since it was queued
+        else {
+          const taskFile = join(directory, `task-${id}.json`), outFile = join(directory, `out-${id}.json`);
+          await writeFile(taskFile, JSON.stringify({ site: task.payload.site, seconds: TASK_SECONDS, races: races.map(({ id: raceId, name, start_date, website_url, municipality }) => ({ id: raceId, name, start_date, website_url, municipality })) }));
+          const ran = await read(taskFile, outFile);
+          const raw = await readFile(outFile, "utf8").then(JSON.parse).catch(() => null);
+          const checked = raw ? checkReaderOutput(raw, { eventIds: races.map(race => race.id), fields: ["regulations_url"], reader: "site_documents" }) : null;
+          if (ran.timedOut) ended = { outcome: "timeout", reason: "timeout" };
+          else if (!checked) { ended = { outcome: "failed", reason: "crashed" }; entry.error = ran.stderr.split("\n").filter(Boolean).at(-1)?.slice(0, 200); }
+          else if (!checked.ok) { ended = { outcome: "failed", reason: "bad_output" }; entry.error = checked.why; }
+          else { ended = { outcome: checked.output.outcome, reason: checked.output.reason }; proposals = checked.output.proposals; stats = checked.output.stats; }
         }
-      } else {
-        const next = nextAttempt(ended, failuresInARow(await db.attempts(task.key)), { usualSeconds: AGAIN_AFTER_SECONDS });
-        entry.nextTryInSeconds = next.delaySeconds; entry.failures = next.failures; if (next.stopped) entry.stopped = true;
-        await db.retry(task, `${ended.outcome}:${ended.reason ?? ""}`, next.delaySeconds);
-      }
-    }
+        entry.outcome = ended.outcome; entry.reason = ended.reason; entry.stats = stats; entry.seconds = Math.round((Date.now() - started) / 100) / 10;
+        add(`task_${ended.outcome}`);
+
+        if (["done", "partial", "waiting"].includes(ended.outcome)) {
+          // The site was read. What it gave is handed in with the task, or not at all.
+          const finished = await db.finish(task, { ...ended, stats }, proposals);
+          entry.accepted = finished.accepted; if (!finished.accepted) { entry.refused = finished.reason; add("handin_refused"); return; }
+          entry.decisions = [];
+          for (const key of finished.proposals ?? []) {
+            const decision = await db.apply(key);
+            (entry.decisions as object[]).push({ key, ...decision });
+            add(`proposal_${decision.status}${decision.reason ? `_${decision.reason}` : ""}`);
+          }
+        } else {
+          const next = nextAttempt(ended, failuresInARow(await db.attempts(task.key)), { usualSeconds: AGAIN_AFTER_SECONDS });
+          entry.nextTryInSeconds = next.delaySeconds; entry.failures = next.failures; if (next.stopped) entry.stopped = true;
+          await db.retry(task, `${ended.outcome}:${ended.reason ?? ""}`, next.delaySeconds);
+        }
+      },
+    });
+    report.stoppedByDeadline = pool.stoppedByDeadline;
   } finally { await rm(directory, { recursive: true, force: true }); }
   if (arg("out")) await writeFile(arg("out")!, JSON.stringify(report, null, 1));
   console.log(JSON.stringify({ ...report, tasks: report.tasks.length }));
 }
-main().catch(error => { console.error(error instanceof Error ? error.message : error); process.exitCode = 1; });
+const isMain = typeof require !== "undefined" && typeof module !== "undefined" && require.main === module;
+if (isMain) main().catch(error => { console.error(error instanceof Error ? error.message : error); process.exitCode = 1; });

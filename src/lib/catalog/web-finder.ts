@@ -5,8 +5,12 @@ import { ACTIVE_EVENT_STATUSES } from "@/lib/event-visibility";
 import { htmlText } from "@/lib/catalog/regulation-ages";
 import { isRegistrationPlatformUrl } from "@/lib/watcher/registration-url";
 import { fetchBot } from "@/lib/http/fetch";
+import { runWebSearch, webSearchAvailable } from "@/lib/catalog/web-search";
 
 const PAGE = 1000;
+const CANDIDATE_CONCURRENCY = 3;
+const RACE_CONCURRENCY = 3;
+const FETCH_TIMEOUT_MS = 8_000;
 
 /** Sites that list races or talk about them; the race's own page is elsewhere. */
 const NOT_THE_RACE =
@@ -84,7 +88,6 @@ export type SearchHit = { url: string; title: string };
 export async function searchWeb(query: string): Promise<SearchHit[]> {
   // DuckDuckGo stopped answering scripts: prefer Serper (Google index), local SearXNG, or Brave.
   const ledger = process.env.SEARCH_LEDGER_PATH;
-  const { webSearchAvailable, runWebSearch } = await import("@/lib/catalog/web-search");
   if (webSearchAvailable()) {
     if (ledger) {
       const { takeSearch } = await import("@/lib/catalog/race-completeness");
@@ -234,18 +237,200 @@ export async function isTheRacesPage(
 
 export type FoundSite = { id: string; name: string; startDate: string; url: string; kind: "website" | "registration"; confident: boolean };
 
+type CandidatePick = { url: string; kind: "website" | "registration"; confident: boolean; text: string; title: string };
+
+function deadlineMsFromEnv(): number {
+  const raw = Number(process.env.SOURCE_RUN_DEADLINE || 0);
+  return Number.isFinite(raw) && raw > 0 ? raw * 1000 : Infinity;
+}
+
+/** Serialize fetches per hostname so concurrent workers never hammer a single external host. */
+function createHostLimiter() {
+  const chains = new Map<string, Promise<void>>();
+  return {
+    isBusy(host: string): boolean {
+      return chains.has(host);
+    },
+    async run<T>(host: string, fn: () => Promise<T>): Promise<T> {
+      const prev = chains.get(host) ?? Promise.resolve();
+      let release!: () => void;
+      const mine = new Promise<void>((resolve) => {
+        release = resolve;
+      });
+      const tail = prev.then(() => mine);
+      chains.set(host, tail);
+      await prev;
+      try {
+        return await fn();
+      } finally {
+        release();
+        if (chains.get(host) === tail) chains.delete(host);
+      }
+    },
+  };
+}
+
+/**
+ * Inspect filtered search hits with bounded concurrency across distinct hosts,
+ * aborting lower-ranked candidates as soon as a confident match is found while
+ * preserving exact search-rank selection order.
+ */
+async function inspectCandidates(
+  hits: SearchHit[],
+  target: { name: string; startDate: string; municipality: string | null },
+  hostLimiter: ReturnType<typeof createHostLimiter>,
+  deadlineMs: number,
+): Promise<{ chosen: CandidatePick | null; likely: CandidatePick | null; timedOutByDeadline: boolean }> {
+  type FilteredHit = { hit: SearchHit; host: string; platform: boolean };
+  const candidates: FilteredHit[] = [];
+  for (const hit of hits.slice(0, 6)) {
+    let host = "";
+    try {
+      host = new URL(hit.url).hostname.toLowerCase();
+    } catch {
+      continue;
+    }
+    const platform = isRegistrationPlatformUrl(hit.url);
+    if (!platform && NOT_THE_RACE.test(`${host}.`)) continue;
+    if (/\.(pdf|docx?|jpg|png)(\?|$)/i.test(hit.url)) continue;
+    if (!platform && looksLikeArticleOrListing(hit.url)) continue;
+    if (!platform && namesAnotherEdition(hit.url, target.name, target.startDate)) continue;
+    candidates.push({ hit, host, platform });
+  }
+  if (!candidates.length) return { chosen: null, likely: null, timedOutByDeadline: false };
+
+  const results: (CandidatePick | null)[] = new Array(candidates.length).fill(null);
+  const controllers = candidates.map(() => new AbortController());
+  const started = new Array(candidates.length).fill(false);
+  let confidentCutoff = candidates.length;
+  let inFlight = 0;
+  let timedOutByDeadline = false;
+
+  let notify: (() => void) | null = null;
+  const waitForProgress = () =>
+    new Promise<void>((resolve) => {
+      notify = resolve;
+    });
+  const wake = () => {
+    const fn = notify;
+    notify = null;
+    fn?.();
+  };
+
+  const nextCandidateIndex = (): number => {
+    for (let i = 0; i < confidentCutoff; i += 1) {
+      if (!started[i] && !hostLimiter.isBusy(candidates[i]!.host)) return i;
+    }
+    for (let i = 0; i < confidentCutoff; i += 1) {
+      if (!started[i]) return i;
+    }
+    return -1;
+  };
+
+  const runOne = async (idx: number) => {
+    const { hit, host, platform } = candidates[idx]!;
+    const controller = controllers[idx]!;
+    try {
+      if (Date.now() >= deadlineMs || idx >= confidentCutoff) return;
+      const pick = await hostLimiter.run(host, async () => {
+        if (controller.signal.aborted || idx >= confidentCutoff) return null;
+        const left = deadlineMs - Date.now();
+        if (left <= 0) {
+          timedOutByDeadline = true;
+          return null;
+        }
+        const page = await fetchBot(hit.url, {
+          timeoutMs: Math.min(FETCH_TIMEOUT_MS, left),
+          signal: controller.signal,
+        });
+        if (!page.ok || !/html/i.test(page.headers.get("content-type") ?? "")) {
+          await page.body?.cancel().catch(() => {});
+          return null;
+        }
+        const text = `${hit.title} ${htmlText(await page.text())}`;
+        // The page must be about this race (its text) and be the race's own
+        // (its name or address says so), not a calendar that lists it.
+        if (!pageIsAbout(text, target.name, target.municipality, target.startDate) || !namedByThePage(page.url || hit.url, hit.title, target.name)) {
+          return null;
+        }
+        const finalUrl = (page.url || hit.url)
+          .replace(/\/\(X\(\d\)S\([^)]*\)\)\//, "/")
+          .replace(/[?&]AspxAutoDetectCookieSupport=1/, "");
+        return {
+          url: finalUrl,
+          kind: platform ? ("registration" as const) : ("website" as const),
+          confident: platform || isConfidentMatch(finalUrl, text, target.name, target.municipality),
+          text,
+          title: hit.title,
+        };
+      });
+      if (pick) {
+        results[idx] = pick;
+        if (pick.confident && idx < confidentCutoff) {
+          confidentCutoff = idx;
+          for (let j = idx + 1; j < candidates.length; j += 1) {
+            controllers[j]!.abort();
+          }
+        }
+      }
+    } catch {
+      /* next result */
+    } finally {
+      inFlight -= 1;
+      wake();
+    }
+  };
+
+  const activeTasks = new Set<Promise<void>>();
+  const deadlineTimer = Number.isFinite(deadlineMs)
+    ? setTimeout(() => wake(), Math.max(0, deadlineMs - Date.now()))
+    : null;
+  try {
+    while (true) {
+      if (Date.now() >= deadlineMs) {
+        timedOutByDeadline = true;
+        for (const c of controllers) c.abort();
+        break;
+      }
+      while (inFlight < CANDIDATE_CONCURRENCY) {
+        const idx = nextCandidateIndex();
+        if (idx === -1) break;
+        started[idx] = true;
+        inFlight += 1;
+        const task = runOne(idx).finally(() => activeTasks.delete(task));
+        activeTasks.add(task);
+      }
+      if (inFlight === 0) break;
+      await waitForProgress();
+    }
+  } finally {
+    if (deadlineTimer) clearTimeout(deadlineTimer);
+  }
+  await Promise.allSettled(activeTasks);
+
+  const chosen = results.find((r, i) => i <= confidentCutoff && r?.confident) ?? null;
+  const likely = chosen ? null : results.find((r) => r && !r.confident) ?? null;
+  return { chosen, likely, timedOutByDeadline };
+}
+
 export async function findWebsites(opts?: {
   max?: number;
   /** Only races in these countries. */
   countries?: string[];
   dryRun?: boolean;
   delayMs?: number;
+  concurrency?: number;
+  deadlineMs?: number;
   log?: (line: string) => void;
   /** Also past races from this day on: their site is where next year's date gets announced. */
   from?: string;
   /** Where the not-quite-sure finds go for a person to look at. */
   onReview?: (site: FoundSite) => void;
 }): Promise<{ attempted: number; found: number; reviewed: number; registration: number; silent: number; failed: number }> {
+  const deadlineMs = Math.min(opts?.deadlineMs ?? Infinity, deadlineMsFromEnv());
+  const result = { attempted: 0, found: 0, reviewed: 0, registration: 0, silent: 0, failed: 0 };
+  if (Date.now() >= deadlineMs) return result;
+
   const supabase = createServerSupabase();
   const max = opts?.max ?? 300;
   const today = new Date().toISOString().slice(0, 10);
@@ -275,107 +460,131 @@ export async function findWebsites(opts?: {
     if (rows.length < PAGE) break;
   }
 
-  const result = { attempted: targets.length, found: 0, reviewed: 0, registration: 0, silent: 0, failed: 0 };
+  const useSearchProvider = webSearchAvailable();
+  const explicitDelay = opts?.delayMs;
+  const concurrency = opts?.concurrency ?? (explicitDelay !== undefined && explicitDelay > 0 ? 1 : useSearchProvider || explicitDelay === 0 ? RACE_CONCURRENCY : 1);
+  const hostLimiter = createHostLimiter();
   let humanChallenges = 0;
-  for (const t of targets) {
-    // A name that is only a town and a round number ("#03 - Bad Harzburg")
-    // names nothing to look for: every site of the town would match.
-    const own = fold(searchableName(t.name))
-      .split(/[^a-z0-9]+/)
-      .filter((w) => w.length >= 4 && !GENERIC.has(w) && !fold(t.municipality ?? "").includes(w));
-    if (!own.length) {
-      result.silent += 1;
-      continue;
-    }
-    try {
-      const hits = await searchWeb(searchQuery(t.name, t.municipality, t.startDate.slice(0, 4)));
-      type Pick = { url: string; kind: "website" | "registration"; confident: boolean; text: string; title: string };
-      let chosen = null as Pick | null;
-      let likely = null as Pick | null;
-      for (const hit of hits.slice(0, 6)) {
-        let host = "";
-        try {
-          host = new URL(hit.url).hostname;
-        } catch {
-          continue;
-        }
-        const platform = isRegistrationPlatformUrl(hit.url);
-        if (!platform && NOT_THE_RACE.test(`${host}.`)) continue;
-        if (/\.(pdf|docx?|jpg|png)(\?|$)/i.test(hit.url)) continue;
-        if (!platform && looksLikeArticleOrListing(hit.url)) continue;
-        if (!platform && namesAnotherEdition(hit.url, t.name, t.startDate)) continue;
-        try {
-          const page = await fetchBot(hit.url, { timeoutMs: 12_000 });
-          if (!page.ok || !/html/i.test(page.headers.get("content-type") ?? "")) continue;
-          const text = `${hit.title} ${htmlText(await page.text())}`;
-          // The page must be about this race (its text) and be the race's own
-          // (its name or address says so), not a calendar that lists it.
-          if (pageIsAbout(text, t.name, t.municipality, t.startDate) && namedByThePage(page.url || hit.url, hit.title, t.name)) {
-            const finalUrl = (page.url || hit.url).replace(/\/\(X\(\d\)S\([^)]*\)\)\//, "/").replace(/[?&]AspxAutoDetectCookieSupport=1/, "");
-            chosen = {
-              url: finalUrl,
-              kind: platform ? "registration" : "website",
-              confident: platform || isConfidentMatch(finalUrl, text, t.name, t.municipality),
-              text,
-              title: hit.title,
-            };
-            // Keep looking for a sure one if this is only a likely one.
-            if (chosen.confident) break;
-            if (!likely) likely = chosen;
-            chosen = null;
-          }
-        } catch {
-          /* next result */
-        }
+  let stopped = false;
+  let pauseUntil = 0;
+  let nextTarget = 0;
+
+  const worker = async () => {
+    while (!stopped) {
+      if (Date.now() >= deadlineMs) {
+        stopped = true;
+        break;
       }
-      // A reader checks the page before it is saved: this race's own page, or
-      // its organiser's page about this edition — not a town's tourism page,
-      // a sports centre's front page or a calendar.
-      const candidate = chosen ?? likely;
-      if (candidate && llmAvailable()) {
-        const ok = await isTheRacesPage(t, candidate).catch((e) => {
-          if (e instanceof LlmUnavailable || e instanceof LlmResponseError) throw e;
-          return false;
-        });
-        chosen = ok ? { ...candidate, confident: true } : null;
-        likely = null;
+      const pauseLeft = pauseUntil - Date.now();
+      if (pauseLeft > 0) {
+        if (Date.now() + pauseLeft >= deadlineMs) {
+          stopped = true;
+          break;
+        }
+        await new Promise((r) => setTimeout(r, pauseLeft));
+        continue;
       }
-      if (!chosen && likely) {
-        result.reviewed += 1;
-        opts?.onReview?.({ id: t.id, name: t.name, startDate: t.startDate, url: likely.url, kind: likely.kind, confident: false });
-        if (!opts?.dryRun) await recordProbe(supabase, t.id, "web_search", "silent");
-      } else if (!chosen) {
+      const idx = nextTarget;
+      if (idx >= targets.length) break;
+      nextTarget += 1;
+      const t = targets[idx]!;
+      result.attempted += 1;
+
+      // A name that is only a town and a round number ("#03 - Bad Harzburg")
+      // names nothing to look for: every site of the town would match.
+      const own = fold(searchableName(t.name))
+        .split(/[^a-z0-9]+/)
+        .filter((w) => w.length >= 4 && !GENERIC.has(w) && !fold(t.municipality ?? "").includes(w));
+      if (!own.length) {
         result.silent += 1;
-        if (!opts?.dryRun) await recordProbe(supabase, t.id, "web_search", "silent");
-      } else {
-        result.found += 1;
-        if (chosen.kind === "registration") result.registration += 1;
-        opts?.log?.(`${opts?.dryRun ? "DRY" : "SET"}  ${t.startDate}  ${t.name}  → ${chosen.kind}: ${chosen.url}`);
-        if (!opts?.dryRun) {
-          await supabase
-            .from("events")
-            .update({
-              ...(chosen.kind === "registration" ? { registration_url: chosen.url } : { website_url: chosen.url }),
-              updated_at: new Date().toISOString(),
-            })
-            .eq("id", t.id)
-            .or(chosen.kind === "registration" ? "registration_url.is.null" : "website_url.is.null,website_url.ilike.*rideandrest.net*,website_url.ilike.*odjazd.pl*,website_url.ilike.*kalendarzrowerowy*,website_url.ilike.*eventivsport*,website_url.ilike.*radsport-events*,website_url.ilike.*granfondoguide*,website_url.ilike.*cyklistikaszc.sk*,website_url.ilike.*cyklokros.cz/kalendar*");
-          await clearProbe(supabase, t.id, "web_search");
+        continue;
+      }
+      try {
+        const hits = await searchWeb(searchQuery(t.name, t.municipality, t.startDate.slice(0, 4)));
+        const inspected = await inspectCandidates(hits, t, hostLimiter, deadlineMs);
+        let chosen = inspected.chosen;
+        let likely = inspected.likely;
+
+        if (inspected.timedOutByDeadline && !chosen && !likely) {
+          result.attempted -= 1;
+          stopped = true;
+          break;
+        }
+
+        // A reader checks the page before it is saved: this race's own page, or
+        // its organiser's page about this edition — not a town's tourism page,
+        // a sports centre's front page or a calendar.
+        const candidate = chosen ?? likely;
+        if (candidate && llmAvailable()) {
+          const ok = await isTheRacesPage(t, candidate).catch((e) => {
+            if (e instanceof LlmUnavailable || e instanceof LlmResponseError) throw e;
+            return false;
+          });
+          chosen = ok ? { ...candidate, confident: true } : null;
+          likely = null;
+        }
+        if (!chosen && likely) {
+          result.reviewed += 1;
+          opts?.onReview?.({ id: t.id, name: t.name, startDate: t.startDate, url: likely.url, kind: likely.kind, confident: false });
+          if (!opts?.dryRun) await recordProbe(supabase, t.id, "web_search", "silent");
+        } else if (!chosen) {
+          result.silent += 1;
+          if (!opts?.dryRun) await recordProbe(supabase, t.id, "web_search", "silent");
+        } else {
+          result.found += 1;
+          if (chosen.kind === "registration") result.registration += 1;
+          opts?.log?.(`${opts?.dryRun ? "DRY" : "SET"}  ${t.startDate}  ${t.name}  → ${chosen.kind}: ${chosen.url}`);
+          if (!opts?.dryRun) {
+            await supabase
+              .from("events")
+              .update({
+                ...(chosen.kind === "registration" ? { registration_url: chosen.url } : { website_url: chosen.url }),
+                updated_at: new Date().toISOString(),
+              })
+              .eq("id", t.id)
+              .or(chosen.kind === "registration" ? "registration_url.is.null" : "website_url.is.null,website_url.ilike.*rideandrest.net*,website_url.ilike.*odjazd.pl*,website_url.ilike.*kalendarzrowerowy*,website_url.ilike.*eventivsport*,website_url.ilike.*radsport-events*,website_url.ilike.*granfondoguide*,website_url.ilike.*cyklistikaszc.sk*,website_url.ilike.*cyklokros.cz/kalendar*");
+            await clearProbe(supabase, t.id, "web_search");
+          }
+        }
+      } catch (e) {
+        result.failed += 1;
+        opts?.log?.(`FAIL ${t.name}: ${e instanceof Error ? e.message : e}`);
+        if (e instanceof Error && e.message === "search allowance used up") {
+          stopped = true;
+          break;
+        }
+        // Asked to prove we are human: wait it out, once; if it persists, stop
+        // rather than push — the rest is picked up by the next run.
+        if (e instanceof Error && /human|HTTP 4(29|03)/.test(e.message)) {
+          humanChallenges += 1;
+          if (humanChallenges >= 2) {
+            stopped = true;
+            break;
+          }
+          const waitMs = 10 * 60_000;
+          if (Date.now() + waitMs >= deadlineMs) {
+            stopped = true;
+            break;
+          }
+          pauseUntil = Math.max(pauseUntil, Date.now() + waitMs);
+          opts?.log?.("search asked for a human; waiting ten minutes");
+          await new Promise((r) => setTimeout(r, waitMs));
         }
       }
-    } catch (e) {
-      result.failed += 1;
-      opts?.log?.(`FAIL ${t.name}: ${e instanceof Error ? e.message : e}`);
-      // Asked to prove we are human: wait it out, once; if it persists, stop
-      // rather than push — the rest is picked up by the next run.
-      if (e instanceof Error && /human|HTTP 4(29|03)/.test(e.message)) {
-        humanChallenges += 1;
-        if (humanChallenges >= 2) break;
-        opts?.log?.("search asked for a human; waiting ten minutes");
-        await new Promise((r) => setTimeout(r, 10 * 60_000));
+      const waitMs = explicitDelay !== undefined ? explicitDelay : useSearchProvider ? 0 : 8_000 + Math.floor(Math.random() * 4_000);
+      if (waitMs > 0 && !stopped && nextTarget < targets.length) {
+        if (Date.now() + waitMs >= deadlineMs) {
+          stopped = true;
+          break;
+        }
+        await new Promise((r) => setTimeout(r, waitMs));
       }
     }
-    await new Promise((r) => setTimeout(r, opts?.delayMs ?? 8_000 + Math.floor(Math.random() * 4_000)));
+  };
+
+  if (Date.now() < deadlineMs && targets.length > 0) {
+    const workerCount = Math.min(Math.max(1, concurrency), targets.length);
+    await Promise.all(Array.from({ length: workerCount }, () => worker()));
   }
   return result;
 }
