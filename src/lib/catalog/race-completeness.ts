@@ -12,6 +12,7 @@ export type RaceToComplete = { name: string; start_date: string; practical_detai
 const FIELDS = ["organizer", "schedule", "fees", "categories"] as const;
 const FIRST_COUNTRIES = new Set(["CZ", "SK"]);
 const DAY = 86_400_000;
+export const PRACTICAL_ENRICHMENT_HORIZON_DAYS = 300;
 
 const missingFields = (details: unknown) => FIELDS.filter(field => !(details && typeof details === "object" && field in details)).length;
 const daysUntil = (date: string, now: number) => (Date.parse(date) - now) / DAY;

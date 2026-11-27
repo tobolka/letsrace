@@ -4,9 +4,13 @@ import Foundation
 import os
 
 struct CollectionHealth: Decodable {
-    struct Sources: Decodable { let active: Int; let due: Int; let late24h: Int; let neverRead: Int; let unreadable: Int }
+    struct Sources: Decodable { let active: Int; let due: Int; let late24h: Int; let neverRead: Int; let unreadable: Int; let broken: Int? }
     struct Nearby: Decodable { let total: Int; let missingRegulations: Int; let pausedSourcesOnly: Int }
+    struct BrokenReader: Decodable { let url: String; let kind: String?; let state: String?; let races: Int; let error: String?; let lastFetchedAt: String? }
+    struct Upcoming10m: Decodable { let total: Int; let missingRegulations: Int; let missingDetails: Int }
     let at: String; let sources: Sources; let nearby: Nearby
+    let brokenReaders: [BrokenReader]?
+    let upcoming10m: Upcoming10m?
 }
 
 struct RaceFinderHealth: Decodable {
@@ -434,6 +438,14 @@ final class MonitorController: NSObject, NSApplicationDelegate, NSMenuDelegate {
             metric(collectionHealth?.sources.unreadable, "Nešlo přečíst")
         ], in: sources)
         if let health = collectionHealth {
+            let flagged = (health.brokenReaders ?? []).filter { $0.state == "broken" || $0.races > 0 }
+            if let top = flagged.first {
+                let host = URL(string: top.url)?.host ?? top.url
+                let raceLabel = top.races == 1 ? "1 závod" : (2...4).contains(top.races) ? "\(top.races) závody" : "\(top.races) závodů"
+                let extraCount = flagged.count - 1
+                let extra = extraCount > 0 ? " + \(extraCount) " + (extraCount <= 4 ? "další" : "dalších") : ""
+                add("Rozbitá čtečka: \(host) (\(raceLabel))\(extra)", size: 11, bold: true, color: .systemOrange, to: sources)
+            }
             add("\(health.sources.active) sledovaných webů · stav v \(shortDate(health.at))", size: 10, color: secondary, to: sources)
         }
 
@@ -578,6 +590,23 @@ final class MonitorController: NSObject, NSApplicationDelegate, NSMenuDelegate {
         if let health = collectionHealth {
             let near = health.nearby
             stack.addArrangedSubview(label("Propozice chybí u \(near.missingRegulations) ze \(near.total) závodů v příštích 30 dnech.", size: 12))
+            if let u10 = health.upcoming10m {
+                let line10 = label("Příštích 10 měsíců: chybí propozice u \(u10.missingRegulations) z \(u10.total) · bez detailů \(u10.missingDetails)", size: 11, color: .secondaryLabelColor)
+                line10.maximumNumberOfLines = 2
+                stack.addArrangedSubview(line10)
+            }
+            if let broken = health.brokenReaders, !broken.isEmpty {
+                let items = broken.prefix(3).map { r -> String in
+                    let parsed = URL(string: r.url)
+                    let hostPath = parsed.map { ($0.host ?? "") + ($0.path == "/" ? "" : $0.path) } ?? r.url
+                    let raceLabel = r.races == 1 ? "1 závod" : (2...4).contains(r.races) ? "\(r.races) závody" : "\(r.races) závodů"
+                    let err = (r.error ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+                    return err.isEmpty ? "\(hostPath) (\(raceLabel))" : "\(hostPath) (\(raceLabel)) · \(err)"
+                }.joined(separator: "\n")
+                let brokenLabel = label("Rozbité čtečky (top 3):\n\(items)", size: 10, color: .systemOrange)
+                brokenLabel.maximumNumberOfLines = 6
+                stack.addArrangedSubview(brokenLabel)
+            }
         }
         if let agent = raceFinderHealth {
             stack.addArrangedSubview(label("Případy ke kontrole teď \(agent.due) · později \(agent.planned)", size: 12))

@@ -18,7 +18,8 @@ import { isAccountOrNewsletterUrl } from "@/lib/watcher/registration-url";
 import { documentDetails, documentKind, onlyInBrowser, posterImages, rankPracticalLinks } from "./practical-sources";
 import { renderPagesHtml } from "@/lib/watcher/extractors/csc-render";
 import { braveSearch } from "@/lib/catalog/brave";
-import { completionOrder, daysBeforeNextLook, documentIsAboutRace, documentLinks, ownSourcePages, placeAndDayQuery, regulationsAmong, regulationsQuery, resultsLinkIn, takeSearch, usableHits, websiteMayBeReplaced } from "@/lib/catalog/race-completeness";
+import { completionOrder, daysBeforeNextLook, documentIsAboutRace, documentLinks, ownSourcePages, placeAndDayQuery, PRACTICAL_ENRICHMENT_HORIZON_DAYS, regulationsAmong, regulationsQuery, resultsLinkIn, takeSearch, usableHits, websiteMayBeReplaced } from "@/lib/catalog/race-completeness";
+import { isGenericSeriesRegulationsUrl, needsRoundRegulationsOrDetails } from "@/lib/pipeline2/agent-detail-sources";
 import { isServerless } from "@/lib/runtime";
 
 export function practicalWindows(text: string, max = 6000) {
@@ -89,8 +90,40 @@ export async function savePracticalDetails(eventId: string, revision: string, de
   return data as { status: string; changed?: string[]; skipped?: string[] };
 }
 
+const sameLink = (a: string | null | undefined, b: string | null | undefined): boolean => {
+  if (!a || !b) return false;
+  try {
+    const norm = (u: string) => { const url = new URL(u); return url.hostname.replace(/^www\./, "") + url.pathname.replace(/\/$/, "") + url.search; };
+    return norm(a) === norm(b);
+  } catch {
+    return a === b;
+  }
+};
+
+/**
+ * Generic series rules (e.g. /pravidla, /regulations-en, /generalausschreibung, /reglement)
+ * may be upgraded when a round-specific regulations document is found and core practical details are still empty.
+ */
+export function regulationsMayBeReplaced(
+  stored: string | null | undefined,
+  replacement: string | null | undefined,
+  practicalDetails?: unknown,
+): boolean {
+  if (!replacement) return false;
+  if (!stored) return true;
+  if (sameLink(stored, replacement) || !isGenericSeriesRegulationsUrl(stored) || isGenericSeriesRegulationsUrl(replacement)) return false;
+  if (practicalDetails !== undefined) {
+    const parsed = practicalDetails ? readPracticalDetails(practicalDetails) : {};
+    return needsRoundRegulationsOrDetails({
+      regulations_url: stored,
+      practical_details: parsed as Record<string, unknown>,
+    }).needsRegulations;
+  }
+  return true;
+}
+
 /** Links found for a race go where nothing better is stored, unless someone locked them. */
-export async function saveFoundLinks(row: { id: string; website_url?: string | null; regulations_url?: string | null; results_url?: string | null; registration_url?: string | null }, found: { registration?: string; website?: string; regulations?: string; results?: string }): Promise<number> {
+export async function saveFoundLinks(row: { id: string; website_url?: string | null; regulations_url?: string | null; results_url?: string | null; registration_url?: string | null; practical_details?: unknown }, found: { registration?: string; website?: string; regulations?: string; results?: string }): Promise<number> {
   if (!found.website && !found.regulations && !found.results && !found.registration) return 0;
   const db = createServerSupabase();
   const { data: overrides } = await db.from("event_overrides").select("locked_fields").eq("event_id", row.id).maybeSingle();
@@ -98,7 +131,7 @@ export async function saveFoundLinks(row: { id: string; website_url?: string | n
   const changes: { website_url?: string; regulations_url?: string; results_url?: string; registration_url?: string } = {};
   if (found.registration && !locked.has("registration_url") && !row.registration_url) changes.registration_url = found.registration;
   if (found.website && !locked.has("website_url") && websiteMayBeReplaced(row.website_url)) changes.website_url = found.website;
-  if (found.regulations && !locked.has("regulations_url") && !row.regulations_url) changes.regulations_url = found.regulations;
+  if (found.regulations && !locked.has("regulations_url") && regulationsMayBeReplaced(row.regulations_url, found.regulations, row.practical_details)) changes.regulations_url = found.regulations;
   if (found.results && !locked.has("results_url") && !row.results_url) changes.results_url = found.results;
   if (!Object.keys(changes).length) return 0;
   const { error } = await db.from("events").update(changes).eq("id", row.id);
@@ -115,14 +148,18 @@ export async function enrichPracticalDetails(options: { max?: number; ids?: stri
   const probe = `${PRACTICAL_READER_VERSION}${options.structuredOnly ? ":structured-v2" : ""}`;
   const probes = await readAllRows((from, to) => db.from("catalog_probes").select("event_id,outcome,last_attempt_at,attempts").eq("probe", probe).order("event_id").range(from, to));
   const history = new Map(probes.map(p => [p.event_id, p]));
-  const today = new Date().toISOString().slice(0, 10);
+  const now = Date.now();
+  const today = new Date(now).toISOString().slice(0, 10);
+  const horizon = new Date(now + PRACTICAL_ENRICHMENT_HORIZON_DAYS * 86_400_000).toISOString().slice(0, 10);
   const rows = await readAllRows((from, to) => {
-    let query = db.from("events").select("id,name,start_date,end_date,disciplines,public_revision,practical_details,website_url,registration_url,regulations_url,results_url,location:locations(venue,country_code,municipality)").eq("visibility", "public").is("merged_into_id", null).gte("start_date", today).or("website_url.not.is.null,regulations_url.not.is.null,registration_url.not.is.null").order("start_date").order("id").range(from, to);
+    let query = db.from("events").select("id,name,start_date,end_date,disciplines,public_revision,practical_details,website_url,registration_url,regulations_url,results_url,location:locations(venue,country_code,municipality)").eq("visibility", "public").is("merged_into_id", null).gte("start_date", today);
     if (options.ids?.length) query = query.in("id", options.ids);
-    return query;
+    else query = query.lte("start_date", horizon);
+    return query.or("website_url.not.is.null,regulations_url.not.is.null,registration_url.not.is.null").order("start_date").order("id").range(from, to);
   });
   const wantedCountries = process.env.CATALOG_COUNTRIES?.split(",");
   const targets = rows.filter(row => {
+    if (!options.ids?.length && row.start_date > horizon) return false;
     if (!practicalSeedUrls(row).length) return false;
     if (wantedCountries && !options.ids?.length && !wantedCountries.includes(row.location?.country_code ?? "")) return false;
     const previous = history.get(row.id), days = daysBeforeNextLook({ ...row, practical_details: readPracticalDetails(row.practical_details) }, previous?.outcome === "failed");
@@ -195,8 +232,8 @@ export async function enrichPracticalDetails(options: { max?: number; ids?: stri
     try {
       while (queue.length && seen.size < MAX_READS_PER_RACE && Date.now() + 30_000 < deadline && !documents.some(document => completeDocument(document, row))) {
         const waveUrls: string[] = [];
-        // When the race already points directly at its regulations, read that first before fanning out.
-        const maxWave = seen.size === 0 && row.regulations_url && queue[0] === row.regulations_url ? 1 : DOCUMENT_WAVE_CONCURRENCY;
+        // When the race already points directly at round-specific regulations, read that first before fanning out.
+        const maxWave = seen.size === 0 && row.regulations_url && !isGenericSeriesRegulationsUrl(row.regulations_url) && queue[0] === row.regulations_url ? 1 : DOCUMENT_WAVE_CONCURRENCY;
         while (queue.length && waveUrls.length < maxWave && seen.size < MAX_READS_PER_RACE) {
           const url = queue.shift()!;
           if (seen.has(url) || !isPracticalDocumentUrl(url)) continue;
@@ -261,7 +298,7 @@ export async function enrichPracticalDetails(options: { max?: number; ids?: stri
             const { url, source } = page;
             documents.push({ url, text: source.text, links: [...source.links] });
             const isFile = /\.pdf(?:$|\?)/i.test(url);
-            if (isFile || /propoz|ausschreibung|regulamin|regolamento|reglement|règlement/i.test(decodeURIComponent(url))) found.regulations ??= url;
+            if ((isFile || /propoz|ausschreibung|regulamin|regolamento|reglement|règlement/i.test(decodeURIComponent(url))) && (!row.regulations_url || !isGenericSeriesRegulationsUrl(url))) found.regulations ??= url;
             if (!isFile) found.website ??= url;
             // The site's own regulations are usually one link away from its page about the race.
             const childLinks = practicalChildLinks(url, source.links, row, source.text)
@@ -335,7 +372,8 @@ export async function enrichPracticalDetails(options: { max?: number; ids?: stri
         const saved = await savePracticalDetails(row.id, row.public_revision, checked.details);
         if (saved.status !== "saved") { defer(); return; }
         for (const document of documents) { found.results ??= resultsLinkIn(document.text) ?? undefined; }
-        found.regulations ??= regulationsAmong(documents, { name: row.name, start_date: row.start_date, municipality: row.location?.municipality }) ?? undefined;
+        const inferredRegulations = regulationsAmong(documents, { name: row.name, start_date: row.start_date, municipality: row.location?.municipality });
+        if (inferredRegulations && (!row.regulations_url || !isGenericSeriesRegulationsUrl(inferredRegulations))) found.regulations ??= inferredRegulations;
         result.linksSaved += await saveFoundLinks(row, found);
         result.changedFacts += saved.changed?.length ?? 0; result.changedRaces += Number(Boolean(saved.changed?.length)); result.skippedLocked += saved.skipped?.length ?? 0;
         // Failed/partial source reads remain retryable, even after useful other facts were saved.

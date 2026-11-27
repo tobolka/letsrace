@@ -19,6 +19,7 @@ import { distinctiveWords, documentIsAboutRace } from "../src/lib/catalog/race-c
 import { quoteStatesDate } from "../src/lib/catalog/quoted-date";
 import { readDocument } from "../src/lib/catalog/regulation-ages";
 import { mergeFoundRaces, type FoundRace } from "../src/lib/pipeline2/agent-case-groups";
+import { isGenericSeriesRegulationsUrl } from "../src/lib/pipeline2/agent-detail-sources";
 
 export const AGENT_READER = "agent", AGENT_VERSION = "agent-1";
 const arg = (key: string) => process.argv.find(value => value.startsWith(`--${key}=`))?.slice(key.length + 3);
@@ -61,7 +62,11 @@ async function main() {
       if (error) throw Error(error.message);
       // A race the Mac knows and the server does not is not ours to fill yet.
       if (!race) { consider("skipped", "race_not_on_server"); continue; }
-      if (race.regulations_url) { consider("skipped", "field_filled"); continue; }
+      const canUpgradeGenericRules =
+        isGenericSeriesRegulationsUrl(race.regulations_url) &&
+        !isGenericSeriesRegulationsUrl(answer.url) &&
+        !samePage(answer.url, race.regulations_url);
+      if (race.regulations_url && !canUpgradeGenericRules) { consider("skipped", "field_filled"); continue; }
       if (samePage(answer.url, race.website_url)) { consider("skipped", "same_as_website"); continue; }
       const text = (await readDocument(answer.url, { maxBytes: 8 * 1024 * 1024 }).catch(() => null))?.text ?? "";
       const location = race.location as { municipality?: string | null } | { municipality?: string | null }[] | null;

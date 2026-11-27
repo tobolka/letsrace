@@ -1,5 +1,5 @@
 import { expect, it, vi } from "vitest";
-import { enrichPracticalDetails } from "@/lib/catalog/practical-enrichment";
+import { enrichPracticalDetails, regulationsMayBeReplaced, saveFoundLinks } from "@/lib/catalog/practical-enrichment";
 import { LlmUnavailable } from "@/lib/llm/anthropic";
 
 const mocks = vi.hoisted(() => ({ from: vi.fn(), rpc: vi.fn(), read: vi.fn(), mark: vi.fn(), checkpoint: vi.fn(), ask: vi.fn(), secondRace: false, website: "https://club.test/" as string | null, regulations: null as string | null, rows: null as Record<string, unknown>[] | null }));
@@ -12,7 +12,7 @@ vi.mock("@/lib/llm/anthropic", async original => ({ ...await original<object>(),
 it("saves useful work but leaves a capped document walk retryable rather than stamping it complete", async () => {
   mocks.from.mockImplementation(table => {
     const query: Record<string, unknown> = { table, single: async () => ({ data: { public_revision: "revision", practical_details: {} }, error: null }), upsert: mocks.checkpoint };
-    for (const name of ["select", "eq", "gte", "is", "not", "or", "order", "range", "in"]) query[name] = () => query;
+    for (const name of ["select", "eq", "gte", "lte", "is", "not", "or", "order", "range", "in"]) query[name] = () => query;
     return query;
   });
   mocks.checkpoint.mockResolvedValue({ error: null });
@@ -195,5 +195,81 @@ it("stops claiming new races across workers once AI budget is exhausted", async 
     mocks.rows = null;
     mocks.read.mockReset();
     mocks.ask.mockReset();
+  }
+});
+
+it("limits batch enrichment to the 10-month (300-day) horizon while prioritizing nearest races", async () => {
+  const isoInDays = (days: number) => new Date(Date.now() + days * 86_400_000).toISOString().slice(0, 10);
+  const nearDate = isoInDays(20);
+  const midDate = isoInDays(250);
+  const farDate = isoInDays(340);
+  mocks.rows = [
+    { id: "far", name: "Far Race", start_date: farDate, public_revision: "rev", practical_details: {}, website_url: "https://far.test/", regulations_url: null, location: { country_code: "CZ" } },
+    { id: "mid", name: "Mid Race", start_date: midDate, public_revision: "rev", practical_details: {}, website_url: "https://mid.test/", regulations_url: null, location: { country_code: "CZ" } },
+    { id: "near", name: "Near Race", start_date: nearDate, public_revision: "rev", practical_details: {}, website_url: "https://near.test/", regulations_url: null, location: { country_code: "CZ" } },
+  ];
+  const visited: string[] = [];
+  mocks.read.mockClear();
+  mocks.read.mockImplementation(async (url: string) => {
+    visited.push(url);
+    return { text: "Club welcome", html: null };
+  });
+  try {
+    const result = await enrichPracticalDetails({ max: 5, structuredOnly: true });
+    expect(result).toMatchObject({ eligible: 2, considered: 2, read: 2 });
+    expect(visited).toEqual(["https://near.test/", "https://mid.test/"]);
+  } finally {
+    mocks.rows = null;
+    mocks.read.mockReset();
+  }
+});
+
+it("upgrades generic series rules regulations_url only when core practical details are empty and round regulations are found", async () => {
+  for (const generic of [
+    "https://series.test/o-serialu/pravidla/",
+    "https://series.test/pravidla",
+    "https://series.test/en/regulations-en/",
+    "https://series.test/generalausschreibung",
+    "https://series.test/reglement/",
+  ]) {
+    expect(regulationsMayBeReplaced(generic, "https://series.test/2027-brno-propozice.pdf", {})).toBe(true);
+    expect(regulationsMayBeReplaced(generic, "https://series.test/regulations", {})).toBe(false);
+    expect(regulationsMayBeReplaced(generic, generic, {})).toBe(false);
+  }
+  const filledDetails = {
+    venue: { value: { name: "Brno", precision: "municipality" }, sourceUrl: "https://series.test/", quote: "Místo konání Brno", checkedAt: "2026-11-27T10:00:00Z", editionYear: 2027, status: "current" },
+    fees: { value: [{ label: "Elite", amount: 300, currency: "CZK" }], sourceUrl: "https://series.test/", quote: "Startovné Elite 300 Kč", checkedAt: "2026-11-27T10:00:00Z", editionYear: 2027, status: "current" },
+    schedule: { value: [{ label: "Start", date: "2027-05-01", time: "10:00" }], sourceUrl: "https://series.test/", quote: "Start závodu v 10:00", checkedAt: "2026-11-27T10:00:00Z", editionYear: 2027, status: "current" },
+  };
+  expect(regulationsMayBeReplaced("https://series.test/pravidla", "https://series.test/2027-brno-propozice.pdf", filledDetails)).toBe(false);
+  expect(regulationsMayBeReplaced("https://series.test/2027-ostrava-propozice.pdf", "https://series.test/2027-brno-propozice.pdf", {})).toBe(false);
+
+  const updates: Record<string, unknown>[] = [];
+  const facts: unknown[] = [];
+  const previousImpl = mocks.from.getMockImplementation();
+  mocks.from.mockImplementation((table: string) => {
+    const query: Record<string, unknown> = {
+      maybeSingle: async () => ({ data: { locked_fields: [] }, error: null }),
+      update: (payload: Record<string, unknown>) => { updates.push(payload); return query; },
+      insert: async (payload: unknown) => { facts.push(payload); return { error: null }; },
+      select: () => query,
+      eq: asyncOrChain(),
+    };
+    function asyncOrChain() {
+      return () => Object.assign(Promise.resolve({ error: null }), query);
+    }
+    if (table === "event_overrides") query.eq = () => query;
+    return query;
+  });
+  try {
+    const saved = await saveFoundLinks(
+      { id: "race-1", regulations_url: "https://series.test/o-serialu/pravidla/", practical_details: {} },
+      { regulations: "https://series.test/2027-brno-propozice.pdf" },
+    );
+    expect(saved).toBe(1);
+    expect(updates).toEqual([{ regulations_url: "https://series.test/2027-brno-propozice.pdf" }]);
+    expect(facts).toHaveLength(1);
+  } finally {
+    if (previousImpl) mocks.from.mockImplementation(previousImpl);
   }
 });

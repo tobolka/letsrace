@@ -122,6 +122,84 @@ const NON_DETAIL_PATH_SEGMENT = /\b(?:news|blog|contact|kontakt|privacy|cookies?
 const HUB_PATH_PATTERN = /^\/?(?:[a-z]{2}\/)?(?:calendar|kalendar|events?|races?|rounds?|series|schedule|season|seasons|rules|regulations|regulations-[a-z]{2}|propozice|terminy|termine|calendario|calendrier)?(?:\/20\d{2}(?:[-/]20\d{2}|[-/]\d{2})?)?\/?$/i;
 const CALENDAR_HUB_PATH = /^\/?(?:[a-z]{2}\/)?(?:calendar|kalendar|events?|races?|rounds?|series|schedule|season|seasons|rules|regulations|regulations-[a-z]{2}|terminy|termine|calendario|calendrier)(?:\/20\d{2}(?:[-/]20\d{2}|[-/]\d{2})?)?\/?$/i;
 
+export const CORE_PRACTICAL_FIELDS = ["venue", "routes", "fees", "schedule", "categories"] as const;
+
+const GENERIC_SERIES_REGULATIONS_PATH =
+  /^\/(?:.*\/)?(?:o-serialu\/pravidla|pravidla(?:-serialu)?|rules|regulations(?:-[a-z]{2})?|generalausschreibung|reglement|series-rules|series-regulations|calendar|kalendar|terminy|termine|calendario|calendrier)(?:\/20\d{2}(?:[-/]20\d{2}|[-/]\d{2})?)?$/i;
+
+const GENERIC_SERIES_PDF_NAME =
+  /^(?:generalausschreibung|series[-_]rules|series[-_]regulations|pravidla[-_]serialu|reglement[-_]general)\.(?:pdf|docx?)$/i;
+
+const NON_SPECIFIC_QUERY_PARAMS = new Set(["lang", "locale", "hl", "fbclid", "gclid"]);
+
+/**
+ * True when `url` points to a generic series rules, regulations, calendar overview,
+ * or root homepage rather than a specific round/race document or detail page.
+ */
+export function isGenericSeriesRegulationsUrl(url: string | null | undefined): boolean {
+  const parsed = parseHttpUrl(url);
+  if (!parsed) return false;
+  for (const key of parsed.searchParams.keys()) {
+    const lower = key.toLowerCase();
+    if (!NON_SPECIFIC_QUERY_PARAMS.has(lower) && !lower.startsWith("utm_")) {
+      return false;
+    }
+  }
+  const pathname = parsed.pathname.replace(/\/+$/, "");
+  if (!pathname) return true;
+  if (/\.(?:pdf|docx?)$/i.test(pathname)) {
+    const filename = pathname.split("/").pop() ?? "";
+    return GENERIC_SERIES_PDF_NAME.test(filename);
+  }
+  return GENERIC_SERIES_REGULATIONS_PATH.test(pathname);
+}
+
+function hasPracticalFieldValue(entry: unknown): boolean {
+  if (entry === null || entry === undefined) return false;
+  if (typeof entry === "string") return entry.trim().length > 0;
+  if (Array.isArray(entry)) return entry.length > 0;
+  if (typeof entry !== "object") return Boolean(entry);
+  const record = entry as Record<string, unknown>;
+  if ("value" in record) {
+    const val = record.value;
+    if (val === null || val === undefined) return false;
+    if (typeof val === "string") return val.trim().length > 0;
+    if (Array.isArray(val)) return val.length > 0;
+    if (typeof val === "object") return Object.keys(val as Record<string, unknown>).length > 0;
+    return Boolean(val);
+  }
+  return Object.keys(record).length > 0;
+}
+
+/**
+ * Determines whether a race still needs round-specific regulations discovery
+ * or practical detail extraction from its available official/registration URLs.
+ */
+export function needsRoundRegulationsOrDetails(race: {
+  regulations_url?: string | null;
+  website_url?: string | null;
+  registration_url?: string | null;
+  practical_details?: Record<string, unknown> | null;
+}): {
+  needsRegulations: boolean;
+  needsDetails: boolean;
+  genericSeriesRules: boolean;
+  missingCoreFields: string[];
+} {
+  const details = race.practical_details && typeof race.practical_details === "object" ? race.practical_details : {};
+  const missingCoreFields = CORE_PRACTICAL_FIELDS.filter((field) => !hasPracticalFieldValue(details[field]));
+  const genericSeriesRules = isGenericSeriesRegulationsUrl(race.regulations_url);
+  const needsRegulations = !race.regulations_url || (genericSeriesRules && missingCoreFields.length >= 3);
+  const needsDetails =
+    missingCoreFields.length > 0 && Boolean(race.regulations_url || race.website_url || race.registration_url);
+  return {
+    needsRegulations,
+    needsDetails,
+    genericSeriesRules,
+    missingCoreFields,
+  };
+}
+
 function parseHttpUrl(raw: string | null | undefined): URL | null {
   if (!raw || typeof raw !== "string") return null;
   try {

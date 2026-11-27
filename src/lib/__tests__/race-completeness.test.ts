@@ -3,7 +3,7 @@ import { mkdtempSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
-import { completionOrder, daysBeforeNextLook, documentIsAboutRace, ownSourcePages, regulationsQuery, statesRaceDay, takeSearch, usableHits, websiteMayBeReplaced } from "@/lib/catalog/race-completeness";
+import { completionOrder, daysBeforeNextLook, documentIsAboutRace, ownSourcePages, PRACTICAL_ENRICHMENT_HORIZON_DAYS, regulationsQuery, statesRaceDay, takeSearch, usableHits, websiteMayBeReplaced } from "@/lib/catalog/race-completeness";
 
 const require = createRequire(import.meta.url);
 const { betterWebsite } = require("../../../scripts/local-fills.cjs");
@@ -14,6 +14,11 @@ describe("which known race is worked on next", () => {
   it("nearest Czech and Slovak races first, then near ones elsewhere, then later ones", () => {
     const list = [race({ name: "far cz", start_date: "2027-05-01" }), race({ name: "near it", country: "IT", start_date: "2026-11-08" }), race({ name: "near sk", country: "SK" }), race({ name: "far it", country: "IT", start_date: "2027-05-01" })];
     expect(list.sort((a, b) => completionOrder(a, b, now)).map(r => r.name)).toEqual(["near sk", "near it", "far cz", "far it"]);
+  });
+  it("uses a 10-month (300-day) enrichment horizon while ordering earlier dates before later ones", () => {
+    expect(PRACTICAL_ENRICHMENT_HORIZON_DAYS).toBe(300);
+    const list = [race({ name: "290d", start_date: "2027-08-23" }), race({ name: "90d", start_date: "2027-02-04" }), race({ name: "20d", start_date: "2026-11-26" })];
+    expect(list.sort((a, b) => completionOrder(a, b, now)).map(r => r.name)).toEqual(["20d", "90d", "290d"]);
   });
   it("comes back sooner the nearer the race, and rarely once it has everything", () => {
     expect(daysBeforeNextLook(race({ start_date: "2026-11-30" }), false, now)).toBe(3);

@@ -133,7 +133,7 @@ async function main() {
       }
 
       const isGenericRules = Boolean(event.regulations_url && /\/o-serialu\/pravidla\b/i.test(event.regulations_url));
-      const patch: Record<string, string> = {};
+      const patch: { regulations_url?: string; website_url?: string } = {};
       if (verifiedFields.length >= 2 && (!event.regulations_url || isGenericRules) && event.regulations_url !== page.url) {
         patch.regulations_url = page.url;
       }

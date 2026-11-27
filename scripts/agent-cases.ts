@@ -15,7 +15,7 @@ import { isNonRaceEventName } from "../src/lib/event-visibility";
 import { classifyEventForAgentQueue, extractSourceCategories, looksLikeRide } from "../src/lib/pipeline2/rides";
 import { groupCalendars, groupSameRace, pairKey } from "../src/lib/pipeline2/agent-case-groups";
 import { candidateRowToExistingEdition, filterExistingNextDateCases, type ExistingEditionRecord, type PipelineCandidateRow } from "../src/lib/pipeline2/agent-next-date-filter";
-import { resolveDetailSources, type DetailPageSnapshot } from "../src/lib/pipeline2/agent-detail-sources";
+import { needsRoundRegulationsOrDetails, resolveDetailSources, type DetailPageSnapshot } from "../src/lib/pipeline2/agent-detail-sources";
 import { readDocument } from "../src/lib/catalog/regulation-ages";
 import { pageAsText } from "../src/lib/watcher/extractors/llm-calendar";
 
@@ -26,10 +26,10 @@ const arg = (key: string) => process.argv.find(value => value.startsWith(`--${ke
 type Row = {
   id: string; name: string; start_date: string; end_date: string | null; status: string | null; visibility: string | null; disciplines: string[] | null; event_type: string | null;
   class_label: string | null; competition_type: string | null; uci_class: string | null; description: string | null; formats: string[] | null;
-  website_url: string | null; registration_url: string | null; regulations_url: string | null; series: string | null;
+  website_url: string | null; registration_url: string | null; regulations_url: string | null; practical_details: Record<string, unknown> | null; series: string | null;
   municipality: string | null; place: string | null; country_code: string | null; lat: number | null; lng: number | null; sources: string[] | null;
 };
-const SELECT = `select e.id,e.name,e.start_date,e.end_date,e.status,e.visibility,e.disciplines,e.event_type,e.class_label,e.competition_type,e.uci_class,e.description,e.formats,e.website_url,e.registration_url,e.regulations_url,
+const SELECT = `select e.id,e.name,e.start_date,e.end_date,e.status,e.visibility,e.disciplines,e.event_type,e.class_label,e.competition_type,e.uci_class,e.description,e.formats,e.website_url,e.registration_url,e.regulations_url,e.practical_details,
   s.name series,l.municipality,l.name place,l.country_code,l.lat,l.lng,
   (select array_agg(distinct x.source_url) from public.event_sources x where x.event_id=e.id and x.source_url is not null) sources
   from public.events e left join public.locations l on l.id=e.location_id left join public.series s on s.id=e.series_id`;
@@ -85,14 +85,29 @@ async function main() {
 
   // Regulations: nearest race first, Czech and Slovak races first on the same day.
   const wantRegulations = Number(arg("regulations") ?? 20);
-  const missing = rows(`e.visibility='public' and e.merged_into_id is null and e.start_date between current_date+2 and current_date+60 and e.regulations_url is null and coalesce(e.status,'') not in ('cancelled','completed')
-    order by e.start_date, (l.country_code in ('CZ','SK')) desc, e.id limit ${wantRegulations * 6}`).filter(race => !answered(`regulations-${race.id.slice(0, 8)}`));
-  const classifiedMissing = missing.map(race => ({ race, decision: classifyRow(race) }));
+  const missing = rows(`e.visibility='public' and e.merged_into_id is null and e.start_date between current_date+2 and current_date+300
+    and (e.regulations_url is null or (
+      case when coalesce(e.practical_details, '{}'::jsonb) ? 'venue' then 0 else 1 end +
+      case when coalesce(e.practical_details, '{}'::jsonb) ? 'routes' then 0 else 1 end +
+      case when coalesce(e.practical_details, '{}'::jsonb) ? 'fees' then 0 else 1 end +
+      case when coalesce(e.practical_details, '{}'::jsonb) ? 'schedule' then 0 else 1 end +
+      case when coalesce(e.practical_details, '{}'::jsonb) ? 'categories' then 0 else 1 end
+    ) >= 3)
+    and coalesce(e.status,'') not in ('cancelled','completed')
+    order by e.start_date, (l.country_code in ('CZ','SK')) desc, e.id limit ${Math.max(wantRegulations * 20, 400)}`)
+    .map(race => ({ race, needs: needsRoundRegulationsOrDetails(race) }))
+    .filter(({ race, needs }) => needs.needsRegulations && !answered(`regulations-${race.id.slice(0, 8)}`));
+  const classifiedMissing = missing.map(({ race, needs }) => ({ race, needs, decision: classifyRow(race) }));
   // Non-competitive events (source category or ride name) are skipped; ambiguous ones are sent to decide_ride.
   const realRaces = groupSameRace(
     classifiedMissing
       .filter(({ race, decision }) => decision.action === "process_race" && !answeredAs(`ride-${race.id.slice(0, 8)}`, "ride"))
-      .map(({ race }) => ({ case: `regulations-${race.id.slice(0, 8)}`, kind: "find_regulations", race: shown(race) as ReturnType<typeof shown> & { same_race_ids?: string[] } })),
+      .map(({ race, needs }) => ({
+        case: `regulations-${race.id.slice(0, 8)}`,
+        kind: "find_regulations",
+        race: shown(race) as ReturnType<typeof shown> & { same_race_ids?: string[] },
+        ...(needs.genericSeriesRules ? { current_regulations_note: "current_regulations_url_is_generic_series_rules" } : {}),
+      })),
   )
     .filter(item => !(item.race.same_race_ids ?? []).some(id => answered(`regulations-${id.slice(0, 8)}`))).slice(0, wantRegulations);
   cases.push(...realRaces);
@@ -131,15 +146,15 @@ async function main() {
 
   // Details are a separate lane and rotate with the other desk cases.
   if (process.env.AGENT_DETAILS_FALLBACK === "1") {
-    const practical = sql<(Row & { practical_details: Record<string, { value: unknown; sourceUrl: string }> })[]>(`
+    const practical = sql<(Omit<Row, "practical_details"> & { practical_details: Record<string, { value: unknown; sourceUrl: string }> })[]>(`
       select coalesce(json_agg(t),'[]') from (
         select e.id,e.name,e.start_date,e.end_date,e.status,e.visibility,e.disciplines,e.event_type,e.class_label,e.competition_type,e.uci_class,e.description,e.formats,e.registration_url,e.regulations_url,e.website_url,e.practical_details,s.name series,
           l.municipality,l.name place,l.country_code,l.lat,l.lng,
           (select array_agg(distinct x.source_url) from public.event_sources x where x.event_id=e.id and x.source_url is not null) sources
         from public.events e left join public.locations l on l.id=e.location_id left join public.series s on s.id=e.series_id
-        where e.visibility='public' and e.merged_into_id is null and e.start_date between current_date and current_date+120
+        where e.visibility='public' and e.merged_into_id is null and e.start_date between current_date and current_date+300
           and coalesce(e.status,'') not in ('cancelled','completed') and e.event_type is distinct from 'ride'
-          and (e.regulations_url is not null or e.practical_details <> '{}')
+          and (e.regulations_url is not null or e.website_url is not null or e.registration_url is not null or e.practical_details <> '{}')
         order by e.start_date,e.id limit 800
       ) t`);
     const fields = ["venue","organizer","parking","schedule","fees","routes","categories"];
@@ -166,11 +181,11 @@ async function main() {
       if (queueDecision.action === "decide_ride") { queueDecideRide(row); continue; }
       const race = { id:row.id,name:row.name,date:row.start_date,end_date:row.end_date,place:row.municipality };
       const stored = row.practical_details ?? {};
-      if (extracts < 8 && row.regulations_url && fields.some(field=>!stored[field])) {
+      if (extracts < 8 && (row.regulations_url || row.website_url || row.registration_url) && fields.some(field=>!stored[field])) {
         const previousMissingReason = detailNotes[row.id]?.reason ?? null;
         const resolved = await resolveDetailSources(
           { ...race, municipality: row.municipality, series: row.series },
-          { fetchPage, allowedUrls: [row.regulations_url, row.website_url, ...(row.sources ?? []).slice(0, 4)], previousMissingReason },
+          { fetchPage, allowedUrls: [row.regulations_url, row.website_url, row.registration_url, ...(row.sources ?? []).slice(0, 4)], previousMissingReason },
         );
         if (resolved.missingDetailReason) {
           detailNotes[row.id] = { reason: resolved.missingDetailReason, at: new Date().toISOString() };
@@ -179,7 +194,7 @@ async function main() {
           delete detailNotes[row.id];
           detailNotesChanged = true;
         }
-        const urls = resolved.urls.length ? resolved.urls : [...new Set([row.regulations_url,row.website_url].filter((url): url is string=>Boolean(url)))];
+        const urls = resolved.urls.length ? resolved.urls : [...new Set([row.regulations_url,row.website_url,row.registration_url].filter((url): url is string=>Boolean(url)))];
         const name = `details-${short(JSON.stringify([race,urls]))}`;
         if (!answered(name)) {
           cases.push({
@@ -325,7 +340,7 @@ async function main() {
   const wantPairs = Number(arg("pairs") ?? 10);
   if (wantPairs) {
     // Rides are not judged as doubles: several starts of one ride look like separate entries, and none of them belongs in the catalogue.
-    const coming = rows(`e.visibility='public' and e.merged_into_id is null and e.start_date between current_date and current_date + 240 and coalesce(e.status,'') not in ('cancelled','completed','hidden') and coalesce(e.event_type,'') <> 'ride' order by e.start_date, e.id`).filter(race => !looksLikeRide(race.name));
+    const coming = rows(`e.visibility='public' and e.merged_into_id is null and e.start_date between current_date and current_date + 300 and coalesce(e.status,'') not in ('cancelled','completed','hidden') and coalesce(e.event_type,'') <> 'ride' order by e.start_date, e.id`).filter(race => !looksLikeRide(race.name));
     const known = new Set(sql<string[]>(`select coalesce(json_agg(left_id||'|'||right_id),'[]') from public.duplicate_reviews`));
     let pairs = 0;
     for (let i = 0; i < coming.length && pairs < wantPairs; i++) for (let j = i + 1; j < coming.length && pairs < wantPairs; j++) {
