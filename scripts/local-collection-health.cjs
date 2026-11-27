@@ -34,9 +34,16 @@ function collectionHealthQuery(countries) {
     left join public.events e on e.id=s.event_id and e.merged_into_id is null
     where w.status='active'
       and w.url not ilike '%portal.czechcyclingfederation.com/Races%'
-      and (w.operational_state in ('broken','unreadable','review') or w.last_extract_status in ('needs_review','error'))
+      and (
+        w.operational_state = 'broken'
+        or (
+          w.operational_state in ('unreadable', 'review')
+          and coalesce(w.last_error, '') not ilike '%identity_review_required%'
+          and coalesce(w.last_error, '') not ilike '%calendar_write_retry_pending%'
+        )
+      )
     group by w.id, w.url, w.kind, w.operational_state, w.last_error, w.last_extract_status, w.last_fetched_at
-    order by count(distinct e.id) desc, w.last_fetched_at desc nulls last
+    order by (w.operational_state = 'broken') desc, count(distinct e.id) desc, w.last_fetched_at desc nulls last
     limit 5
   )
   select json_build_object(
@@ -49,7 +56,7 @@ function collectionHealthQuery(countries) {
     'nearby',(select json_build_object('total',count(*),'missingRegulations',count(*) filter(where nullif(btrim(regulations_url),'') is null),
       'pausedSourcesOnly',(select count(*) from unmonitored)) from nearby),
     'brokenReaders',coalesce((select json_agg(json_build_object('url',r.url,'kind',r.kind,'state',r.state,'races',r.races,'error',r.error,'lastFetchedAt',r.last_fetched_at)
-      order by r.races desc, r.last_fetched_at desc nulls last) from broken_readers r),'[]'::json),
+      order by (r.state = 'broken') desc, r.races desc, r.last_fetched_at desc nulls last) from broken_readers r),'[]'::json),
     'upcoming10m',(select json_build_object('total',count(*),'missingRegulations',count(*) filter(where nullif(btrim(regulations_url),'') is null),
       'missingDetails',count(*) filter(where not (practical_details ?| array['venue','routes','fees','schedule','categories']))) from upcoming_10m)
   )`;

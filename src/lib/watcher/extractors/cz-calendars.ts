@@ -4,6 +4,7 @@ import { normalizeName } from "@/lib/domain";
 import { parseCyklokrosCalendar } from "@/lib/watcher/extractors/cyklokros";
 import { fetchText } from "@/lib/watcher/http";
 import { mapPool } from "@/lib/watcher/pool";
+import { isDumpListingUrl, preferDeeperOfficialUrl } from "@/lib/watcher/public-url";
 import { isStartListUrl } from "@/lib/watcher/registration-url";
 
 const CZ_MONTHS: Record<string, string> = {
@@ -401,7 +402,50 @@ export function parseMaratonTerminovka(url: string, html: string): ParsedEvent[]
   return events;
 }
 
-/** Český pohár MTB XCO — `poharmtb.cz/cross-country` table. */
+/** Český pohár MTB XCO / XCM — `poharmtb.cz/cross-country` and `/maraton`. */
+function isSkippedPoharMtbHref(href: string, listing: string): boolean {
+  if (isSameListing(href, listing) || isPdfHref(href) || isDumpListingUrl(href)) return true;
+  if (/results\.|\/vysledky(\/|$)/i.test(href)) return true;
+  try {
+    const host = new URL(href).hostname.replace(/^www\./i, "").toLowerCase();
+    return host === "poharmtb.cz";
+  } catch {
+    return true;
+  }
+}
+
+function collectPoharMtbXcmLinks($: cheerio.CheerioAPI, pageUrl: string, listing: string): Map<string, string> {
+  const byName = new Map<string, string>();
+  $("h2 a[href], h3 a[href], h4 a[href], a.btn[href]").each((_, a) => {
+    const href = absHref($(a).attr("href"), pageUrl);
+    if (!href || isSkippedPoharMtbHref(href, listing)) return;
+    const label = $(a).text().replace(/\s+/g, " ").trim();
+    const key = normalizeName(label);
+    if (key.length < 3) return;
+    const best = preferDeeperOfficialUrl(href, byName.get(key));
+    if (best) byName.set(key, best);
+  });
+  return byName;
+}
+
+function matchPoharMtbXcmLink(raceTitle: string, links: Map<string, string>): string | undefined {
+  const key = normalizeName(raceTitle);
+  if (links.has(key)) return links.get(key);
+  for (const [k, href] of links) {
+    if (k.length >= 4 && (key.includes(k) || k.includes(key))) return href;
+  }
+  return undefined;
+}
+
+function cleanPoharMtbXcmTitle(rawRace: string): { raceTitle: string; isMcr: boolean } {
+  const isMcr = /mistrovství|mčr|\bmcr\b/i.test(rawRace);
+  const raceTitle =
+    rawRace
+      .replace(/\s*[–-]\s*(?:mistrovství\s*(?:čr|české\s+republiky)|mčr|mcr)(?:\s*xcm)?\s*$/i, "")
+      .trim() || rawRace;
+  return { raceTitle, isMcr };
+}
+
 export function parsePoharMtb(url: string, html: string): ParsedEvent[] {
   const $ = cheerio.load(html);
   const events: ParsedEvent[] = [];
@@ -475,64 +519,139 @@ export function parsePoharMtb(url: string, html: string): ParsedEvent[] {
     });
   });
 
-  // XCM season page is prose + a calendar <ul>, not the XCO race-table.
+  // XCM season page uses a standard CMS table (`Datum | Závod | Místo`) plus
+  // per-race <h3> and button links; older seasons used a calendar <ul>.
   if (isXcm && !events.length) {
-    const MONTHS: Record<string, string> = {
-      ledna: "01",
-      února: "02",
-      unora: "02",
-      března: "03",
-      brezna: "03",
-      dubna: "04",
-      května: "05",
-      kvetna: "05",
-      června: "06",
-      cervna: "06",
-      července: "07",
-      cervence: "07",
-      srpna: "08",
-      září: "09",
-      zari: "09",
-      října: "10",
-      rijna: "10",
-      listopadu: "11",
-      prosince: "12",
-    };
-    $("ul li").each((_, li) => {
-      const $li = $(li);
-      const text = $li.text().replace(/\s+/g, " ").trim();
-      const m = text.match(
-        /(\d{1,2})\.\s*(ledna|února|unora|března|brezna|dubna|května|kvetna|června|cervna|července|cervence|srpna|září|zari|října|rijna|listopadu|prosince)\s*[-–]\s*(.+)/i,
-      );
-      if (!m) return;
-      const month = MONTHS[m[2]!.toLowerCase()];
-      if (!month) return;
-      const start = `2026-${month}-${m[1]!.padStart(2, "0")}`;
-      const rest = m[3]!.replace(/\s*\/\s*.*$/, "").trim();
-      const placeMatch = rest.match(/,\s*\*?([^*]+?)\s*\*?\s*$/);
-      const place = (placeMatch?.[1] || rest.split(",")[1] || rest).replace(/\*/g, "").trim();
-      const raceName = rest.replace(/,\s*\*?[^*]+?\*?\s*$/, "").replace(/\*/g, "").trim() || rest;
-      const href = absHref($li.find("a[href]").first().attr("href"), url);
-      const isMcr = /mistrovství|mčr/i.test(raceName);
-      const externalId = `poharmtb-xcm-${start}-${normalizeName(place || raceName)}`;
+    const xcmLinks = collectPoharMtbXcmLinks($, url, listing);
+    const pushXcmEvent = (opts: {
+      dates: { start: string; end?: string };
+      rawRace: string;
+      place: string;
+      rowUrl?: string;
+      regulationsUrl?: string;
+      confidence: number;
+    }) => {
+      const { raceTitle, isMcr } = cleanPoharMtbXcmTitle(opts.rawRace);
+      const place = opts.place || raceTitle;
+      const externalId = `poharmtb-xcm-${opts.dates.start}-${normalizeName(place)}`;
       if (seen.has(externalId)) return;
       seen.add(externalId);
+      const matchedUrl = matchPoharMtbXcmLink(raceTitle, xcmLinks);
+      const bestWebsite =
+        preferDeeperOfficialUrl(opts.rowUrl, matchedUrl) ?? opts.rowUrl ?? matchedUrl;
       events.push({
         externalId,
-        name: isMcr ? `MČR XCM — ${raceName}` : `ČP MTB XCM — ${raceName}`,
-        startDate: start,
-        placeText: place || raceName,
+        name: isMcr ? `MČR XCM — ${raceTitle}` : `ČP MTB XCM — ${raceTitle}`,
+        startDate: opts.dates.start,
+        endDate: opts.dates.end,
+        placeText: place,
         countryHint: "CZ",
         discipline: ["xcm"],
         audience: "mixed",
         seriesName,
         seriesSlug,
         seriesWebsite: "https://www.poharmtb.cz/",
-        sourceUrl: href || url,
-        websiteUrl: href || listing,
-        confidence: 0.88,
+        sourceUrl: bestWebsite || opts.regulationsUrl || url,
+        websiteUrl: bestWebsite || listing,
+        regulationsUrl: opts.regulationsUrl,
+        confidence: opts.confidence,
       });
+    };
+
+    $("table:not(.race-table) tr").each((_, tr) => {
+      const $tr = $(tr);
+      const cells = $tr.find("td");
+      if (cells.length < 2) return;
+      const dates = parseCzIso(cells.eq(0).text());
+      if (!dates) return;
+      const rawRace = cells.eq(1).text().replace(/\s+/g, " ").trim();
+      if (!rawRace) return;
+      const place = cells.eq(2).text().replace(/\s+/g, " ").trim();
+
+      let rowUrl: string | undefined;
+      let regulationsUrl: string | undefined;
+      $tr.find("a[href]").each((_, a) => {
+        const href = absHref($(a).attr("href"), url);
+        if (!href) return;
+        const text = $(a).text().replace(/\s+/g, " ").trim();
+        if (/propozic/i.test(`${href} ${text}`) || isPdfHref(href)) {
+          regulationsUrl = regulationsUrl || href;
+        } else if (!isSkippedPoharMtbHref(href, listing)) {
+          rowUrl = rowUrl || href;
+        }
+      });
+
+      pushXcmEvent({ dates, rawRace, place, rowUrl, regulationsUrl, confidence: 0.9 });
     });
+
+    if (!events.length) {
+      $("h2, h3, h4").each((_, h) => {
+        const $h = $(h);
+        const text = $h.text().replace(/\s+/g, " ").trim();
+        const m = text.match(/^(.+?)\s*[-–]\s*([^(]+?)\s*\(([^)]+)\)\s*$/);
+        if (!m) return;
+        const dates = parseCzIso(m[3]!);
+        if (!dates) return;
+        const href = absHref($h.find("a[href]").first().attr("href"), url);
+        const rowUrl = href && !isSkippedPoharMtbHref(href, listing) ? href : undefined;
+        pushXcmEvent({
+          dates,
+          rawRace: m[1]!.trim(),
+          place: m[2]!.trim(),
+          rowUrl,
+          confidence: 0.88,
+        });
+      });
+    }
+
+    if (!events.length) {
+      const MONTHS: Record<string, string> = {
+        ledna: "01",
+        února: "02",
+        unora: "02",
+        března: "03",
+        brezna: "03",
+        dubna: "04",
+        května: "05",
+        kvetna: "05",
+        června: "06",
+        cervna: "06",
+        července: "07",
+        cervence: "07",
+        srpna: "08",
+        září: "09",
+        zari: "09",
+        října: "10",
+        rijna: "10",
+        listopadu: "11",
+        prosince: "12",
+      };
+      const seasonYear =
+        $("h1, h2, h3, h4").text().match(/\b(202[6-9]|203\d)\b/)?.[1] ?? "2026";
+      $("ul li").each((_, li) => {
+        const $li = $(li);
+        const text = $li.text().replace(/\s+/g, " ").trim();
+        const m = text.match(
+          /(\d{1,2})\.\s*(ledna|února|unora|března|brezna|dubna|května|kvetna|června|cervna|července|cervence|srpna|září|zari|října|rijna|listopadu|prosince)\s*[-–]\s*(.+)/i,
+        );
+        if (!m) return;
+        const month = MONTHS[m[2]!.toLowerCase()];
+        if (!month) return;
+        const start = `${seasonYear}-${month}-${m[1]!.padStart(2, "0")}`;
+        const rest = m[3]!.replace(/\s*\/\s*.*$/, "").trim();
+        const placeMatch = rest.match(/,\s*\*?([^*]+?)\s*\*?\s*$/);
+        const place = (placeMatch?.[1] || rest.split(",")[1] || rest).replace(/\*/g, "").trim();
+        const raceName = rest.replace(/,\s*\*?[^*]+?\*?\s*$/, "").replace(/\*/g, "").trim() || rest;
+        const href = absHref($li.find("a[href]").first().attr("href"), url);
+        pushXcmEvent({
+          dates: { start },
+          rawRace: raceName,
+          place: place || raceName,
+          rowUrl: href,
+          confidence: 0.88,
+        });
+      });
+    }
   }
 
   return events;

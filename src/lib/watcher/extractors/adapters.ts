@@ -32,6 +32,10 @@ import { parseRaceresultEvents } from "@/lib/watcher/extractors/raceresult";
 import { parseEventinKids } from "@/lib/watcher/extractors/eventin-kids";
 import { parseKalendarSportsoft, parseSportsoftRegistration } from "@/lib/watcher/extractors/sportsoft";
 import { parseSportBase } from "@/lib/watcher/extractors/sportbase";
+import {
+  isSportchallengeListingUrl,
+  parseSportchallenge,
+} from "@/lib/watcher/extractors/sportchallenge";
 import { isRacementHost, parseRacement } from "@/lib/watcher/extractors/racement";
 import {
   isHynekSeriesCalendarHost,
@@ -889,10 +893,13 @@ export async function extractWithAdapter(
     return { events: parseWerdenfelserCup(url, html), strategy: "adapter:werdenfels" };
   }
   if (host.includes("sportchallenge.cz")) {
-    if (!/podkrkonosskymaraton\/20\d{2}/i.test(url)) {
-      return { events: [], strategy: "adapter:podkrkonos-skip" };
+    if (/podkrkonosskymaraton\/20\d{2}/i.test(url)) {
+      return { events: parsePodkrkonosskyMaraton(url, html), strategy: "adapter:podkrkonos" };
     }
-    return { events: parsePodkrkonosskyMaraton(url, html), strategy: "adapter:podkrkonos" };
+    if (isSportchallengeListingUrl(url)) {
+      return { events: parseSportchallenge(url, html), strategy: "adapter:sportchallenge" };
+    }
+    return { events: [], strategy: "adapter:sportchallenge-skip" };
   }
   if (host.includes("mtb-rhein-main-cup.de")) {
     try {
