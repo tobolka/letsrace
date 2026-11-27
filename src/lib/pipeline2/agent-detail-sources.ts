@@ -119,7 +119,8 @@ const GENERIC_RACE_WORDS = new Set([
 
 const NON_DETAIL_PATH_SEGMENT = /\b(?:news|blog|contact|kontakt|privacy|cookies?|terms|imprint|impressum|login|signin|sign-in|account|cart|shop|store|sponsors?|partners?|about|o-nas|rankings?|standings?|classification|photos?|gallery|galerie|videos?|media|press|faq|newsletter|archive|archiv)\b/i;
 
-const HUB_PATH_PATTERN = /^\/?(?:[a-z]{2}\/)?(?:calendar|kalendar|events?|races?|rounds?|series|schedule|season|seasons|rules|regulations|propozice|terminy|termine|calendario|calendrier)?(?:\/20\d{2}(?:[-/]20\d{2}|[-/]\d{2})?)?\/?$/i;
+const HUB_PATH_PATTERN = /^\/?(?:[a-z]{2}\/)?(?:calendar|kalendar|events?|races?|rounds?|series|schedule|season|seasons|rules|regulations|regulations-[a-z]{2}|propozice|terminy|termine|calendario|calendrier)?(?:\/20\d{2}(?:[-/]20\d{2}|[-/]\d{2})?)?\/?$/i;
+const CALENDAR_HUB_PATH = /^\/?(?:[a-z]{2}\/)?(?:calendar|kalendar|events?|races?|rounds?|series|schedule|season|seasons|rules|regulations|regulations-[a-z]{2}|terminy|termine|calendario|calendrier)(?:\/20\d{2}(?:[-/]20\d{2}|[-/]\d{2})?)?\/?$/i;
 
 function parseHttpUrl(raw: string | null | undefined): URL | null {
   if (!raw || typeof raw !== "string") return null;
@@ -380,6 +381,12 @@ export function verifyOfficialDetailPage(
   const raceYear = Number(race.date.slice(0, 4));
   const pathFolded = fold(decodedUrl(parsed.pathname + " " + parsed.search));
 
+  // 0. Reject generic calendar/series hub paths (e.g. /en/calendar or /en/regulations-en)
+  // so resolveDetailSources follows links to the specific round detail page.
+  if (CALENDAR_HUB_PATH.test(parsed.pathname) && !parsed.search) {
+    return { ok: false, reason: "calendar_overview_not_detail" };
+  }
+
   // 1. Reject URLs explicitly belonging to a different season or edition year.
   const urlSeasons = extractSeasonRanges(pathFolded);
   if (urlSeasons.length > 0 && !urlSeasons.some((s) => seasonMatchesDate(s, race.date))) {
@@ -499,11 +506,42 @@ export async function resolveDetailSources(
   }
 
   const fetchedUrls = new Set<string>();
-  const candidatePool: string[] = [];
-  const candidateSet = new Set<string>();
+  const failureReasons: string[] = [];
+  const tryCandidates = async (candidates: string[]): Promise<ResolvedDetailSources | null> => {
+    for (const candidate of candidates.slice(0, maxCandidates)) {
+      const key = normalizeUrl(new URL(candidate));
+      if (fetchedUrls.has(key)) continue;
+      fetchedUrls.add(key);
 
-  // Inspect allowed URLs: if one already verifies as this edition's detail page,
-  // use it; otherwise harvest candidate detail links from hub/calendar pages.
+      const snapshot = await options.fetchPage(candidate).catch(() => null);
+      if (!snapshot) {
+        failureReasons.push("fetch_failed");
+        continue;
+      }
+      const effectiveUrl = snapshot.url || candidate;
+      if (!isVerifiedDetailUrlForHub(effectiveUrl, baseUrls)) {
+        failureReasons.push("off_host_redirect");
+        continue;
+      }
+
+      const check = verifyOfficialDetailPage(effectiveUrl, snapshot.text, race);
+      if (check.ok) {
+        const urls = [...new Set([effectiveUrl, ...baseUrls])];
+        return {
+          urls,
+          officialDetailUrl: effectiveUrl,
+          missingDetailReason: null,
+          previousMissingReason,
+        };
+      }
+      if (check.reason) failureReasons.push(check.reason);
+    }
+    return null;
+  };
+
+  // Inspect allowed URLs in priority order (regulations_url, website_url, then sources).
+  // When an official hub/calendar page yields candidate round links on the same host,
+  // verify those official round links before falling back to lower-priority third-party sources.
   for (const allowedUrl of baseUrls.slice(0, maxCandidates)) {
     const normalizedAllowed = normalizeUrl(new URL(allowedUrl));
     if (fetchedUrls.has(normalizedAllowed)) continue;
@@ -526,45 +564,9 @@ export async function resolveDetailSources(
 
     if (looksLikeHubOrOverviewUrl(effectiveUrl, race) || directCheck.reason === "calendar_overview_not_detail") {
       const candidates = extractOfficialDetailCandidates(effectiveUrl, snapshot.links ?? [], race);
-      for (const candidate of candidates) {
-        const key = normalizeUrl(new URL(candidate));
-        if (!fetchedUrls.has(key) && !candidateSet.has(key)) {
-          candidateSet.add(key);
-          candidatePool.push(candidate);
-        }
-      }
+      const resolved = await tryCandidates(candidates);
+      if (resolved) return resolved;
     }
-  }
-
-  // Fetch and verify top candidate detail pages (bounded).
-  const failureReasons: string[] = [];
-  for (const candidate of candidatePool.slice(0, maxCandidates)) {
-    const key = normalizeUrl(new URL(candidate));
-    if (fetchedUrls.has(key)) continue;
-    fetchedUrls.add(key);
-
-    const snapshot = await options.fetchPage(candidate).catch(() => null);
-    if (!snapshot) {
-      failureReasons.push("fetch_failed");
-      continue;
-    }
-    const effectiveUrl = snapshot.url || candidate;
-    if (!isVerifiedDetailUrlForHub(effectiveUrl, baseUrls)) {
-      failureReasons.push("off_host_redirect");
-      continue;
-    }
-
-    const check = verifyOfficialDetailPage(effectiveUrl, snapshot.text, race);
-    if (check.ok) {
-      const urls = [...new Set([effectiveUrl, ...baseUrls])];
-      return {
-        urls,
-        officialDetailUrl: effectiveUrl,
-        missingDetailReason: null,
-        previousMissingReason,
-      };
-    }
-    if (check.reason) failureReasons.push(check.reason);
   }
 
   const uniqueReasons = [...new Set(failureReasons)];

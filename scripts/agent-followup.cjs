@@ -171,13 +171,30 @@ function sourceChanges(archive) {
     if (page.asksVerification || page.requestAttempted === false || !page.at || !page.url) continue;
     const previous = changed.get(page.url);
     if (page.error || page.status >= 400) {
-      changed.set(page.url, { signal: previous?.signal ?? null, at: previous?.at ?? 0, failed: true });
+      changed.set(page.url, {
+        signal: previous?.signal ?? null,
+        at: previous?.at ?? 0,
+        recoveredAt: previous?.recoveredAt ?? 0,
+        failed: true,
+      });
       continue;
     }
-    // Ignore counters, navigation and decoration. Early wake-up needs a new edition signal or recovery from an error.
+    // Ignore counters, navigation and decoration. Early wake-up needs a new edition signal;
+    // error->200 recovery is tracked separately so transient blips don't wake unchanged calendars.
     const signal = fingerprint([page.dateSignals ?? [], page.structuredEvents ?? [], page.follow ?? []]);
-    if (!previous) changed.set(page.url, { signal, at: 0, failed: false });
-    else if (previous.failed || previous.signal !== signal) changed.set(page.url, { signal, at: Date.parse(page.at), failed: false });
+    const atMs = Date.parse(page.at);
+    if (!previous) {
+      changed.set(page.url, { signal, at: 0, recoveredAt: 0, failed: false });
+    } else {
+      const contentChanged = previous.signal !== null && previous.signal !== signal;
+      const recovered = Boolean(previous.failed);
+      changed.set(page.url, {
+        signal,
+        at: contentChanged ? atMs : (previous.at ?? 0),
+        recoveredAt: recovered ? atMs : (previous.recoveredAt ?? 0),
+        failed: false,
+      });
+    }
   }
   return changed;
 }
@@ -251,8 +268,12 @@ function followup(saved, body, changes, ocr, now = Date.now()) {
   if (changes && (saved.kind === 'find_next_date' || lastOutcome === 'temporary_error' || lastOutcome === 'unchanged_calendar')) {
     for (const href of caseUrls(body)) {
       const source = changes.get(href);
-      if (source?.at > checked) {
-        due = Math.min(due, source.at);
+      if (!source) continue;
+      const wakeAt = lastOutcome === 'temporary_error'
+        ? Math.max(source.at ?? 0, source.recoveredAt ?? 0)
+        : (source.at ?? 0);
+      if (wakeAt > checked) {
+        due = Math.min(due, wakeAt);
         sourceChanged = true;
       }
     }
