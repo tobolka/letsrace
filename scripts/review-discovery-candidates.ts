@@ -77,7 +77,7 @@ export function buildReviewRequiredUpdate(decision: ReviewDecision, error: unkno
 export async function loadResumeDecisions(
   db: ReturnType<typeof createServerSupabase>,
   nowIso = new Date().toISOString(),
-  limit = 3,
+  limit = 10,
 ): Promise<ReviewDecision[]> {
   // Prefer fresh interrupted publications (publish_error IS NULL) so previously
   // errored rows waiting on retries cannot starve valid in-flight candidates.

@@ -284,4 +284,47 @@ describe("loadResumeDecisions", () => {
     expect(calls).toEqual(["is_null"]);
     expect(result.map(d => d.id)).toEqual(["fresh-1", "fresh-2", "fresh-3"]);
   });
+
+  it("defaults limit to 10 when omitted", async () => {
+    const calls: Array<{ nullFilter: string; limit: number }> = [];
+    const db = {
+      from: vi.fn(() => {
+        let nullFilter = "";
+        const chain: Record<string, unknown> = {};
+        for (const method of ["select", "eq", "lte", "order"]) chain[method] = () => chain;
+        chain.is = (col: string, val: unknown) => {
+          if (col === "publish_error" && val === null) nullFilter = "is_null";
+          return chain;
+        };
+        chain.not = (col: string, op: string, val: unknown) => {
+          if (col === "publish_error" && op === "is" && val === null) nullFilter = "not_null";
+          return chain;
+        };
+        chain.limit = async (n: number) => {
+          calls.push({ nullFilter, limit: n });
+          if (nullFilter === "is_null") {
+            return {
+              data: [
+                { decision: { ...decision, id: "fresh-1" } },
+                { decision: { ...decision, id: "fresh-2" } },
+              ],
+              error: null,
+            };
+          }
+          return {
+            data: [{ decision: { ...decision, id: "retry-1" } }],
+            error: null,
+          };
+        };
+        return chain;
+      }),
+    } as unknown as Parameters<typeof loadResumeDecisions>[0];
+
+    const result = await loadResumeDecisions(db, "2026-11-26T21:10:00.000Z");
+    expect(calls).toEqual([
+      { nullFilter: "is_null", limit: 10 },
+      { nullFilter: "not_null", limit: 8 },
+    ]);
+    expect(result.map(d => d.id)).toEqual(["fresh-1", "fresh-2", "retry-1"]);
+  });
 });

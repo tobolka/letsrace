@@ -5,6 +5,7 @@ import type { Json } from "@/lib/supabase/database.types";
 import { practicalDetailsForEvent } from "@/lib/practical-details";
 import { racePlace } from "@/lib/race-place";
 import { formatPlaceName, joinPlace, splitPlace } from "@/lib/places";
+import { unshout } from "@/lib/seo-race-copy";
 import { repairText } from "@/lib/text";
 
 export class StalePublication extends Error {}
@@ -27,6 +28,7 @@ export function verifyPublicRevision(html: string, status: number, publication: 
   const $ = load(html), article = $("article[data-race-revision]").first();
   if (article.attr("data-race-revision") !== publication.revision || article.attr("data-race-id") !== publication.expected.id) throw new StalePublication("Public race revision does not match the saved change");
   const events: Record<string, unknown>[] = [];
+  let malformedJsonLd = false;
   function collect(value: unknown) {
     if (Array.isArray(value)) { value.forEach(collect); return; }
     if (!value || typeof value !== "object") return;
@@ -35,25 +37,42 @@ export function verifyPublicRevision(html: string, status: number, publication: 
     if (item["@graph"]) collect(item["@graph"]);
   }
   $('script[type="application/ld+json"]').each((_, element) => {
-    try { collect(JSON.parse($(element).text())); } catch { /* A broken block must not count as evidence. */ }
+    try { collect(JSON.parse($(element).text())); } catch { malformedJsonLd = true; /* A broken block must not count as evidence. */ }
   });
   const expected = publication.expected;
-  const actual = events.find(event => event.name === repairText(String(expected.name)));
-  if (!actual || actual.startDate !== expected.start_date || actual.endDate !== (expected.end_date ?? expected.start_date)) throw new StalePublication("Public race name or dates do not match the saved change");
-  const schemaStatus = expected.status === "cancelled" ? "EventCancelled" : expected.status === "postponed" ? "EventPostponed" : "EventScheduled";
-  if (actual.eventStatus !== `https://schema.org/${schemaStatus}`) throw new StalePublication("Public race status does not match the saved change");
-  const wantedPlace = expected.public_location;
-  if (wantedPlace && typeof wantedPlace === "object" && !Array.isArray(wantedPlace)) {
-    const actualPlace = actual.location as Record<string, unknown> | undefined;
-    const address = actualPlace?.address as Record<string, unknown> | undefined;
-    const normalize = (value: unknown) => String(value ?? "").normalize("NFKC").replace(/\s+/g, " ").trim();
-    if (normalize(actualPlace?.name) !== normalize(wantedPlace.name)) throw new StalePublication("Public race location does not match the saved change");
-    for (const key of ["streetAddress", "postalCode"]) if (wantedPlace[key] && normalize(address?.[key]) !== normalize(wantedPlace[key])) throw new StalePublication("Public race address does not match the saved change");
-    const geo = actualPlace?.geo as Record<string, unknown> | undefined;
-    if (wantedPlace.lat != null && (Number(geo?.latitude) !== Number(wantedPlace.lat) || Number(geo?.longitude) !== Number(wantedPlace.lng))) throw new StalePublication("Public race coordinates do not match the saved change");
-    const visible = $.root().clone(); visible.find("script,style").remove();
-    const text = normalize(visible.text());
-    for (const key of ["name", "streetAddress", "postalCode"]) if (wantedPlace[key] && !text.includes(normalize(wantedPlace[key]))) throw new StalePublication("Saved race location is missing from the visible page");
+  const normalize = (value: unknown) => String(value ?? "").normalize("NFKC").replace(/\s+/g, " ").trim();
+  const expectedName = repairText(String(expected.name));
+  const actual = events.find(event => event.name === expectedName);
+  if (actual) {
+    if (actual.startDate !== expected.start_date || actual.endDate !== (expected.end_date ?? expected.start_date)) throw new StalePublication("Public race name or dates do not match the saved change");
+    const schemaStatus = expected.status === "cancelled" ? "EventCancelled" : expected.status === "postponed" ? "EventPostponed" : "EventScheduled";
+    if (actual.eventStatus !== `https://schema.org/${schemaStatus}`) throw new StalePublication("Public race status does not match the saved change");
+    const wantedPlace = expected.public_location;
+    if (wantedPlace && typeof wantedPlace === "object" && !Array.isArray(wantedPlace)) {
+      const actualPlace = actual.location as Record<string, unknown> | undefined;
+      const address = actualPlace?.address as Record<string, unknown> | undefined;
+      if (normalize(actualPlace?.name) !== normalize(wantedPlace.name)) throw new StalePublication("Public race location does not match the saved change");
+      for (const key of ["streetAddress", "postalCode"]) if (wantedPlace[key] && normalize(address?.[key]) !== normalize(wantedPlace[key])) throw new StalePublication("Public race address does not match the saved change");
+      const geo = actualPlace?.geo as Record<string, unknown> | undefined;
+      if (wantedPlace.lat != null && (Number(geo?.latitude) !== Number(wantedPlace.lat) || Number(geo?.longitude) !== Number(wantedPlace.lng))) throw new StalePublication("Public race coordinates do not match the saved change");
+      const visible = $.root().clone(); visible.find("script,style").remove();
+      const text = normalize(visible.text());
+      for (const key of ["name", "streetAddress", "postalCode"]) if (wantedPlace[key] && !text.includes(normalize(wantedPlace[key]))) throw new StalePublication("Saved race location is missing from the visible page");
+    }
+  } else {
+    // EventJsonLd omits SportsEvent when a race has no location (`public_location === null`).
+    if (expected.public_location !== null || events.length > 0 || malformedJsonLd) {
+      throw new StalePublication("Public race name or dates do not match the saved change");
+    }
+    const heading = normalize(article.find("h1[data-page-title]").first().text());
+    const startDate = article.find("header time[datetime]").first().attr("datetime")?.trim();
+    if (heading !== normalize(unshout(expectedName)) || startDate !== expected.start_date) {
+      throw new StalePublication("Public race name or dates do not match the saved change");
+    }
+    const showsCancelled = article.children('p[role="status"]').length > 0;
+    if ((expected.status === "cancelled") !== showsCancelled) {
+      throw new StalePublication("Public race status does not match the saved change");
+    }
   }
   if (expected.registration_url && !$('a[href]').toArray().some(link => $(link).attr('href') === expected.registration_url)) throw new StalePublication("Saved registration link is missing from the public page");
 }

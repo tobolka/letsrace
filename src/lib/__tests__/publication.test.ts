@@ -51,3 +51,34 @@ it("checks the canonical target's country after a merge, rather than assuming ev
   expect(publicationIsVisible({ ...expected, status: "tbc" }, "CZ")).toBe(false);
   expect(publicationIsVisible({ ...expected, status: "cancelled" }, "CZ")).toBe(true);
 });
+
+it("verifies races without a location when SportsEvent JSON-LD is intentionally omitted", () => {
+  const noPlace: Publication = {
+    revision: "rev-no-place",
+    slug: "women-s-cycling-grand-prix-region-stuttgart-2027",
+    expected: {
+      id: "race-no-place",
+      name: "Women’s Cycling Grand Prix Region Stuttgart",
+      start_date: "2027-09-19",
+      end_date: "2027-09-19",
+      status: "scheduled",
+      public_location: null,
+    },
+  };
+  const noPlaceHtml = (name = "Women’s Cycling Grand Prix Region Stuttgart", startDate = "2027-09-19", cancelled = false) =>
+    `<article data-race-id="race-no-place" data-race-revision="rev-no-place">${cancelled ? '<p role="status">This race is cancelled.</p>' : ""}<header><h1 data-page-title="true">${name}</h1><p><time dateTime="${startDate}">Sunday</time></p></header></article><script type="application/ld+json">${JSON.stringify({ "@type": "BreadcrumbList" })}</script>`;
+
+  expect(() => verifyPublicRevision(noPlaceHtml(), 200, noPlace, true)).not.toThrow();
+  expect(() => verifyPublicRevision(noPlaceHtml("Old Name"), 200, noPlace, true)).toThrow("name or dates");
+  expect(() => verifyPublicRevision(noPlaceHtml(undefined, "2027-09-20"), 200, noPlace, true)).toThrow("name or dates");
+  expect(() => verifyPublicRevision(noPlaceHtml(undefined, undefined, true), 200, noPlace, true)).toThrow("status");
+  expect(() => verifyPublicRevision(noPlaceHtml().replace('"BreadcrumbList"', 'invalid-json'), 200, noPlace, true)).toThrow("name or dates");
+  expect(() => verifyPublicRevision(noPlaceHtml(), 200, { ...noPlace, expected: { ...noPlace.expected, public_location: { name: "Stuttgart" } } }, true)).toThrow("name or dates");
+
+  const cancelledNoPlace: Publication = { ...noPlace, expected: { ...noPlace.expected, status: "cancelled" } };
+  expect(() => verifyPublicRevision(noPlaceHtml(undefined, undefined, true), 200, cancelledNoPlace, true)).not.toThrow();
+  expect(() => verifyPublicRevision(noPlaceHtml(undefined, undefined, false), 200, cancelledNoPlace, true)).toThrow("status");
+
+  const shouted: Publication = { ...noPlace, expected: { ...noPlace.expected, name: "WOMEN'S CYCLING GRAND PRIX" } };
+  expect(() => verifyPublicRevision(noPlaceHtml("Women's Cycling Grand Prix"), 200, shouted, true)).not.toThrow();
+});

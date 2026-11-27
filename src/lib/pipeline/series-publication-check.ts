@@ -1,5 +1,11 @@
 import type { Locale } from "@/lib/i18n/messages";
-import { checkPublicationLocales, publicationLocaleWaves } from "@/lib/pipeline/publication-locales";
+import {
+  DEFAULT_LOCALE_WAVE_DELAY_MS,
+  RateLimitedPublication,
+  checkPublicationLocales,
+  publicationLocaleWaves,
+} from "@/lib/pipeline/publication-locales";
+import { MAX_EDGE_SECONDS } from "@/lib/cloudflare-edge-cache";
 import { load } from "cheerio";
 import { readPublicSeries } from "@/lib/events";
 import { eventPagePath } from "@/lib/event-url";
@@ -9,6 +15,28 @@ import { createServerSupabase } from "@/lib/supabase/server";
 
 type PublicSeries = Awaited<ReturnType<typeof readPublicSeries>>;
 const normalize = (value: string) => value.normalize("NFKC").replace(/\s+/g, " ").trim();
+
+const EDGE_RETRY_BUFFER_SECONDS = 60;
+const MIN_EDGE_RETRY_SECONDS = MAX_EDGE_SECONDS + EDGE_RETRY_BUFFER_SECONDS;
+const MIN_RATE_LIMIT_RETRY_SECONDS = 300;
+export const DEFAULT_BETWEEN_SERIES_CHECKS_MS = 350;
+
+const sleep = (ms: number) => new Promise<void>(resolve => setTimeout(resolve, ms));
+
+function isRateLimitedError(error: unknown): boolean {
+  if (error instanceof RateLimitedPublication) return true;
+  const message = error instanceof Error ? error.message : String(error ?? "");
+  return /\bHTTP 429\b/i.test(message);
+}
+
+/** Wait past Cloudflare's edge TTL on stale HTML and at least 5 min when rate-limited. */
+export function seriesRetryDelaySeconds(error: unknown, attempts = 0): number {
+  const exponent = Number.isFinite(attempts) && attempts > 0 ? Math.min(Math.floor(attempts), 8) : 0;
+  const backoff = Math.min(86400, 300 * 2 ** exponent);
+  if (error instanceof StalePublication) return Math.max(MIN_EDGE_RETRY_SECONDS, backoff);
+  if (isRateLimitedError(error)) return Math.max(MIN_RATE_LIMIT_RETRY_SECONDS, backoff);
+  return backoff;
+}
 
 export function verifyPublicSeries(html: string, status: number, expected: PublicSeries, locale: Locale) {
   if (!expected) {
@@ -57,10 +85,26 @@ export function verifyPublicSeries(html: string, status: number, expected: Publi
   }
 }
 
-export async function checkPublicSeriesRevisions({ maxChecks, deadline, timeoutMs }: { maxChecks: number; deadline: number; timeoutMs: number }) {
+export async function checkPublicSeriesRevisions({
+  maxChecks,
+  deadline,
+  timeoutMs,
+  betweenChecksMs = DEFAULT_BETWEEN_SERIES_CHECKS_MS,
+  waveDelayMs = DEFAULT_LOCALE_WAVE_DELAY_MS,
+}: {
+  maxChecks: number;
+  deadline: number;
+  timeoutMs: number;
+  betweenChecksMs?: number;
+  waveDelayMs?: number;
+}) {
   const db = createServerSupabase();
   let processed = 0, verified = 0, deferred = 0;
-  for (let index = 0; index < maxChecks && Date.now() + publicationLocaleWaves.length * timeoutMs + 2000 < deadline; index++) {
+  const waveSpreadMs = Math.max(0, publicationLocaleWaves.length - 1) * Math.max(0, waveDelayMs);
+  for (let index = 0; index < maxChecks; index++) {
+    const waitMs = index > 0 && betweenChecksMs > 0 ? betweenChecksMs : 0;
+    if (Date.now() + waitMs + publicationLocaleWaves.length * timeoutMs + waveSpreadMs + 2000 >= deadline) break;
+    if (waitMs > 0) await sleep(waitMs);
     const { data: tasks, error } = await db.rpc("pipeline_claim_tasks", { p_kind: "series_refresh", p_capabilities: ["web"], p_limit: 1 });
     if (error) throw error;
     const task = tasks[0];
@@ -74,9 +118,14 @@ export async function checkPublicSeriesRevisions({ maxChecks, deadline, timeoutM
       if (payload.expected.visibility === "public" ? expected?.series.id !== task.entity_id : expected !== null) {
         throw Error("Series changed while checking publication");
       }
-      const checkedLocales = await checkPublicationLocales(`series/${payload.slug}`, timeoutMs, (html, status, locale) => {
-        verifyPublicSeries(html, status, expected, locale);
-      });
+      const checkedLocales = await checkPublicationLocales(
+        `series/${payload.slug}`,
+        timeoutMs,
+        (html, status, locale) => {
+          verifyPublicSeries(html, status, expected, locale);
+        },
+        waveDelayMs,
+      );
       const { data: finished, error } = await db.rpc("pipeline_finish_task", {
         p_key: task.key, p_token: task.token!, p_payload: task.payload,
         p_result: { verified: true, verifiedAt: new Date().toISOString(), revision: payload.revision, locales: checkedLocales, rounds: expected?.events.length ?? 0 },
@@ -84,13 +133,15 @@ export async function checkPublicSeriesRevisions({ maxChecks, deadline, timeoutM
       if (error) throw error;
       if (finished) verified++; else deferred++;
     } catch (error) {
+      const rateLimited = isRateLimitedError(error);
       const retry = await db.rpc("pipeline_retry_publication_check", {
         p_key: task.key, p_token: task.token!, p_revision: revision, p_stale: error instanceof StalePublication,
         p_error: error instanceof Error ? error.message : "Series publication check failed",
-        p_delay_seconds: Math.min(86400, 300 * 2 ** Math.min(task.attempts, 8)),
+        p_delay_seconds: seriesRetryDelaySeconds(error, task.attempts),
       });
       if (retry.error) throw retry.error;
       deferred++;
+      if (rateLimited) break;
     }
   }
   return { processed, verified, deferred };
