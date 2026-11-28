@@ -288,7 +288,7 @@ function extractCardRaces($: cheerio.CheerioAPI): RawSportBaseRace[] {
     if (!startDate) return;
 
     let sport: string | null = null;
-    let placeParts = parts.slice(1);
+    const placeParts = parts.slice(1);
     if (placeParts.length >= 2 && KNOWN_CARD_SPORT.test(placeParts[placeParts.length - 1]!)) {
       sport = placeParts.pop()!;
     } else if (placeParts.length === 1 && KNOWN_CARD_SPORT.test(placeParts[0]!)) {
